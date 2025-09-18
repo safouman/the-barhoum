@@ -40,7 +40,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const cookiesStore = cookies();
+  const cookiesStore = await cookies();
   const headersStore = headers();
   const locale = resolveLocale(cookiesStore, headersStore);
   const direction = getDirection(locale);
