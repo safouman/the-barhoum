@@ -29,7 +29,7 @@ const HOME_THEMES: Record<ThemeName, HomeThemeDefinition> = {
 
 const MEDIA_LAYOUT: Record<ThemeName, { sectionClass: string; videoGrid: string; pdfGrid: string; container: string }> = {
   a: {
-    sectionClass: "bg-gradient-to-b from-black/10 via-transparent to-black/40",
+    sectionClass: "bg-gradient-to-b from-transparent via-[rgba(41,214,199,0.08)] to-[rgba(43,43,43,0.9)]",
     videoGrid: "grid gap-6 lg:grid-cols-[1.4fr,0.6fr]",
     pdfGrid: "flex flex-wrap gap-3",
     container: "space-y-[clamp(var(--space-sm),4vw,var(--space-md))]",
@@ -41,7 +41,7 @@ const MEDIA_LAYOUT: Record<ThemeName, { sectionClass: string; videoGrid: string;
     container: "space-y-[clamp(var(--space-sm),3vw,var(--space-md))]",
   },
   c: {
-    sectionClass: "bg-gradient-to-br from-[#fff3e4] via-white to-[#ffe9d6]",
+    sectionClass: "bg-background",
     videoGrid: "grid gap-6 lg:grid-cols-[1fr,1fr]",
     pdfGrid: "flex flex-wrap gap-3",
     container: "space-y-[clamp(var(--space-sm),4vw,var(--space-lg))]",
@@ -106,18 +106,11 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
     [testimonials, locale]
   );
 
-  const initialCategory = localizedCategories[0]?.id;
-  const [activeCategory, setActiveCategory] = useState<Category["id"] | undefined>(initialCategory);
+  const [activeCategory, setActiveCategory] = useState<Category["id"] | undefined>();
   const [activePackageId, setActivePackageId] = useState<Package["id"] | undefined>();
 
-  useEffect(() => {
-    if (!activeCategory && initialCategory) {
-      setActiveCategory(initialCategory);
-    }
-  }, [activeCategory, initialCategory]);
-
   const packagesForCategory = useMemo(
-    () => localizedPackages.filter((pkg) => !activeCategory || pkg.categoryId === activeCategory),
+    () => (activeCategory ? localizedPackages.filter((pkg) => pkg.categoryId === activeCategory) : []),
     [localizedPackages, activeCategory]
   );
 
@@ -161,6 +154,8 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
 
   const mediaLayout = MEDIA_LAYOUT[theme];
 
+  const hasPackages = packagesForCategory.length > 0;
+
   return (
     <>
       <Theme.Hero hero={home.hero} locale={locale} media={home.media} />
@@ -184,7 +179,7 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
           </div>
           <div className="space-y-4">
             <h3 className="font-heading text-[clamp(1.4rem,3vw,2rem)]">{strings.media.pdfs}</h3>
-            <div className={clsx(mediaLayout.pdfGrid, "min-h-[3rem]")}> 
+            <div className={clsx(mediaLayout.pdfGrid, "min-h-[3rem]")}>
               {home.media.pdfs.map((pdf) => (
                 <PdfCard key={pdf.url} href={pdf.url} label={pdf.label[locale]} localeLabel={strings.media.pdfs} />
               ))}
@@ -203,20 +198,24 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
         ui={strings}
       />
 
-      <Theme.Packages
-        packages={packagesForCategory}
-        activePackageId={activePackageId}
-        onSelect={handlePackageSelect}
-        ui={strings}
-      />
+      {hasPackages && (
+        <Theme.Packages
+          packages={packagesForCategory}
+          activePackageId={activePackageId}
+          onSelect={handlePackageSelect}
+          ui={strings}
+        />
+      )}
 
       <Theme.Testimonials testimonials={testimonialsForCategory} ui={strings} />
 
-      <Theme.LeadForm
-        selectedCategory={leadCategoryLabel}
-        selectedPackage={leadPackageLabel}
-        ui={strings}
-      />
+      {activeCategory && activePackageId && leadPackageLabel && (
+        <Theme.LeadForm
+          selectedCategory={leadCategoryLabel}
+          selectedPackage={leadPackageLabel}
+          ui={strings}
+        />
+      )}
     </>
   );
 }

@@ -9,23 +9,23 @@ import { PdfCard } from "@/components/PdfCard";
 import type { HomeThemeDefinition } from "./types";
 
 const Hero: HomeThemeDefinition["Hero"] = ({ hero, locale, media }) => (
-  <section className="bg-gradient-to-br from-[#fbe9da] via-[#fff5ea] to-[#fde5d0]">
+  <section className="bg-background text-text">
     <Container className="grid gap-10 py-[clamp(var(--space-lg),16vh,var(--space-xl))] lg:grid-cols-[1.2fr,0.8fr] lg:items-center">
       <div className="space-y-6">
         <div className="flex items-center gap-3 text-sm text-subtle">
           <span className="flex h-12 w-12 items-center justify-center rounded-full bg-accent/30 text-sm font-semibold text-accent">
             {hero.title[locale].at(0)}
           </span>
-          <span className="rounded-full bg-white/70 px-4 py-1 text-xs uppercase tracking-[0.3em] text-subtle">
+          <span className="rounded-full bg-surface px-4 py-1 text-xs uppercase tracking-[0.35em] text-subtle/80">
             {hero.cta[locale]}
           </span>
         </div>
-        <h1 className="font-heading text-[clamp(2.3rem,5vw,3.6rem)] text-text">{hero.title[locale]}</h1>
-        <p className="max-w-xl text-[clamp(1rem,2vw,1.3rem)] text-subtle">{hero.subtitle[locale]}</p>
+        <h1 className="font-heading text-[clamp(2.4rem,5.2vw,3.7rem)] leading-tight">{hero.title[locale]}</h1>
+        <p className="max-w-xl text-[clamp(1.05rem,2vw,1.35rem)] text-subtle">{hero.subtitle[locale]}</p>
         <Button href="#lead-form">{hero.cta[locale]}</Button>
       </div>
-      <div className="grid gap-4 rounded-[28px] border border-border/50 bg-white/70 p-6 shadow-md shadow-accent/20">
-        <span className="text-xs uppercase tracking-[0.3em] text-subtle">{hero.cta[locale]}</span>
+      <div className="grid gap-4 rounded-[28px] border border-border bg-surface p-6 shadow-sm">
+        <span className="text-xs uppercase tracking-[0.35em] text-subtle/80">{hero.cta[locale]}</span>
         {media.videos.length > 0 && (
           <VideoEmbed videoId={media.videos[0].id} title={media.videos[0].title[locale]} />
         )}
@@ -40,7 +40,7 @@ const Hero: HomeThemeDefinition["Hero"] = ({ hero, locale, media }) => (
 );
 
 const Categories: HomeThemeDefinition["Categories"] = ({ categories, activeCategory, onSelect, ui }) => (
-  <Section id="categories" title={ui.categories} className="bg-[#fff8f1]">
+  <Section id="categories" title={ui.categories} className="bg-surface">
     <Container className="grid gap-3">
       {categories.map((category) => (
         <button
@@ -49,17 +49,17 @@ const Categories: HomeThemeDefinition["Categories"] = ({ categories, activeCateg
           onClick={() => onSelect(category.id)}
           aria-pressed={activeCategory === category.id}
           className={clsx(
-            "flex items-center justify-between gap-4 rounded-[22px] border border-transparent bg-white/80 px-6 py-5 text-start shadow-sm transition",
+            "flex items-center justify-between gap-4 rounded-[24px] border border-transparent bg-background px-6 py-5 text-start shadow-sm transition",
             activeCategory === category.id
-              ? "border-accent/60 shadow-[0_14px_38px_rgba(236,159,102,0.28)]"
-              : "hover:border-border/60"
+              ? "border-accent/70 shadow-md"
+              : "hover:border-border"
           )}
         >
           <div className="space-y-1">
             <h3 className="text-lg font-semibold text-text">{category.label}</h3>
             <p className="max-w-prose text-sm text-subtle">{category.description}</p>
           </div>
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/20 text-sm text-accent">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-subtle/10 text-sm text-subtle">
             {ui.categories}
           </span>
         </button>
@@ -69,7 +69,7 @@ const Categories: HomeThemeDefinition["Categories"] = ({ categories, activeCateg
 );
 
 const Packages: HomeThemeDefinition["Packages"] = ({ packages, activePackageId, onSelect, ui }) => (
-  <Section title={ui.packages} className="bg-gradient-to-b from-[#fff5ea] to-white">
+  <Section title={ui.packages} className="bg-background">
     <Container className="grid gap-4 md:grid-cols-2">
       {packages.map((pkg) => (
         <button
@@ -78,18 +78,18 @@ const Packages: HomeThemeDefinition["Packages"] = ({ packages, activePackageId, 
           onClick={() => onSelect(pkg.id)}
           aria-pressed={activePackageId === pkg.id}
           className={clsx(
-            "grid gap-3 rounded-[26px] border border-border/40 bg-white/80 p-6 text-start shadow-sm transition hover:-translate-y-0.5",
-            activePackageId === pkg.id && "border-accent/80 shadow-[0_18px_45px_rgba(236,159,102,0.28)]"
+            "grid gap-3 rounded-[26px] border border-border bg-surface p-6 text-start shadow-sm transition hover:-translate-y-0.5",
+            activePackageId === pkg.id && "border-accent shadow-md"
           )}
         >
           <div className="flex items-baseline justify-between gap-4">
             <span className="text-xl font-heading text-text">{pkg.title}</span>
-            <span className="rounded-full bg-accent/10 px-4 py-1 text-sm font-semibold text-accent">{pkg.priceLabel}</span>
+            <span className="rounded-full bg-accent/15 px-4 py-1 text-sm font-semibold text-accent">{pkg.priceLabel}</span>
           </div>
           <ul className="grid gap-1.5 text-sm text-subtle">
             {pkg.features.map((feature) => (
               <li key={feature} className="flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-accent/80" aria-hidden />
+                <span className="h-2 w-2 rounded-full bg-subtle" aria-hidden />
                 <span>{feature}</span>
               </li>
             ))}
@@ -119,14 +119,14 @@ const Testimonials: HomeThemeDefinition["Testimonials"] = ({ testimonials, ui })
   );
 
   return (
-    <Section title={ui.testimonials} className="bg-white">
+    <Section title={ui.testimonials} className="bg-surface">
       <Container className="grid gap-6">
         {current && (
-          <article className="grid gap-5 rounded-[28px] border border-border/50 bg-[#fff8f1] p-8 text-center shadow-md shadow-accent/20">
+          <article className="grid gap-5 rounded-[28px] border border-border bg-background p-8 text-center shadow-sm">
             <div className="mx-auto h-20 w-20 overflow-hidden rounded-full bg-accent/20 text-3xl font-semibold text-accent">
               <span className="flex h-full items-center justify-center">{current.name.at(0)}</span>
             </div>
-            <p className="text-[clamp(1.1rem,2.3vw,1.5rem)] text-text">&quot;{current.quote}&quot;</p>
+            <p className="text-[clamp(1.15rem,2.4vw,1.6rem)] font-heading leading-relaxed text-text">&quot;{current.quote}&quot;</p>
             <div className="text-sm text-subtle">
               <div className="font-semibold text-text">{current.name}</div>
               <div>{current.role}</div>
@@ -149,7 +149,7 @@ const Testimonials: HomeThemeDefinition["Testimonials"] = ({ testimonials, ui })
             <button
               type="button"
               onClick={() => goTo(-1)}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-accent shadow-sm"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface text-accent shadow-sm"
               aria-label="Previous"
             >
               &lt;
@@ -157,7 +157,7 @@ const Testimonials: HomeThemeDefinition["Testimonials"] = ({ testimonials, ui })
             <button
               type="button"
               onClick={() => goTo(1)}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-white text-accent shadow-sm"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface text-accent shadow-sm"
               aria-label="Next"
             >
               &gt;
@@ -170,14 +170,18 @@ const Testimonials: HomeThemeDefinition["Testimonials"] = ({ testimonials, ui })
 };
 
 const LeadFormSection: HomeThemeDefinition["LeadForm"] = ({ selectedCategory, selectedPackage, ui }) => (
-  <Section id="lead-form" className="bg-gradient-to-tr from-[#fde7d4] via-white to-[#fde7d4]">
+  <Section
+    id="lead-form"
+    title={<span className="text-xs font-semibold uppercase tracking-[0.4em] text-subtle">{ui.form.title}</span>}
+    className="bg-background"
+  >
     <Container className="grid gap-8 lg:grid-cols-[0.9fr,1.1fr] lg:items-center">
-      <div className="space-y-4 text-center lg:text-start">
-        <h3 className="text-3xl font-heading text-text">{ui.form.title}</h3>
+      <div className="space-y-4 text-center lg:text-start text-text">
+        <h3 className="text-3xl font-heading">{ui.form.title}</h3>
         <p className="text-sm text-subtle">
           {ui.form.category}: {selectedCategory ?? "-"} · {ui.form.package}: {selectedPackage ?? "-"}
         </p>
-        <p className="text-sm text-subtle">{ui.media.videos}</p>
+        <p className="text-sm text-subtle/80">{ui.media.videos}</p>
       </div>
       <LeadForm labels={ui.form} selectedCategory={selectedCategory} selectedPackage={selectedPackage} variant="warm" />
     </Container>

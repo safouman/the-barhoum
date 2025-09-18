@@ -43,119 +43,119 @@ export type DesignTokens = {
 export const TOKENS: Record<ThemeName, DesignTokens> = {
   a: {
     color: {
-      background: "#141312",
-      surface: "#1f1d1b",
-      text: "#f8f4ec",
-      subtle: "#d2c6ad",
-      accent: "#c7a764",
-      accentText: "#141312",
-      border: "#3b352f",
-      focus: "#f5c16c"
+      background: "#2b2b2b",
+      surface: "#343434",
+      text: "#f3f1eb",
+      subtle: "#a59c91",
+      accent: "#29d6c7",
+      accentText: "#0f4540",
+      border: "#3f3f3f",
+      focus: "#4de6d9"
     },
     font: {
-      familyBase: "'Georgia', 'Times New Roman', serif",
-      familyHeading: "'Didot', 'Georgia', serif",
+      familyBase: "var(--font-inter)",
+      familyHeading: "var(--font-playfair)",
       weightRegular: 400,
       weightBold: 600
     },
     radius: {
-      sm: "8px",
-      md: "16px",
+      sm: "12px",
+      md: "20px",
       lg: "32px"
     },
     shadow: {
-      sm: "0 8px 16px rgba(0,0,0,0.2)",
-      md: "0 16px 40px rgba(0,0,0,0.35)"
+      sm: "0 18px 50px rgba(15,15,15,0.32)",
+      md: "0 26px 80px rgba(12,12,12,0.45)"
     },
     spacing: {
-      xs: "0.5rem",
-      sm: "0.75rem",
-      md: "1.5rem",
-      lg: "2.5rem",
-      xl: "4rem"
+      xs: "0.75rem",
+      sm: "1.5rem",
+      md: "3rem",
+      lg: "5rem",
+      xl: "7.5rem"
     },
     lineHeight: {
       tight: 1.2,
-      base: 1.5,
-      relaxed: 1.8
-    }
-  },
-  b: {
-    color: {
-      background: "#f7f7f7",
-      surface: "#ffffff",
-      text: "#0f172a",
-      subtle: "#475569",
-      accent: "#2563eb",
-      accentText: "#ffffff",
-      border: "#e2e8f0",
-      focus: "#3b82f6"
-    },
-    font: {
-      familyBase: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
-      familyHeading: "'Segoe UI Semibold', 'Helvetica Neue', Arial, sans-serif",
-      weightRegular: 400,
-      weightBold: 700
-    },
-    radius: {
-      sm: "6px",
-      md: "12px",
-      lg: "20px"
-    },
-    shadow: {
-      sm: "0 6px 12px rgba(15,23,42,0.08)",
-      md: "0 12px 24px rgba(15,23,42,0.12)"
-    },
-    spacing: {
-      xs: "0.5rem",
-      sm: "1rem",
-      md: "1.5rem",
-      lg: "2rem",
-      xl: "3rem"
-    },
-    lineHeight: {
-      tight: 1.1,
       base: 1.6,
       relaxed: 1.9
     }
   },
-  c: {
+  b: {
     color: {
-      background: "#faf5ef",
-      surface: "#fff9f2",
-      text: "#3a2f2a",
-      subtle: "#8f7765",
-      accent: "#ec9f66",
-      accentText: "#3a2f2a",
-      border: "#f2dfcf",
-      focus: "#f1b37a"
+      background: "#f5f1e8",
+      surface: "#ffffff",
+      text: "#3b2328",
+      subtle: "#7a605f",
+      accent: "#29d6c7",
+      accentText: "#0f4540",
+      border: "#e4ded3",
+      focus: "#2f7d73"
     },
     font: {
-      familyBase: "'Tahoma', 'Verdana', sans-serif",
-      familyHeading: "'Trebuchet MS', 'Tahoma', sans-serif",
+      familyBase: "var(--font-poppins)",
+      familyHeading: "var(--font-poppins)",
+      weightRegular: 400,
+      weightBold: 600
+    },
+    radius: {
+      sm: "10px",
+      md: "18px",
+      lg: "26px"
+    },
+    shadow: {
+      sm: "0 16px 36px rgba(13, 28, 28, 0.12)",
+      md: "0 28px 60px rgba(20, 35, 35, 0.16)"
+    },
+    spacing: {
+      xs: "0.75rem",
+      sm: "1.5rem",
+      md: "3rem",
+      lg: "5rem",
+      xl: "7rem"
+    },
+    lineHeight: {
+      tight: 1.15,
+      base: 1.6,
+      relaxed: 1.85
+    }
+  },
+  c: {
+    color: {
+      background: "#f2e6db",
+      surface: "#fff3ea",
+      text: "#3f342c",
+      subtle: "#2f7d73",
+      accent: "#e27e6d",
+      accentText: "#ffffff",
+      border: "#e8d6c7",
+      focus: "#29d6c7"
+    },
+    font: {
+      familyBase: "var(--font-nunito)",
+      familyHeading: "var(--font-rubik)",
       weightRegular: 400,
       weightBold: 700
     },
     radius: {
-      sm: "10px",
-      md: "20px",
-      lg: "28px"
+      sm: "14px",
+      md: "22px",
+      lg: "30px"
     },
     shadow: {
-      sm: "0 6px 14px rgba(236,159,102,0.18)",
-      md: "0 14px 30px rgba(236,159,102,0.24)"
+      sm: "0 18px 42px rgba(226,126,109,0.18)",
+      md: "0 30px 68px rgba(226,126,109,0.22)"
     },
     spacing: {
       xs: "0.75rem",
-      sm: "1.25rem",
-      md: "1.75rem",
-      lg: "2.5rem",
-      xl: "3.5rem"
+      sm: "1.75rem",
+      md: "3.25rem",
+      lg: "5.25rem",
+      xl: "7.5rem"
     },
     lineHeight: {
-      tight: 1.15,
-      base: 1.7,
-      relaxed: 2
+      tight: 1.2,
+      base: 1.65,
+      relaxed: 1.95
     }
   }
 };
