@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { Inter, Nunito, Playfair_Display, Poppins, Rubik } from "next/font/google";
 import "../styles/globals.css";
 import { LocaleProvider } from "@/providers/locale-provider";
@@ -18,8 +18,8 @@ const poppins = Poppins({ subsets: ["latin"], weight: ["400", "600", "700"], var
 const nunito = Nunito({ subsets: ["latin"], weight: ["400", "600", "700"], variable: "--font-nunito", display: "swap" });
 const rubik = Rubik({ subsets: ["latin"], weight: ["400", "600", "700"], variable: "--font-rubik", display: "swap" });
 
-function resolveTheme(): ThemeName {
-  const themeCookie = cookies().get("barhoum_theme")?.value;
+function resolveTheme(cookiesStore: ReturnType<typeof cookies>): ThemeName {
+  const themeCookie = cookiesStore.get("barhoum_theme")?.value;
   if (themeCookie && (THEME_NAMES as readonly string[]).includes(themeCookie)) {
     return themeCookie as ThemeName;
   }
@@ -37,9 +37,11 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const locale = resolveLocale();
+  const cookiesStore = cookies();
+  const headersStore = headers();
+  const locale = resolveLocale(cookiesStore, headersStore);
   const direction = getDirection(locale);
-  const initialTheme = resolveTheme();
+  const initialTheme = resolveTheme(cookiesStore);
   const [ui, payments] = await Promise.all([loadUi(), getPayments()]);
   const defaultPaymentSlug = payments[0]?.slug;
   const fontClass = [playfair.variable, inter.variable, poppins.variable, nunito.variable, rubik.variable].join(" ");
