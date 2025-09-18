@@ -1,0 +1,26 @@
+[
+  {
+    "id": "individuals",
+    "label": {"ar": "أفراد", "en": "Individuals"},
+    "description": {
+      "ar": "جلسات فردية تركز على الوعي الذاتي والتطور المهني والشخصي.",
+      "en": "One-on-one coaching focused on self-awareness and professional growth."
+    }
+  },
+  {
+    "id": "couples",
+    "label": {"ar": "أزواج", "en": "Couples"},
+    "description": {
+      "ar": "برامج مشتركة لتعزيز التواصل وبناء شراكة أكثر انسجاماً.",
+      "en": "Shared programs to deepen communication and cultivate aligned partnership."
+    }
+  },
+  {
+    "id": "organizations",
+    "label": {"ar": "منظمات", "en": "Organizations"},
+    "description": {
+      "ar": "حلول قيادية وثقافية تساعد الفرق على الأداء بثقة ومرونة.",
+      "en": "Leadership and culture solutions that empower teams to perform with confidence."
+    }
+  }
+]

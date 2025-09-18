@@ -1,0 +1,20 @@
+[
+  {
+    "id": "newsletter",
+    "title": {"ar": "النشرة البريدية", "en": "Newsletter"},
+    "description": {"ar": "رسائل شهرية تكشف أدوات الوعي", "en": "Monthly letters with awareness practices"},
+    "url": "https://example.com/newsletter"
+  },
+  {
+    "id": "podcast",
+    "title": {"ar": "بودكاست حوارات", "en": "Dialogue Podcast"},
+    "description": {"ar": "لقاءات مع قادة يبنون ثقافات واعية", "en": "Talks with leaders building conscious cultures"},
+    "url": "https://example.com/podcast"
+  },
+  {
+    "id": "calendar",
+    "title": {"ar": "احجز جلسة", "en": "Book a Session"},
+    "description": {"ar": "اختر الوقت المناسب للقاء استكشافي", "en": "Pick a time for a discovery call"},
+    "url": "https://example.com/calendar"
+  }
+]

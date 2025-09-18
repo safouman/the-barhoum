@@ -1,0 +1,51 @@
+{
+  "nav": {
+    "home": "Home",
+    "cv": "CV",
+    "links": "Links",
+    "pay": "Pay"
+  },
+  "form": {
+    "title": "Start the conversation",
+    "name": "Full name",
+    "email": "Email",
+    "phone": "Phone",
+    "notes": "Notes",
+    "submit": "Send interest",
+    "category": "Category",
+    "package": "Package"
+  },
+  "testimonials": "Testimonials",
+  "packages": "Packages",
+  "categories": "Categories",
+  "media": {
+    "videos": "Videos",
+    "pdfs": "Documents"
+  },
+  "links": {
+    "title": "Curated Links",
+    "description": "Follow where Barhoum shows up"
+  },
+  "cv": {
+    "title": "Résumé",
+    "download": "Download CV"
+  },
+  "payment": {
+    "title": "Payment details",
+    "client": "Client",
+    "amount": "Amount",
+    "discount": "Optional discount",
+    "price": "Price"
+  },
+  "theme": {
+    "label": "Theme",
+    "a": "Luxury",
+    "b": "Modern",
+    "c": "Warm"
+  },
+  "language": {
+    "label": "Language",
+    "ar": "العربية",
+    "en": "English"
+  }
+}

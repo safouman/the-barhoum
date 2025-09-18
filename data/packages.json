@@ -1,0 +1,57 @@
+[
+  {
+    "id": "ind-foundation",
+    "categoryId": "individuals",
+    "title": {"ar": "أساس الوعي", "en": "Awareness Foundation"},
+    "price": {"amount": 180, "currency": "EUR"},
+    "features": {
+      "ar": ["3 جلسات رقمية", "تحليل نقاط القوة", "خطة متابعة لمدة شهر"],
+      "en": ["3 virtual sessions", "Strengths debrief", "1-month follow-up plan"]
+    },
+    "visible": true
+  },
+  {
+    "id": "ind-immersion",
+    "categoryId": "individuals",
+    "title": {"ar": "رحلة تحول", "en": "Transformative Immersion"},
+    "price": {"amount": 540, "currency": "EUR"},
+    "features": {
+      "ar": ["6 جلسات عميقة", "دعم صوتي بين الجلسات", "تمارين موجهة"],
+      "en": ["6 deep-dive sessions", "Voice notes support", "Guided practices"]
+    },
+    "visible": true
+  },
+  {
+    "id": "cpl-alignment",
+    "categoryId": "couples",
+    "title": {"ar": "انسجام الشركاء", "en": "Partners Alignment"},
+    "price": {"amount": 320, "currency": "EUR"},
+    "features": {
+      "ar": ["جلسات مشتركة + فردية", "تمارين تواصل", "أدوات لإدارة الخلاف"],
+      "en": ["Joint + solo sessions", "Communication rituals", "Conflict navigation toolkit"]
+    },
+    "visible": true
+  },
+  {
+    "id": "org-lead",
+    "categoryId": "organizations",
+    "title": {"ar": "قيادة متزنة", "en": "Balanced Leadership"},
+    "price": {"amount": 2400, "currency": "USD"},
+    "features": {
+      "ar": ["ورشة حضورية", "جلسات متابعة تنفيذية", "تقرير ثقافة الفريق"],
+      "en": ["On-site intensive", "Executive follow-ups", "Team culture brief"]
+    },
+    "visible": true
+  },
+  {
+    "id": "org-retainer",
+    "categoryId": "organizations",
+    "title": {"ar": "شراكة مستمرة", "en": "Ongoing Partnership"},
+    "price": {"amount": 4800, "currency": "USD"},
+    "features": {
+      "ar": ["دعم شهري", "جلسات تدريب للفرق", "لوحة قياس مخصصة"],
+      "en": ["Monthly advisory", "Team training sessions", "Custom measurement dashboard"]
+    },
+    "visible": false
+  }
+]

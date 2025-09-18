@@ -1,0 +1,15 @@
+[
+  {
+    "slug": "sahara-retreat",
+    "client": {"ar": "فريق Sahara Labs", "en": "Sahara Labs Team"},
+    "packageTitle": {"ar": "قيادة متزنة", "en": "Balanced Leadership"},
+    "amount": {"amount": 2400, "currency": "USD"},
+    "discount": 10
+  },
+  {
+    "slug": "layla-immersion",
+    "client": {"ar": "ليلى", "en": "Layla"},
+    "packageTitle": {"ar": "رحلة تحول", "en": "Transformative Immersion"},
+    "amount": {"amount": 540, "currency": "EUR"}
+  }
+]

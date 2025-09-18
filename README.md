@@ -37,6 +37,7 @@ Design tokens are defined in `design/tokens.ts`; update these to adjust color, t
 ```
 app/                 Route segments and layouts
 components/          UI primitives & composed sections (Tailwind-powered)
+components/home/    Theme-specific home layouts (Hero/Categories/Packages/Testimonials/Form)
 lib/                 Zod-validated loaders, i18n helpers, analytics
 providers/           Theme & locale context providers
 styles/globals.css   Tailwind entrypoint + token plumbing

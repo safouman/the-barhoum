@@ -1,0 +1,63 @@
+{
+  "summary": [
+    {
+      "ar": "مدرب تنموي معتمد يرافق القادة والفرق في تحول مستدام.",
+      "en": "Certified developmental coach guiding leaders and teams through sustained change."
+    },
+    {
+      "ar": "خبرة تتجاوز 12 عاماً في بناء ثقافات عمل متوازنة بين الأداء والإنسان.",
+      "en": "12+ years shaping cultures that balance performance and humanity."
+    }
+  ],
+  "sections": [
+    {
+      "id": "experience",
+      "title": {"ar": "الخبرات", "en": "Experience"},
+      "items": [
+        {
+          "id": "exp1",
+          "title": {"ar": "مدرب تنفيذي مستقل", "en": "Independent Executive Coach"},
+          "subtitle": {"ar": "الشرق الأوسط وأوروبا", "en": "Middle East & Europe"},
+          "period": {"ar": "2018 - الآن", "en": "2018 - Present"},
+          "bullets": {
+            "ar": ["تصميم برامج تحول للقادة الشباب", "إدارة دوائر تطور جماعية للشركات الناشئة"],
+            "en": ["Design transformation programs for emerging leaders", "Facilitate cohort-based development for startup teams"]
+          }
+        },
+        {
+          "id": "exp2",
+          "title": {"ar": "رئيس ثقافة الشركة - Sahara Labs", "en": "Head of Culture - Sahara Labs"},
+          "period": {"ar": "2014 - 2018", "en": "2014 - 2018"},
+          "bullets": {
+            "ar": ["بناء إطار قيادي داخلي", "إطلاق برنامج رعاية للموظفين"],
+            "en": ["Built the internal leadership framework", "Launched holistic employee care program"]
+          }
+        }
+      ]
+    },
+    {
+      "id": "credentials",
+      "title": {"ar": "الاعتمادات", "en": "Credentials"},
+      "items": [
+        {
+          "id": "cred1",
+          "title": {"ar": "ICF PCC", "en": "ICF PCC"},
+          "bullets": {
+            "ar": ["اعتماد الاتحاد الدولي للمدربين"],
+            "en": ["International Coach Federation Professional Certified Coach"]
+          }
+        },
+        {
+          "id": "cred2",
+          "title": {"ar": "ماجستير علم النفس التنظيمي", "en": "MSc Organizational Psychology"},
+          "subtitle": {"ar": "جامعة أمستردام", "en": "University of Amsterdam"},
+          "bullets": {
+            "ar": ["بحث حول الذكاء العاطفي في بيئات سريعة"],
+            "en": ["Researched emotional intelligence in fast-paced environments"]
+          }
+        }
+      ]
+    }
+  ],
+  "pdf": "/docs/intro.pdf"
+}

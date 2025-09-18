@@ -1,0 +1,99 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --font-base: 'Georgia', 'Times New Roman', serif;
+  --font-heading: 'Didot', 'Georgia', serif;
+  --font-weight-regular: 400;
+  --font-weight-bold: 600;
+  --color-background: #141312;
+  --color-surface: #1f1d1b;
+  --color-text: #f8f4ec;
+  --color-subtle: #d2c6ad;
+  --color-accent: #c7a764;
+  --color-accent-text: #141312;
+  --color-border: #3b352f;
+  --color-focus: #f5c16c;
+  --radius-sm: 0.5rem;
+  --radius-md: 1rem;
+  --radius-lg: 2rem;
+  --shadow-sm: 0 8px 16px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 16px 40px rgba(0, 0, 0, 0.35);
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1.5rem;
+  --space-lg: 2.5rem;
+  --space-xl: 4rem;
+  --leading-tight: 1.2;
+  --leading-base: 1.5;
+  --leading-relaxed: 1.8;
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-background);
+    color: var(--color-text);
+    font-family: var(--font-base);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--leading-base);
+    transition: background 0.3s ease-out, color 0.3s ease-out;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  button {
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    font-family: var(--font-base);
+  }
+
+  img,
+  video {
+    max-width: 100%;
+    display: block;
+  }
+
+  main {
+    min-height: 100vh;
+  }
+
+  .rtl {
+    direction: rtl;
+  }
+
+  .ltr {
+    direction: ltr;
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
+}
