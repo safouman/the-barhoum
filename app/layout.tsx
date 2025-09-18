@@ -10,6 +10,9 @@ import { getDirection } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/i18n.server";
 import type { ThemeName } from "@/design/tokens";
 import { THEME_NAMES } from "@/design/theme";
+
+export const dynamic = 'force-dynamic';
+
 const brand = { ar: "برهوم", en: "Barhoum" };
 
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair", display: "swap" });
