@@ -1,7 +1,6 @@
 export const runtime = "nodejs";
 
 import type { Metadata } from "next";
-import { cookies, headers } from "next/headers";
 import { Inter, Nunito, Playfair_Display, Poppins, Rubik } from "next/font/google";
 import "../styles/globals.css";
 import { LocaleProvider } from "@/providers/locale-provider";
@@ -29,9 +28,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const cookiesStore = cookies();
-  const headersStore = headers();
-  const locale = resolveLocale(cookiesStore, headersStore, null);
+  const locale = resolveLocale(null);
   const direction = getDirection(locale);
   const [ui, payments] = await Promise.all([loadUi(), getPayments()]);
   const defaultPaymentSlug = payments[0]?.slug;
