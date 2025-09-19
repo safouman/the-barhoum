@@ -13,6 +13,7 @@ export function getThemeVars(theme: ThemeName): Record<string, string | number> 
     "--color-accent-text": tokens.color.accentText,
     "--color-border": tokens.color.border,
     "--color-focus": tokens.color.focus,
+    "--page-gradient": tokens.color.pageGradient ?? tokens.color.background,
     "--font-base": tokens.font.familyBase,
     "--font-heading": tokens.font.familyHeading,
     "--font-weight-regular": tokens.font.weightRegular,

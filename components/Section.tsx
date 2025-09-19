@@ -11,15 +11,11 @@ interface SectionProps {
 
 export function Section({ id, title, subtitle, children, className }: SectionProps) {
   return (
-    <section id={id} className={clsx("py-[clamp(5rem,15vh,7.5rem)]", className)}>
+    <section id={id} data-section="true" className={clsx("py-[clamp(var(--space-lg),14vh,var(--space-xl))]", className)}>
       {(title || subtitle) && (
-        <header className="mb-lg grid gap-sm text-center">
-          {title && (
-            <h2 className="font-heading text-[clamp(2.2rem,4.5vw,3.4rem)] font-semibold uppercase tracking-[0.35em]">
-              {title}
-            </h2>
-          )}
-          {subtitle && <p className="mx-auto max-w-3xl text-[clamp(1.05rem,2.2vw,1.35rem)] text-subtle">{subtitle}</p>}
+        <header className="mb-md grid gap-sm text-center">
+          {title && <h2 className="font-heading text-[clamp(1.75rem,4vw,3rem)] font-bold leading-tight">{title}</h2>}
+          {subtitle && <p className="mx-auto max-w-3xl text-[clamp(1rem,2vw,1.3rem)] text-subtle">{subtitle}</p>}
         </header>
       )}
       {children}

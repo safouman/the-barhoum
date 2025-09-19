@@ -40,12 +40,25 @@
 
   body {
     margin: 0;
-    background: var(--color-background);
+    background: var(--page-gradient, var(--color-background));
     color: var(--color-text);
     font-family: var(--font-base), sans-serif;
     font-weight: var(--font-weight-regular);
     line-height: var(--leading-base);
     transition: background 0.3s ease-out, color 0.3s ease-out;
+    position: relative;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 50% 12%, rgba(15, 36, 34, 0.6), transparent 55%);
+    opacity: var(--vignette-opacity, 0);
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    z-index: -1;
   }
 
   a {
@@ -95,5 +108,134 @@
     overflow: hidden;
     clip: rect(0, 0, 0, 0);
     border: 0;
+  }
+}
+
+@layer components {
+  .btn {
+    border-radius: var(--radius-md);
+  }
+
+  [data-theme="a"] .btn-primary {
+    background: #29d6c7;
+    color: #0f4540;
+    box-shadow: 0 2px 8px rgba(41, 214, 199, 0.22);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  [data-theme="a"] .btn-primary:hover {
+    background: #3de4d6;
+    box-shadow: 0 4px 18px rgba(41, 214, 199, 0.28);
+    transform: translateY(-1px);
+  }
+
+  [data-theme="a"] .btn-primary:focus-visible {
+    outline: 2px solid rgba(41, 214, 199, 0.6);
+    outline-offset: 2px;
+  }
+
+  [data-theme="a"] .btn-ghost {
+    border-color: rgba(243, 241, 235, 0.45);
+    color: rgba(243, 241, 235, 0.75);
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  }
+
+  [data-theme="a"] .btn-ghost:hover {
+    background: rgba(41, 214, 199, 0.08);
+    color: #29d6c7;
+    border-color: rgba(41, 214, 199, 0.45);
+  }
+
+  [data-theme="a"] [data-section="true"] {
+    padding-block: clamp(6.5rem, 20vh, 7.75rem);
+  }
+
+  [data-theme="a"] [data-section="true"] > header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: clamp(2.5rem, 6vw, 3.5rem);
+  }
+
+  [data-theme="a"] [data-section="true"] > header h2 {
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+    font-weight: 600;
+    font-size: clamp(1.5rem, 2.6vw, 1.75rem);
+  }
+
+  [data-theme="a"] [data-section="true"] > header::after {
+    content: "";
+    display: block;
+    width: 6rem;
+    height: 1px;
+    background: rgba(243, 241, 235, 0.15);
+    margin-top: 1.5rem;
+  }
+
+  [data-theme="a"] .lux-hero-btn {
+    border-radius: 2px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    transition: background 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  }
+
+  [data-theme="a"] .lux-hero-btn--primary {
+    background: rgba(13, 18, 19, 0.88);
+    border: 1px solid rgba(41, 214, 199, 0.42);
+    color: #e7e9e8;
+    box-shadow: 0 10px 28px rgba(10, 16, 16, 0.35);
+  }
+
+  [data-theme="a"] .lux-hero-btn--primary:hover {
+    background: rgba(18, 26, 28, 0.92);
+    box-shadow: 0 0 0 1px rgba(41, 214, 199, 0.2), 0 14px 32px rgba(41, 214, 199, 0.18);
+    transform: translateY(-1px);
+  }
+
+  [data-theme="a"] .lux-hero-btn--primary:active {
+    background: rgba(13, 20, 21, 0.96);
+    transform: translateY(0);
+  }
+
+  [data-theme="a"] .lux-hero-btn--primary:focus-visible {
+    outline: 2px solid rgba(41, 214, 199, 0.35);
+    outline-offset: 2px;
+  }
+
+  [data-theme="a"] .lux-hero-btn--primary:disabled {
+    background: rgba(30, 62, 56, 0.4);
+    color: rgba(231, 233, 232, 0.45);
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  [data-theme="a"] .lux-hero-btn--ghost {
+    background: transparent;
+    border: 1px solid rgba(231, 233, 232, 0.28);
+    color: #e7e9e8;
+    box-shadow: 0 10px 24px rgba(8, 12, 13, 0.22);
+  }
+
+  [data-theme="a"] .lux-hero-btn--ghost:hover {
+    background: rgba(255, 255, 255, 0.03);
+    border-color: rgba(231, 233, 232, 0.32);
+  }
+
+  [data-theme="a"] .lux-hero-btn--ghost:active {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(231, 233, 232, 0.4);
+  }
+
+  [data-theme="a"] .lux-hero-btn--ghost:focus-visible {
+    outline: 2px solid rgba(41, 214, 199, 0.35);
+    outline-offset: 2px;
+  }
+
+  [data-theme="a"] .lux-hero-btn--ghost:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    background: transparent;
   }
 }

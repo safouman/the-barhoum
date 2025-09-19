@@ -72,6 +72,32 @@ export function ThemeProvider({ children, initialTheme = defaultTheme }: { child
     }
   }, [theme]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const root = document.documentElement;
+
+    if (theme !== "a") {
+      root.style.removeProperty("--vignette-opacity");
+      return;
+    }
+
+    const updateVignette = () => {
+      const max = 0.45;
+      const min = 0.15;
+      const progress = Math.min(window.scrollY / 480, 1);
+      const value = max - (max - min) * progress;
+      root.style.setProperty("--vignette-opacity", value.toFixed(2));
+    };
+
+    updateVignette();
+    window.addEventListener("scroll", updateVignette, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", updateVignette);
+      root.style.removeProperty("--vignette-opacity");
+    };
+  }, [theme]);
+
   const setTheme = useCallback((name: ThemeName) => {
     setThemeState(name);
     event("theme_switch", { theme: name });

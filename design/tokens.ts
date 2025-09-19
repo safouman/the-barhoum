@@ -10,6 +10,7 @@ export type DesignTokens = {
     accentText: string;
     border: string;
     focus: string;
+    pageGradient?: string;
   };
   font: {
     familyBase: string;
@@ -43,14 +44,15 @@ export type DesignTokens = {
 export const TOKENS: Record<ThemeName, DesignTokens> = {
   a: {
     color: {
-      background: "#2b2b2b",
-      surface: "#343434",
+      background: "#0b0d0d",
+      surface: "#141919",
       text: "#f3f1eb",
       subtle: "#a59c91",
       accent: "#29d6c7",
       accentText: "#0f4540",
-      border: "#3f3f3f",
-      focus: "#4de6d9"
+      border: "#223432",
+      focus: "#4de6d9",
+      pageGradient: "#0b0d0d"
     },
     font: {
       familyBase: "var(--font-inter)",
@@ -89,7 +91,8 @@ export const TOKENS: Record<ThemeName, DesignTokens> = {
       accent: "#29d6c7",
       accentText: "#0f4540",
       border: "#e4ded3",
-      focus: "#2f7d73"
+      focus: "#2f7d73",
+      pageGradient: "#f5f1e8"
     },
     font: {
       familyBase: "var(--font-poppins)",
@@ -128,7 +131,8 @@ export const TOKENS: Record<ThemeName, DesignTokens> = {
       accent: "#e27e6d",
       accentText: "#ffffff",
       border: "#e8d6c7",
-      focus: "#29d6c7"
+      focus: "#29d6c7",
+      pageGradient: "#f2e6db"
     },
     font: {
       familyBase: "var(--font-nunito)",
