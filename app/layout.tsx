@@ -1,15 +1,15 @@
+export const runtime = "nodejs";
+
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { Inter, Nunito, Playfair_Display, Poppins, Rubik } from "next/font/google";
 import "../styles/globals.css";
 import { LocaleProvider } from "@/providers/locale-provider";
-import { ThemeProvider } from "@/providers/theme-provider";
 import { SiteHeader } from "@/components/SiteHeader";
 import { getPayments, getUiStrings, type UIStrings } from "@/lib/content";
 import { getDirection } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/i18n.server";
-import type { ThemeName } from "@/design/tokens";
-import { THEME_NAMES } from "@/design/theme";
+import ThemeGate from "./_theme-gate";
 const brand = { ar: "برهوم", en: "Barhoum" };
 
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair", display: "swap" });
@@ -17,14 +17,6 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "sw
 const poppins = Poppins({ subsets: ["latin"], weight: ["400", "600", "700"], variable: "--font-poppins", display: "swap" });
 const nunito = Nunito({ subsets: ["latin"], weight: ["400", "600", "700"], variable: "--font-nunito", display: "swap" });
 const rubik = Rubik({ subsets: ["latin"], weight: ["400", "600", "700"], variable: "--font-rubik", display: "swap" });
-
-function resolveTheme(): ThemeName {
-  const themeCookie = cookies().get("barhoum_theme")?.value;
-  if (themeCookie && (THEME_NAMES as readonly string[]).includes(themeCookie)) {
-    return themeCookie as ThemeName;
-  }
-  return "a";
-}
 
 async function loadUi(): Promise<Record<"ar" | "en", UIStrings>> {
   const [ar, en] = await Promise.all([getUiStrings("ar"), getUiStrings("en")]);
@@ -37,9 +29,10 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const locale = resolveLocale();
+  const cookiesStore = cookies();
+  const headersStore = headers();
+  const locale = resolveLocale(cookiesStore, headersStore, null);
   const direction = getDirection(locale);
-  const initialTheme = resolveTheme();
   const [ui, payments] = await Promise.all([loadUi(), getPayments()]);
   const defaultPaymentSlug = payments[0]?.slug;
   const fontClass = [playfair.variable, inter.variable, poppins.variable, nunito.variable, rubik.variable].join(" ");
@@ -47,12 +40,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={locale} dir={direction} className={fontClass}>
       <body>
-        <LocaleProvider initialLocale={locale}>
-          <ThemeProvider initialTheme={initialTheme}>
+        <ThemeGate>
+          <LocaleProvider initialLocale={locale}>
             <SiteHeader ui={ui} brand={brand} paymentSlug={defaultPaymentSlug} />
             <main>{children}</main>
-          </ThemeProvider>
-        </LocaleProvider>
+          </LocaleProvider>
+        </ThemeGate>
       </body>
     </html>
   );
