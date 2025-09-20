@@ -3,23 +3,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Category, HomeData, Locale, Package, Testimonial as TestimonialType, UIStrings } from "@/lib/content";
 import { event } from "@/lib/analytics";
 import { useLocale } from "@/providers/locale-provider";
-import { useTheme } from "@/providers/theme-provider";
-import type { ThemeName } from "@/design/tokens";
-import { themeA } from "./home/theme-a";
 import { themeB } from "./home/theme-b";
-import { themeC } from "./home/theme-c";
-import type {
-  HomeThemeDefinition,
-  LocalizedCategory,
-  LocalizedPackage,
-  LocalizedTestimonial,
-} from "./home/types";
-
-const HOME_THEMES: Record<ThemeName, HomeThemeDefinition> = {
-  a: themeA,
-  b: themeB,
-  c: themeC,
-};
+import type { LocalizedCategory, LocalizedPackage, LocalizedTestimonial } from "./home/types";
 
 interface HomeExperienceProps {
   home: HomeData;
@@ -38,9 +23,8 @@ function formatPrice(price: Package["price"], locale: Locale) {
 
 export function HomeExperience({ home, categories, packages, testimonials, ui }: HomeExperienceProps) {
   const { locale } = useLocale();
-  const { theme } = useTheme();
   const strings = ui[locale];
-  const Theme = HOME_THEMES[theme];
+  const Theme = themeB;
 
   const localizedCategories = useMemo<LocalizedCategory[]>(
     () =>

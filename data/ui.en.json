@@ -37,12 +37,6 @@
     "discount": "Optional discount",
     "price": "Price"
   },
-  "theme": {
-    "label": "Theme",
-    "a": "Luxury",
-    "b": "Modern",
-    "c": "Warm"
-  },
   "language": {
     "label": "Language",
     "ar": "العربية",

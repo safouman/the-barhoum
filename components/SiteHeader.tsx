@@ -3,9 +3,7 @@
 import Link from "next/link";
 import { Container } from "./Container";
 import { LangSwitch } from "./LangSwitch";
-import { ThemeSwitch } from "./ThemeSwitch";
 import { useLocale } from "@/providers/locale-provider";
-import { THEME_NAMES } from "@/design/theme";
 import type { Locale, UIStrings } from "@/lib/content";
 
 interface SiteHeaderProps {
@@ -46,22 +44,13 @@ export function SiteHeader({ ui, brand, paymentSlug }: SiteHeaderProps) {
             </Link>
           ))}
         </nav>
-        <div className="flex flex-wrap items-center gap-4">
-          <LangSwitch
-            label={currentUi.language.label}
-            options={[
-              { value: "ar", label: currentUi.language.ar },
-              { value: "en", label: currentUi.language.en },
-            ]}
-          />
-          <ThemeSwitch
-            label={currentUi.theme.label}
-            options={THEME_NAMES.map((name) => ({
-              value: name,
-              label: currentUi.theme[name],
-            }))}
-          />
-        </div>
+        <LangSwitch
+          label={currentUi.language.label}
+          options={[
+            { value: "ar", label: currentUi.language.ar },
+            { value: "en", label: currentUi.language.en },
+          ]}
+        />
       </Container>
     </header>
   );

@@ -168,12 +168,6 @@ export const uiSchema = z.object({
     discount: z.string(),
     price: z.string(),
   }),
-  theme: z.object({
-    label: z.string(),
-    a: z.string(),
-    b: z.string(),
-    c: z.string(),
-  }),
   language: z.object({
     label: z.string(),
     ar: z.string(),
