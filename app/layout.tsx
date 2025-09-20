@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { cookies } from "next/headers";
-import { Inter, Nunito, Playfair_Display, Poppins, Rubik } from "next/font/google";
+import { Cairo, Fraunces, Inter, Nunito, Playfair_Display, Poppins, Rubik, Scheherazade_New } from "next/font/google";
 import "../styles/globals.css";
 import { LocaleProvider } from "@/providers/locale-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
@@ -17,6 +17,9 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "sw
 const poppins = Poppins({ subsets: ["latin"], weight: ["400", "600", "700"], variable: "--font-poppins", display: "swap" });
 const nunito = Nunito({ subsets: ["latin"], weight: ["400", "600", "700"], variable: "--font-nunito", display: "swap" });
 const rubik = Rubik({ subsets: ["latin"], weight: ["400", "600", "700"], variable: "--font-rubik", display: "swap" });
+const fraunces = Fraunces({ subsets: ["latin"], weight: ["400", "600", "700"], variable: "--font-fraunces", display: "swap" });
+const scheherazade = Scheherazade_New({ subsets: ["arabic"], weight: ["400", "700"], variable: "--font-scheherazade", display: "swap" });
+const cairo = Cairo({ subsets: ["arabic"], weight: ["400", "600"], variable: "--font-cairo", display: "swap" });
 
 function resolveTheme(): ThemeName {
   const themeCookie = cookies().get("barhoum_theme")?.value;
@@ -42,7 +45,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const initialTheme = resolveTheme();
   const [ui, payments] = await Promise.all([loadUi(), getPayments()]);
   const defaultPaymentSlug = payments[0]?.slug;
-  const fontClass = [playfair.variable, inter.variable, poppins.variable, nunito.variable, rubik.variable].join(" ");
+  const fontClass = [
+    playfair.variable,
+    inter.variable,
+    poppins.variable,
+    nunito.variable,
+    rubik.variable,
+    fraunces.variable,
+    scheherazade.variable,
+    cairo.variable,
+  ].join(" ");
 
   return (
     <html lang={locale} dir={direction} className={fontClass}>

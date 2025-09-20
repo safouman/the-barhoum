@@ -84,15 +84,15 @@ export const TOKENS: Record<ThemeName, DesignTokens> = {
   },
   b: {
     color: {
-      background: "#f5f1e8",
-      surface: "#ffffff",
-      text: "#3b2328",
-      subtle: "#7a605f",
-      accent: "#29d6c7",
-      accentText: "#0f4540",
-      border: "#e4ded3",
-      focus: "#2f7d73",
-      pageGradient: "#f5f1e8"
+      background: "#ffffff",
+      surface: "#f8f8f8",
+      text: "#1d1c1a",
+      subtle: "#64645f",
+      accent: "#2fb9ad",
+      accentText: "#103d39",
+      border: "#e4e4e3",
+      focus: "#2fb9ad",
+      pageGradient: "#ffffff"
     },
     font: {
       familyBase: "var(--font-poppins)",
