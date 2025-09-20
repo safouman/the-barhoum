@@ -124,30 +124,30 @@ export const TOKENS: Record<ThemeName, DesignTokens> = {
   },
   c: {
     color: {
-      background: "#f2e6db",
-      surface: "#fff3ea",
-      text: "#3f342c",
-      subtle: "#2f7d73",
-      accent: "#e27e6d",
+      background: "#ffffff",
+      surface: "#f5f5f5",
+      text: "#111111",
+      subtle: "#666666",
+      accent: "#000000",
       accentText: "#ffffff",
-      border: "#e8d6c7",
-      focus: "#29d6c7",
-      pageGradient: "#f2e6db"
+      border: "#e3e3e3",
+      focus: "#101010",
+      pageGradient: "#ffffff"
     },
     font: {
-      familyBase: "var(--font-nunito)",
-      familyHeading: "var(--font-rubik)",
+      familyBase: "var(--font-inter)",
+      familyHeading: "var(--font-playfair)",
       weightRegular: 400,
-      weightBold: 700
+      weightBold: 600
     },
     radius: {
-      sm: "14px",
-      md: "22px",
-      lg: "30px"
+      sm: "12px",
+      md: "20px",
+      lg: "28px"
     },
     shadow: {
-      sm: "0 18px 42px rgba(226,126,109,0.18)",
-      md: "0 30px 68px rgba(226,126,109,0.22)"
+      sm: "0 20px 40px rgba(0,0,0,0.06)",
+      md: "0 36px 80px rgba(0,0,0,0.08)"
     },
     spacing: {
       xs: "0.75rem",

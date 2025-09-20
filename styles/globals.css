@@ -370,4 +370,54 @@
       max-width: 220px;
     }
   }
+
+  [data-theme="c"] .theme-c-hero {
+    background: #ffffff;
+    color: #111111;
+  }
+
+  [data-theme="c"] .theme-c-hero__content h1 {
+    color: #101010;
+  }
+
+  [data-theme="c"] .theme-c-hero__btn-primary {
+    border-radius: 0;
+    background: #000000;
+    color: #ffffff;
+    border: 1px solid #000000;
+    letter-spacing: 0.07em;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  [data-theme="c"] .theme-c-hero__btn-primary:hover {
+    background: #121212;
+  }
+
+  [data-theme="c"] .theme-c-hero__btn-primary:focus-visible {
+    outline: 2px solid rgba(0, 0, 0, 0.4);
+    outline-offset: 2px;
+  }
+
+  [data-theme="c"] .theme-c-hero__btn-secondary {
+    border-radius: 0;
+    border: 1px solid #101010;
+    background: transparent;
+    color: #101010;
+    letter-spacing: 0.07em;
+    transition: background 0.2s ease, color 0.2s ease;
+    position: relative;
+  }
+
+  [data-theme="c"] .theme-c-hero__btn-secondary:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  [data-theme="c"] .theme-c-hero__btn-secondary:focus-visible {
+    outline: 2px solid rgba(0, 0, 0, 0.35);
+    outline-offset: 2px;
+  }
+
+  [data-theme="c"] .theme-c-hero__logo {
+    mix-blend-mode: multiply;
+  }
 }
