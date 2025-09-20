@@ -30,6 +30,11 @@ export interface HeroProps {
   media: HomeData["media"];
 }
 
+export interface AboutProps {
+  locale: Locale;
+  media: HomeData["media"];
+}
+
 export interface CategoriesProps {
   categories: LocalizedCategory[];
   activeCategory?: Category["id"];
@@ -57,6 +62,7 @@ export interface LeadFormProps {
 
 export interface HomeThemeDefinition {
   Hero: (props: HeroProps) => ReactElement;
+  About: (props: AboutProps) => ReactElement;
   Categories: (props: CategoriesProps) => ReactElement;
   Packages: (props: PackagesProps) => ReactElement;
   Testimonials: (props: TestimonialsProps) => ReactElement;

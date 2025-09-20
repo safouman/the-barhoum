@@ -182,50 +182,53 @@
   }
 
   [data-theme="a"] .lux-hero-btn--primary {
-    background: #000000;
-    border: 1px solid #000000;
-    color: #ffffff;
+    background: #ffffff;
+    border: 1px solid #ffffff;
+    color: #111111;
     box-shadow: none;
   }
 
   [data-theme="a"] .lux-hero-btn--primary:hover {
-    background: #111111;
+    background: #f5fffd;
+    box-shadow: 0 0 0 3px rgba(41, 214, 199, 0.28);
     transform: translateY(-1px);
   }
 
   [data-theme="a"] .lux-hero-btn--primary:active {
-    background: #090909;
+    background: #e6fdf7;
     transform: translateY(0);
   }
 
   [data-theme="a"] .lux-hero-btn--primary:focus-visible {
-    outline: 2px solid rgba(0, 0, 0, 0.4);
+    outline: 2px solid rgba(41, 214, 199, 0.45);
     outline-offset: 2px;
   }
 
   [data-theme="a"] .lux-hero-btn--primary:disabled {
-    background: rgba(0, 0, 0, 0.4);
-    color: rgba(255, 255, 255, 0.45);
+    background: rgba(255, 255, 255, 0.35);
+    color: rgba(0, 0, 0, 0.4);
     cursor: not-allowed;
   }
 
   [data-theme="a"] .lux-hero-btn--ghost {
     background: transparent;
-    border: none;
-    color: #101010;
+    border: 1px solid rgba(41, 214, 199, 0.6);
+    color: rgba(41, 214, 199, 0.9);
     position: relative;
   }
 
   [data-theme="a"] .lux-hero-btn--ghost:hover {
-    color: #0b0b0b;
+    background: rgba(41, 214, 199, 0.85);
+    color: #ffffff;
   }
 
   [data-theme="a"] .lux-hero-btn--ghost:active {
-    color: #050505;
+    background: rgba(41, 214, 199, 0.95);
+    color: #ffffff;
   }
 
   [data-theme="a"] .lux-hero-btn--ghost:focus-visible {
-    outline: 2px solid rgba(0, 0, 0, 0.25);
+    outline: 2px solid rgba(41, 214, 199, 0.45);
     outline-offset: 2px;
   }
 
@@ -239,10 +242,10 @@
     content: "";
     position: absolute;
     left: 0;
-    bottom: -2px;
+    bottom: -4px;
     height: 1px;
     width: 100%;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(41, 214, 199, 0.6);
     transform: scaleX(0.2);
     transform-origin: left;
     transition: transform 0.2s ease;

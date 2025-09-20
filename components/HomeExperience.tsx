@@ -1,16 +1,10 @@
 "use client";
-
-import clsx from "classnames";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Category, HomeData, Locale, Package, Testimonial as TestimonialType, UIStrings } from "@/lib/content";
 import { event } from "@/lib/analytics";
 import { useLocale } from "@/providers/locale-provider";
 import { useTheme } from "@/providers/theme-provider";
 import type { ThemeName } from "@/design/tokens";
-import { Container } from "./Container";
-import { Section } from "./Section";
-import { VideoEmbed } from "./VideoEmbed";
-import { PdfCard } from "./PdfCard";
 import { themeA } from "./home/theme-a";
 import { themeB } from "./home/theme-b";
 import { themeC } from "./home/theme-c";
@@ -25,27 +19,6 @@ const HOME_THEMES: Record<ThemeName, HomeThemeDefinition> = {
   a: themeA,
   b: themeB,
   c: themeC,
-};
-
-const MEDIA_LAYOUT: Record<ThemeName, { sectionClass: string; videoGrid: string; pdfGrid: string; container: string }> = {
-  a: {
-    sectionClass: "bg-gradient-to-b from-transparent via-[rgba(41,214,199,0.08)] to-[rgba(43,43,43,0.9)]",
-    videoGrid: "grid gap-6 lg:grid-cols-[1.4fr,0.6fr]",
-    pdfGrid: "flex flex-wrap gap-3",
-    container: "space-y-[clamp(var(--space-sm),4vw,var(--space-md))]",
-  },
-  b: {
-    sectionClass: "bg-background",
-    videoGrid: "grid gap-4 md:grid-cols-2",
-    pdfGrid: "grid gap-3 sm:grid-cols-2 lg:grid-cols-3",
-    container: "space-y-[clamp(var(--space-sm),3vw,var(--space-md))]",
-  },
-  c: {
-    sectionClass: "bg-background",
-    videoGrid: "grid gap-6 lg:grid-cols-[1fr,1fr]",
-    pdfGrid: "flex flex-wrap gap-3",
-    container: "space-y-[clamp(var(--space-sm),4vw,var(--space-lg))]",
-  },
 };
 
 interface HomeExperienceProps {
@@ -152,44 +125,13 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
     return match?.title;
   }, [localizedPackages, activePackageId]);
 
-  const mediaLayout = MEDIA_LAYOUT[theme];
-
   const hasPackages = packagesForCategory.length > 0;
 
   return (
     <>
       <Theme.Hero hero={home.hero} locale={locale} media={home.media} />
 
-      <Section id="media" className={mediaLayout.sectionClass}>
-        <Container className={mediaLayout.container}>
-          <div className="space-y-4">
-            <h2 className="font-heading text-[clamp(1.8rem,4vw,2.6rem)]">
-              {strings.media.videos}
-            </h2>
-            <div className={mediaLayout.videoGrid}>
-              {home.media.videos.map((video) => (
-                <VideoEmbed key={video.id} videoId={video.id} title={video.title[locale]} />
-              ))}
-              {home.media.videos.length === 0 && (
-                <div className="rounded-lg border border-border/60 p-6 text-sm text-subtle">
-                  {strings.media.videos}
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="space-y-4">
-            <h3 className="font-heading text-[clamp(1.4rem,3vw,2rem)]">{strings.media.pdfs}</h3>
-            <div className={clsx(mediaLayout.pdfGrid, "min-h-[3rem]")}>
-              {home.media.pdfs.map((pdf) => (
-                <PdfCard key={pdf.url} href={pdf.url} label={pdf.label[locale]} localeLabel={strings.media.pdfs} />
-              ))}
-              {home.media.pdfs.length === 0 && (
-                <span className="text-sm text-subtle">{strings.media.pdfs}</span>
-              )}
-            </div>
-          </div>
-        </Container>
-      </Section>
+      <Theme.About locale={locale} media={home.media} />
 
       <Theme.Categories
         categories={localizedCategories}

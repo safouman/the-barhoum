@@ -5,6 +5,7 @@ import { Button } from "@/components/Button";
 import { Container } from "@/components/Container";
 import { LeadForm } from "@/components/LeadForm";
 import { Section } from "@/components/Section";
+import { VideoEmbed } from "@/components/VideoEmbed";
 import type { HomeThemeDefinition } from "./types";
 
 const Hero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
@@ -50,6 +51,62 @@ const Hero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
             </Container>
         </section>
     );
+};
+
+const About: HomeThemeDefinition["About"] = ({ locale, media }) => {
+  const isRTL = locale === "ar";
+  const title = isRTL ? "شكونو ابراهيم بن عبد الله" : "Who is Barhoum?";
+  const intro = isRTL
+    ? "لوريم إيبسوم فقرة تمهيدية تعرّف بإبراهيم كقائد إنساني ومدرب فني يصنع توازناً بين الرؤية العملية والإلهام الهادئ. يقدم مساحة للتأمل والعمل ويقود القرارات بثقة متواضعة." 
+    : "Barhoum is a calm force—coach, artist, and strategist—guiding leaders to act with empathy and conviction. He carves out reflective space, frames clarity, and moves teams with quietly confident direction.";
+
+  const pdfs = media.pdfs.length
+    ? media.pdfs
+    : Array.from({ length: 4 }, (_, index) => ({
+        url: "#",
+        label: { en: `Portfolio note ${index + 1}`, ar: `مذكرة تعريفية ${index + 1}` },
+      }));
+
+  const video = media.videos[0];
+
+  return (
+    <Section title={title} className="bg-[#ffffff]">
+      <Container className={clsx("grid gap-12", "lg:grid-cols-[minmax(0,60ch)_minmax(0,1fr)]", isRTL && "text-right") }>
+        <div className="space-y-8">
+          <p
+            className={clsx(
+              "text-[clamp(1.18rem,2.2vw,1.45rem)] leading-[1.82] text-[#2d2d2d]",
+              isRTL ? "font-[var(--font-cairo)]" : "font-[var(--font-inter)]"
+            )}
+          >
+            {intro}
+          </p>
+          <ul className={clsx("space-y-3 text-sm", isRTL ? "pr-4" : "pl-4") }>
+            {pdfs.slice(0, 5).map((pdf, index) => (
+              <li key={pdf.url ?? index} className="flex items-center gap-3 text-[#1a1a1a]">
+                <span aria-hidden className="text-[#939393]">•</span>
+                <a
+                  href={pdf.url}
+                  className="border-b border-[rgba(0,0,0,0.12)] pb-1 transition hover:border-[#000] hover:text-[#000]"
+                  rel="noopener noreferrer"
+                >
+                  {pdf.label[locale] ?? pdf.label.en}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        {video ? (
+          <div className="relative isolate flex items-center justify-center">
+            <div className="absolute inset-6 rounded-full bg-[radial-gradient(circle,_rgba(0,0,0,0.04),_transparent_70%)]" aria-hidden />
+            <div className="relative w-full max-w-[560px]">
+              <VideoEmbed videoId={video.id} title={video.title[locale]} />
+            </div>
+          </div>
+        ) : null}
+      </Container>
+    </Section>
+  );
 };
 
 function LogoMark() {
@@ -272,9 +329,10 @@ const LeadFormSection: HomeThemeDefinition["LeadForm"] = ({
 );
 
 export const themeC: HomeThemeDefinition = {
-    Hero,
-    Categories,
-    Packages,
-    Testimonials,
-    LeadForm: LeadFormSection,
+  Hero,
+  About,
+  Categories,
+  Packages,
+  Testimonials,
+  LeadForm: LeadFormSection,
 };

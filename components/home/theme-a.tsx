@@ -4,6 +4,7 @@ import { Button } from "@/components/Button";
 import { Container } from "@/components/Container";
 import { LeadForm } from "@/components/LeadForm";
 import { Section } from "@/components/Section";
+import { VideoEmbed } from "@/components/VideoEmbed";
 import type { HomeThemeDefinition } from "./types";
 
 const Hero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
@@ -31,10 +32,10 @@ const Hero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
                             : "I stand with founders and executives in the moments that define them, translating complexity into decisive clarity without losing the human center. Together we craft pragmatic strategy, install rhythms that hold, and create a quiet place for candid reflection. Each engagement moves with deliberate pace—bold enough to change the game, grounded enough to honor the person behind the title."}
                     </p>
                 </div>
-                <div className="mt-12 flex flex-wrap items-center justify-center gap-6">
+                <div className="mt-12 flex flex-wrap items-center justify-center gap-8">
                     <Button
                         href="#categories"
-                        className="lux-hero-btn lux-hero-btn--primary px-8 py-[0.95rem] text-sm"
+                        className="lux-hero-btn lux-hero-btn--primary px-8 py-[1rem] text-base"
                     >
                         {locale === "ar"
                             ? "ابدأ المحادثة"
@@ -43,7 +44,7 @@ const Hero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
                     <Button
                         href="#media"
                         variant="ghost"
-                        className="lux-hero-btn lux-hero-btn--ghost px-8 py-[0.95rem] text-sm"
+                        className="lux-hero-btn lux-hero-btn--ghost px-8 py-[1rem] text-base"
                     >
                         {locale === "ar" ? "اكتشف المنهج" : "View Approach"}
                     </Button>
@@ -51,6 +52,58 @@ const Hero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
             </Container>
         </section>
     );
+};
+
+const About: HomeThemeDefinition["About"] = ({ locale, media }) => {
+  const isRTL = locale === "ar";
+  const title = isRTL ? "شكونو ابراهيم بن عبد الله" : "Who is Barhoum?";
+  const intro = isRTL
+    ? "لوريم إيبسوم نص تجريبي يصف حضور إبراهيم كمدرب وفنان يزاوج الثقة بالهدوء، ويرسم مساحات للقيادة الواعية بلمسة إنسانية." +
+        " في كل تعاون يوفّر إطاراً عملياً، يحمي أصالة الصوت الداخلي، ويصوغ قرارات تشبه أصحابها." +
+        " يعمل ببطء محسوب، ويوسّع مساحة النظر بعيداً عن ردود الفعل العاجلة." 
+    : "Barhoum stands as a grounded coach, strategist, and artist who brings calm clarity into high-stakes rooms." +
+        " Each engagement balances decisive structure with space to listen inward." +
+        " He guides teams and leaders toward choices that feel both ambitious and humane.";
+  const pdfs = media.pdfs.length
+    ? media.pdfs
+    : Array.from({ length: 4 }, (_, index) => ({
+        url: "#",
+        label: { en: `Placeholder dossier ${index + 1}`, ar: `ملف تعريفي ${index + 1}` },
+      }));
+  const video = media.videos[0];
+
+  return (
+    <Section title={title} className="bg-transparent">
+      <Container className={clsx("grid gap-12", "lg:grid-cols-[minmax(0,60ch)_minmax(0,1fr)]", isRTL && "text-right") }>
+        <div className="space-y-8">
+          <p className="text-[clamp(1.15rem,2.2vw,1.4rem)] leading-[1.85] text-[#cbcfd0]">
+            {intro}
+          </p>
+          <ul className={clsx("space-y-4 text-sm", isRTL ? "pr-4" : "pl-4", "list-none") }>
+            {pdfs.map((pdf, index) => (
+              <li key={pdf.url ?? index} className="flex items-center gap-3 text-[#e7e9e8]">
+                <span aria-hidden className="text-accent">
+                  •
+                </span>
+                <a
+                  href={pdf.url}
+                  className="border-b border-[rgba(231,233,232,0.3)] pb-1 text-sm transition hover:border-accent hover:text-accent"
+                  rel="noopener noreferrer"
+                >
+                  {pdf.label[locale] ?? pdf.label.en}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+        {video ? (
+          <div className="mx-auto w-full max-w-[560px]">
+            <VideoEmbed videoId={video.id} title={video.title[locale]} />
+          </div>
+        ) : null}
+      </Container>
+    </Section>
+  );
 };
 
 function LogoMark() {
@@ -215,9 +268,10 @@ const LeadFormSection: HomeThemeDefinition["LeadForm"] = ({
 );
 
 export const themeA: HomeThemeDefinition = {
-    Hero,
-    Categories,
-    Packages,
-    Testimonials,
-    LeadForm: LeadFormSection,
+  Hero,
+  About,
+  Categories,
+  Packages,
+  Testimonials,
+  LeadForm: LeadFormSection,
 };
