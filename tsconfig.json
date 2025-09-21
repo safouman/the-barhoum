@@ -26,9 +26,6 @@
       "@/components/*": [
         "./components/*"
       ],
-      "@/design/*": [
-        "./design/*"
-      ],
       "@/lib/*": [
         "./lib/*"
       ],
@@ -37,9 +34,6 @@
       ],
       "@/providers/*": [
         "./providers/*"
-      ],
-      "@/hooks/*": [
-        "./hooks/*"
       ]
     },
     "plugins": [

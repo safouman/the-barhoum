@@ -3,7 +3,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Category, HomeData, Locale, Package, Testimonial as TestimonialType, UIStrings } from "@/lib/content";
 import { event } from "@/lib/analytics";
 import { useLocale } from "@/providers/locale-provider";
-import { themeB } from "./home/theme-b";
+import {
+  About,
+  Categories as CategoriesSection,
+  Hero,
+  LeadFormSection,
+  Packages as PackagesSection,
+  Testimonials,
+} from "./home/sections";
 import type { LocalizedCategory, LocalizedPackage, LocalizedTestimonial } from "./home/types";
 
 interface HomeExperienceProps {
@@ -24,7 +31,6 @@ function formatPrice(price: Package["price"], locale: Locale) {
 export function HomeExperience({ home, categories, packages, testimonials, ui }: HomeExperienceProps) {
   const { locale } = useLocale();
   const strings = ui[locale];
-  const Theme = themeB;
 
   const localizedCategories = useMemo<LocalizedCategory[]>(
     () =>
@@ -113,11 +119,11 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
 
   return (
     <>
-      <Theme.Hero hero={home.hero} locale={locale} media={home.media} />
+      <Hero hero={home.hero} locale={locale} media={home.media} />
 
-      <Theme.About locale={locale} media={home.media} />
+      <About locale={locale} media={home.media} />
 
-      <Theme.Categories
+      <CategoriesSection
         categories={localizedCategories}
         activeCategory={activeCategory}
         onSelect={handleCategorySelect}
@@ -125,7 +131,7 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
       />
 
       {hasPackages && (
-        <Theme.Packages
+        <PackagesSection
           packages={packagesForCategory}
           activePackageId={activePackageId}
           onSelect={handlePackageSelect}
@@ -133,10 +139,10 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
         />
       )}
 
-      <Theme.Testimonials testimonials={testimonialsForCategory} ui={strings} />
+      <Testimonials testimonials={testimonialsForCategory} ui={strings} />
 
       {activeCategory && activePackageId && leadPackageLabel && (
-        <Theme.LeadForm
+        <LeadFormSection
           selectedCategory={leadCategoryLabel}
           selectedPackage={leadPackageLabel}
           ui={strings}

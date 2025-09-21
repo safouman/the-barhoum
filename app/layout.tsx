@@ -44,7 +44,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   ].join(" ");
 
   return (
-    <html lang={locale} dir={direction} className={fontClass} data-theme="b">
+    <html lang={locale} dir={direction} className={fontClass}>
       <body>
         <LocaleProvider initialLocale={locale}>
           <SiteHeader ui={ui} brand={brand} paymentSlug={defaultPaymentSlug} />
