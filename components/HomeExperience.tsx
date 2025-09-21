@@ -4,12 +4,12 @@ import type { Category, HomeData, Locale, Package, Testimonial as TestimonialTyp
 import { event } from "@/lib/analytics";
 import { useLocale } from "@/providers/locale-provider";
 import {
-  About,
-  Categories as CategoriesSection,
-  Hero,
-  LeadFormSection,
-  Packages as PackagesSection,
-  Testimonials,
+  HomeAbout,
+  HomeCategories,
+  HomeHero,
+  HomeLeadForm,
+  HomePackages,
+  HomeTestimonials,
 } from "./home/sections";
 import type { LocalizedCategory, LocalizedPackage, LocalizedTestimonial } from "./home/types";
 
@@ -119,11 +119,11 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
 
   return (
     <>
-      <Hero hero={home.hero} locale={locale} media={home.media} />
+      <HomeHero hero={home.hero} locale={locale} media={home.media} />
 
-      <About locale={locale} media={home.media} />
+      <HomeAbout locale={locale} media={home.media} />
 
-      <CategoriesSection
+      <HomeCategories
         categories={localizedCategories}
         activeCategory={activeCategory}
         onSelect={handleCategorySelect}
@@ -131,7 +131,7 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
       />
 
       {hasPackages && (
-        <PackagesSection
+        <HomePackages
           packages={packagesForCategory}
           activePackageId={activePackageId}
           onSelect={handlePackageSelect}
@@ -139,10 +139,10 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
         />
       )}
 
-      <Testimonials testimonials={testimonialsForCategory} ui={strings} />
+      <HomeTestimonials testimonials={testimonialsForCategory} ui={strings} />
 
       {activeCategory && activePackageId && leadPackageLabel && (
-        <LeadFormSection
+        <HomeLeadForm
           selectedCategory={leadCategoryLabel}
           selectedPackage={leadPackageLabel}
           ui={strings}

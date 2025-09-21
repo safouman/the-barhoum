@@ -23,13 +23,10 @@ interface ButtonAsLinkProps extends BaseProps, AnchorElementProps {
 type ButtonProps = ButtonAsButtonProps | ButtonAsLinkProps;
 
 const baseClass =
-  "btn inline-flex items-center justify-center gap-2 rounded-md border border-transparent px-6 py-3 text-base font-bold transition duration-200 ease-out";
+  "btn inline-flex items-center justify-center gap-2 rounded-md border px-6 py-3 text-base font-semibold uppercase tracking-[0.08em] transition duration-200 ease-out";
 
 export function Button({ variant = "primary", fullWidth = false, className, children, ...props }: ButtonProps) {
-  const variantClass =
-    variant === "ghost"
-      ? "btn-ghost border-border bg-transparent text-text hover:bg-white/10"
-      : "btn-primary bg-accent text-accentText shadow-sm hover:-translate-y-0.5 hover:shadow-md";
+  const variantClass = variant === "ghost" ? "btn-outline" : "btn-solid";
 
   const combinedClass = clsx(baseClass, variantClass, fullWidth && "w-full", className);
 

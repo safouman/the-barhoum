@@ -3,7 +3,7 @@ import { Container } from "@/components/Container";
 import { Section } from "@/components/Section";
 import type { HomeThemeDefinition } from "../types";
 
-export const Packages: HomeThemeDefinition["Packages"] = ({
+export const HomePackages: HomeThemeDefinition["Packages"] = ({
   packages,
   activePackageId,
   onSelect,
@@ -22,21 +22,21 @@ export const Packages: HomeThemeDefinition["Packages"] = ({
               onClick={() => onSelect(pkg.id)}
               aria-pressed={activePackageId === pkg.id}
               className={clsx(
-                "grid items-center gap-3 rounded-[20px] border border-transparent bg-background px-6 py-5 text-start transition hover:border-border",
+                "surface-panel grid items-center gap-3 px-6 py-5 text-start transition",
                 activePackageId === pkg.id && "border-accent shadow-sm"
               )}
             >
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <span className="text-base font-semibold text-text">{pkg.title}</span>
-                <span className="text-sm text-subtle">{pkg.priceLabel}</span>
+                <span className="text-label">{pkg.priceLabel}</span>
               </div>
               <p className="text-sm text-subtle line-clamp-2">{pkg.features[0]}</p>
             </button>
           ))}
         </div>
         {selectedPackage && (
-          <aside className="sticky top-32 grid gap-4 rounded-[22px] border border-border bg-background p-8 shadow-sm">
-            <span className="text-xs uppercase tracking-[0.45em] text-subtle/80">{ui.packages}</span>
+          <aside className="surface-muted sticky top-32 grid gap-4 p-8">
+            <span className="text-smallcaps">{ui.packages}</span>
             <h3 className="text-3xl font-heading text-text">{selectedPackage.title}</h3>
             <span className="text-xl font-semibold text-accent">{selectedPackage.priceLabel}</span>
             <ul className="grid gap-2 text-sm text-subtle">

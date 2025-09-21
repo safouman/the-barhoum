@@ -1,6 +1,6 @@
-export { About } from "./About";
-export { Categories } from "./Categories";
-export { Hero } from "./Hero";
-export { LeadFormSection } from "./LeadFormSection";
-export { Packages } from "./Packages";
-export { Testimonials } from "./Testimonials";
+export { HomeAbout } from "./About";
+export { HomeCategories } from "./Categories";
+export { HomeHero } from "./Hero";
+export { HomeLeadForm } from "./LeadFormSection";
+export { HomePackages } from "./Packages";
+export { HomeTestimonials } from "./Testimonials";

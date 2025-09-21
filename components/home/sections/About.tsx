@@ -4,7 +4,7 @@ import { Section } from "@/components/Section";
 import { VideoEmbed } from "@/components/VideoEmbed";
 import type { HomeThemeDefinition } from "../types";
 
-export const About: HomeThemeDefinition["About"] = ({ locale, media }) => {
+export const HomeAbout: HomeThemeDefinition["About"] = ({ locale, media }) => {
   const isRTL = locale === "ar";
   const title = isRTL ? "شكونو ابراهيم بن عبد الله" : "Who is Barhoum?";
   const intro = isRTL
@@ -26,25 +26,25 @@ export const About: HomeThemeDefinition["About"] = ({ locale, media }) => {
         className={clsx(
           "grid gap-12",
           "lg:grid-cols-[minmax(0,60ch)_minmax(0,1fr)]",
-          isRTL && "text-right"
+          isRTL ? "text-right" : "text-left"
         )}
       >
         <div className="space-y-8">
           <p
             className={clsx(
-              "text-[clamp(1.15rem,2.1vw,1.35rem)] leading-[1.82] text-[#3b3b39]",
+              "text-body-lg",
               isRTL ? "font-[var(--font-cairo)]" : "font-[var(--font-inter)]"
             )}
           >
             {intro}
           </p>
-          <ul className={clsx("space-y-3 text-sm", isRTL ? "pr-4" : "pl-4")}>
+          <ul className={clsx("space-y-3", isRTL ? "pr-4" : "pl-4", "text-label")}>
             {pdfs.slice(0, 5).map((pdf, index) => (
-              <li key={pdf.url ?? index} className="flex items-center gap-3 text-[#1d1c1a]">
-                <span aria-hidden className="text-[#8d8d88]">•</span>
+              <li key={pdf.url ?? index} className="flex items-center gap-3 text-text">
+                <span aria-hidden className="text-subtle">•</span>
                 <a
                   href={pdf.url}
-                  className="border-b border-[rgba(29,28,26,0.2)] pb-1 transition hover:border-[#000] hover:text-[#000]"
+                  className="border-b border-border pb-1 text-subtle transition hover:border-text hover:text-text"
                   rel="noopener noreferrer"
                 >
                   {pdf.label[locale] ?? pdf.label.en}

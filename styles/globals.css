@@ -102,12 +102,106 @@
 }
 
 @layer components {
+  .text-eyebrow {
+    @apply text-[clamp(0.8rem,1.1vw,0.95rem)] uppercase tracking-[0.35em] text-subtle font-medium;
+  }
+
+  .text-display {
+    @apply text-[clamp(2.6rem,6.5vw,5.3rem)] leading-[1.15] tracking-[-0.012em] text-text;
+  }
+
+  .text-lead {
+    @apply max-w-[62ch] text-[clamp(1.18rem,2.4vw,1.45rem)] leading-[1.8] text-subtle;
+  }
+
+  .text-body-lg {
+    @apply text-[clamp(1.15rem,2.2vw,1.35rem)] leading-[1.82] text-subtle;
+  }
+
+  .text-quote {
+    @apply font-heading text-[clamp(1.6rem,3vw,2.2rem)] leading-[1.5] text-text;
+  }
+
+  .text-smallcaps {
+    @apply text-xs uppercase tracking-[0.4em] text-subtle;
+  }
+
+  .text-label {
+    @apply text-sm text-subtle;
+  }
+
+  .text-section-title {
+    @apply font-heading text-[clamp(1.75rem,4vw,3rem)] font-bold leading-tight text-text;
+  }
+
   .btn {
     border-radius: var(--radius-md);
   }
 
-  .theme-b-hero {
-    background: #ffffff;
+  .btn-solid {
+    background: var(--color-text);
+    color: var(--color-background);
+    border-color: var(--color-text);
+    letter-spacing: 0.07em;
+    box-shadow: none;
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .btn-solid:hover {
+    background: #111111;
+    transform: translateY(-1px);
+  }
+
+  .btn-solid:focus-visible {
+    outline: 2px solid rgba(29, 28, 26, 0.45);
+    outline-offset: 2px;
+  }
+
+  .btn-outline {
+    position: relative;
+    background: transparent;
+    color: var(--color-text);
+    border-color: var(--color-text);
+    letter-spacing: 0.07em;
+    transition: background 0.2s ease;
+  }
+
+  .btn-outline:hover {
+    background: rgba(29, 28, 26, 0.06);
+  }
+
+  .btn-outline:focus-visible {
+    outline: 2px solid rgba(29, 28, 26, 0.35);
+    outline-offset: 2px;
+  }
+
+  .btn-outline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    height: 1px;
+    width: 100%;
+    background: rgba(29, 28, 26, 0.6);
+    transform: scaleX(0.2);
+    transform-origin: left;
+    transition: transform 0.2s ease;
+  }
+
+  .btn-outline:hover::after {
+    transform: scaleX(1);
+  }
+
+  .surface-panel {
+    @apply rounded-[20px] border border-border bg-surface bg-opacity-90;
+  }
+
+  .surface-muted {
+    @apply rounded-[22px] border border-border bg-background shadow-sm;
+  }
+
+  .surface-accent {
+    @apply rounded-[24px] border border-border bg-surface bg-opacity-95 p-8 shadow-md;
   }
 
   [data-section="true"] {
@@ -133,83 +227,4 @@
     margin-top: 1rem;
   }
 
-  .theme-b-hero__btn-primary {
-    border-radius: 0;
-    background: #000000 !important;
-    color: #ffffff !important;
-    border: 1px solid #000000 !important;
-    box-shadow: none !important;
-    letter-spacing: 0.07em;
-  }
-
-  .theme-b-hero__btn-primary:hover {
-    background: #111111 !important;
-  }
-
-  .theme-b-hero__btn-primary:focus-visible {
-    outline: 2px solid rgba(0, 0, 0, 0.45);
-    outline-offset: 2px;
-  }
-
-  .theme-b-hero__btn-secondary {
-    border-radius: 0;
-    border: 1px solid #000000;
-    background: transparent;
-    color: #000000;
-    letter-spacing: 0.07em;
-    position: relative;
-  }
-
-  .theme-b-hero__btn-secondary:hover {
-    background: rgba(0, 0, 0, 0.04);
-  }
-
-  .theme-b-hero__btn-secondary:focus-visible {
-    outline: 2px solid rgba(0, 0, 0, 0.35);
-    outline-offset: 2px;
-  }
-
-  .theme-b-hero__btn-secondary::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -4px;
-    height: 1px;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    transform: scaleX(0.2);
-    transform-origin: left;
-    transition: transform 0.2s ease;
-  }
-
-  .theme-b-hero__btn-secondary:hover::after {
-    transform: scaleX(1);
-  }
-
-  .theme-b-hero__logo {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: clamp(180px, 42vh, 320px);
-  }
-
-  .theme-b-hero__logo-image {
-    width: min(28vw, 28vh);
-    max-width: 280px;
-    height: auto;
-    opacity: 0.12;
-    filter: saturate(0.7);
-  }
-
-  @media (max-width: 767px) {
-    .theme-b-hero__logo {
-      min-height: clamp(140px, 32vh, 220px);
-    }
-
-    .theme-b-hero__logo-image {
-      width: min(38vw, 26vh);
-      max-width: 220px;
-    }
-  }
 }
