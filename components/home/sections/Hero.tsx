@@ -18,7 +18,7 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
           <h1
             className={clsx(
               "text-display font-heading",
-              isRTL ? "font-[var(--font-scheherazade)]" : "font-[var(--font-fraunces)]"
+              isRTL ? "font-[var(--font-scheherazade)]" : "font-[var(--font-inter)]"
             )}
           >
             {hero.title[locale]}

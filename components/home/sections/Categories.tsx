@@ -25,7 +25,7 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
           >
             <header className="space-y-3">
               <span className="text-smallcaps">{ui.categories}</span>
-              <h3 className="font-heading text-xl leading-[1.2] text-text md:text-2xl">{category.label}</h3>
+              <h3 className="font-heading text-xl font-semibold leading-[1.2] text-text md:text-2xl">{category.label}</h3>
             </header>
             <p className="text-[clamp(1.05rem,2vw,1.2rem)] text-subtle">{category.description}</p>
           </button>

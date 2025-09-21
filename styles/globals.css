@@ -4,8 +4,8 @@
 
 :root {
   color-scheme: light;
-  --font-base: var(--font-poppins);
-  --font-heading: var(--font-poppins);
+  --font-base: var(--font-inter);
+  --font-heading: var(--font-inter);
   --font-weight-regular: 400;
   --font-weight-bold: 600;
   --color-background: #ffffff;
@@ -30,6 +30,11 @@
   --leading-tight: 1.15;
   --leading-base: 1.6;
   --leading-relaxed: 1.85;
+}
+
+html[dir="rtl"] {
+  --font-base: var(--font-cairo);
+  --font-heading: var(--font-scheherazade);
 }
 
 @layer base {
@@ -107,7 +112,7 @@
   }
 
   .text-display {
-    @apply text-[clamp(2.6rem,6.5vw,5.3rem)] leading-[1.15] tracking-[-0.012em] text-text;
+    @apply text-[clamp(2.6rem,6.5vw,5.3rem)] leading-[1.15] tracking-[-0.012em] text-text font-semibold;
   }
 
   .text-lead {
@@ -131,7 +136,7 @@
   }
 
   .text-section-title {
-    @apply font-heading text-[clamp(1.75rem,4vw,3rem)] font-bold leading-tight text-text;
+    @apply font-heading text-[clamp(1.75rem,4vw,3rem)] font-semibold leading-tight text-text;
   }
 
   .btn {
@@ -215,7 +220,7 @@
   }
 
   [data-section="true"] > header h2 {
-    font-family: var(--font-fraunces), serif;
+    font-family: var(--font-heading), sans-serif;
     letter-spacing: 0.22em;
     font-weight: 600;
     color: #1d1c1a;

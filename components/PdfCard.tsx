@@ -22,7 +22,7 @@ export function PdfCard({ href, label, localeLabel }: PdfCardProps) {
       target="_blank"
       rel="noopener noreferrer"
     >
-      <span className="font-bold">{label}</span>
+      <span className="font-heading text-lg font-semibold">{label}</span>
       <span className="text-sm text-subtle">{localeLabel}</span>
     </Link>
   );

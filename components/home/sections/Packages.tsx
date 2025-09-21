@@ -37,7 +37,7 @@ export const HomePackages: HomeThemeDefinition["Packages"] = ({
         {selectedPackage && (
           <aside className="surface-muted sticky top-32 grid gap-4 p-8">
             <span className="text-smallcaps">{ui.packages}</span>
-            <h3 className="text-3xl font-heading text-text">{selectedPackage.title}</h3>
+            <h3 className="text-3xl font-heading font-semibold text-text">{selectedPackage.title}</h3>
             <span className="text-xl font-semibold text-accent">{selectedPackage.priceLabel}</span>
             <ul className="grid gap-2 text-sm text-subtle">
               {selectedPackage.features.map((feature) => (
