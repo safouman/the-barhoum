@@ -98,7 +98,7 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({ locale, media }) => {
             {/* Video embed */}
             <div className="flex justify-center">
               <div className="w-full max-w-2xl">
-                <div className="relative overflow-hidden rounded-2xl shadow-md bg-black">
+                <div className="relative overflow-hidden rounded-2xl shadow-md">
                   <VideoEmbed 
                     videoId={video.id} 
                  
