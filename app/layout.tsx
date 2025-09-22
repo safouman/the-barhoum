@@ -57,7 +57,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <LocaleProvider initialLocale={locale}>
           <SiteHeader ui={ui} brand={brand} paymentSlug={defaultPaymentSlug} />
           <main>{children}</main>
-          <Footer ui={ui} brand={brand} locale={locale} />
+          <Footer ui={ui} locale={locale} />
         </LocaleProvider>
       </body>
     </html>
