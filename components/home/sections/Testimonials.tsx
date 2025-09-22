@@ -153,3 +153,4 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({ testimon
       </Container>
     </Section>
   );
+};
