@@ -30,12 +30,7 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({ locale, media }) => {
         )}
       >
         <div className="space-y-8">
-          <p
-            className={clsx(
-              "text-body-lg",
-              isRTL ? "font-[var(--font-cairo)]" : "font-[var(--font-inter)]"
-            )}
-          >
+          <p className="text-body-lg">
             {intro}
           </p>
           <ul className={clsx("space-y-3", isRTL ? "pr-4" : "pl-4", "text-label")}>

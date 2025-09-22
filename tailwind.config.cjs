@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./providers/**/*.{ts,tsx}", "./lib/**/*.{ts,tsx}", "./hooks/**/*.{ts,tsx}"],
+  content: ["./app/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./providers/**/*.{ts,tsx}", "./lib/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
@@ -15,7 +15,7 @@ module.exports = {
       },
       fontFamily: {
         base: ["var(--font-base)", "sans-serif"],
-        heading: ["var(--font-heading)", "serif"],
+        heading: ["var(--font-heading)", "sans-serif"],
       },
       boxShadow: {
         sm: "var(--shadow-sm)",

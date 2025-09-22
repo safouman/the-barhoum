@@ -3,233 +3,232 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: light;
-  --font-base: var(--font-inter);
-  --font-heading: var(--font-inter);
-  --font-weight-regular: 400;
-  --font-weight-bold: 600;
-  --color-background: #ffffff;
-  --color-surface: #f8f8f8;
-  --color-text: #1d1c1a;
-  --color-subtle: #64645f;
-  --color-accent: #2fb9ad;
-  --color-accent-text: #103d39;
-  --color-border: #e4e4e3;
-  --color-focus: #2fb9ad;
-  --page-gradient: #ffffff;
-  --radius-sm: 0.75rem;
-  --radius-md: 1.25rem;
-  --radius-lg: 2rem;
-  --shadow-sm: 0 16px 36px rgba(13, 28, 28, 0.12);
-  --shadow-md: 0 28px 60px rgba(20, 35, 35, 0.16);
-  --space-xs: 0.75rem;
-  --space-sm: 1.5rem;
-  --space-md: 3rem;
-  --space-lg: 5rem;
-  --space-xl: 7rem;
-  --leading-tight: 1.15;
-  --leading-base: 1.6;
-  --leading-relaxed: 1.85;
+    color-scheme: light;
+    --font-base: var(--font-inter);
+    --font-heading: var(--font-inter);
+    --font-weight-regular: 400;
+    --font-weight-bold: 600;
+    --color-background: #ffffff;
+    --color-surface: #f8f8f8;
+    --color-text: #1d1c1a;
+    --color-subtle: #64645f;
+    --color-accent: #2fb9ad;
+    --color-accent-text: #103d39;
+    --color-border: #e4e4e3;
+    --color-focus: #2fb9ad;
+    --page-gradient: #ffffff;
+    --radius-sm: 0.75rem;
+    --radius-md: 1.25rem;
+    --radius-lg: 2rem;
+    --shadow-sm: 0 16px 36px rgba(13, 28, 28, 0.12);
+    --shadow-md: 0 28px 60px rgba(20, 35, 35, 0.16);
+    --space-xs: 0.75rem;
+    --space-sm: 1.5rem;
+    --space-md: 3rem;
+    --space-lg: 5rem;
+    --space-xl: 7rem;
+    --leading-tight: 1.15;
+    --leading-base: 1.6;
+    --leading-relaxed: 1.85;
 }
 
 html[dir="rtl"] {
-  --font-base: var(--font-cairo);
-  --font-heading: var(--font-scheherazade);
+    --font-base: var(--font-cairo);
+    --font-heading: var(--font-scheherazade);
 }
 
 @layer base {
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
-  }
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
 
-  body {
-    margin: 0;
-    background: var(--page-gradient, var(--color-background));
-    color: var(--color-text);
-    font-family: var(--font-base), sans-serif;
-    font-weight: var(--font-weight-regular);
-    line-height: var(--leading-base);
-    transition: background 0.3s ease-out, color 0.3s ease-out;
-    position: relative;
-    min-height: 100vh;
-  }
+    body {
+        margin: 0;
+        background: var(--page-gradient, var(--color-background));
+        color: var(--color-text);
+        font-family: var(--font-base), sans-serif;
+        font-weight: var(--font-weight-regular);
+        line-height: var(--leading-base);
+        transition: background 0.3s ease-out, color 0.3s ease-out;
+        position: relative;
+        min-height: 100vh;
+    }
 
-  a {
-    color: inherit;
-    text-decoration: none;
-  }
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
 
-  a:focus-visible,
-  button:focus-visible,
-  input:focus-visible,
-  textarea:focus-visible {
-    outline: 2px solid var(--color-focus);
-    outline-offset: 2px;
-  }
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 2px;
+    }
 
-  button {
-    cursor: pointer;
-    background: transparent;
-    border: none;
-    font-family: var(--font-base);
-  }
+    button {
+        cursor: pointer;
+        background: transparent;
+        border: none;
+        font-family: var(--font-base);
+    }
 
-  img,
-  video {
-    max-width: 100%;
-    display: block;
-  }
+    img,
+    video {
+        max-width: 100%;
+        display: block;
+    }
 
-  main {
-    min-height: 100vh;
-  }
+    main {
+        min-height: 100vh;
+    }
 
-  .rtl {
-    direction: rtl;
-  }
+    .rtl {
+        direction: rtl;
+    }
 
-  .ltr {
-    direction: ltr;
-  }
+    .ltr {
+        direction: ltr;
+    }
 
-  .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    border: 0;
-  }
+    .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+    }
 }
 
 @layer components {
-  .text-eyebrow {
-    @apply text-[clamp(0.8rem,1.1vw,0.95rem)] uppercase tracking-[0.35em] text-subtle font-medium;
-  }
+    .text-eyebrow {
+        @apply text-[clamp(0.8rem,1.1vw,0.95rem)] uppercase tracking-[0.35em] text-subtle font-medium;
+    }
 
-  .text-display {
-    @apply text-[clamp(2.6rem,6.5vw,5.3rem)] leading-[1.15] tracking-[-0.012em] text-text font-semibold;
-  }
+    .text-display {
+        @apply text-[clamp(2.6rem,6.5vw,5.3rem)] leading-[1.15] tracking-[-0.012em] text-text font-semibold;
+    }
 
-  .text-lead {
-    @apply max-w-[62ch] text-[clamp(1.18rem,2.4vw,1.45rem)] leading-[1.8] text-subtle;
-  }
+    .text-lead {
+        @apply max-w-[62ch] text-[clamp(1.18rem,2.4vw,1.45rem)] leading-[1.8] text-subtle;
+    }
 
-  .text-body-lg {
-    @apply text-[clamp(1.15rem,2.2vw,1.35rem)] leading-[1.82] text-subtle;
-  }
+    .text-body-lg {
+        @apply text-[clamp(1.15rem,2.2vw,1.35rem)] leading-[1.82] text-subtle;
+    }
 
-  .text-quote {
-    @apply font-heading text-[clamp(1.6rem,3vw,2.2rem)] leading-[1.5] text-text;
-  }
+    .text-quote {
+        @apply font-heading text-[clamp(1.6rem,3vw,2.2rem)] leading-[1.5] text-text;
+    }
 
-  .text-smallcaps {
-    @apply text-xs uppercase tracking-[0.4em] text-subtle;
-  }
+    .text-smallcaps {
+        @apply text-xs uppercase tracking-[0.4em] text-subtle;
+    }
 
-  .text-label {
-    @apply text-sm text-subtle;
-  }
+    .text-label {
+        @apply text-sm text-subtle;
+    }
 
-  .text-section-title {
-    @apply font-heading text-[clamp(1.75rem,4vw,3rem)] font-semibold leading-tight text-text;
-  }
+    .text-section-title {
+        @apply font-heading text-[clamp(1.75rem,4vw,3rem)] font-semibold leading-tight text-text;
+    }
 
-  .btn {
-    border-radius: var(--radius-md);
-  }
+    .btn {
+        border-radius: var(--radius-md);
+    }
 
-  .btn-solid {
-    background: var(--color-text);
-    color: var(--color-background);
-    border-color: var(--color-text);
-    letter-spacing: 0.07em;
-    box-shadow: none;
-    transition: background 0.2s ease, transform 0.2s ease;
-  }
+    .btn-solid {
+        background: var(--color-text);
+        color: var(--color-background);
+        border-color: var(--color-text);
+        letter-spacing: 0.07em;
+        box-shadow: none;
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
 
-  .btn-solid:hover {
-    background: #111111;
-    transform: translateY(-1px);
-  }
+    .btn-solid:hover {
+        background: #111111;
+        transform: translateY(-1px);
+    }
 
-  .btn-solid:focus-visible {
-    outline: 2px solid rgba(29, 28, 26, 0.45);
-    outline-offset: 2px;
-  }
+    .btn-solid:focus-visible {
+        outline: 2px solid rgba(29, 28, 26, 0.45);
+        outline-offset: 2px;
+    }
 
-  .btn-outline {
-    position: relative;
-    background: transparent;
-    color: var(--color-text);
-    border-color: var(--color-text);
-    letter-spacing: 0.07em;
-    transition: background 0.2s ease;
-  }
+    .btn-outline {
+        position: relative;
+        background: transparent;
+        color: var(--color-text);
+        border-color: var(--color-text);
+        letter-spacing: 0.07em;
+        transition: background 0.2s ease;
+    }
 
-  .btn-outline:hover {
-    background: rgba(29, 28, 26, 0.06);
-  }
+    .btn-outline:hover {
+        background: rgba(29, 28, 26, 0.06);
+    }
 
-  .btn-outline:focus-visible {
-    outline: 2px solid rgba(29, 28, 26, 0.35);
-    outline-offset: 2px;
-  }
+    .btn-outline:focus-visible {
+        outline: 2px solid rgba(29, 28, 26, 0.35);
+        outline-offset: 2px;
+    }
 
-  .btn-outline::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -4px;
-    height: 1px;
-    width: 100%;
-    background: rgba(29, 28, 26, 0.6);
-    transform: scaleX(0.2);
-    transform-origin: left;
-    transition: transform 0.2s ease;
-  }
+    .btn-outline::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -4px;
+        height: 1px;
+        width: 100%;
+        background: rgba(29, 28, 26, 0.6);
+        transform: scaleX(0.2);
+        transform-origin: left;
+        transition: transform 0.2s ease;
+    }
 
-  .btn-outline:hover::after {
-    transform: scaleX(1);
-  }
+    .btn-outline:hover::after {
+        transform: scaleX(1);
+    }
 
-  .surface-panel {
-    @apply rounded-[20px] border border-border bg-surface bg-opacity-90;
-  }
+    .surface-panel {
+        @apply rounded-[20px] border border-border bg-surface bg-opacity-90;
+    }
 
-  .surface-muted {
-    @apply rounded-[22px] border border-border bg-background shadow-sm;
-  }
+    .surface-muted {
+        @apply rounded-[22px] border border-border bg-background shadow-sm;
+    }
 
-  .surface-accent {
-    @apply rounded-[24px] border border-border bg-surface bg-opacity-95 p-8 shadow-md;
-  }
+    .surface-accent {
+        @apply rounded-[24px] border border-border bg-surface bg-opacity-95 p-8 shadow-md;
+    }
 
-  [data-section="true"] {
-    text-align: left;
-    padding-block: clamp(6rem, 18vh, 7.5rem);
-  }
+    [data-section="true"] {
+        text-align: left;
+        padding-block: clamp(6rem, 18vh, 7.5rem);
+    }
 
-  [data-section="true"] > header {
-    align-items: flex-start;
-    margin-bottom: clamp(3rem, 6vw, 4rem);
-  }
+    [data-section="true"] > header {
+        align-items: flex-start;
+        margin-bottom: clamp(3rem, 6vw, 4rem);
+    }
 
-  [data-section="true"] > header h2 {
-    font-family: var(--font-heading), sans-serif;
-    letter-spacing: 0.22em;
-    font-weight: 600;
-    color: #1d1c1a;
-  }
+    [data-section="true"] > header h2 {
+        font-family: var(--font-heading), sans-serif;
+        letter-spacing: 0.22em;
+        font-weight: 600;
+        color: #1d1c1a;
+    }
 
-  [data-section="true"] > header::after {
-    background: rgba(29, 28, 26, 0.1);
-    width: 5rem;
-    margin-top: 1rem;
-  }
-
+    [data-section="true"] > header::after {
+        background: rgba(29, 28, 26, 0.1);
+        width: 5rem;
+        margin-top: 1rem;
+    }
 }
