@@ -111,7 +111,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                           "text-[clamp(1.4rem,3vw,1.8rem)]"
                         )}
                       >
-                        "{testimonial.quote}"
+                        &ldquo;{testimonial.quote}&rdquo;
                       </blockquote>
 
                       {/* Attribution */}
@@ -138,16 +138,16 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
           </div>
 
           {/* Navigation Dots */}
-          <div className="flex justify-center space-x-3">
+          <div className="flex justify-center items-center gap-3">
             {testimonials.map((_, index) => (
               <button
                 key={index}
                 onClick={() => handleDotClick(index)}
                 className={clsx(
-                  "w-2 h-2 rounded-full transition-all duration-200",
+                  "rounded-full transition-all duration-200 flex-shrink-0",
                   index === currentIndex
                     ? "bg-primary w-3 h-3"
-                    : "bg-gray-300 hover:bg-gray-400"
+                    : "bg-gray-300 hover:bg-gray-400 w-2 h-2"
                 )}
                 aria-label={`Go to testimonial ${index + 1}`}
               />
