@@ -1,3 +1,5 @@
+import 'server-only';
+
 import { cookies, headers } from "next/headers";
 import type { ReadonlyURLSearchParams } from "next/navigation";
 import type { Locale } from "@/lib/content";
