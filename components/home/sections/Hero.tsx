@@ -26,12 +26,10 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
                     <h1 className="text-display font-heading">
                         {hero.title[locale]}
                     </h1>
-                    <p className="text-lead">
-                        {hero.subtitle[locale]}
-                    </p>
+                    <p className="text-lead">{hero.subtitle[locale]}</p>
                     <p
                         className={clsx(
-                            "mt-4 text-sm text-accent",
+                            "mt-4  text-lead",
                             locale === "ar"
                                 ? "font-signature-arabic"
                                 : "font-signature-latin"

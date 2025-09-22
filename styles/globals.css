@@ -36,6 +36,14 @@
     --leading-relaxed: 1.85;
 }
 
+@font-face {
+    font-family: "Arslan Wessam A";
+    src: url("/fonts/arslan-wessam-a.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
 html[dir="rtl"] {
     --font-base: var(--font-markazi);
     --font-heading: var(--font-markazi);
