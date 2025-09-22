@@ -101,7 +101,7 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({ locale, media }) => {
                 <div className="relative overflow-hidden rounded-2xl shadow-md bg-black">
                   <VideoEmbed 
                     videoId={video.id} 
-                    title={isRTL ? "قصة إبراهيم – من الاكتئاب إلى النجاح" : video.title[locale]} 
+                 
                   />
                 </div>
               </div>
