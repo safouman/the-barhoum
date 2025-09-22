@@ -5,15 +5,14 @@ import { Section } from "@/components/Section";
 import type { HomeThemeDefinition } from "../types";
 
 export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({ 
-  locale, 
-  testimonials 
+  testimonials, 
+  ui 
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [userInteracted, setUserInteracted] = useState(false);
 
-  const isRTL = locale === "ar";
-  const sectionTitle = isRTL ? "شهادات" : "Testimonials";
+  const sectionTitle = ui.testimonials;
 
   // Auto-rotation effect
   useEffect(() => {
@@ -76,20 +75,20 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
             <button
               onClick={handlePrevious}
               className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 rounded-full bg-white shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center text-text hover:text-primary z-10"
-              aria-label={isRTL ? "الشهادة السابقة" : "Previous testimonial"}
+              aria-label="Previous testimonial"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isRTL ? "M9 5l7 7-7 7" : "M15 19l-7-7 7-7"} />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
 
             <button
               onClick={handleNext}
               className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 rounded-full bg-white shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center text-text hover:text-primary z-10"
-              aria-label={isRTL ? "الشهادة التالية" : "Next testimonial"}
+              aria-label="Next testimonial"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isRTL ? "M15 19l-7-7 7-7" : "M9 5l7 7-7 7"} />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
 
@@ -111,18 +110,17 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                           "italic font-light text-text leading-relaxed",
                           "text-[clamp(1.4rem,3vw,1.8rem)]"
                         )}
-                        dir={isRTL ? "rtl" : "ltr"}
                       >
-                        "{testimonial.quote[locale]}"
+                        "{testimonial.quote}"
                       </blockquote>
 
                       {/* Attribution */}
                       <footer className="space-y-1">
                         <cite className="not-italic font-bold text-text text-lg">
-                          {testimonial.name[locale]}
+                          {testimonial.name}
                         </cite>
                         <p className="text-sm text-subtle font-light">
-                          {testimonial.role[locale]}
+                          {testimonial.role}
                         </p>
                       </footer>
                     </div>
@@ -151,7 +149,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                     ? "bg-primary w-3 h-3"
                     : "bg-gray-300 hover:bg-gray-400"
                 )}
-                aria-label={`${isRTL ? "اذهب إلى الشهادة" : "Go to testimonial"} ${index + 1}`}
+                aria-label={`Go to testimonial ${index + 1}`}
               />
             ))}
           </div>
