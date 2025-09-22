@@ -83,17 +83,7 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({ locale, media }) => {
             "text-center space-y-3",
             isRTL ? "mt-5 pb-14" : "mt-10 pb-10"
           )} dir={isRTL ? "rtl" : "ltr"}>
-            {/* Small bridge line */}
-            <div className="text-center">
-              <p className={clsx(
-                "font-light",
-                isRTL 
-                  ? "text-label text-[#777] tracking-normal" 
-                  : "text-sm text-subtle tracking-wide"
-              )}>
-                {videoBridge}
-              </p>
-            </div>
+       
             
             {/* Video embed */}
             <div className="flex justify-center">
