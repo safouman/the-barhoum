@@ -91,7 +91,7 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({ locale, media }) => {
             
                   <VideoEmbed 
                     videoId={video.id} 
-                 
+                 title=""
                   />
               
               </div>
