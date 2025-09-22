@@ -128,19 +128,19 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         {/* Quote */}
                         <blockquote 
                           className={clsx(
-                            "italic font-light text-text leading-relaxed",
+                            "italic font-light text-text leading-relaxed text-center",
                             "text-[clamp(1.4rem,3vw,1.8rem)]"
                           )}
                         >
-                          &ldquo;{testimonial.quote}&rdquo;
+                          "{testimonial.quote}"
                         </blockquote>
 
                         {/* Attribution */}
                         <footer className="space-y-1">
-                          <cite className="not-italic font-bold text-text text-lg">
+                          <cite className="not-italic font-bold text-text text-lg block">
                             {testimonial.name}
                           </cite>
-                          <p className="text-sm text-subtle font-light">
+                          <p className="text-sm text-subtle font-light block">
                             {testimonial.role}
                           </p>
                         </footer>
