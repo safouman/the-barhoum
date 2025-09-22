@@ -87,10 +87,8 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
     }
   }, [packagesForCategory, activePackageId]);
 
-  const testimonialsForCategory = useMemo(
-    () => localizedTestimonials.filter((item) => !activeCategory || item.categoryId === activeCategory),
-    [localizedTestimonials, activeCategory]
-  );
+  // Show all testimonials, not filtered by category
+  const testimonialsToShow = localizedTestimonials;
 
   const seenCategoriesRef = useRef(new Set<string>());
   useEffect(() => {
@@ -123,6 +121,8 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
 
       <HomeAbout locale={locale} media={home.media} />
 
+      <HomeTestimonials testimonials={testimonialsToShow} ui={strings} />
+
       <HomeCategories
         categories={localizedCategories}
         activeCategory={activeCategory}
@@ -139,7 +139,6 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
         />
       )}
 
-      <HomeTestimonials testimonials={testimonialsForCategory} ui={strings} />
 
       {activeCategory && activePackageId && leadPackageLabel && (
         <HomeLeadForm
