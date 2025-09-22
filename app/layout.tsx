@@ -6,6 +6,7 @@ import { Courgette, Inter, Markazi_Text } from "next/font/google";
 import "../styles/globals.css";
 import { LocaleProvider } from "@/providers/locale-provider";
 import { SiteHeader } from "@/components/SiteHeader";
+import { Footer } from "@/components/Footer";
 import { getPayments, getUiStrings, type UIStrings } from "@/lib/content";
 import { getDirection } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/i18n.server";
@@ -56,6 +57,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <LocaleProvider initialLocale={locale}>
           <SiteHeader ui={ui} brand={brand} paymentSlug={defaultPaymentSlug} />
           <main>{children}</main>
+          <Footer ui={ui} brand={brand} locale={locale} />
         </LocaleProvider>
       </body>
     </html>
