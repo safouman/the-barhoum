@@ -1,3 +1,7 @@
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+// optional but helpful in some hosts:
+export const runtime = 'nodejs';
 import { Courgette, Inter, Markazi_Text } from "next/font/google";
 import "../styles/globals.css";
 import { LocaleProvider } from "@/providers/locale-provider";
