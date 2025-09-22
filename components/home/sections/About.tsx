@@ -37,26 +37,30 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({ locale, media }) => {
   return (
     <Section id="about" className="bg-background">
       <Container>
-        {/* Unified content block */}
+        {/* Unified content block with RTL-specific styling */}
         <div className={clsx(
-          "mx-auto max-w-4xl space-y-8",
-          isRTL ? "text-right" : "text-center"
-        )}>
+          "mx-auto text-center",
+          isRTL ? "max-w-4xl space-y-7" : "max-w-4xl space-y-8"
+        )} dir={isRTL ? "rtl" : "ltr"}>
           {/* Quote headline */}
           <h2 className={clsx(
-            "font-heading text-text",
+            "font-heading text-text text-center",
             isRTL 
-              ? "text-[clamp(1.6rem,3.8vw,2.8rem)] leading-[1.25] font-semibold" 
+              ? "text-[clamp(1.75rem,4vw,2.75rem)] leading-[1.25] font-semibold" 
               : "text-[clamp(1.8rem,4.2vw,3.2rem)] leading-[1.3] font-medium"
           )}>
             {headline}
           </h2>
           
           {/* Narrative with inline link */}
-          <div className="mx-auto max-w-3xl">
+          <div className={clsx(
+            "mx-auto text-center",
+            isRTL ? "max-w-[65ch]" : "max-w-3xl"
+          )}>
             <p className={clsx(
-              "text-body-lg",
-              isRTL ? "leading-[1.95]" : "leading-relaxed"
+              isRTL 
+                ? "text-[1.1875rem] leading-[2.05] text-[#444] mb-6" 
+                : "text-body-lg leading-relaxed"
             )}>
               {narrativeStart}
               {" — "}
@@ -73,15 +77,20 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({ locale, media }) => {
           </div>
         </div>
 
-        {/* Video block with tight connection */}
+        {/* Video block with RTL-specific spacing */}
         {video && (
-          <div className="mt-10 space-y-3">
+          <div className={clsx(
+            "text-center space-y-3",
+            isRTL ? "mt-5 pb-14" : "mt-10 pb-10"
+          )} dir={isRTL ? "rtl" : "ltr"}>
             {/* Small bridge line */}
-            <div className={clsx(
-              "text-center",
-              isRTL ? "text-right" : ""
-            )}>
-              <p className="text-sm text-subtle font-light tracking-wide">
+            <div className="text-center">
+              <p className={clsx(
+                "font-light",
+                isRTL 
+                  ? "text-[0.9375rem] text-[#777] tracking-normal" 
+                  : "text-sm text-subtle tracking-wide"
+              )}>
                 {videoBridge}
               </p>
             </div>
