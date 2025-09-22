@@ -1,4 +1,4 @@
-import { Cairo, Inter, Scheherazade_New } from "next/font/google";
+import { Courgette, Inter, Markazi_Text } from "next/font/google";
 import "../styles/globals.css";
 import { LocaleProvider } from "@/providers/locale-provider";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -8,9 +8,29 @@ import { resolveLocale } from "@/lib/i18n.server";
 import { getDefaultMetadata } from "@/lib/seo";
 const brand = { ar: "برهوم", en: "Barhoum" };
 
-const inter = Inter({ subsets: ["latin"], weight: ["400", "600"], variable: "--font-inter", display: "swap" });
-const scheherazade = Scheherazade_New({ subsets: ["arabic"], weight: ["400", "700"], variable: "--font-scheherazade", display: "swap" });
-const cairo = Cairo({ subsets: ["arabic"], weight: ["400", "600"], variable: "--font-cairo", display: "swap" });
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-inter",
+  display: "swap",
+  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+});
+
+const markazi = Markazi_Text({
+  subsets: ["arabic", "latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-markazi",
+  display: "swap",
+  fallback: ["Noto Naskh Arabic", "Amiri", "serif"],
+});
+
+const courgette = Courgette({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-courgette",
+  display: "swap",
+  fallback: ["Brush Script MT", "Comic Sans MS", "cursive"],
+});
 
 async function loadUi(): Promise<Record<"ar" | "en", UIStrings>> {
   const [ar, en] = await Promise.all([getUiStrings("ar"), getUiStrings("en")]);
@@ -24,7 +44,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const direction = getDirection(locale);
   const [ui, payments] = await Promise.all([loadUi(), getPayments()]);
   const defaultPaymentSlug = payments[0]?.slug;
-  const fontClass = [inter.variable, scheherazade.variable, cairo.variable].join(" ");
+  const fontClass = [inter.variable, markazi.variable, courgette.variable].join(" ");
 
   return (
     <html lang={locale} dir={direction} className={fontClass}>

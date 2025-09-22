@@ -6,6 +6,9 @@
     color-scheme: light;
     --font-base: var(--font-inter);
     --font-heading: var(--font-inter);
+    --font-ui: var(--font-inter);
+    --font-signature-latin: var(--font-courgette);
+    --font-signature-arabic: "Arslan Wessam A";
     --font-weight-regular: 400;
     --font-weight-bold: 600;
     --color-background: #ffffff;
@@ -34,8 +37,9 @@
 }
 
 html[dir="rtl"] {
-    --font-base: var(--font-cairo);
-    --font-heading: var(--font-scheherazade);
+    --font-base: var(--font-markazi);
+    --font-heading: var(--font-markazi);
+    --font-ui: var(--font-markazi);
 }
 
 @layer base {
@@ -49,12 +53,16 @@ html[dir="rtl"] {
         margin: 0;
         background: var(--page-gradient, var(--color-background));
         color: var(--color-text);
-        font-family: var(--font-base), sans-serif;
+        font-family: var(--font-base), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         font-weight: var(--font-weight-regular);
         line-height: var(--leading-base);
         transition: background 0.3s ease-out, color 0.3s ease-out;
         position: relative;
         min-height: 100vh;
+    }
+
+    html[dir="rtl"] body {
+        font-family: var(--font-base), "Noto Naskh Arabic", "Amiri", serif;
     }
 
     a {
@@ -138,6 +146,17 @@ html[dir="rtl"] {
 
     .text-section-title {
         @apply font-heading text-[clamp(1.75rem,4vw,3rem)] font-semibold leading-tight text-text;
+    }
+
+    .font-signature-latin {
+        font-family: var(--font-courgette), "Courgette", "Segoe UI", cursive;
+        font-weight: 400;
+    }
+
+    .font-signature-arabic {
+        font-family: var(--font-signature-arabic), var(--font-markazi), "Noto Naskh Arabic", serif;
+        font-weight: 400;
+        letter-spacing: 0.01em;
     }
 
     .btn {

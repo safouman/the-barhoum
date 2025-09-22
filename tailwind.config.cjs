@@ -14,8 +14,25 @@ module.exports = {
         focus: "var(--color-focus)",
       },
       fontFamily: {
-        base: ["var(--font-base)", "sans-serif"],
-        heading: ["var(--font-heading)", "sans-serif"],
+        base: [
+          "var(--font-base)",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "Noto Naskh Arabic",
+          "Amiri",
+          "sans-serif",
+          "serif",
+        ],
+        heading: [
+          "var(--font-heading)",
+          "Noto Naskh Arabic",
+          "Amiri",
+          "system-ui",
+          "sans-serif",
+          "serif",
+        ],
       },
       boxShadow: {
         sm: "var(--shadow-sm)",
