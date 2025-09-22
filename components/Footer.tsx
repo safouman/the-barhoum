@@ -1,12 +1,15 @@
+"use client";
+
+import { useLocale } from "@/providers/locale-provider";
 import { Container } from "./Container";
-import type { Locale, UIStrings } from "@/lib/content";
+import type { UIStrings } from "@/lib/content";
 
 interface FooterProps {
-  ui: Record<Locale, UIStrings>;
-  locale: Locale;
+  ui: Record<"ar" | "en", UIStrings>;
 }
 
-export function Footer({ ui, locale }: FooterProps) {
+export function Footer({ ui }: FooterProps) {
+  const { locale } = useLocale();
   const strings = ui[locale];
   const isRtl = locale === "ar";
 
