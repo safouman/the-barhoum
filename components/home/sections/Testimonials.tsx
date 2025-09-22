@@ -1,15 +1,21 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import clsx from "classnames";
 import { Container } from "@/components/Container";
 import { Section } from "@/components/Section";
 import type { HomeThemeDefinition } from "../types";
 
-export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({ testimonials, ui }) => {
+export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({ 
+  locale, 
+  testimonials 
+}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [userInteracted, setUserInteracted] = useState(false);
 
-  // Auto-rotation every 7 seconds
+  const isRTL = locale === "ar";
+  const sectionTitle = isRTL ? "شهادات" : "Testimonials";
+
+  // Auto-rotation effect
   useEffect(() => {
     if (!isAutoPlaying || testimonials.length <= 1) return;
 
@@ -20,135 +26,135 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({ testimon
     return () => clearInterval(interval);
   }, [isAutoPlaying, testimonials.length]);
 
-  const goToSlide = (index: number) => {
-    setCurrentIndex(index);
-    setIsAutoPlaying(false);
-    // Resume auto-play after 10 seconds of inactivity
-    setTimeout(() => setIsAutoPlaying(true), 10000);
-  };
+  // Resume auto-play after user interaction
+  useEffect(() => {
+    if (userInteracted) {
+      const timeout = setTimeout(() => {
+        setIsAutoPlaying(true);
+        setUserInteracted(false);
+      }, 10000);
 
-  const goToPrevious = () => {
+      return () => clearTimeout(timeout);
+    }
+  }, [userInteracted]);
+
+  const handlePrevious = () => {
+    setIsAutoPlaying(false);
+    setUserInteracted(true);
     setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
-    setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 10000);
   };
 
-  const goToNext = () => {
+  const handleNext = () => {
+    setIsAutoPlaying(false);
+    setUserInteracted(true);
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-    setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 10000);
   };
 
-  if (testimonials.length === 0) return null;
+  const handleDotClick = (index: number) => {
+    setIsAutoPlaying(false);
+    setUserInteracted(true);
+    setCurrentIndex(index);
+  };
+
+  if (!testimonials.length) return null;
 
   return (
-    <Section title={ui.testimonials} className="bg-surface">
+    <Section id="testimonials" className="bg-surface">
       <Container>
-        <div className="relative mx-auto max-w-4xl">
-          {/* Carousel Container */}
-          <div className="relative overflow-hidden">
-            <div 
-              className="flex transition-transform duration-700 ease-in-out"
-              style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-            >
-              {testimonials.map((testimonial, index) => (
-                <div
-                  key={testimonial.id}
-                  className="w-full flex-shrink-0 px-4"
-                >
-                  <article className="text-center space-y-6 py-8">
-                    <blockquote className="text-[clamp(1.4rem,3vw,1.8rem)] leading-relaxed italic text-text font-light">
-                      "{testimonial.quote}"
-                    </blockquote>
-                    <footer className="space-y-2">
-                      <cite className="block text-lg font-semibold text-text not-italic">
-                        {testimonial.name}
-                      </cite>
-                      <p className="text-sm text-subtle font-light">
-                        {testimonial.role}
-                      </p>
-                    </footer>
-                  </article>
-                </div>
-              ))}
-            </div>
+        <div className="text-center space-y-12">
+          {/* Section Header */}
+          <div className="space-y-4">
+            <div className="w-12 h-0.5 bg-primary mx-auto"></div>
+            <h2 className="text-section-title font-semibold text-text">
+              {sectionTitle}
+            </h2>
           </div>
 
-          {/* Navigation Arrows */}
-          {testimonials.length > 1 && (
-            <>
-              <button
-                onClick={goToPrevious}
-                className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 rounded-full bg-white/80 hover:bg-white shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center text-text hover:text-primary group"
-                aria-label="Previous testimonial"
+          {/* Carousel Container */}
+          <div className="relative max-w-4xl mx-auto">
+            {/* Navigation Arrows */}
+            <button
+              onClick={handlePrevious}
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-10 h-10 rounded-full bg-white shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center text-text hover:text-primary z-10"
+              aria-label={isRTL ? "الشهادة السابقة" : "Previous testimonial"}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isRTL ? "M9 5l7 7-7 7" : "M15 19l-7-7 7-7"} />
+              </svg>
+            </button>
+
+            <button
+              onClick={handleNext}
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 rounded-full bg-white shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center text-text hover:text-primary z-10"
+              aria-label={isRTL ? "الشهادة التالية" : "Next testimonial"}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isRTL ? "M15 19l-7-7 7-7" : "M9 5l7 7-7 7"} />
+              </svg>
+            </button>
+
+            {/* Testimonials Slider */}
+            <div className="overflow-hidden">
+              <div 
+                className="flex transition-transform duration-700 ease-in-out"
+                style={{ transform: `translateX(-${currentIndex * 100}%)` }}
               >
-                <svg 
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round"
-                  className="group-hover:scale-110 transition-transform duration-200"
-                >
-                  <polyline points="15,18 9,12 15,6"></polyline>
-                </svg>
-              </button>
-              
-              <button
-                onClick={goToNext}
-                className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-10 h-10 rounded-full bg-white/80 hover:bg-white shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center text-text hover:text-primary group"
-                aria-label="Next testimonial"
-              >
-                <svg 
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round"
-                  className="group-hover:scale-110 transition-transform duration-200"
-                >
-                  <polyline points="9,18 15,12 9,6"></polyline>
-                </svg>
-              </button>
-            </>
-          )}
+                {testimonials.map((testimonial, index) => (
+                  <div
+                    key={index}
+                    className="w-full flex-shrink-0 px-8"
+                  >
+                    <div className="text-center space-y-6 py-8">
+                      {/* Quote */}
+                      <blockquote 
+                        className={clsx(
+                          "italic font-light text-text leading-relaxed",
+                          "text-[clamp(1.4rem,3vw,1.8rem)]"
+                        )}
+                        dir={isRTL ? "rtl" : "ltr"}
+                      >
+                        "{testimonial.quote[locale]}"
+                      </blockquote>
+
+                      {/* Attribution */}
+                      <footer className="space-y-1">
+                        <cite className="not-italic font-bold text-text text-lg">
+                          {testimonial.name[locale]}
+                        </cite>
+                        <p className="text-sm text-subtle font-light">
+                          {testimonial.role[locale]}
+                        </p>
+                      </footer>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            {isAutoPlaying && !userInteracted && (
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-0.5 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-full bg-primary rounded-full animate-progress"></div>
+              </div>
+            )}
+          </div>
 
           {/* Navigation Dots */}
-          {testimonials.length > 1 && (
-            <div className="flex justify-center space-x-3 mt-8">
-              {testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => goToSlide(index)}
-                  className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
-                    index === currentIndex
-                      ? "bg-primary scale-125 shadow-sm"
-                      : "bg-border hover:bg-primary/40 hover:scale-110"
-                  }`}
-                  aria-label={`Go to testimonial ${index + 1}`}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Progress Indicator (subtle) */}
-          {testimonials.length > 1 && isAutoPlaying && (
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-16 h-0.5 bg-border/30 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-primary/60 rounded-full transition-all duration-100 ease-linear"
-                style={{
-                  width: `${((Date.now() % 7000) / 7000) * 100}%`,
-                  animation: isAutoPlaying ? 'progress 7s linear infinite' : 'none'
-                }}
+          <div className="flex justify-center space-x-3">
+            {testimonials.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => handleDotClick(index)}
+                className={clsx(
+                  "w-2 h-2 rounded-full transition-all duration-200",
+                  index === currentIndex
+                    ? "bg-primary w-3 h-3"
+                    : "bg-gray-300 hover:bg-gray-400"
+                )}
+                aria-label={`${isRTL ? "اذهب إلى الشهادة" : "Go to testimonial"} ${index + 1}`}
               />
-            </div>
-          )}
+            ))}
+          </div>
         </div>
       </Container>
     </Section>
