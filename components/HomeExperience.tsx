@@ -65,16 +65,16 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
         const localized = {
           id: testimonial.id,
           categoryId: testimonial.categoryId,
-          quote: testimonial.quote[locale],
+          quote: testimonial.quote,
           name: testimonial.name,
-          role: testimonial.role[locale],
+          role: testimonial.role,
         };
         console.log('Localized testimonial:', localized);
         return localized;
       });
       return result;
     },
-    [testimonials, locale]
+    [testimonials]
   );
 
   const [activeCategory, setActiveCategory] = useState<Category["id"] | undefined>();

@@ -47,8 +47,8 @@ export const testimonialSchema = z.object({
   id: z.string(),
   categoryId: categoryIdSchema,
   name: z.string(),
-  role: localizedSchema,
-  quote: localizedSchema,
+  role: z.string(),
+  quote: z.string(),
 });
 
 export type Testimonial = z.infer<typeof testimonialSchema>;

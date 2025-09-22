@@ -2,31 +2,22 @@
   {
     "id": "t1",
     "categoryId": "individuals",
-    "name": "ليلى" ,
-    "role": {"ar": "مديرة تسويق", "en": "Marketing Lead"},
-    "quote": {
-      "ar": "مع برهوم أصبحت أرى قراراتي المهنية بوضوح وهدوء.",
-      "en": "Barhoum helped me see my career decisions with clarity and calm."
-    }
+    "name": "ليلى",
+    "role": "مديرة تسويق",
+    "quote": "مع برهوم أصبحت أرى قراراتي المهنية بوضوح وهدوء."
   },
   {
     "id": "t2",
     "categoryId": "couples",
     "name": "سمير & دانا",
-    "role": {"ar": "شركاء حياة", "en": "Life partners"},
-    "quote": {
-      "ar": "تعلمنا أن نصغي من دون دفاع وأن نبني لغة مشتركة.",
-      "en": "We learned to listen without defense and build shared language."
-    }
+    "role": "شركاء حياة",
+    "quote": "تعلمنا أن نصغي من دون دفاع وأن نبني لغة مشتركة."
   },
   {
     "id": "t3",
     "categoryId": "organizations",
     "name": "Sahara Labs",
-    "role": {"ar": "شركة تقنية", "en": "Tech company"},
-    "quote": {
-      "ar": "وضع لنا إطاراً قيادياً رفع ثقة الفريق وأداءه.",
-      "en": "He introduced a leadership frame that raised our team's confidence and output."
-    }
+    "role": "شركة تقنية",
+    "quote": "وضع لنا إطاراً قيادياً رفع ثقة الفريق وأداءه."
   }
 ]
