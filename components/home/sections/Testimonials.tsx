@@ -55,7 +55,23 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
     setCurrentIndex(index);
   };
 
-  if (!testimonials.length) return null;
+  if (!testimonials.length) {
+    return (
+      <Section id="testimonials" className="bg-surface">
+        <Container>
+          <div className="text-center space-y-12">
+            <div className="space-y-4">
+              <div className="w-12 h-0.5 bg-primary mx-auto"></div>
+              <h2 className="text-section-title font-semibold text-text">
+                {sectionTitle}
+              </h2>
+            </div>
+            <p className="text-subtle">No testimonials available.</p>
+          </div>
+        </Container>
+      </Section>
+    );
+  }
 
   return (
     <Section id="testimonials" className="bg-surface">
