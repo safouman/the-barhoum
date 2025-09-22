@@ -51,6 +51,41 @@ html[dir="rtl"] {
     --font-ui: var(--font-markazi);
 }
 
+html[dir="rtl"] .text-eyebrow {
+    font-size: clamp(0.85rem, 1.2vw, 1rem);
+}
+
+html[dir="rtl"] .text-display {
+    font-size: clamp(2.7rem, 6.7vw, 5.5rem);
+}
+
+html[dir="rtl"] .text-lead {
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+    line-height: 2.05;
+}
+
+html[dir="rtl"] .text-body-lg {
+    font-size: clamp(1.2rem, 2.3vw, 1.4rem);
+    line-height: 2.05;
+}
+
+html[dir="rtl"] .text-quote {
+    font-size: clamp(1.7rem, 3.2vw, 2.3rem);
+}
+
+html[dir="rtl"] .text-smallcaps {
+    font-size: 0.8125rem;
+}
+
+html[dir="rtl"] .text-label {
+    font-size: 0.9375rem;
+}
+
+html[dir="rtl"] .text-section-title {
+    font-size: clamp(1.875rem, 4.2vw, 3.125rem);
+    line-height: 1.25;
+}
+
 @layer base {
     *,
     *::before,
