@@ -177,23 +177,19 @@ html[dir="rtl"] {
         color: var(--color-accent);
         border-color: var(--color-primary);
         letter-spacing: 0.07em;
-        box-shadow: 0 12px 24px rgba(42, 214, 202, 0.22);
-        transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        transition: background 0.2s ease;
     }
 
     .btn-solid:hover {
-        background: #26c4b6;
-        transform: translateY(-1px);
-        box-shadow: 0 14px 26px rgba(38, 196, 182, 0.24);
+        background: #24b9af;
     }
 
     .btn-solid:focus-visible {
-        outline: 2px solid rgba(42, 214, 202, 0.6);
+        outline: 2px solid var(--color-primary);
         outline-offset: 2px;
     }
 
     .btn-outline {
-        position: relative;
         background: transparent;
         color: var(--color-primary);
         border-color: var(--color-primary);
@@ -202,30 +198,14 @@ html[dir="rtl"] {
     }
 
     .btn-outline:hover {
-        background: rgba(42, 214, 202, 0.1);
+        background: rgba(42, 214, 202, 0.05);
     }
 
     .btn-outline:focus-visible {
-        outline: 2px solid rgba(42, 214, 202, 0.45);
+        outline: 2px solid var(--color-primary);
         outline-offset: 2px;
     }
 
-    .btn-outline::after {
-        content: "";
-        position: absolute;
-        left: 0;
-        bottom: -4px;
-        height: 1px;
-        width: 100%;
-        background: rgba(42, 214, 202, 0.7);
-        transform: scaleX(0.2);
-        transform-origin: left;
-        transition: transform 0.2s ease;
-    }
-
-    .btn-outline:hover::after {
-        transform: scaleX(1);
-    }
 
     .surface-panel {
         @apply rounded-[8px] border border-border bg-surface bg-opacity-90;
