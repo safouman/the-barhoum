@@ -114,9 +114,12 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                 className="flex transition-transform duration-700 ease-in-out"
                 style={{ transform: `translateX(-${currentIndex * 100}%)` }}
               >
-                {testimonials.map((testimonial, index) => (
-                  <>
-                    {console.log('Rendering testimonial:', testimonial)}
+                {testimonials.map((testimonial, index) => {
+                  console.log('Rendering testimonial:', testimonial);
+                  console.log('Name value:', testimonial.name);
+                  console.log('Quote value:', testimonial.quote);
+                  console.log('Role value:', testimonial.role);
+                  return (
                     <div
                       key={index}
                       className="w-full flex-shrink-0 px-8"
@@ -143,8 +146,8 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         </footer>
                       </div>
                     </div>
-                  </>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
