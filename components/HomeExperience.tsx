@@ -59,6 +59,21 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
 
   const localizedTestimonials = useMemo<LocalizedTestimonial[]>(
     () =>
+      console.log('Processing testimonials for locale:', locale);
+      const result = testimonials.map((testimonial) => {
+        console.log('Original testimonial:', testimonial);
+        const localized = {
+          id: testimonial.id,
+          categoryId: testimonial.categoryId,
+          quote: testimonial.quote[locale],
+          name: testimonial.name,
+          role: testimonial.role[locale],
+        };
+        console.log('Localized testimonial:', localized);
+        return localized;
+      });
+      return result;
+    },
       testimonials.map((testimonial) => ({
         id: testimonial.id,
         categoryId: testimonial.categoryId,
