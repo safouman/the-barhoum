@@ -33,7 +33,7 @@ export function VideoEmbed({ videoId, title }: VideoEmbedProps) {
                     allowFullScreen
                 />
             </div>
-            <figcaption className="text-sm text-subtle">{title}</figcaption>
+        
         </figure>
     );
 }
