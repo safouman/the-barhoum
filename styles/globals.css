@@ -276,4 +276,9 @@ html[dir="rtl"] .text-section-title {
         width: 5rem;
         margin-top: 1rem;
     }
+
+    @keyframes progress {
+        from { width: 0%; }
+        to { width: 100%; }
+    }
 }

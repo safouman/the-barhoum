@@ -151,13 +151,5 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({ testimon
           )}
         </div>
       </Container>
-
-      <style jsx>{`
-        @keyframes progress {
-          from { width: 0%; }
-          to { width: 100%; }
-        }
-      `}</style>
     </Section>
   );
-};
