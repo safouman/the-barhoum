@@ -46,7 +46,7 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({ locale, media }) => {
           <h2 className={clsx(
             "font-heading text-text text-center",
             isRTL 
-              ? "text-[clamp(1.75rem,4vw,2.75rem)] leading-[1.25] font-semibold" 
+              ? "text-[clamp(1.875rem,4.2vw,2.875rem)] leading-[1.25] font-semibold" 
               : "text-[clamp(1.8rem,4.2vw,3.2rem)] leading-[1.3] font-medium"
           )}>
             {headline}
@@ -59,7 +59,7 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({ locale, media }) => {
           )}>
             <p className={clsx(
               isRTL 
-                ? "text-[1.1875rem] leading-[2.05] text-[#444] mb-6" 
+                ? "text-[1.25rem] leading-[2.05] text-[#444] mb-6" 
                 : "text-body-lg leading-relaxed"
             )}>
               {narrativeStart}
@@ -88,7 +88,7 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({ locale, media }) => {
               <p className={clsx(
                 "font-light",
                 isRTL 
-                  ? "text-[0.9375rem] text-[#777] tracking-normal" 
+                  ? "text-[0.9875rem] text-[#777] tracking-normal" 
                   : "text-sm text-subtle tracking-wide"
               )}>
                 {videoBridge}
