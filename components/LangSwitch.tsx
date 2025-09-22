@@ -43,8 +43,8 @@ export function LangSwitch({ options, className }: LangSwitchProps) {
                     className={clsx(
                         "px-3 py-1 text-sm transition",
                         option.value === locale
-                            ? "bg-accent text-accentText"
-                            : "bg-transparent text-subtle hover:bg-white/10"
+                            ? "bg-primary text-accent"
+                            : "bg-transparent text-subtle hover:bg-primary/10 hover:text-primary"
                     )}
                     onClick={() => handleChange(option.value)}
                 >

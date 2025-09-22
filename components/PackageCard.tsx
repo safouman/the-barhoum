@@ -26,7 +26,7 @@ export function PackageCard({ id, title, price, features, visible = true, active
       type="button"
       className={clsx(
         "surface-panel grid gap-sm p-sm text-left transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-sm",
-        active && "border-accent shadow-sm"
+        active && "border-primary shadow-sm"
       )}
       onClick={handleClick}
     >

@@ -8,6 +8,7 @@ module.exports = {
         surface: "var(--color-surface)",
         text: "var(--color-text)",
         subtle: "var(--color-subtle)",
+        primary: "var(--color-primary)",
         accent: "var(--color-accent)",
         accentText: "var(--color-accent-text)",
         border: "var(--color-border)",

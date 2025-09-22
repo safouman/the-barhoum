@@ -20,7 +20,7 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
             aria-pressed={activeCategory === category.id}
             className={clsx(
               "surface-panel flex flex-col justify-between gap-5 px-8 py-10 text-start transition",
-              activeCategory === category.id ? "border-accent bg-surface" : "hover:border-accent/40"
+              activeCategory === category.id ? "border-primary bg-surface" : "hover:border-primary/40"
             )}
           >
             <header className="space-y-3">

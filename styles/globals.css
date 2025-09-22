@@ -13,12 +13,13 @@
     --font-weight-bold: 600;
     --color-background: #ffffff;
     --color-surface: #f8f8f8;
-    --color-text: #1d1c1a;
-    --color-subtle: #64645f;
-    --color-accent: #2fb9ad;
-    --color-accent-text: #103d39;
-    --color-border: #e4e4e3;
-    --color-focus: #2fb9ad;
+    --color-text: #333333;
+    --color-subtle: #555555;
+    --color-primary: #2ad6ca;
+    --color-accent: #ffffff;
+    --color-accent-text: #333333;
+    --color-border: #e0f6f4;
+    --color-focus: #2ad6ca;
     --page-gradient: #ffffff;
     --radius-sm: 0.75rem;
     --radius-md: 1.25rem;
@@ -172,39 +173,40 @@ html[dir="rtl"] {
     }
 
     .btn-solid {
-        background: var(--color-text);
-        color: var(--color-background);
-        border-color: var(--color-text);
+        background: var(--color-primary);
+        color: var(--color-accent);
+        border-color: var(--color-primary);
         letter-spacing: 0.07em;
-        box-shadow: none;
-        transition: background 0.2s ease, transform 0.2s ease;
+        box-shadow: 0 12px 24px rgba(42, 214, 202, 0.22);
+        transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
     }
 
     .btn-solid:hover {
-        background: #111111;
+        background: #26c4b6;
         transform: translateY(-1px);
+        box-shadow: 0 14px 26px rgba(38, 196, 182, 0.24);
     }
 
     .btn-solid:focus-visible {
-        outline: 2px solid rgba(29, 28, 26, 0.45);
+        outline: 2px solid rgba(42, 214, 202, 0.6);
         outline-offset: 2px;
     }
 
     .btn-outline {
         position: relative;
         background: transparent;
-        color: var(--color-text);
-        border-color: var(--color-text);
+        color: var(--color-primary);
+        border-color: var(--color-primary);
         letter-spacing: 0.07em;
         transition: background 0.2s ease;
     }
 
     .btn-outline:hover {
-        background: rgba(29, 28, 26, 0.06);
+        background: rgba(42, 214, 202, 0.1);
     }
 
     .btn-outline:focus-visible {
-        outline: 2px solid rgba(29, 28, 26, 0.35);
+        outline: 2px solid rgba(42, 214, 202, 0.45);
         outline-offset: 2px;
     }
 
@@ -215,7 +217,7 @@ html[dir="rtl"] {
         bottom: -4px;
         height: 1px;
         width: 100%;
-        background: rgba(29, 28, 26, 0.6);
+        background: rgba(42, 214, 202, 0.7);
         transform: scaleX(0.2);
         transform-origin: left;
         transition: transform 0.2s ease;

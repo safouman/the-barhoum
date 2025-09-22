@@ -29,7 +29,7 @@ export function CategoryGrid({ categories, selectedId, onSelect }: CategoryGridP
           type="button"
           className={clsx(
             "grid gap-2 rounded-[8px] border border-border bg-surface p-sm text-left transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-sm",
-            selectedId === category.id && "border-accent shadow-sm"
+            selectedId === category.id && "border-primary shadow-sm"
           )}
           onClick={() => handleSelect(category.id)}
         >

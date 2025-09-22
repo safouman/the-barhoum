@@ -16,7 +16,7 @@ type Props = InputProps | TextareaProps;
 
 const baseFieldClass = "grid gap-2";
 const baseControlClass =
-  "w-full rounded-[8px] border border-border bg-surface px-4 py-3 text-base text-inherit transition focus:border-accent focus:outline-none focus:ring-0";
+  "w-full rounded-[8px] border border-border bg-surface px-4 py-3 text-base text-inherit transition focus:border-primary focus:outline-none focus:ring-0";
 
 export function Input(props: Props) {
   const { label, name, className, multiline } = props;

@@ -61,7 +61,7 @@ export function SiteHeader({ ui, brand, paymentSlug }: SiteHeaderProps) {
                                 <Link
                                     key={item.href}
                                     href={item.href}
-                className="rounded-[8px] px-2 py-1 transition hover:bg-white/10"
+                                    className="rounded-[8px] px-2 py-1 transition hover:bg-primary/10 hover:text-primary"
                                 >
                                     {item.label}
                                 </Link>

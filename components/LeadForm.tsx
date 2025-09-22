@@ -64,7 +64,7 @@ export function LeadForm({ labels, selectedCategory, selectedPackage, variant }:
   if (variant === "luxury") {
     return (
       <form
-        className="grid gap-sm rounded-[32px] border border-accent/40 bg-surface/50 p-lg shadow-md shadow-black/20 backdrop-blur"
+        className="grid gap-sm rounded-[32px] border border-primary/40 bg-surface/50 p-lg shadow-md shadow-black/20 backdrop-blur"
         onSubmit={handleSubmit}
         onFocus={handleFocus}
       >
@@ -144,7 +144,7 @@ export function LeadForm({ labels, selectedCategory, selectedPackage, variant }:
 
   return (
     <form
-      className="grid gap-4 rounded-[28px] border border-border/60 bg-surface p-lg shadow-md shadow-accent/30"
+      className="grid gap-4 rounded-[28px] border border-border/60 bg-surface p-lg shadow-md shadow-primary/30"
       onSubmit={handleSubmit}
       onFocus={handleFocus}
     >
@@ -184,7 +184,7 @@ function LuxuryField(props: FieldUnion) {
   if (props.multiline) {
     const { label, name, className, multiline: _multiline, ...textareaProps } = props as TextareaFieldProps;
     const id = textareaProps.id ?? name;
-    const baseClass = "w-full rounded-[8px] border border-border/50 bg-background/20 px-4 py-3 text-base transition focus:border-accent";
+    const baseClass = "w-full rounded-[8px] border border-border/50 bg-background/20 px-4 py-3 text-base transition focus:border-primary";
 
     return (
       <label className="grid gap-2 text-sm text-subtle" htmlFor={id}>
@@ -196,7 +196,7 @@ function LuxuryField(props: FieldUnion) {
 
   const { label, name, className, multiline: _multiline, ...inputProps } = props as InputFieldProps;
   const id = inputProps.id ?? name;
-  const baseClass = "w-full rounded-[8px] border border-border/50 bg-background/20 px-4 py-3 text-base transition focus:border-accent";
+  const baseClass = "w-full rounded-[8px] border border-border/50 bg-background/20 px-4 py-3 text-base transition focus:border-primary";
   return (
     <label className="grid gap-2 text-sm text-subtle" htmlFor={id}>
       <span>{label}</span>
@@ -211,7 +211,7 @@ type ModernFieldProps = FieldUnion & {
 
 function ModernField(props: ModernFieldProps) {
   const baseClass =
-    "w-full border-0 border-b border-border bg-transparent px-0 pb-2 text-base transition focus:border-accent focus:ring-0";
+    "w-full border-0 border-b border-border bg-transparent px-0 pb-2 text-base transition focus:border-primary focus:ring-0";
 
   if (props.multiline) {
     const { label, name, className, helper, multiline: _multiline, ...textareaProps } = props as TextareaFieldProps & {
@@ -242,7 +242,7 @@ function ModernField(props: ModernFieldProps) {
 
 function WarmField(props: FieldUnion) {
   const baseClass =
-    "w-full rounded-[8px] border border-border/40 bg-white/60 px-6 py-4 text-base text-text shadow-sm shadow-accent/10 transition focus:border-accent focus:outline-none";
+    "w-full rounded-[8px] border border-border/40 bg-white/60 px-6 py-4 text-base text-text shadow-sm shadow-primary/10 transition focus:border-primary focus:outline-none";
 
   if (props.multiline) {
     const { label, name, className, multiline: _multiline, ...textareaProps } = props as TextareaFieldProps;
