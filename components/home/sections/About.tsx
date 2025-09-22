@@ -12,34 +12,37 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({ locale, media }) => {
     ? "في كل لحظةِ صمت، تولدُ حكمةٌ جديدة"
     : "In every moment of stillness, wisdom is born";
   
-  // Flowing narrative paragraph
-  const narrative = isRTL
-    ? "يؤمن إبراهيم أنّ التحوّل الحقيقي يبدأ من الداخل. يرافق القادة والمبدعين في رحلةٍ هادئةٍ من الاكتشاف، حيث تلتقي البصيرة بالاستراتيجية، والوضوح بالشجاعة الناعمة. في كل جلسة نعيد ترتيب الإيقاع لنستمع إلى ما تهمس به الحكمة الداخلية."
-    : "Ibrahim believes true transformation begins from within. He guides leaders and creatives through a quiet journey of discovery, where strategy meets intuition and clarity embraces soft courage. In each session, we reset the rhythm and listen to what inner wisdom whispers.";
+  // Flowing narrative paragraph with inline link
+  const narrativeStart = isRTL
+    ? "يؤمن إبراهيم أنّ التحوّل الحقيقي يبدأ من الداخل. يرافق القادة والمبدعين في رحلةٍ هادئةٍ من الاكتشاف، حيث تلتقي البصيرة بالاستراتيجية، والوضوح بالشجاعة الناعمة. في كل جلسة نعيد ترتيب الإيقاع لنستمع إلى ما تهمس به الحكمة الداخلية"
+    : "Ibrahim believes true transformation begins from within. He guides leaders and creatives through a quiet journey of discovery, where strategy meets intuition and clarity embraces soft courage. In each session, we reset the rhythm and listen to what inner wisdom whispers";
 
-  // Video teasing headline
-  const videoHeadline = isRTL
-    ? "ابدأ بلمحة…"
-    : "Begin with a glimpse...";
+  const linkText = isRTL ? "ملف تعريفي" : "intro deck";
+  const linkArrow = isRTL ? " ←" : " →";
+
+  // Small bridge line above video
+  const videoBridge = isRTL
+    ? "ابدأ بلمحة"
+    : "begin with a glimpse";
 
   const pdfs = media.pdfs.length
     ? media.pdfs
-    : Array.from({ length: 3 }, (_, index) => ({
+    : Array.from({ length: 1 }, () => ({
         url: "#",
-        label: { en: `Guided approach ${index + 1}`, ar: `ملف تعريفي` },
+        label: { en: "Guided approach", ar: "ملف تعريفي" },
       }));
 
   const video = media.videos[0];
 
   return (
     <Section id="about" className="bg-background">
-      <Container className="space-y-12">
-        {/* Main content block */}
+      <Container>
+        {/* Unified content block */}
         <div className={clsx(
-          "mx-auto max-w-4xl space-y-6",
-          isRTL ? "text-right" : "text-left"
+          "mx-auto max-w-4xl space-y-8",
+          isRTL ? "text-right" : "text-center"
         )}>
-          {/* Poetic headline */}
+          {/* Quote headline */}
           <h2 className={clsx(
             "font-heading text-text",
             isRTL 
@@ -49,46 +52,41 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({ locale, media }) => {
             {headline}
           </h2>
           
-          {/* Flowing narrative */}
+          {/* Narrative with inline link */}
           <div className="mx-auto max-w-3xl">
             <p className={clsx(
               "text-body-lg",
               isRTL ? "leading-[1.95]" : "leading-relaxed"
             )}>
-              {narrative}
+              {narrativeStart}
+              {" — "}
+              <a
+                href={pdfs[0]?.url ?? "#"}
+                className="text-subtle hover:text-primary transition-colors duration-200 border-b border-transparent hover:border-primary"
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                {linkText}
+                <span className="text-xs" aria-hidden="true">{linkArrow}</span>
+              </a>
             </p>
-          </div>
-          
-          {/* Single inline PDF link */}
-          <div className={clsx(
-            "text-sm",
-            isRTL ? "text-right" : "text-center"
-          )}>
-            <a
-              href={pdfs[0]?.url ?? "#"}
-              className="inline-flex items-center gap-2 text-subtle hover:text-primary transition-colors duration-200 border-b border-transparent hover:border-primary pb-1"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
-              <span>{isRTL ? "ملف تعريفي" : pdfs[0]?.label.en ?? "Intro deck"}</span>
-              <span className="text-xs" aria-hidden="true">{isRTL ? "←" : "→"}</span>
-            </a>
           </div>
         </div>
 
-        {/* Video highlight block */}
+        {/* Video block with tight connection */}
         {video && (
-          <div className="space-y-4 pt-4">
-            {/* Video teasing headline */}
+          <div className="mt-10 space-y-3">
+            {/* Small bridge line */}
             <div className={clsx(
-              isRTL ? "text-right" : "text-center"
+              "text-center",
+              isRTL ? "text-right" : ""
             )}>
-              <h3 className="font-heading text-[clamp(1.1rem,2.4vw,1.5rem)] text-subtle font-medium">
-                {videoHeadline}
-              </h3>
+              <p className="text-sm text-subtle font-light tracking-wide">
+                {videoBridge}
+              </p>
             </div>
             
-            {/* Centered video with premium styling */}
+            {/* Video embed */}
             <div className="flex justify-center">
               <div className="w-full max-w-2xl">
                 <div className="relative overflow-hidden rounded-2xl shadow-md bg-black">
