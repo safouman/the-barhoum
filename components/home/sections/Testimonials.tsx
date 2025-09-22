@@ -115,32 +115,35 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                 style={{ transform: `translateX(-${currentIndex * 100}%)` }}
               >
                 {testimonials.map((testimonial, index) => (
-                  <div
-                    key={index}
-                    className="w-full flex-shrink-0 px-8"
-                  >
-                    <div className="text-center space-y-6 py-8">
-                      {/* Quote */}
-                      <blockquote 
-                        className={clsx(
-                          "italic font-light text-text leading-relaxed",
-                          "text-[clamp(1.4rem,3vw,1.8rem)]"
-                        )}
-                      >
-                        &ldquo;{testimonial.quote}&rdquo;
-                      </blockquote>
+                  <>
+                    {console.log('Rendering testimonial:', testimonial)}
+                    <div
+                      key={index}
+                      className="w-full flex-shrink-0 px-8"
+                    >
+                      <div className="text-center space-y-6 py-8">
+                        {/* Quote */}
+                        <blockquote 
+                          className={clsx(
+                            "italic font-light text-text leading-relaxed",
+                            "text-[clamp(1.4rem,3vw,1.8rem)]"
+                          )}
+                        >
+                          &ldquo;{testimonial.quote}&rdquo;
+                        </blockquote>
 
-                      {/* Attribution */}
-                      <footer className="space-y-1">
-                        <cite className="not-italic font-bold text-text text-lg">
-                          {testimonial.name}
-                        </cite>
-                        <p className="text-sm text-subtle font-light">
-                          {testimonial.role}
-                        </p>
-                      </footer>
+                        {/* Attribution */}
+                        <footer className="space-y-1">
+                          <cite className="not-italic font-bold text-text text-lg">
+                            {testimonial.name}
+                          </cite>
+                          <p className="text-sm text-subtle font-light">
+                            {testimonial.role}
+                          </p>
+                        </footer>
+                      </div>
                     </div>
-                  </div>
+                  </>
                 ))}
               </div>
             </div>
