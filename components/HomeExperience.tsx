@@ -130,6 +130,7 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
       <HomeAbout locale={locale} media={home.media} />
 
       <HomeTestimonials testimonials={testimonialsToShow} ui={strings} />
+      <HomeTestimonials testimonials={testimonialsToShow} ui={strings} locale={locale} />
 
       <HomeCategories
         categories={localizedCategories}

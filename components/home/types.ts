@@ -52,6 +52,7 @@ export interface PackagesProps {
 export interface TestimonialsProps {
   testimonials: LocalizedTestimonial[];
   ui: UIStrings;
+  locale: Locale;
 }
 
 export interface LeadFormProps {
