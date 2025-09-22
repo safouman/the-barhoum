@@ -191,18 +191,18 @@ html[dir="rtl"] {
 
     .btn-outline {
         background: transparent;
-        color: var(--color-primary);
-        border-color: var(--color-primary);
+        color: var(--color-text);
+        border-color: var(--color-text);
         letter-spacing: 0.07em;
         transition: background 0.2s ease;
     }
 
     .btn-outline:hover {
-        background: rgba(42, 214, 202, 0.05);
+        background: var(--color-surface);
     }
 
     .btn-outline:focus-visible {
-        outline: 2px solid var(--color-primary);
+        outline: 2px solid var(--color-text);
         outline-offset: 2px;
     }
 
