@@ -7,13 +7,15 @@ import type { Locale } from "@/lib/content";
 
 interface LangSwitchProps {
     options: { value: Locale; label: string }[];
+    className?: string;
 }
 
-export function LangSwitch({ options }: LangSwitchProps) {
+export function LangSwitch({ options, className }: LangSwitchProps) {
     const { locale, setLocale } = useLocale();
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const isRtl = locale === "ar";
 
     const handleChange = (value: Locale) => {
         setLocale(value);
@@ -26,24 +28,29 @@ export function LangSwitch({ options }: LangSwitchProps) {
     };
 
     return (
-        <div className="inline-flex items-center gap-2">
-            <div className="inline-flex overflow-hidden rounded-sm border border-border">
-                {options.map((option) => (
-                    <button
-                        type="button"
-                        key={option.value}
-                        className={clsx(
-                            "px-3 py-1 text-sm transition",
-                            option.value === locale
-                                ? "bg-accent text-accentText"
-                                : "bg-transparent text-subtle hover:bg-white/10"
-                        )}
-                        onClick={() => handleChange(option.value)}
-                    >
-                        {option.label}
-                    </button>
-                ))}
-            </div>
+        <div
+            className={clsx(
+                "inline-flex overflow-hidden rounded-[8px] border border-border",
+                isRtl ? "flex-row-reverse" : "flex-row",
+                className
+            )}
+            dir={isRtl ? "rtl" : "ltr"}
+        >
+            {options.map((option) => (
+                <button
+                    type="button"
+                    key={option.value}
+                    className={clsx(
+                        "px-3 py-1 text-sm transition",
+                        option.value === locale
+                            ? "bg-accent text-accentText"
+                            : "bg-transparent text-subtle hover:bg-white/10"
+                    )}
+                    onClick={() => handleChange(option.value)}
+                >
+                    {option.label}
+                </button>
+            ))}
         </div>
     );
 }

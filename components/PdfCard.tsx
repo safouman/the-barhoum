@@ -16,7 +16,7 @@ export function PdfCard({ href, label, localeLabel }: PdfCardProps) {
 
   return (
     <Link
-      className="grid gap-3 rounded-md border border-border bg-surface p-sm transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-sm"
+      className="grid gap-3 rounded-[8px] border border-border bg-surface p-sm transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-sm"
       href={href}
       onClick={handleClick}
       target="_blank"

@@ -184,7 +184,7 @@ function LuxuryField(props: FieldUnion) {
   if (props.multiline) {
     const { label, name, className, multiline: _multiline, ...textareaProps } = props as TextareaFieldProps;
     const id = textareaProps.id ?? name;
-    const baseClass = "w-full rounded-2xl border border-border/50 bg-background/20 px-4 py-3 text-base transition focus:border-accent";
+    const baseClass = "w-full rounded-[8px] border border-border/50 bg-background/20 px-4 py-3 text-base transition focus:border-accent";
 
     return (
       <label className="grid gap-2 text-sm text-subtle" htmlFor={id}>
@@ -196,7 +196,7 @@ function LuxuryField(props: FieldUnion) {
 
   const { label, name, className, multiline: _multiline, ...inputProps } = props as InputFieldProps;
   const id = inputProps.id ?? name;
-  const baseClass = "w-full rounded-2xl border border-border/50 bg-background/20 px-4 py-3 text-base transition focus:border-accent";
+  const baseClass = "w-full rounded-[8px] border border-border/50 bg-background/20 px-4 py-3 text-base transition focus:border-accent";
   return (
     <label className="grid gap-2 text-sm text-subtle" htmlFor={id}>
       <span>{label}</span>
@@ -242,7 +242,7 @@ function ModernField(props: ModernFieldProps) {
 
 function WarmField(props: FieldUnion) {
   const baseClass =
-    "w-full rounded-full border border-border/40 bg-white/60 px-6 py-4 text-base text-text shadow-sm shadow-accent/10 transition focus:border-accent focus:outline-none";
+    "w-full rounded-[8px] border border-border/40 bg-white/60 px-6 py-4 text-base text-text shadow-sm shadow-accent/10 transition focus:border-accent focus:outline-none";
 
   if (props.multiline) {
     const { label, name, className, multiline: _multiline, ...textareaProps } = props as TextareaFieldProps;
@@ -250,7 +250,7 @@ function WarmField(props: FieldUnion) {
     return (
       <label className="grid gap-2 text-sm text-subtle" htmlFor={id}>
         <span>{label}</span>
-        <textarea id={id} name={name} className={clsx(baseClass, "min-h-[180px] rounded-3xl", className)} {...textareaProps} />
+        <textarea id={id} name={name} className={clsx(baseClass, "min-h-[180px]", className)} {...textareaProps} />
       </label>
     );
   }

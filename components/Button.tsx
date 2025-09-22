@@ -23,7 +23,7 @@ interface ButtonAsLinkProps extends BaseProps, AnchorElementProps {
 type ButtonProps = ButtonAsButtonProps | ButtonAsLinkProps;
 
 const baseClass =
-  "btn inline-flex items-center justify-center gap-2 rounded-md border px-6 py-3 text-base font-semibold uppercase tracking-[0.08em] transition duration-200 ease-out";
+  "btn inline-flex items-center justify-center gap-2 rounded-[8px] border px-6 py-3 text-base font-semibold uppercase tracking-[0.08em] transition duration-200 ease-out";
 
 export function Button({ variant = "primary", fullWidth = false, className, children, ...props }: ButtonProps) {
   const variantClass = variant === "ghost" ? "btn-outline" : "btn-solid";

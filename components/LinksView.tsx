@@ -25,7 +25,7 @@ export function LinksView({ links, ui }: LinksViewProps) {
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="grid gap-2 rounded-md border border-border bg-surface p-sm transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-sm"
+              className="grid gap-2 rounded-[8px] border border-border bg-surface p-sm transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-sm"
             >
               <span className="font-heading text-xl">{link.title[locale]}</span>
               <span className="text-sm text-subtle">{link.description[locale]}</span>

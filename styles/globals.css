@@ -20,6 +20,7 @@
     --radius-sm: 0.75rem;
     --radius-md: 1.25rem;
     --radius-lg: 2rem;
+    --radius-interactive: 0.5rem;
     --shadow-sm: 0 16px 36px rgba(13, 28, 28, 0.12);
     --shadow-md: 0 28px 60px rgba(20, 35, 35, 0.16);
     --space-xs: 0.75rem;
@@ -140,7 +141,7 @@ html[dir="rtl"] {
     }
 
     .btn {
-        border-radius: var(--radius-md);
+        border-radius: var(--radius-interactive);
     }
 
     .btn-solid {
@@ -198,7 +199,7 @@ html[dir="rtl"] {
     }
 
     .surface-panel {
-        @apply rounded-[20px] border border-border bg-surface bg-opacity-90;
+        @apply rounded-[8px] border border-border bg-surface bg-opacity-90;
     }
 
     .surface-muted {

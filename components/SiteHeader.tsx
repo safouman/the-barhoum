@@ -33,8 +33,8 @@ export function SiteHeader({ ui, brand, paymentSlug }: SiteHeaderProps) {
         <header className="sticky top-0 z-50 border-b border-border bg-background/70 backdrop-blur">
             <Container className="[direction:ltr] flex items-center gap-sm py-4">
                 <div
-                    className={`flex flex-1 flex-wrap items-center gap-4${
-                        isRtl ? " flex-row-reverse" : ""
+                    className={`flex flex-1 flex-wrap items-center gap-4 ${
+                        isRtl ? "order-2 flex-row-reverse" : "order-1"
                     }`}
                 >
                     <Link
@@ -61,7 +61,7 @@ export function SiteHeader({ ui, brand, paymentSlug }: SiteHeaderProps) {
                                 <Link
                                     key={item.href}
                                     href={item.href}
-                                    className="rounded-sm px-2 py-1 transition hover:bg-white/10"
+                className="rounded-[8px] px-2 py-1 transition hover:bg-white/10"
                                 >
                                     {item.label}
                                 </Link>
@@ -69,14 +69,15 @@ export function SiteHeader({ ui, brand, paymentSlug }: SiteHeaderProps) {
                         </nav>
                     )}
                 </div>
-                <div className="ml-auto flex-shrink-0">
-                    <LangSwitch
-                        options={[
-                            { value: "ar", label: "AR" },
-                            { value: "en", label: "EN" },
-                        ]}
-                    />
-                </div>
+                <LangSwitch
+                    className={`flex-shrink-0 ${
+                        isRtl ? "order-1 mr-auto" : "order-2 ml-auto"
+                    }`}
+                    options={[
+                        { value: "ar", label: "AR" },
+                        { value: "en", label: "EN" },
+                    ]}
+                />
             </Container>
         </header>
     );
