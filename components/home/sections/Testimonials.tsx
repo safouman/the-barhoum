@@ -10,6 +10,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [screenWidth, setScreenWidth] = useState<number | undefined>(undefined);
   const trackRef = useRef<HTMLDivElement>(null);
   const startXRef = useRef(0);
   const currentXRef = useRef(0);
@@ -25,6 +26,23 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
   
   const sectionTitle = isRTL ? "شهادات" : "Testimonials";
   const ctaText = isRTL ? "قصص أخرى ←" : "Read more stories →";
+
+  // Handle screen width for responsive behavior
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenWidth(window.innerWidth);
+    };
+
+    // Set initial width
+    setScreenWidth(window.innerWidth);
+
+    // Add resize listener
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   // Navigation handlers
   const handlePrevious = useCallback(() => {
@@ -126,8 +144,11 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
     let cardClasses = "absolute top-0 transition-all duration-300 ease-out";
     let cardStyles: React.CSSProperties = {};
 
+    // Use screenWidth with fallback for SSR
+    const currentScreenWidth = screenWidth || 768; // Default to tablet size during SSR
+
     // Desktop positioning
-    if (window.innerWidth >= 1280) {
+    if (currentScreenWidth >= 1280) {
       cardStyles.width = 'min(720px, 70vw)';
       cardStyles.height = '480px';
       
@@ -142,7 +163,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
         cardClasses += " z-10 scale-95 opacity-75";
         cardStyles.left = isRTL ? '8%' : '75%';
       }
-    } else if (window.innerWidth >= 768) {
+    } else if (currentScreenWidth >= 768) {
       // Tablet positioning
       cardStyles.width = 'min(600px, 80vw)';
       cardStyles.height = '440px';
@@ -185,7 +206,6 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
             border: '1px solid rgba(42, 214, 202, 0.12)',
             boxShadow: '0 24px 48px rgba(3, 35, 32, 0.12), 0 8px 16px rgba(3, 35, 32, 0.08)',
           }}
-          onMouseEnter={() => !isActive && (cardClasses.includes('scale-95') && (cardStyles.transform = 'scale(0.98)'))}
         >
           {/* Decorative quote marks in corners */}
           <div className="absolute top-6 left-6 opacity-[0.08] pointer-events-none">
