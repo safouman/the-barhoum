@@ -108,8 +108,8 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
     <Section id="testimonials" className="relative overflow-hidden">
       {/* Subtle premium background treatment */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-50/30 via-gray-50/50 to-gray-50/30" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(42,214,202,0.008)_0%,transparent_70%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-50/40 via-white/60 to-gray-50/40" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(42,214,202,0.012)_0%,transparent_70%)]" />
       </div>
 
       <Container>
@@ -197,10 +197,10 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                 >
                   {/* Large, Bold Quote with teal accents */}
                   <div className="relative">
-                    <blockquote className="text-2xl md:text-3xl lg:text-4xl leading-[1.4] text-gray-900 font-bold max-w-3xl mx-auto text-center">
-                      <span className="text-[#2AD6CA]/70 text-4xl md:text-5xl font-serif leading-none">"</span>
+                    <blockquote className="text-3xl md:text-4xl lg:text-5xl leading-[1.5] text-gray-900 font-semibold max-w-3xl mx-auto text-center">
+                      <span className="text-[#2AD6CA]/50 text-3xl md:text-4xl font-serif leading-none">"</span>
                       {currentTestimonial.quote}
-                      <span className="text-[#2AD6CA]/70 text-4xl md:text-5xl font-serif leading-none">"</span>
+                      <span className="text-[#2AD6CA]/50 text-3xl md:text-4xl font-serif leading-none">"</span>
                     </blockquote>
                   </div>
 
@@ -215,10 +215,10 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
 
                   {/* Premium Attribution */}
                   <footer className="space-y-3">
-                    <cite className="not-italic font-bold text-gray-900 text-xl block tracking-wide">
+                    <cite className="not-italic font-bold text-gray-900 text-2xl block tracking-wide">
                       {currentTestimonial.name}
                     </cite>
-                    <p className="text-[#7A7A7A] text-base font-medium">
+                    <p className="text-[#7A7A7A] text-sm font-normal">
                       {currentTestimonial.role}
                     </p>
                   </footer>
