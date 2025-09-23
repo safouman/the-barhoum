@@ -15,7 +15,6 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
   const [isPaused, setIsPaused] = useState(false);
 
   const sectionTitle = ui.testimonials;
-  const isRtl = locale === "ar";
 
   // Auto-rotation effect
   useEffect(() => {
@@ -106,11 +105,11 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
   const currentTestimonial = testimonials[currentIndex];
 
   return (
-    <Section id="testimonials" className="bg-background relative overflow-hidden">
-      {/* Premium background with subtle gradient */}
+    <Section id="testimonials" className="relative overflow-hidden">
+      {/* Subtle premium background treatment */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#2AD6CA]/[0.015] to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(42,214,202,0.02)_0%,transparent_70%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-50/30 via-gray-50/50 to-gray-50/30" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(42,214,202,0.008)_0%,transparent_70%)]" />
       </div>
 
       <Container>
@@ -127,7 +126,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
               {sectionTitle}
             </h2>
             <div className="flex justify-center">
-              <div className="w-20 h-px bg-gradient-to-r from-transparent via-[#2AD6CA] to-transparent" />
+              <div className="w-16 h-px bg-gradient-to-r from-transparent via-[#2AD6CA]/60 to-transparent" />
             </div>
           </div>
 
@@ -166,19 +165,16 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                 aria-live="polite"
                 aria-label={`Testimonial ${currentIndex + 1} of ${testimonials.length}`}
               >
-                {/* Premium decorative quote mark */}
-                <div className={clsx(
-                  "absolute top-8 opacity-[0.04] pointer-events-none",
-                  isRtl ? "right-8" : "left-8"
-                )}>
-                  <svg width="64" height="48" viewBox="0 0 48 36" fill="currentColor" className="text-[#2AD6CA]">
+                {/* Subtle decorative quote mark */}
+                <div className="absolute top-8 left-8 opacity-[0.025] pointer-events-none">
+                  <svg width="56" height="42" viewBox="0 0 48 36" fill="currentColor" className="text-[#2AD6CA]">
                     <path d="M0 36V20.4C0 9.12 5.04 3.36 15.12 2.16L16.8 6.24C11.28 7.2 8.4 10.32 8.16 15.36H16.8V36H0ZM25.2 36V20.4C25.2 9.12 30.24 3.36 40.32 2.16L42 6.24C36.48 7.2 33.6 10.32 33.36 15.36H42V36H25.2Z"/>
                   </svg>
                 </div>
 
-                {/* Teal accent divider top */}
+                {/* Subtle teal accent divider top */}
                 <div className="flex justify-center mb-10">
-                  <div className="w-12 h-0.5 bg-gradient-to-r from-transparent via-[#2AD6CA] to-transparent rounded-full" />
+                  <div className="w-10 h-px bg-gradient-to-r from-transparent via-[#2AD6CA]/40 to-transparent rounded-full" />
                 </div>
 
                 {/* Premium Avatar */}
@@ -202,18 +198,18 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                   {/* Large, Bold Quote with teal accents */}
                   <div className="relative">
                     <blockquote className="text-2xl md:text-3xl lg:text-4xl leading-[1.4] text-gray-900 font-bold max-w-3xl mx-auto text-center">
-                      <span className="text-[#2AD6CA] text-5xl md:text-6xl font-serif leading-none">"</span>
+                      <span className="text-[#2AD6CA]/70 text-4xl md:text-5xl font-serif leading-none">"</span>
                       {currentTestimonial.quote}
-                      <span className="text-[#2AD6CA] text-5xl md:text-6xl font-serif leading-none">"</span>
+                      <span className="text-[#2AD6CA]/70 text-4xl md:text-5xl font-serif leading-none">"</span>
                     </blockquote>
                   </div>
 
-                  {/* Teal accent divider */}
+                  {/* Subtle teal accent divider */}
                   <div className="flex justify-center">
                     <div className="flex items-center space-x-2">
-                      <div className="w-3 h-3 rounded-full bg-[#2AD6CA]/30" />
-                      <div className="w-16 h-px bg-gradient-to-r from-[#2AD6CA]/50 via-[#2AD6CA] to-[#2AD6CA]/50" />
-                      <div className="w-3 h-3 rounded-full bg-[#2AD6CA]/30" />
+                      <div className="w-2 h-2 rounded-full bg-[#2AD6CA]/25" />
+                      <div className="w-12 h-px bg-gradient-to-r from-[#2AD6CA]/30 via-[#2AD6CA]/50 to-[#2AD6CA]/30" />
+                      <div className="w-2 h-2 rounded-full bg-[#2AD6CA]/25" />
                     </div>
                   </div>
 
@@ -228,9 +224,9 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                   </footer>
                 </div>
 
-                {/* Bottom teal accent */}
+                {/* Bottom subtle teal accent */}
                 <div className="flex justify-center mt-10">
-                  <div className="w-8 h-0.5 bg-gradient-to-r from-transparent via-[#2AD6CA] to-transparent rounded-full" />
+                  <div className="w-6 h-px bg-gradient-to-r from-transparent via-[#2AD6CA]/40 to-transparent rounded-full" />
                 </div>
               </div>
             </div>
