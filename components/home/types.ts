@@ -23,7 +23,6 @@ export interface LocalizedTestimonial {
   name: string;
   role: string;
   initials?: string;
-  avatarUrl?: string;
 }
 
 export interface HeroProps {
