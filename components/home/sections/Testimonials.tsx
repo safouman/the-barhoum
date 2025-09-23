@@ -24,7 +24,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
     ? "موثوق به من قِبل القادة والمبدعين حول العالم"
     : "Trusted by founders, leaders, and creatives worldwide";
   
-  const sectionTitle = isRTL ? "شهادات" : "Testimonials";
+      return { width: 480, height: 600 }; // Desktop - portrait
   const ctaText = isRTL ? "قصص أخرى ←" : "Read more stories →";
 
   // Handle screen width for responsive behavior
@@ -154,14 +154,13 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
       
       if (isActive) {
         cardClasses += " z-20 scale-100 opacity-100";
-        cardStyles.left = '50%';
-        cardStyles.transform = 'translateX(-50%)';
+        cardStyles.left = 'calc(50% - 240px)'; // Center the card
       } else if (isPrevious) {
         cardClasses += " z-10 scale-95 opacity-75";
-        cardStyles.left = isRTL ? '75%' : '8%';
+        cardStyles.left = isRTL ? 'calc(50% + 120px)' : 'calc(50% - 600px)'; // Symmetrical left
       } else if (isNext) {
         cardClasses += " z-10 scale-95 opacity-75";
-        cardStyles.left = isRTL ? '8%' : '75%';
+        cardStyles.left = isRTL ? 'calc(50% - 600px)' : 'calc(50% + 120px)'; // Symmetrical right
       }
     } else if (currentScreenWidth >= 768) {
       // Tablet positioning
@@ -170,12 +169,11 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
       
       if (isActive) {
         cardClasses += " z-20 scale-100 opacity-100";
-        cardStyles.left = '50%';
-        cardStyles.transform = 'translateX(-50%)';
+        cardStyles.left = 'calc(50% - 210px)'; // Center the card
       } else if (isNext) {
         cardClasses += " z-10 scale-95 opacity-70";
-        cardStyles.left = isRTL ? '15%' : '70%';
-      }
+        cardStyles.left = isRTL ? 'calc(50% - 420px)' : 'calc(50% + 60px)'; // Symmetrical peek
+      return { width: 420, height: 540 }; // Tablet - portrait
     } else {
       // Mobile positioning
       cardStyles.width = 'min(90vw, 400px)';
@@ -187,7 +185,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
         cardClasses += " z-20 scale-100 opacity-100";
       } else {
         return null; // Hide non-active cards on mobile
-      }
+      return { width: Math.min(screenWidth * 0.9, 360), height: 480 }; // Mobile - portrait
     }
     
     return (
@@ -200,7 +198,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
         aria-label={`Testimonial from ${testimonial.name}`}
       >
         <div 
-          className="relative h-full rounded-[20px] overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1"
+          className="relative h-full rounded-[20px] overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1 flex flex-col justify-center"
           style={{
             background: 'white',
             border: '1px solid rgba(42, 214, 202, 0.12)',
@@ -220,7 +218,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
             </svg>
           </div>
 
-          <div className="relative h-full flex flex-col justify-center p-12 md:p-14">
+          <div className="relative h-full flex flex-col justify-center px-8 py-10 md:px-12 md:py-12">
             {/* Avatar with initials */}
             <div className="flex justify-center mb-8">
               <div 
@@ -234,17 +232,14 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
             {/* Quote */}
             <div className="flex-1 flex items-center justify-center">
               <blockquote 
-                className={`
-                  text-center max-w-[720px]
-                  ${isRTL ? 'text-right' : 'text-center'}
-                `}
+                className="text-center max-w-full"
                 dir={isRTL ? 'rtl' : 'ltr'}
               >
                 <p className={`
-                  font-semibold leading-relaxed mb-0
+                  font-medium leading-relaxed mb-0 text-center
                   ${isRTL 
-                    ? 'font-heading text-[clamp(22px,3vw,36px)] text-[#0E2D2A]' 
-                    : 'font-base text-[clamp(20px,2.8vw,34px)] text-[#0E2D2A]'
+                    ? 'font-heading text-[clamp(20px,2.5vw,28px)] text-[#0E2D2A]' 
+                    : 'font-base text-[clamp(18px,2.2vw,24px)] text-[#0E2D2A]'
                   }
                 `}>
                   {testimonial.quote}
@@ -253,14 +248,14 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
             </div>
 
             {/* Attribution */}
-            <footer className="text-center mt-8">
+            <footer className="text-center mt-6">
               <div className="w-8 h-px bg-[#2AD6CA] mx-auto mb-6" />
               <cite className="not-italic">
-                <div className="font-semibold text-[#0E2D2A] text-lg mb-1">
+                <div className="font-bold text-[#0E2D2A] text-base mb-1">
                   {testimonial.name}
                 </div>
                 {testimonial.role && (
-                  <div className="text-[#4E716D] text-base font-medium">
+                  <div className="text-[#4E716D] text-sm font-normal">
                     {testimonial.role}
                   </div>
                 )}
@@ -316,7 +311,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
             {/* Carousel Track */}
             <div 
               ref={trackRef}
-              className="relative h-[480px] md:h-[480px] overflow-visible"
+              className="relative h-[600px] md:h-[600px] overflow-visible flex justify-center"
               onMouseDown={(e) => handleStart(e.clientX)}
               onMouseMove={(e) => handleMove(e.clientX)}
               onMouseUp={handleEnd}
