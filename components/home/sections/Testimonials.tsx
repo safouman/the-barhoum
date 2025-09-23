@@ -23,7 +23,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
 
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % testimonials.length);
-    }, 7000);
+    }, 6000);
 
     return () => clearInterval(interval);
   }, [isAutoPlaying, testimonials.length, isPaused]);
@@ -34,7 +34,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
       const timeout = setTimeout(() => {
         setIsAutoPlaying(true);
         setUserInteracted(false);
-      }, 10000);
+      }, 12000);
 
       return () => clearTimeout(timeout);
     }
@@ -104,145 +104,175 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
   }
 
   const currentTestimonial = testimonials[currentIndex];
-  const prevIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
-  const nextIndex = (currentIndex + 1) % testimonials.length;
 
   return (
     <Section id="testimonials" className="bg-background relative overflow-hidden">
-      {/* Background gradient band */}
+      {/* Premium background with subtle gradient */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#2AD6CA]/[0.02] to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#2AD6CA]/[0.015] to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(42,214,202,0.02)_0%,transparent_70%)]" />
       </div>
 
       <Container>
         <div 
-          className="text-center space-y-12 relative z-10"
+          className="text-center space-y-16 relative z-10"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           onKeyDown={handleKeyDown}
           tabIndex={0}
         >
-          {/* Section Header */}
-          <div className="space-y-4">
-            <h2 className="text-sm font-medium tracking-[0.2em] uppercase text-text/80">
+          {/* Premium Section Header */}
+          <div className="space-y-6">
+            <h2 className="text-sm font-semibold tracking-[0.25em] uppercase text-gray-700 letterspacing-wide">
               {sectionTitle}
             </h2>
-            <div className="w-16 h-px bg-[#2AD6CA] mx-auto" />
+            <div className="flex justify-center">
+              <div className="w-20 h-px bg-gradient-to-r from-transparent via-[#2AD6CA] to-transparent" />
+            </div>
           </div>
 
-          {/* Testimonials Container */}
-          <div className="relative max-w-4xl mx-auto">
-            {/* Neighbor cards (decorative depth) */}
+          {/* Premium Testimonials Container */}
+          <div className="relative max-w-5xl mx-auto">
+            {/* Decorative neighbor cards for depth */}
             {testimonials.length > 1 && (
               <>
-                {/* Previous card */}
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-8 pointer-events-none hidden lg:block">
-                  <div className="w-80 transform scale-[0.92] opacity-[0.12] blur-[1px]">
-                    <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-8 shadow-lg">
-                      <div className="h-20 bg-gray-100 rounded" />
+                {/* Previous card shadow */}
+                <div className="absolute left-8 top-1/2 -translate-y-1/2 -translate-x-12 pointer-events-none hidden xl:block">
+                  <div className="w-72 transform scale-[0.88] opacity-[0.08] blur-[2px] rotate-[-1deg]">
+                    <div className="bg-white rounded-3xl p-10 shadow-2xl">
+                      <div className="h-24 bg-gray-100 rounded-xl mb-4" />
+                      <div className="h-4 bg-gray-100 rounded w-3/4 mx-auto" />
                     </div>
                   </div>
                 </div>
 
-                {/* Next card */}
-                <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-8 pointer-events-none hidden lg:block">
-                  <div className="w-80 transform scale-[0.92] opacity-[0.12] blur-[1px]">
-                    <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-8 shadow-lg">
-                      <div className="h-20 bg-gray-100 rounded" />
+                {/* Next card shadow */}
+                <div className="absolute right-8 top-1/2 -translate-y-1/2 translate-x-12 pointer-events-none hidden xl:block">
+                  <div className="w-72 transform scale-[0.88] opacity-[0.08] blur-[2px] rotate-[1deg]">
+                    <div className="bg-white rounded-3xl p-10 shadow-2xl">
+                      <div className="h-24 bg-gray-100 rounded-xl mb-4" />
+                      <div className="h-4 bg-gray-100 rounded w-3/4 mx-auto" />
                     </div>
                   </div>
                 </div>
               </>
             )}
 
-            {/* Main testimonial card */}
+            {/* Main Premium Testimonial Card */}
             <div className="relative">
               <div 
-                className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 md:p-12 shadow-[0_18px_36px_rgba(0,0,0,0.12)] transition-all duration-300 hover:shadow-[0_20px_40px_rgba(0,0,0,0.15)] hover:-translate-y-0.5 max-w-3xl mx-auto"
+                className="bg-white/95 backdrop-blur-sm rounded-3xl p-12 md:p-16 shadow-[0_24px_48px_rgba(0,0,0,0.08),0_8px_16px_rgba(0,0,0,0.04)] transition-all duration-500 hover:shadow-[0_32px_64px_rgba(0,0,0,0.12),0_12px_24px_rgba(0,0,0,0.06)] hover:-translate-y-1 max-w-4xl mx-auto border border-gray-100/50"
                 role="region"
                 aria-live="polite"
                 aria-label={`Testimonial ${currentIndex + 1} of ${testimonials.length}`}
               >
-                {/* Decorative quote mark watermark */}
+                {/* Premium decorative quote mark */}
                 <div className={clsx(
-                  "absolute top-6 opacity-[0.07] pointer-events-none",
-                  isRtl ? "right-6" : "left-6"
+                  "absolute top-8 opacity-[0.04] pointer-events-none",
+                  isRtl ? "right-8" : "left-8"
                 )}>
-                  <svg width="48" height="36" viewBox="0 0 48 36" fill="currentColor" className="text-[#2AD6CA]">
+                  <svg width="64" height="48" viewBox="0 0 48 36" fill="currentColor" className="text-[#2AD6CA]">
                     <path d="M0 36V20.4C0 9.12 5.04 3.36 15.12 2.16L16.8 6.24C11.28 7.2 8.4 10.32 8.16 15.36H16.8V36H0ZM25.2 36V20.4C25.2 9.12 30.24 3.36 40.32 2.16L42 6.24C36.48 7.2 33.6 10.32 33.36 15.36H42V36H25.2Z"/>
                   </svg>
                 </div>
 
-                {/* Avatar */}
-                <div className="flex justify-center mb-6">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#2AD6CA]/20 to-[#2AD6CA]/40 border-2 border-[#2AD6CA]/30 flex items-center justify-center">
-                    <span className="text-[#2AD6CA] font-semibold text-lg">
-                      {getInitials(currentTestimonial.name)}
-                    </span>
+                {/* Teal accent divider top */}
+                <div className="flex justify-center mb-10">
+                  <div className="w-12 h-0.5 bg-gradient-to-r from-transparent via-[#2AD6CA] to-transparent rounded-full" />
+                </div>
+
+                {/* Premium Avatar */}
+                <div className="flex justify-center mb-10">
+                  <div className="relative">
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#2AD6CA]/10 to-[#2AD6CA]/20 border-2 border-[#2AD6CA]/20 flex items-center justify-center shadow-lg shadow-[#2AD6CA]/10">
+                      <span className="text-[#2AD6CA] font-bold text-xl tracking-wide">
+                        {getInitials(currentTestimonial.name)}
+                      </span>
+                    </div>
+                    {/* Subtle glow ring */}
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#2AD6CA]/5 to-transparent blur-sm" />
                   </div>
                 </div>
 
-                {/* Content with fade transition */}
+                {/* Premium Content with smooth transitions */}
                 <div 
                   key={currentIndex}
-                  className="space-y-6 animate-[fadeInScale_300ms_ease-out]"
+                  className="space-y-8 animate-[fadeInUp_400ms_ease-out]"
                 >
-                  {/* Quote */}
-                  <blockquote className="text-xl md:text-2xl leading-[1.7] text-gray-800 font-light italic max-w-2xl mx-auto">
-                    "{currentTestimonial.quote}"
-                  </blockquote>
+                  {/* Large, Bold Quote with teal accents */}
+                  <div className="relative">
+                    <blockquote className="text-2xl md:text-3xl lg:text-4xl leading-[1.4] text-gray-900 font-bold max-w-3xl mx-auto text-center">
+                      <span className="text-[#2AD6CA] text-5xl md:text-6xl font-serif leading-none">"</span>
+                      {currentTestimonial.quote}
+                      <span className="text-[#2AD6CA] text-5xl md:text-6xl font-serif leading-none">"</span>
+                    </blockquote>
+                  </div>
 
-                  {/* Attribution */}
-                  <footer className="space-y-1">
-                    <cite className="not-italic font-semibold text-gray-900 text-lg block">
+                  {/* Teal accent divider */}
+                  <div className="flex justify-center">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 rounded-full bg-[#2AD6CA]/30" />
+                      <div className="w-16 h-px bg-gradient-to-r from-[#2AD6CA]/50 via-[#2AD6CA] to-[#2AD6CA]/50" />
+                      <div className="w-3 h-3 rounded-full bg-[#2AD6CA]/30" />
+                    </div>
+                  </div>
+
+                  {/* Premium Attribution */}
+                  <footer className="space-y-3">
+                    <cite className="not-italic font-bold text-gray-900 text-xl block tracking-wide">
                       {currentTestimonial.name}
                     </cite>
-                    <p className="text-[#7A7A7A] text-sm">
+                    <p className="text-[#7A7A7A] text-base font-medium">
                       {currentTestimonial.role}
                     </p>
                   </footer>
                 </div>
+
+                {/* Bottom teal accent */}
+                <div className="flex justify-center mt-10">
+                  <div className="w-8 h-0.5 bg-gradient-to-r from-transparent via-[#2AD6CA] to-transparent rounded-full" />
+                </div>
               </div>
             </div>
 
-            {/* Navigation arrows */}
+            {/* Premium Navigation arrows */}
             {testimonials.length > 1 && (
               <>
                 <button
                   onClick={handlePrevious}
-                  className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-gray-300 bg-white/80 backdrop-blur-sm hover:border-[#2AD6CA] hover:bg-[#2AD6CA]/10 transition-all duration-200 flex items-center justify-center text-gray-600 hover:text-[#2AD6CA] focus:outline-none focus:ring-2 focus:ring-[#2AD6CA]/50"
+                  className="absolute left-6 md:left-12 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full border-2 border-gray-200 bg-white/90 backdrop-blur-sm hover:border-[#2AD6CA] hover:bg-[#2AD6CA]/5 hover:shadow-lg hover:shadow-[#2AD6CA]/20 transition-all duration-300 flex items-center justify-center text-gray-500 hover:text-[#2AD6CA] focus:outline-none focus:ring-2 focus:ring-[#2AD6CA]/30 hover:scale-105"
                   aria-label="Previous testimonial"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 19l-7-7 7-7" />
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                   </svg>
                 </button>
 
                 <button
                   onClick={handleNext}
-                  className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full border border-gray-300 bg-white/80 backdrop-blur-sm hover:border-[#2AD6CA] hover:bg-[#2AD6CA]/10 transition-all duration-200 flex items-center justify-center text-gray-600 hover:text-[#2AD6CA] focus:outline-none focus:ring-2 focus:ring-[#2AD6CA]/50"
+                  className="absolute right-6 md:right-12 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full border-2 border-gray-200 bg-white/90 backdrop-blur-sm hover:border-[#2AD6CA] hover:bg-[#2AD6CA]/5 hover:shadow-lg hover:shadow-[#2AD6CA]/20 transition-all duration-300 flex items-center justify-center text-gray-500 hover:text-[#2AD6CA] focus:outline-none focus:ring-2 focus:ring-[#2AD6CA]/30 hover:scale-105"
                   aria-label="Next testimonial"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
               </>
             )}
           </div>
 
-          {/* Navigation dots */}
+          {/* Premium Navigation dots */}
           {testimonials.length > 1 && (
-            <div className="flex justify-center items-center gap-3 pt-4">
+            <div className="flex justify-center items-center gap-4 pt-6">
               {testimonials.map((_, index) => (
                 <button
                   key={index}
                   onClick={() => handleDotClick(index)}
                   className={clsx(
-                    "rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#2AD6CA]/50",
+                    "rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#2AD6CA]/50 hover:scale-110",
                     index === currentIndex
-                      ? "bg-[#2AD6CA] w-2.5 h-2.5"
-                      : "bg-gray-400/30 hover:bg-gray-400/50 w-2 h-2"
+                      ? "bg-[#2AD6CA] w-3 h-3 shadow-lg shadow-[#2AD6CA]/30"
+                      : "bg-gray-300/60 hover:bg-gray-400/80 w-2.5 h-2.5"
                   )}
                   aria-label={`Go to testimonial ${index + 1}`}
                 />
@@ -253,14 +283,14 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
       </Container>
 
       <style jsx>{`
-        @keyframes fadeInScale {
+        @keyframes fadeInUp {
           from {
             opacity: 0;
-            transform: scale(0.98);
+            transform: translateY(8px) scale(0.98);
           }
           to {
             opacity: 1;
-            transform: scale(1);
+            transform: translateY(0) scale(1);
           }
         }
       `}</style>
