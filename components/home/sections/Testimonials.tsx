@@ -24,7 +24,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
     ? "موثوق به من قِبل القادة والمبدعين حول العالم"
     : "Trusted by founders, leaders, and creatives worldwide";
   
-      return { width: 480, height: 600 }; // Desktop - portrait
+  const sectionTitle = isRTL ? "ما يقوله عملاؤنا" : "What our clients say";
   const ctaText = isRTL ? "قصص أخرى ←" : "Read more stories →";
 
   // Handle screen width for responsive behavior
@@ -173,7 +173,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
       } else if (isNext) {
         cardClasses += " z-10 scale-95 opacity-70";
         cardStyles.left = isRTL ? 'calc(50% - 420px)' : 'calc(50% + 60px)'; // Symmetrical peek
-      return { width: 420, height: 540 }; // Tablet - portrait
+      }
     } else {
       // Mobile positioning
       cardStyles.width = 'min(90vw, 400px)';
@@ -185,7 +185,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
         cardClasses += " z-20 scale-100 opacity-100";
       } else {
         return null; // Hide non-active cards on mobile
-      return { width: Math.min(screenWidth * 0.9, 360), height: 480 }; // Mobile - portrait
+      }
     }
     
     return (
