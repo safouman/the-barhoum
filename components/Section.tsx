@@ -1,7 +1,7 @@
 import clsx from "classnames";
-import type { ReactNode } from "react";
+import type { ReactNode, HTMLAttributes } from "react";
 
-interface SectionProps {
+interface SectionProps extends Omit<HTMLAttributes<HTMLElement>, 'id' | 'className'> {
   id?: string;
   title?: ReactNode;
   subtitle?: ReactNode;
@@ -9,9 +9,9 @@ interface SectionProps {
   className?: string;
 }
 
-export function Section({ id, title, subtitle, children, className }: SectionProps) {
+export function Section({ id, title, subtitle, children, className, ...props }: SectionProps) {
   return (
-    <section id={id} data-section="true" className={clsx("py-[clamp(var(--space-lg),14vh,var(--space-xl))]", className)}>
+    <section id={id} data-section="true" className={clsx("py-[clamp(var(--space-lg),14vh,var(--space-xl))]", className)} {...props}>
       {(title || subtitle) && (
         <header className="mb-md grid gap-sm text-center">
           {title && <h2 className="text-section-title">{title}</h2>}
