@@ -312,7 +312,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
             {/* Carousel Track */}
             <div 
               ref={trackRef}
-              className="relative h-[480px] md:h-[520px] lg:h-[560px] overflow-hidden flex justify-center"
+              className="relative h-[540px] md:h-[580px] lg:h-[620px] overflow-visible flex justify-center items-center py-8"
               onMouseDown={(e) => handleStart(e.clientX)}
               onMouseMove={(e) => handleMove(e.clientX)}
               onMouseUp={handleEnd}
@@ -357,7 +357,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
             {/* Navigation Dots */}
             {showDots && (
               <div 
-                className="flex justify-center items-center gap-2 pt-16"
+                className="flex justify-center items-center gap-2 pt-20"
                 role="tablist"
                 aria-label="Testimonial navigation"
               >
@@ -381,7 +381,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
             )}
 
             {/* Optional CTA */}
-            <div className="text-center pt-8">
+            <div className="text-center pt-12">
               <a 
                 href="#testimonials-full" 
                 className="text-[#4E716D] hover:text-[#2AD6CA] text-sm font-light transition-colors duration-200"
