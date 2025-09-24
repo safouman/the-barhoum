@@ -152,13 +152,13 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
 
     if (currentScreenWidth >= 1200) {
       cardWidth = 400;
-      cardHeight = 720;
+      cardHeight = 560;
     } else if (currentScreenWidth >= 768) {
       cardWidth = 350;
-      cardHeight = 630;
+      cardHeight = 520;
     } else {
       cardWidth = 320;
-      cardHeight = 580;
+      cardHeight = 480;
     }
 
     cardStyles.width = `${cardWidth}px`;
@@ -312,7 +312,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
             {/* Carousel Track */}
             <div 
               ref={trackRef}
-              className="relative h-[580px] md:h-[630px] lg:h-[720px] overflow-hidden flex justify-center"
+              className="relative h-[480px] md:h-[520px] lg:h-[560px] overflow-hidden flex justify-center"
               onMouseDown={(e) => handleStart(e.clientX)}
               onMouseMove={(e) => handleMove(e.clientX)}
               onMouseUp={handleEnd}
