@@ -1,7 +1,7 @@
 import clsx from "classnames";
 import type { ReactNode, HTMLAttributes } from "react";
 
-interface SectionProps extends Omit<HTMLAttributes<HTMLElement>, 'id' | 'className'> {
+interface SectionProps extends Omit<HTMLAttributes<HTMLElement>, 'id' | 'className' | 'title'> {
   id?: string;
   title?: ReactNode;
   subtitle?: ReactNode;
