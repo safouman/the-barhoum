@@ -279,12 +279,12 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
     <Section 
       id="testimonials" 
       className="relative overflow-hidden bg-gradient-to-b from-white to-[#fafffe]"
-      role="region"
-      aria-label="Customer testimonials"
     >
       <Container>
         <div 
           className="text-center space-y-12 relative z-10"
+          role="region"
+          aria-label="Customer testimonials"
           onKeyDown={handleKeyDown}
           tabIndex={0}
           onMouseEnter={stopAutoPlay}

@@ -39,7 +39,7 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
         label: category.label[locale],
         description: category.description[locale],
       })),
-    [categories,locale]
+    [categories, locale]
   );
 
   const localizedPackages = useMemo<LocalizedPackage[]>(
@@ -54,7 +54,7 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
           features: pkg.features[locale],
           visible: pkg.visible,
         })),
-    [packages,locale]
+    [packages, locale]
   );
 
   const localizedTestimonials = useMemo<LocalizedTestimonial[]>(
