@@ -39,7 +39,7 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
         label: category.label[locale],
         description: category.description[locale],
       })),
-    [categories]
+    [categories,locale]
   );
 
   const localizedPackages = useMemo<LocalizedPackage[]>(
