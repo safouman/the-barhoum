@@ -71,7 +71,7 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
       });
       return result;
     },
-    [testimonials, locale]
+    [testimonials]
   );
 
   const [activeCategory, setActiveCategory] = useState<Category["id"] | undefined>();
