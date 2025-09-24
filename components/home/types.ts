@@ -67,6 +67,6 @@ export interface HomeThemeDefinition {
   About: (props: AboutProps) => ReactElement;
   Categories: (props: CategoriesProps) => ReactElement;
   Packages: (props: PackagesProps) => ReactElement;
-  Testimonials: (props: TestimonialsProps) => ReactElement;
+  Testimonials: (props: TestimonialsProps) => ReactElement | null;
   LeadForm: (props: LeadFormProps) => ReactElement;
 }
