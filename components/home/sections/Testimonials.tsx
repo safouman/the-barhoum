@@ -357,7 +357,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
             {/* Navigation Dots */}
             {showDots && (
               <div 
-                className="flex justify-center items-center gap-2 pt-8"
+                className="flex justify-center items-center gap-2 pt-16"
                 role="tablist"
                 aria-label="Testimonial navigation"
               >
@@ -381,7 +381,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
             )}
 
             {/* Optional CTA */}
-            <div className="text-center pt-10">
+            <div className="text-center pt-8">
               <a 
                 href="#testimonials-full" 
                 className="text-[#4E716D] hover:text-[#2AD6CA] text-sm font-light transition-colors duration-200"
