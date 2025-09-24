@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 // optional but helpful in some hosts:
 export const runtime = 'nodejs';
-import { Courgette, Inter, Markazi_Text } from "next/font/google";
+import { Inter } from "next/font/google";
 import "../styles/globals.css";
 import { LocaleProvider } from "@/providers/locale-provider";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -18,23 +18,7 @@ const inter = Inter({
   weight: ["400", "500", "600", "700"],
   variable: "--font-inter",
   display: "swap",
-  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
-});
-
-const markazi = Markazi_Text({
-  subsets: ["arabic", "latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-markazi",
-  display: "swap",
-  fallback: ["Noto Naskh Arabic", "Amiri", "serif"],
-});
-
-const courgette = Courgette({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-courgette",
-  display: "swap",
-  fallback: ["Brush Script MT", "Comic Sans MS", "cursive"],
+  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"]
 });
 
 async function loadUi(): Promise<Record<"ar" | "en", UIStrings>> {
@@ -49,7 +33,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const direction = getDirection(locale);
   const [ui, payments] = await Promise.all([loadUi(), getPayments()]);
   const defaultPaymentSlug = payments[0]?.slug;
-  const fontClass = [inter.variable, markazi.variable, courgette.variable].join(" ");
+  const fontClass = inter.variable;
 
   return (
     <html lang={locale} dir={direction} className={fontClass}>

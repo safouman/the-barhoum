@@ -7,7 +7,7 @@
     --font-base: var(--font-inter);
     --font-heading: var(--font-inter);
     --font-ui: var(--font-inter);
-    --font-signature-latin: var(--font-courgette);
+    --font-signature-latin: "Brush Script MT", "Comic Sans MS", cursive;
     --font-signature-arabic: "Arslan Wessam A";
     --font-weight-regular: 400;
     --font-weight-bold: 600;
@@ -46,9 +46,9 @@
 }
 
 html[dir="rtl"] {
-    --font-base: var(--font-markazi);
-    --font-heading: var(--font-markazi);
-    --font-ui: var(--font-markazi);
+    --font-base: "Noto Naskh Arabic", "Amiri", serif;
+    --font-heading: "Noto Naskh Arabic", "Amiri", serif;
+    --font-ui: "Noto Naskh Arabic", "Amiri", serif;
 }
 
 html[dir="rtl"] .text-eyebrow {
@@ -106,7 +106,7 @@ html[dir="rtl"] .text-section-title {
     }
 
     html[dir="rtl"] body {
-        font-family: var(--font-base), "Noto Naskh Arabic", "Amiri", serif;
+        font-family: "Noto Naskh Arabic", "Amiri", serif;
     }
 
     a {
@@ -193,12 +193,12 @@ html[dir="rtl"] .text-section-title {
     }
 
     .font-signature-latin {
-        font-family: var(--font-courgette), "Courgette", "Segoe UI", cursive;
+        font-family: "Brush Script MT", "Comic Sans MS", cursive;
         font-weight: 400;
     }
 
     .font-signature-arabic {
-        font-family: var(--font-signature-arabic), var(--font-markazi), "Noto Naskh Arabic", serif;
+        font-family: var(--font-signature-arabic), "Noto Naskh Arabic", serif;
         font-weight: 400;
         letter-spacing: 0.01em;
     }
