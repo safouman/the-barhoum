@@ -14,7 +14,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
   const trackRef = useRef<HTMLDivElement>(null);
   const startXRef = useRef(0);
   const currentXRef = useRef(0);
-  const autoPlayRef = useRef<NodeJS.Timeout>();
+  const autoPlayRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   const isRTL = locale === "ar";
   const testimonialCount = testimonials.length;
