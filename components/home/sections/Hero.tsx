@@ -60,7 +60,7 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
                 </div>
                 <div className={styles.logo}>
                     <Image
-                        src="/images/logo.png"
+                        src="/images/hero.jpg"
                         alt="Barhoum watermark"
                         width={720}
                         height={720}
