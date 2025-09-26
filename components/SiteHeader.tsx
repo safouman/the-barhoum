@@ -31,7 +31,7 @@ export function SiteHeader({ ui, brand, paymentSlug }: SiteHeaderProps) {
 
     return (
         <header className="sticky top-0 z-50 border-b border-border bg-background/70 backdrop-blur">
-            <Container className="[direction:ltr] flex items-center gap-sm py-4">
+            <Container className="flex items-center gap-sm py-4">
                 <div
                     className={`flex flex-1 flex-wrap items-center gap-4 ${
                         isRtl ? "order-2 flex-row-reverse" : "order-1"
@@ -55,7 +55,6 @@ export function SiteHeader({ ui, brand, paymentSlug }: SiteHeaderProps) {
                                 isRtl ? " justify-end" : ""
                             }`}
                             aria-label={brandLabel}
-                            dir={isRtl ? "rtl" : "ltr"}
                         >
                             {navItems.map((item) => (
                                 <Link

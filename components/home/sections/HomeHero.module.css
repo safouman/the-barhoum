@@ -1,82 +1,150 @@
 .hero {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  background-color: var(--color-background);
-  color: var(--color-text);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    min-height: 90vh;
 }
 
 .container {
-  position: relative;
-  display: grid;
-  min-height: calc(100dvh - 80px);
-  align-items: center;
-  gap: clamp(32px, 6vw, 64px);
-  padding-block: clamp(4rem, 14vh, 7rem);
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-areas: "text";
+    min-height: inherit;
+    align-items: center;
+    gap: clamp(24px, 5vw, 40px);
+    padding-inline: clamp(1rem, 6vw, 4rem);
+    height: 94vh;
 }
 
 .containerRtl {
-  direction: rtl;
 }
-
 .containerLtr {
-  direction: ltr;
 }
 
 @media (min-width: 768px) {
-  .container {
-    grid-template-columns: minmax(0, 65ch) minmax(0, 1fr);
-  }
+    .containerLtr {
+        justify-items: end;
+    }
+    .containerRtl {
+        justify-items: start;
+    }
 }
 
 .text {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  max-width: 65ch;
-  flex-direction: column;
-  gap: clamp(24px, 5vw, 40px);
+    position: relative;
+    z-index: 10;
+    display: flex;
+    grid-area: text;
+    align-self: center;
+    max-width: 65ch;
+    flex-direction: column;
+    gap: clamp(24px, 5vw, 40px);
 }
 
 .textRtl {
-  text-align: right;
+    text-align: right;
 }
-
 .textLtr {
-  text-align: left;
+    text-align: left;
 }
 
-.logo {
-  pointer-events: none;
-  position: relative;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: clamp(180px, 42vh, 320px);
+.imageLayer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    z-index: 1;
+    pointer-events: none;
 }
 
-.logoImage {
-  width: min(28vw, 28vh);
-  max-width: 280px;
-  height: auto;
-  opacity: 0.12;
-  filter: saturate(0.7);
+.imageLeft {
+    left: 0;
+}
+.imageRight {
+    right: 0;
 }
 
-@media (min-width: 768px) {
-  .logo {
-    justify-self: end;
-  }
+.imageMedia {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0.5;
+}
+.posLeft {
+    object-position: left center;
+}
+.posRight {
+    object-position: right center;
 }
 
+/* Edge-fade overlay element (blurred white gradient) */
+.edgeFade {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.edgeFadeLtr { left: 0; }
+.edgeFadeRtl { right: 0; }
+
+.edgeFadeLtr {
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0.98) 0%,
+        rgba(255, 255, 255, 0.9) 35%,
+        rgba(255, 255, 255, 0.65) 55%,
+        rgba(255, 255, 255, 0) 85%
+    );
+}
+
+.edgeFadeRtl {
+    background: linear-gradient(
+        to left,
+        rgba(255, 255, 255, 1) 0%,
+        rgba(255, 255, 255, 1) 35%,
+        rgba(255, 255, 255, 0.65) 55%,
+        rgba(255, 255, 255, 0) 85%
+    );
+}
+
+/* On mobile, stack with a top-to-bottom white fade for legibility */
 @media (max-width: 767px) {
-  .logo {
-    min-height: clamp(140px, 32vh, 220px);
-  }
+    .imageLayer {
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 50vh;
+    }
+    .edgeFade {
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 50vh;
+        background: linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.98) 0%,
+            rgba(255, 255, 255, 0.9) 30%,
+            rgba(255, 255, 255, 0.65) 50%,
+            rgba(255, 255, 255, 0) 80%
+        );
+    }
+}
 
-  .logoImage {
-    width: min(38vw, 26vh);
-    max-width: 220px;
-  }
+/* Subtle polish */
+.imageMedia {
+    transition: transform 200ms ease, opacity 200ms ease;
+}
+.imageLayer {
+    transition: opacity 200ms ease;
+}
+.edgeFade {
+    transition: opacity 200ms ease;
 }

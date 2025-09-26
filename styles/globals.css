@@ -18,7 +18,7 @@
     --color-primary: #2ad6ca;
     --color-accent: #ffffff;
     --color-accent-text: #333333;
-    --color-border: #e0f6f4;
+    --color-border: #e4e4e3;
     --color-focus: #2ad6ca;
     --page-gradient: #ffffff;
     --radius-sm: 0.75rem;
@@ -227,17 +227,18 @@ html[dir="rtl"] .text-section-title {
     .btn-outline {
         background: transparent;
         color: var(--color-text);
-        border-color: var(--color-text);
+        border-color: var(--color-primary);
         letter-spacing: 0.07em;
-        transition: background 0.2s ease;
+        transition: background 0.2s ease, color 0.2s ease, outline-color 0.2s ease;
     }
 
     .btn-outline:hover {
-        background: var(--color-surface);
+        background: rgba(42, 214, 202, 0.10);
+        color: var(--color-text);
     }
 
     .btn-outline:focus-visible {
-        outline: 2px solid var(--color-text);
+        outline: 2px solid var(--color-primary);
         outline-offset: 2px;
     }
 
@@ -250,9 +251,7 @@ html[dir="rtl"] .text-section-title {
         @apply rounded-[22px] border border-border bg-background shadow-sm;
     }
 
-    .surface-accent {
-        @apply rounded-[24px] border border-border bg-surface bg-opacity-95 p-8 shadow-md;
-    }
+    /* removed .surface-accent to avoid token confusion */
 
     [data-section="true"] {
         text-align: left;

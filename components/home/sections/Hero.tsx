@@ -1,4 +1,5 @@
 import Image from "next/image";
+import heroImg from "../../../public/images/hero.jpg";
 import clsx from "classnames";
 import { Button } from "@/components/Button";
 import { Container } from "@/components/Container";
@@ -10,6 +11,19 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
 
     return (
         <section className={styles.hero}>
+            {/* Fixed-side image layer */}
+            <div className={clsx(styles.imageLayer, isRTL ? styles.imageLeft : styles.imageRight)}>
+                <Image
+                    src={heroImg}
+                    alt="Portrait"
+                    className={clsx(styles.imageMedia, isRTL ? styles.posLeft : styles.posRight)}
+                    priority
+                    fill
+                    sizes="(min-width: 1024px) 50vw, (min-width: 768px) 60vw, 100vw"
+                />
+                {/* Blurred edge fade overlay (above image, below text) */}
+                <div className={clsx(styles.edgeFade, isRTL ? styles.edgeFadeRtl : styles.edgeFadeLtr)} />
+            </div>
             <Container
                 className={clsx(
                     styles.container,
@@ -57,16 +71,6 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
                             {locale === "ar" ? "عرض المنهج" : "View Approach"}
                         </Button>
                     </div>
-                </div>
-                <div className={styles.logo}>
-                    <Image
-                        src="/images/hero.jpg"
-                        alt="Barhoum watermark"
-                        width={720}
-                        height={720}
-                        className={styles.logoImage}
-                        priority
-                    />
                 </div>
             </Container>
         </section>
