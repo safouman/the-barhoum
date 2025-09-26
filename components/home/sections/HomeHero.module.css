@@ -27,9 +27,13 @@
 @media (min-width: 768px) {
     .containerLtr {
         justify-items: end;
+        padding-right: min(45vw, 720px);
+        padding-left: clamp(1rem, 6vw, 4rem);
     }
     .containerRtl {
         justify-items: start;
+        padding-left: min(45vw, 720px);
+        padding-right: clamp(1rem, 6vw, 4rem);
     }
 }
 
@@ -55,9 +59,10 @@
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 50%;
+    width: 45vw;
     z-index: 1;
     pointer-events: none;
+    overflow: hidden;
 }
 
 .imageLeft {
@@ -74,12 +79,11 @@
     height: 100%;
     object-fit: contain;
     opacity: 0.5;
+    object-position: left;
 }
-.posLeft {
-    object-position: left center;
-}
-.posRight {
-    object-position: right center;
+.flipX {
+    transform: scaleX(-1);
+    transform-origin: center;
 }
 
 /* Edge-fade overlay element (blurred white gradient) */
@@ -92,26 +96,32 @@
     pointer-events: none;
 }
 
-.edgeFadeLtr { left: 0; }
-.edgeFadeRtl { right: 0; }
+.edgeFadeLtr {
+    right: 0;
+}
+.edgeFadeRtl {
+    left: 0;
+}
 
 .edgeFadeLtr {
+    /* EN (LTR): white on right edge fading inward (right → left) */
     background: linear-gradient(
         to right,
-        rgba(255, 255, 255, 0.98) 0%,
-        rgba(255, 255, 255, 0.9) 35%,
-        rgba(255, 255, 255, 0.65) 55%,
-        rgba(255, 255, 255, 0) 85%
+        rgba(255, 255, 255, 0.98) 51%,
+        rgba(255, 255, 255, 0.9) 54%,
+        rgba(255, 255, 255, 0.65) 64%,
+        rgba(255, 255, 255, 0) 78%
     );
 }
 
 .edgeFadeRtl {
+    /* AR (RTL): white on left edge fading inward (left → right) */
     background: linear-gradient(
         to left,
-        rgba(255, 255, 255, 1) 0%,
-        rgba(255, 255, 255, 1) 35%,
-        rgba(255, 255, 255, 0.65) 55%,
-        rgba(255, 255, 255, 0) 85%
+        rgba(255, 255, 255, 0.98) 51%,
+        rgba(255, 255, 255, 0.9) 54%,
+        rgba(255, 255, 255, 0.65) 64%,
+        rgba(255, 255, 255, 0) 78%
     );
 }
 

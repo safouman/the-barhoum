@@ -16,7 +16,11 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
                 <Image
                     src={heroImg}
                     alt="Portrait"
-                    className={clsx(styles.imageMedia, isRTL ? styles.posLeft : styles.posRight)}
+                    className={clsx(
+                        styles.imageMedia,
+                        isRTL ? styles.posLeft : styles.posRight,
+                        !isRTL && styles.flipX
+                    )}
                     priority
                     fill
                     sizes="(min-width: 1024px) 50vw, (min-width: 768px) 60vw, 100vw"
