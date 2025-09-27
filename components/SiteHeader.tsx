@@ -30,7 +30,7 @@ export function SiteHeader({ ui, brand, paymentSlug }: SiteHeaderProps) {
     }
 
     return (
-        <header className="sticky top-0 z-50  border-border bg-background/70 backdrop-blur">
+        <header className=" top-0 z-50  border-border bg-background/70 backdrop-blur">
             <Container className="flex items-center gap-sm py-4">
                 <div
                     className={`flex flex-1 flex-wrap items-center gap-4 ${
