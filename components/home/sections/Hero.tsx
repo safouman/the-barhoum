@@ -12,7 +12,14 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
     return (
         <section className={styles.hero}>
             {/* Fixed-side image layer */}
-            <div className={clsx(styles.imageLayer, isRTL ? styles.imageLeft : styles.imageRight)}>
+            <div
+                className={clsx(
+                    styles.imageLayer,
+                    isRTL ? styles.imageLeft : styles.imageRight,
+                    // Apply the mask on the container so image mirroring doesn't invert it
+                    isRTL ? styles.maskRtl : styles.maskLtr
+                )}
+            >
                 <Image
                     src={heroImg}
                     alt="Portrait"
@@ -25,8 +32,6 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
                     fill
                     sizes="(min-width: 1024px) 50vw, (min-width: 768px) 60vw, 100vw"
                 />
-                {/* Blurred edge fade overlay (above image, below text) */}
-                <div className={clsx(styles.edgeFade, isRTL ? styles.edgeFadeRtl : styles.edgeFadeLtr)} />
             </div>
             <Container
                 className={clsx(

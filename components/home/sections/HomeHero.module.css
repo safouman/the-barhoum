@@ -27,12 +27,12 @@
 @media (min-width: 768px) {
     .containerLtr {
         justify-items: end;
-        padding-right: min(45vw, 720px);
+        padding-right: clamp(360px, 45vw, 720px);
         padding-left: clamp(1rem, 6vw, 4rem);
     }
     .containerRtl {
         justify-items: start;
-        padding-left: min(45vw, 720px);
+        padding-left: clamp(360px, 45vw, 720px);
         padding-right: clamp(1rem, 6vw, 4rem);
     }
 }
@@ -59,7 +59,7 @@
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 45vw;
+    width: clamp(360px, 21vw, 720px);
     z-index: 1;
     pointer-events: none;
     overflow: hidden;
@@ -80,6 +80,48 @@
     object-fit: contain;
     opacity: 0.5;
     object-position: left;
+}
+.maskLtr {
+    /* EN (image on right) – fade on LEFT edge (left → right) */
+    -webkit-mask-image: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.05) 10%,
+        rgba(0, 0, 0, 0.35) 22%,
+        rgba(0, 0, 0, 1) 40%
+    );
+    mask-image: linear-gradient(
+        to right,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.05) 10%,
+        rgba(0, 0, 0, 0.35) 22%,
+        rgba(0, 0, 0, 1) 40%
+    );
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+}
+.maskRtl {
+    /* AR (image on left) – fade on RIGHT edge (right → left) */
+    -webkit-mask-image: linear-gradient(
+        to left,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.05) 10%,
+        rgba(0, 0, 0, 0.35) 22%,
+        rgba(0, 0, 0, 1) 40%
+    );
+    mask-image: linear-gradient(
+        to left,
+        rgba(0, 0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.05) 10%,
+        rgba(0, 0, 0, 0.35) 22%,
+        rgba(0, 0, 0, 1) 40%
+    );
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
 }
 .flipX {
     transform: scaleX(-1);
