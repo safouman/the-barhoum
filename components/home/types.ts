@@ -1,19 +1,10 @@
 import type { ReactElement } from "react";
-import type { Category, HomeData, Locale, Package, Testimonial, UIStrings } from "@/lib/content";
+import type { Category, HomeData, Locale, Testimonial, UIStrings } from "@/lib/content";
 
 export interface LocalizedCategory {
   id: Category["id"];
   label: string;
   description: string;
-}
-
-export interface LocalizedPackage {
-  id: Package["id"];
-  categoryId: Category["id"];
-  title: string;
-  priceLabel: string;
-  features: string[];
-  visible: boolean;
 }
 
 export interface LocalizedTestimonial {
@@ -43,13 +34,6 @@ export interface CategoriesProps {
   ui: UIStrings;
 }
 
-export interface PackagesProps {
-  packages: LocalizedPackage[];
-  activePackageId?: Package["id"];
-  onSelect: (id: Package["id"]) => void;
-  ui: UIStrings;
-}
-
 export interface TestimonialsProps {
   testimonials: LocalizedTestimonial[];
   ui: UIStrings;
@@ -66,7 +50,6 @@ export interface HomeThemeDefinition {
   Hero: (props: HeroProps) => ReactElement;
   About: (props: AboutProps) => ReactElement;
   Categories: (props: CategoriesProps) => ReactElement;
-  Packages: (props: PackagesProps) => ReactElement;
   Testimonials: (props: TestimonialsProps) => ReactElement | null;
   LeadForm: (props: LeadFormProps) => ReactElement;
 }

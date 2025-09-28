@@ -1,34 +1,25 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { Category, HomeData, Locale, Package, Testimonial as TestimonialType, UIStrings } from "@/lib/content";
+import type { Category, HomeData, Locale, Testimonial as TestimonialType, UIStrings } from "@/lib/content";
 import { event } from "@/lib/analytics";
 import { useLocale } from "@/providers/locale-provider";
 import {
   HomeAbout,
   HomeCategories,
   HomeHero,
-  HomeLeadForm,
-  HomePackages,
+  PacksSection,
   HomeTestimonials,
 } from "./home/sections";
-import type { LocalizedCategory, LocalizedPackage, LocalizedTestimonial } from "./home/types";
+import type { LocalizedCategory, LocalizedTestimonial } from "./home/types";
 
 interface HomeExperienceProps {
   home: HomeData;
   categories: Category[];
-  packages: Package[];
   testimonials: TestimonialType[];
   ui: Record<Locale, UIStrings>;
 }
 
-function formatPrice(price: Package["price"], locale: Locale) {
-  return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-    style: "currency",
-    currency: price.currency,
-  }).format(price.amount);
-}
-
-export function HomeExperience({ home, categories, packages, testimonials, ui }: HomeExperienceProps) {
+export function HomeExperience({ home, categories, testimonials, ui }: HomeExperienceProps) {
   const { locale } = useLocale();
   const strings = ui[locale];
 
@@ -40,21 +31,6 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
         description: category.description[locale],
       })),
     [categories, locale]
-  );
-
-  const localizedPackages = useMemo<LocalizedPackage[]>(
-    () =>
-      packages
-        .filter((pkg) => pkg.visible)
-        .map((pkg) => ({
-          id: pkg.id,
-          categoryId: pkg.categoryId,
-          title: pkg.title[locale],
-          priceLabel: formatPrice(pkg.price, locale),
-          features: pkg.features[locale],
-          visible: pkg.visible,
-        })),
-    [packages, locale]
   );
 
   const localizedTestimonials = useMemo<LocalizedTestimonial[]>(
@@ -75,22 +51,6 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
   );
 
   const [activeCategory, setActiveCategory] = useState<Category["id"] | undefined>();
-  const [activePackageId, setActivePackageId] = useState<Package["id"] | undefined>();
-
-  const packagesForCategory = useMemo(
-    () => (activeCategory ? localizedPackages.filter((pkg) => pkg.categoryId === activeCategory) : []),
-    [localizedPackages, activeCategory]
-  );
-
-  useEffect(() => {
-    if (!packagesForCategory.length) {
-      setActivePackageId(undefined);
-      return;
-    }
-    if (!activePackageId || !packagesForCategory.some((pkg) => pkg.id === activePackageId)) {
-      setActivePackageId(packagesForCategory[0].id);
-    }
-  }, [packagesForCategory, activePackageId]);
 
   // Show all testimonials, not filtered by category
   const testimonialsToShow = localizedTestimonials;
@@ -107,19 +67,6 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
     setActiveCategory(id);
   };
 
-  const handlePackageSelect = (id: Package["id"]) => {
-    setActivePackageId(id);
-    event("package_click", { package: id });
-  };
-
-  const leadCategoryLabel = localizedCategories.find((item) => item.id === activeCategory)?.label;
-  const leadPackageLabel = useMemo(() => {
-    const match = localizedPackages.find((pkg) => pkg.id === activePackageId);
-    return match?.title;
-  }, [localizedPackages, activePackageId]);
-
-  const hasPackages = packagesForCategory.length > 0;
-
   return (
     <>
       <HomeHero hero={home.hero} locale={locale} media={home.media} />
@@ -135,23 +82,20 @@ export function HomeExperience({ home, categories, packages, testimonials, ui }:
         ui={strings}
       />
 
-      {hasPackages && (
-        <HomePackages
-          packages={packagesForCategory}
-          activePackageId={activePackageId}
-          onSelect={handlePackageSelect}
-          ui={strings}
+      {activeCategory && (
+        <PacksSection
+          locale={locale}
+          direction={locale === "ar" ? "rtl" : "ltr"}
+          category={activeCategory}
+          onSelect={(pack) => {
+            event("pack_select", { category: pack.category, sessions: pack.sessions });
+          }}
+          onContinue={(pack) => {
+            event("pack_continue", { category: pack.category, sessions: pack.sessions });
+          }}
         />
       )}
 
-
-      {activeCategory && activePackageId && leadPackageLabel && (
-        <HomeLeadForm
-          selectedCategory={leadCategoryLabel}
-          selectedPackage={leadPackageLabel}
-          ui={strings}
-        />
-      )}
     </>
   );
 }
