@@ -222,6 +222,20 @@ export function PacksSection({ locale, direction, category, onSelect, onContinue
   const selectedPack = packs[selectedIndex];
   const accentCopy = ACCENT_COPY[locale] ?? ACCENT_COPY.en;
 
+  const totalPriceDisplay = selectedPack ? formatCurrency(selectedPack.priceTotal, locale) : "";
+  const perSessionDisplay = selectedPack ? formatCurrency(selectedPack.pricePerSession, locale) : "";
+  const sessionTerm = locale === "ar" ? "جلسة" : "session";
+  const totalPriceAriaLabel = selectedPack
+    ? locale === "ar"
+      ? `إجمالي السعر ${totalPriceDisplay}`
+      : `Total price ${totalPriceDisplay}`
+    : undefined;
+  const continueAriaLabel = selectedPack
+    ? locale === "ar"
+      ? `${accentCopy.button} مع ${formatSessionsLabel(selectedPack.sessions, locale)} - الإجمالي ${totalPriceDisplay}`
+      : `${accentCopy.button} with ${formatSessionsLabel(selectedPack.sessions, locale).toLowerCase()} - total ${totalPriceDisplay}`
+    : undefined;
+
   return (
     <Section title={locale === "ar" ? "الباقات" : "Packs"} className="bg-background">
       <Container>
@@ -261,35 +275,36 @@ export function PacksSection({ locale, direction, category, onSelect, onContinue
               aria-live="polite"
             >
               <div className={styles.detailsCard}>
-                <div className={clsx(styles.detailsContent, direction === "rtl" ? styles.detailsContentRtl : "")}
+                <div
+                  className={clsx(styles.detailsContent, direction === "rtl" ? styles.detailsContentRtl : "")}
                   key={`${selectedPack.sessions}-${category}-${locale}`}
                 >
                   <div className={styles.detailsHeader}>
-                    <span className="text-xs uppercase tracking-[0.3em] text-subtle/70">
-                      {accentCopy.overview}
-                    </span>
                     <h3>{selectedPack.title}</h3>
-                    <span className={styles.detailsDuration}>{selectedPack.duration}</span>
+                    <p className={styles.detailsMeta}>{selectedPack.duration}</p>
                   </div>
                   <div className={styles.detailsPricing}>
-                    <span className="text-lg font-semibold text-text/90">
-                      {formatCurrency(selectedPack.priceTotal, locale)}
+                    <span
+                      className={styles.detailsPriceTotal}
+                      aria-label={totalPriceAriaLabel}
+                    >
+                      {totalPriceDisplay}
                     </span>
-                    <span>
-                      {formatCurrency(selectedPack.pricePerSession, locale)} / {locale === "ar" ? "جلسة" : "session"}
+                    <span className={styles.detailsPricePer}>
+                      {perSessionDisplay} / {sessionTerm}
                     </span>
                   </div>
                   <ul className={styles.detailsBullets}>
                     {selectedPack.bullets.map((bullet) => (
                       <li key={bullet}>
-                        <span aria-hidden />
+                        <span aria-hidden className={styles.detailsBulletDot} />
                         <span>{bullet}</span>
                       </li>
                     ))}
                   </ul>
                   <div className={styles.detailsFooter}>
                     <span className={styles.detailsSummary}>
-                      {formatSessionsLabel(selectedPack.sessions, locale)} · {formatCurrency(selectedPack.priceTotal, locale)}
+                      {formatSessionsLabel(selectedPack.sessions, locale)} · {totalPriceDisplay}
                     </span>
                     <button
                       type="button"
@@ -299,6 +314,7 @@ export function PacksSection({ locale, direction, category, onSelect, onContinue
                         }
                       }}
                       className={styles.detailsButton}
+                      aria-label={continueAriaLabel}
                     >
                       {accentCopy.button}
                     </button>
