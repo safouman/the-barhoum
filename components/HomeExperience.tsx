@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Category, HomeData, Locale, Testimonial as TestimonialType, UIStrings } from "@/lib/content";
 import { event } from "@/lib/analytics";
 import { useLocale } from "@/providers/locale-provider";
@@ -7,6 +7,7 @@ import {
   HomeAbout,
   HomeCategories,
   HomeHero,
+  HomeLeadForm,
   PacksSection,
   HomeTestimonials,
 } from "./home/sections";
@@ -51,6 +52,37 @@ export function HomeExperience({ home, categories, testimonials, ui }: HomeExper
   );
 
   const [activeCategory, setActiveCategory] = useState<Category["id"] | undefined>();
+  const [selectedPack, setSelectedPack] = useState<
+    | {
+        category: Category["id"];
+        sessions: number;
+        priceTotal: number;
+        title: string;
+        sessionsLabel: string;
+      }
+    | null
+  >(null);
+  const [leadFormVisible, setLeadFormVisible] = useState(false);
+
+  const formatCurrency = useCallback(
+    (amount: number) =>
+      new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
+        style: "currency",
+        currency: "EUR",
+        maximumFractionDigits: 0,
+      }).format(amount),
+    [locale]
+  );
+
+  const activeCategoryLabel = useMemo(() => {
+    if (!activeCategory) return undefined;
+    return localizedCategories.find((category) => category.id === activeCategory)?.label;
+  }, [activeCategory, localizedCategories]);
+
+  const selectedPackageLabel = useMemo(() => {
+    if (!selectedPack) return undefined;
+    return `${selectedPack.title} · ${selectedPack.sessionsLabel} · ${formatCurrency(selectedPack.priceTotal)}`;
+  }, [selectedPack, formatCurrency]);
 
   // Show all testimonials, not filtered by category
   const testimonialsToShow = localizedTestimonials;
@@ -65,6 +97,8 @@ export function HomeExperience({ home, categories, testimonials, ui }: HomeExper
 
   const handleCategorySelect = (id: Category["id"]) => {
     setActiveCategory(id);
+    setSelectedPack(null);
+    setLeadFormVisible(false);
   };
 
   return (
@@ -89,10 +123,26 @@ export function HomeExperience({ home, categories, testimonials, ui }: HomeExper
           category={activeCategory}
           onSelect={(pack) => {
             event("pack_select", { category: pack.category, sessions: pack.sessions });
+            setSelectedPack(pack);
           }}
           onContinue={(pack) => {
             event("pack_continue", { category: pack.category, sessions: pack.sessions });
+            setSelectedPack(pack);
+            setLeadFormVisible(true);
+            setTimeout(() => {
+              if (typeof window !== "undefined") {
+                document.getElementById("lead-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }
+            }, 0);
           }}
+        />
+      )}
+
+      {leadFormVisible && selectedPack && (
+        <HomeLeadForm
+          selectedCategory={activeCategoryLabel}
+          selectedPackage={selectedPackageLabel}
+          ui={strings}
         />
       )}
 

@@ -20,6 +20,14 @@ type Pack = {
 
 type PacksByCategory = Record<CategoryKey, Record<Locale, Pack[]>>;
 
+type PackSelection = {
+  category: CategoryKey;
+  sessions: PackSessions;
+  priceTotal: number;
+  title: string;
+  sessionsLabel: string;
+};
+
 const BASE_PACKS: Record<Locale, Pack[]> = {
   en: [
     {
@@ -172,8 +180,8 @@ interface PacksSectionProps {
   locale: Locale;
   direction: "ltr" | "rtl";
   category?: CategoryKey;
-  onSelect?: (pack: { category: CategoryKey; sessions: PackSessions; priceTotal: number }) => void;
-  onContinue?: (pack: { category: CategoryKey; sessions: PackSessions; priceTotal: number }) => void;
+  onSelect?: (pack: PackSelection) => void;
+  onContinue?: (pack: PackSelection) => void;
 }
 
 export function PacksSection({ locale, direction, category, onSelect, onContinue }: PacksSectionProps) {
@@ -198,14 +206,28 @@ export function PacksSection({ locale, direction, category, onSelect, onContinue
     setSelectedIndex(0);
     cardRefs.current = [];
     const pack = packs[0];
-    onSelectRef.current?.({ category, sessions: pack.sessions, priceTotal: pack.priceTotal });
-  }, [category, packs]);
+    const sessionsLabel = formatSessionsLabel(pack.sessions, locale);
+    onSelectRef.current?.({
+      category,
+      sessions: pack.sessions,
+      priceTotal: pack.priceTotal,
+      title: pack.title,
+      sessionsLabel,
+    });
+  }, [category, packs, locale]);
 
   const handleSelect = (index: number) => {
     setSelectedIndex(index);
     if (category) {
       const pack = packs[index];
-      onSelectRef.current?.({ category, sessions: pack.sessions, priceTotal: pack.priceTotal });
+      const sessionsLabel = formatSessionsLabel(pack.sessions, locale);
+      onSelectRef.current?.({
+        category,
+        sessions: pack.sessions,
+        priceTotal: pack.priceTotal,
+        title: pack.title,
+        sessionsLabel,
+      });
     }
   };
 
@@ -310,7 +332,13 @@ export function PacksSection({ locale, direction, category, onSelect, onContinue
                       type="button"
                       onClick={() => {
                         if (category) {
-                          onContinue?.({ category, sessions: selectedPack.sessions, priceTotal: selectedPack.priceTotal });
+                          onContinue?.({
+                            category,
+                            sessions: selectedPack.sessions,
+                            priceTotal: selectedPack.priceTotal,
+                            title: selectedPack.title,
+                            sessionsLabel: formatSessionsLabel(selectedPack.sessions, locale),
+                          });
                         }
                       }}
                       className={styles.detailsButton}
