@@ -122,11 +122,19 @@ export function HomeExperience({ home, categories, testimonials, ui }: HomeExper
           direction={locale === "ar" ? "rtl" : "ltr"}
           category={activeCategory}
           onSelect={(pack) => {
-            event("pack_select", { category: pack.category, sessions: pack.sessions });
+            event("package_click", {
+              action: "select",
+              category: pack.category,
+              sessions: pack.sessions,
+            });
             setSelectedPack(pack);
           }}
           onContinue={(pack) => {
-            event("pack_continue", { category: pack.category, sessions: pack.sessions });
+            event("package_click", {
+              action: "continue",
+              category: pack.category,
+              sessions: pack.sessions,
+            });
             setSelectedPack(pack);
             setLeadFormVisible(true);
             setTimeout(() => {
