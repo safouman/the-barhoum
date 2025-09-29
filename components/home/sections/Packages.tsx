@@ -3,6 +3,7 @@ import clsx from "classnames";
 import { Container } from "@/components/Container";
 import { Section } from "@/components/Section";
 import type { Locale } from "@/lib/content";
+import styles from "./Packages.module.css";
 
 type CategoryKey = "individuals" | "couples" | "organizations";
 type PackSessions = 1 | 3 | 5;
@@ -19,72 +20,74 @@ type Pack = {
 
 type PacksByCategory = Record<CategoryKey, Record<Locale, Pack[]>>;
 
-const PACKS: PacksByCategory = {
-  individuals: { en: [], ar: [] },
-  organizations: { en: [], ar: [] },
-  couples: {
-    en: [
-      {
-        sessions: 1,
-        title: "Shared language sprint",
-        subtitle: "Focused discovery",
-        bullets: ["One shared practice", "Joint recommendation", "Light follow-up"],
-        priceTotal: 260,
-        pricePerSession: 260,
-        duration: "75–90 minutes",
-      },
-      {
-        sessions: 3,
-        title: "Renewed dialogue rhythm",
-        subtitle: "Grow the conversation",
-        bullets: ["Short rituals between sessions", "Shared next step", "Gentle accountability"],
-        priceTotal: 720,
-        pricePerSession: 240,
-        duration: "3 × 75–90 minutes",
-      },
-      {
-        sessions: 5,
-        title: "Sustained safe space",
-        subtitle: "Keep the cadence",
-        bullets: ["Between-session voice/text", "Light follow-up practice", "Deeper integration"],
-        priceTotal: 1120,
-        pricePerSession: 224,
-        duration: "5 × 75–90 minutes",
-      },
-    ],
-    ar: [
-      {
-        sessions: 1,
-        title: "لغة مشتركة سريعة",
-        subtitle: "جلسة تعريف سريع",
-        bullets: ["تمرين واحد مشترك", "توصية مشتركة", "متابعة خفيفة"],
-        priceTotal: 260,
-        pricePerSession: 260,
-        duration: "75–90 دقيقة",
-      },
-      {
-        sessions: 3,
-        title: "إيقاع حوار متجدد",
-        subtitle: "تناغم متصاعد",
-        bullets: ["تمارين قصيرة بين الجلسات", "خطوة مشتركة", "متابعة لطيفة"],
-        priceTotal: 720,
-        pricePerSession: 240,
-        duration: "3 × 75–90 دقيقة",
-      },
-      {
-        sessions: 5,
-        title: "مساحة آمنة مستمرة",
-        subtitle: "عمق وثقة",
-        bullets: ["دعم بين الجلسات (صوت/نص)", "تمرين متابعة خفيف", "تكامل أعمق"],
-        priceTotal: 1120,
-        pricePerSession: 224,
-        duration: "5 × 75–90 دقيقة",
-      },
-    ],
-  },
+const BASE_PACKS: Record<Locale, Pack[]> = {
+  en: [
+    {
+      sessions: 1,
+      title: "Shared language sprint",
+      subtitle: "Focused discovery",
+      bullets: ["One shared practice", "Joint recommendation", "Light follow-up"],
+      priceTotal: 260,
+      pricePerSession: 260,
+      duration: "75–90 minutes",
+    },
+    {
+      sessions: 3,
+      title: "Renewed dialogue rhythm",
+      subtitle: "Grow the conversation",
+      bullets: ["Short rituals between sessions", "Shared next step", "Gentle accountability"],
+      priceTotal: 720,
+      pricePerSession: 240,
+      duration: "3 × 75–90 minutes",
+    },
+    {
+      sessions: 5,
+      title: "Sustained safe space",
+      subtitle: "Keep the cadence",
+      bullets: ["Between-session voice/text", "Light follow-up practice", "Deeper integration"],
+      priceTotal: 1_120,
+      pricePerSession: 224,
+      duration: "5 × 75–90 minutes",
+    },
+  ],
+  ar: [
+    {
+      sessions: 1,
+      title: "لغة مشتركة سريعة",
+      subtitle: "جلسة تعريف سريع",
+      bullets: ["تمرين واحد مشترك", "توصية مشتركة", "متابعة خفيفة"],
+      priceTotal: 260,
+      pricePerSession: 260,
+      duration: "75–90 دقيقة",
+    },
+    {
+      sessions: 3,
+      title: "إيقاع حوار متجدد",
+      subtitle: "تناغم متصاعد",
+      bullets: ["تمارين قصيرة بين الجلسات", "خطوة مشتركة", "متابعة لطيفة"],
+      priceTotal: 720,
+      pricePerSession: 240,
+      duration: "3 × 75–90 دقيقة",
+    },
+    {
+      sessions: 5,
+      title: "مساحة آمنة مستمرة",
+      subtitle: "عمق وثقة",
+      bullets: ["دعم بين الجلسات (صوت/نص)", "تمرين متابعة خفيف", "تكامل أعمق"],
+      priceTotal: 1_120,
+      pricePerSession: 224,
+      duration: "5 × 75–90 دقيقة",
+    },
+  ],
 };
 
-const ACCENT_LABEL = {
+const PACKS: PacksByCategory = {
+  individuals: { en: BASE_PACKS.en, ar: BASE_PACKS.ar },
+  couples: { en: BASE_PACKS.en, ar: BASE_PACKS.ar },
+  organizations: { en: BASE_PACKS.en, ar: BASE_PACKS.ar },
+};
+
+const ACCENT_COPY = {
   en: { ready: "Ready to proceed", button: "Continue", overview: "Pack overview" },
   ar: { ready: "جاهز للمواصلة", button: "استمرار", overview: "نبذة عن الباقة" },
 };
@@ -124,58 +127,42 @@ function PackBar({ direction, locale, pack, selected, onSelect, onKeyStep, butto
       role="radio"
       aria-checked={selected}
       onClick={onSelect}
+      tabIndex={selected ? 0 : -1}
       onKeyDown={(event) => {
         const forward = direction === "rtl" ? "ArrowLeft" : "ArrowRight";
         const backward = direction === "rtl" ? "ArrowRight" : "ArrowLeft";
-        if (event.key === forward || event.key === "ArrowDown") {
+        if (event.key === "ArrowDown" || event.key === forward) {
           event.preventDefault();
           onKeyStep("next");
         }
-        if (event.key === backward || event.key === "ArrowUp") {
+        if (event.key === "ArrowUp" || event.key === backward) {
           event.preventDefault();
           onKeyStep("prev");
         }
+        if (event.key === "Home") {
+          event.preventDefault();
+          onKeyStep("prev");
+        }
+        if (event.key === "End") {
+          event.preventDefault();
+          onKeyStep("next");
+        }
       }}
-      className={clsx(
-        "group relative flex w-full items-center justify-between gap-6 rounded-[18px] border border-white/80 bg-white px-8 py-6 text-left shadow-[0_12px_28px_-18px_rgba(15,23,42,0.35)] transition duration-200 ease-out",
-        "hover:-translate-y-[2px] hover:border-primary/35 hover:shadow-[0_18px_36px_-20px_rgba(15,23,42,0.45)]",
-        selected && "border-primary bg-primary/10 shadow-[0_22px_45px_-18px_rgba(15,23,42,0.5)]",
-        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[4px] focus-visible:outline-primary/60"
-      )}
+      className={clsx(styles.option, selected && styles.optionSelected)}
       dir={direction}
       aria-label={`${formatSessionsLabel(pack.sessions, locale)} · ${formatCurrency(pack.priceTotal, locale)}`}
     >
-      <span
-        className={clsx(
-          "pointer-events-none absolute top-4 h-4 w-4 text-primary transition-transform",
-          direction === "rtl" ? "left-4" : "right-4",
-          selected ? "scale-100" : "scale-0"
-        )}
-        aria-hidden
-      >
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-4 w-4">
-          <path d="M3 8.5 6.2 12l6.1-8" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </span>
-      <div className="flex min-w-[200px] flex-col gap-1 text-subtle/80">
-        <span
-          className={clsx(
-            "font-heading text-[1.65rem] font-semibold tracking-tight transition-colors",
-            selected ? "text-primary" : "text-text",
-            "group-hover:text-primary"
-          )}
-        >
-          {formatSessionsLabel(pack.sessions, locale)}
-        </span>
-        <span className="text-sm text-subtle/70 line-clamp-1">{pack.subtitle}</span>
-      </div>
-      <div className="flex flex-col items-end gap-1 text-right text-subtle/75 rtl:items-start rtl:text-left">
-        <span className="text-lg font-semibold text-text/90">
-          {formatCurrency(pack.priceTotal, locale)}
-        </span>
-        <span className="text-xs uppercase tracking-[0.3em] text-subtle/65">
-          {formatCurrency(pack.pricePerSession, locale)} / {locale === "ar" ? "جلسة" : "session"}
-        </span>
+      <div className={styles.optionContent}>
+        <div className={styles.optionMeta}>
+          <span className={styles.optionSessions}>{formatSessionsLabel(pack.sessions, locale)}</span>
+          <span className={styles.optionSubtitle}>{pack.subtitle}</span>
+        </div>
+        <div className={styles.optionPrice}>
+          <span>{formatCurrency(pack.priceTotal, locale)}</span>
+          <span>
+            {formatCurrency(pack.pricePerSession, locale)} / {locale === "ar" ? "جلسة" : "session"}
+          </span>
+        </div>
       </div>
     </button>
   );
@@ -190,7 +177,7 @@ interface PacksSectionProps {
 }
 
 export function PacksSection({ locale, direction, category, onSelect, onContinue }: PacksSectionProps) {
-  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const cardRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const onSelectRef = useRef(onSelect);
 
@@ -200,7 +187,7 @@ export function PacksSection({ locale, direction, category, onSelect, onContinue
 
   const packs = useMemo(() => {
     if (!category) return [];
-    return PACKS[category]?.[locale] ?? PACKS.individuals[locale];
+    return PACKS[category]?.[locale] ?? BASE_PACKS[locale];
   }, [category, locale]);
 
   useEffect(() => {
@@ -230,11 +217,10 @@ export function PacksSection({ locale, direction, category, onSelect, onContinue
     cardRefs.current[next]?.focus({ preventScroll: true });
   };
 
-  const selectedPack = packs[selectedIndex];
-
   if (!category || packs.length === 0) return null;
 
-  const accentCopy = ACCENT_LABEL[locale] ?? ACCENT_LABEL.en;
+  const selectedPack = packs[selectedIndex];
+  const accentCopy = ACCENT_COPY[locale] ?? ACCENT_COPY.en;
 
   return (
     <Section title={locale === "ar" ? "الباقات" : "Packs"} className="bg-background">
@@ -242,73 +228,82 @@ export function PacksSection({ locale, direction, category, onSelect, onContinue
         <div className="mb-10 text-center text-xs uppercase tracking-[0.4em] text-subtle">
           {locale === "ar" ? "اختر وتيرة التقدم" : "Choose your pace"}
         </div>
-        <div className={clsx(
-          "flex flex-col gap-8 xl:flex-row xl:items-start",
-          direction === "rtl" ? "xl:flex-row-reverse" : "xl:flex-row"
-        )}
-        >
+        <div className={clsx(styles.wrap, direction === "rtl" && styles.wrapRtl)}>
           <div
             role="radiogroup"
             aria-label={locale === "ar" ? "اختر الباقة" : "Select a pack"}
-            className="flex flex-col gap-4 xl:flex-[0.55]"
+            className={styles.selector}
           >
-            {packs.map((pack, index) => (
-              <PackBar
-                key={`${category}-${pack.sessions}`}
-                direction={direction}
-                locale={locale}
-                pack={pack}
-                selected={selectedIndex === index}
-                onSelect={() => handleSelect(index)}
-                onKeyStep={(step) => moveSelection(index, step)}
-                buttonRef={(el) => {
-                  cardRefs.current[index] = el;
-                }}
-              />
-            ))}
-          </div>
-          {selectedPack && (
-            <aside className="flex h-full flex-1 flex-col gap-5 rounded-[24px] border border-white/75 bg-white px-10 py-12 text-left shadow-[0_24px_48px_-28px_rgba(15,23,42,0.5)] rtl:text-right">
-              <div className="flex flex-col gap-3">
-                <span className="text-xs uppercase tracking-[0.3em] text-subtle/70">
-                  {accentCopy.overview}
-                </span>
-                <h3 className="font-heading text-[1.95rem] font-semibold text-text/90">
-                  {selectedPack.title}
-                </h3>
-                <span className="text-sm text-subtle/75">{selectedPack.duration}</span>
-                <div className="flex items-center gap-3 text-subtle/80">
-                  <span className="text-lg font-semibold text-text/90">
-                    {formatCurrency(selectedPack.priceTotal, locale)}
-                  </span>
-                  <span className="text-xs uppercase tracking-[0.3em] text-subtle/65">
-                    {formatCurrency(selectedPack.pricePerSession, locale)} / {locale === "ar" ? "جلسة" : "session"}
-                  </span>
-                </div>
-              </div>
-              <ul className="grid gap-2 text-sm text-subtle/85">
-                {selectedPack.bullets.map((bullet) => (
-                  <li key={bullet} className="flex items-start gap-3">
-                    <span className="mt-[6px] h-[6px] w-[6px] rounded-full bg-primary/40" aria-hidden />
-                    <span className="leading-relaxed">{bullet}</span>
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-auto flex flex-col items-end gap-2 text-right rtl:items-start rtl:text-left">
-                <span className="text-xs uppercase tracking-[0.3em] text-subtle/70">
-                  {formatSessionsLabel(selectedPack.sessions, locale)} · {formatCurrency(selectedPack.priceTotal, locale)}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (category && selectedPack) {
-                      onContinue?.({ category, sessions: selectedPack.sessions, priceTotal: selectedPack.priceTotal });
+            <div className={styles.list}>
+              {packs.map((pack, index) => (
+                <PackBar
+                  key={`${category}-${pack.sessions}`}
+                  direction={direction}
+                  locale={locale}
+                  pack={pack}
+                  selected={selectedIndex === index}
+                  onSelect={() => handleSelect(index)}
+                  onKeyStep={(step) => moveSelection(index, step)}
+                  buttonRef={(el) => {
+                    cardRefs.current[index] = el;
+                    if (selectedIndex === index && el) {
+                      el.tabIndex = 0;
                     }
                   }}
-                  className="rounded-full bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-[0_12px_20px_rgba(51,210,197,0.35)] transition hover:shadow-[0_16px_24px_rgba(51,210,197,0.4)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60"
+                />
+              ))}
+            </div>
+          </div>
+
+          {selectedPack && (
+            <aside
+              className={styles.details}
+              aria-live="polite"
+            >
+              <div className={styles.detailsCard}>
+                <div className={clsx(styles.detailsContent, direction === "rtl" ? styles.detailsContentRtl : "")}
+                  key={`${selectedPack.sessions}-${category}-${locale}`}
                 >
-                  {accentCopy.button}
-                </button>
+                  <div className={styles.detailsHeader}>
+                    <span className="text-xs uppercase tracking-[0.3em] text-subtle/70">
+                      {accentCopy.overview}
+                    </span>
+                    <h3>{selectedPack.title}</h3>
+                    <span className={styles.detailsDuration}>{selectedPack.duration}</span>
+                  </div>
+                  <div className={styles.detailsPricing}>
+                    <span className="text-lg font-semibold text-text/90">
+                      {formatCurrency(selectedPack.priceTotal, locale)}
+                    </span>
+                    <span>
+                      {formatCurrency(selectedPack.pricePerSession, locale)} / {locale === "ar" ? "جلسة" : "session"}
+                    </span>
+                  </div>
+                  <ul className={styles.detailsBullets}>
+                    {selectedPack.bullets.map((bullet) => (
+                      <li key={bullet}>
+                        <span aria-hidden />
+                        <span>{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className={styles.detailsFooter}>
+                    <span className={styles.detailsSummary}>
+                      {formatSessionsLabel(selectedPack.sessions, locale)} · {formatCurrency(selectedPack.priceTotal, locale)}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (category) {
+                          onContinue?.({ category, sessions: selectedPack.sessions, priceTotal: selectedPack.priceTotal });
+                        }
+                      }}
+                      className={styles.detailsButton}
+                    >
+                      {accentCopy.button}
+                    </button>
+                  </div>
+                </div>
               </div>
             </aside>
           )}
