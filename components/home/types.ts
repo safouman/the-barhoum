@@ -43,6 +43,14 @@ export interface TestimonialsProps {
 export interface LeadFormProps {
   selectedCategory?: string;
   selectedPackage?: string;
+  packSummary?: {
+    categoryLabel: string;
+    categoryValue: string;
+    packageLabel: string;
+    packageValue: string;
+    sessionsLabel: string;
+    priceLabel: string;
+  };
   ui: UIStrings;
 }
 

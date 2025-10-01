@@ -81,8 +81,20 @@ export function HomeExperience({ home, categories, testimonials, ui }: HomeExper
 
   const selectedPackageLabel = useMemo(() => {
     if (!selectedPack) return undefined;
-    return `${selectedPack.title} · ${selectedPack.sessionsLabel} · ${formatCurrency(selectedPack.priceTotal)}`;
-  }, [selectedPack, formatCurrency]);
+    return selectedPack.title;
+  }, [selectedPack]);
+
+  const selectedPackSummary = useMemo(() => {
+    if (!selectedPack) return undefined;
+    return {
+      categoryLabel: strings.form.category,
+      categoryValue: activeCategoryLabel ?? "-",
+      packageLabel: strings.form.package,
+      packageValue: selectedPack.title,
+      sessionsLabel: selectedPack.sessionsLabel,
+      priceLabel: formatCurrency(selectedPack.priceTotal),
+    };
+  }, [activeCategoryLabel, formatCurrency, selectedPack, strings.form.category, strings.form.package]);
 
   // Show all testimonials, not filtered by category
   const testimonialsToShow = localizedTestimonials;
@@ -150,6 +162,7 @@ export function HomeExperience({ home, categories, testimonials, ui }: HomeExper
         <HomeLeadForm
           selectedCategory={activeCategoryLabel}
           selectedPackage={selectedPackageLabel}
+          packSummary={selectedPackSummary}
           ui={strings}
         />
       )}
