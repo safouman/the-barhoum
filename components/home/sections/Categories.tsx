@@ -82,18 +82,6 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
                   (isMobile ? isExpandedOnMobile : activeCategory === category.id) ? "bg-primary/60" : "group-hover:bg-primary/20"
                 )}
               />
-              {isMobile && (
-                <span
-                  className={clsx(
-                    "absolute right-6 top-6 text-2xl transition-transform duration-200",
-                    styles.chevron,
-                    isExpandedOnMobile && styles.chevronExpanded
-                  )}
-                  aria-hidden="true"
-                >
-                  ▼
-                </span>
-              )}
             </button>
             {isMobile && isExpandedOnMobile && expandedMobileCategory && (
               <div className={clsx("md:hidden col-span-1", styles.mobilePacksContainer)}>

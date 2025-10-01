@@ -144,33 +144,35 @@ export function HomeExperience({ home, categories, testimonials, ui }: HomeExper
       />
 
       {activeCategory && (
-        <PacksSection
-          locale={locale}
-          direction={locale === "ar" ? "rtl" : "ltr"}
-          category={activeCategory}
-          onSelect={(pack) => {
-            event("package_click", {
-              action: "select",
-              category: pack.category,
-              sessions: pack.sessions,
-            });
-            setSelectedPack(pack);
-          }}
-          onContinue={(pack) => {
-            event("package_click", {
-              action: "continue",
-              category: pack.category,
-              sessions: pack.sessions,
-            });
-            setSelectedPack(pack);
-            setLeadFormVisible(true);
-            setTimeout(() => {
-              if (typeof window !== "undefined") {
-                document.getElementById("lead-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
-              }
-            }, 0);
-          }}
-        />
+        <div className="hidden md:block">
+          <PacksSection
+            locale={locale}
+            direction={locale === "ar" ? "rtl" : "ltr"}
+            category={activeCategory}
+            onSelect={(pack) => {
+              event("package_click", {
+                action: "select",
+                category: pack.category,
+                sessions: pack.sessions,
+              });
+              setSelectedPack(pack);
+            }}
+            onContinue={(pack) => {
+              event("package_click", {
+                action: "continue",
+                category: pack.category,
+                sessions: pack.sessions,
+              });
+              setSelectedPack(pack);
+              setLeadFormVisible(true);
+              setTimeout(() => {
+                if (typeof window !== "undefined") {
+                  document.getElementById("lead-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+              }, 0);
+            }}
+          />
+        </div>
       )}
 
       {leadFormVisible && selectedPack && (
