@@ -139,6 +139,28 @@ export function HomeExperience({ home, categories, testimonials, ui }: HomeExper
         onSelect={handleCategorySelect}
         expandedMobileCategory={expandedMobileCategory}
         onMobileToggle={handleMobileCategoryToggle}
+        selectedPack={selectedPack}
+        leadFormVisible={leadFormVisible}
+        activeCategoryLabel={activeCategoryLabel}
+        selectedPackageLabel={selectedPackageLabel}
+        selectedPackSummary={selectedPackSummary}
+        onPackSelect={(pack) => {
+          event("package_click", {
+            action: "select",
+            category: pack.category,
+            sessions: pack.sessions,
+          });
+          setSelectedPack(pack);
+        }}
+        onPackContinue={(pack) => {
+          event("package_click", {
+            action: "continue",
+            category: pack.category,
+            sessions: pack.sessions,
+          });
+          setSelectedPack(pack);
+          setLeadFormVisible(true);
+        }}
         locale={locale}
         ui={strings}
       />
@@ -176,12 +198,14 @@ export function HomeExperience({ home, categories, testimonials, ui }: HomeExper
       )}
 
       {leadFormVisible && selectedPack && (
-        <HomeLeadForm
-          selectedCategory={activeCategoryLabel}
-          selectedPackage={selectedPackageLabel}
-          packSummary={selectedPackSummary}
-          ui={strings}
-        />
+        <div className="hidden md:block">
+          <HomeLeadForm
+            selectedCategory={activeCategoryLabel}
+            selectedPackage={selectedPackageLabel}
+            packSummary={selectedPackSummary}
+            ui={strings}
+          />
+        </div>
       )}
 
     </>

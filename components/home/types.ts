@@ -33,6 +33,26 @@ export interface CategoriesProps {
   onSelect: (id: Category["id"]) => void;
   expandedMobileCategory?: Category["id"];
   onMobileToggle: (id: Category["id"]) => void;
+  selectedPack: {
+    category: Category["id"];
+    sessions: number;
+    priceTotal: number;
+    title: string;
+    sessionsLabel: string;
+  } | null;
+  leadFormVisible: boolean;
+  activeCategoryLabel?: string;
+  selectedPackageLabel?: string;
+  selectedPackSummary?: {
+    categoryLabel: string;
+    categoryValue: string;
+    packageLabel: string;
+    packageValue: string;
+    sessionsLabel: string;
+    priceLabel: string;
+  };
+  onPackSelect: (pack: { category: Category["id"]; sessions: number; priceTotal: number; title: string; sessionsLabel: string }) => void;
+  onPackContinue: (pack: { category: Category["id"]; sessions: number; priceTotal: number; title: string; sessionsLabel: string }) => void;
   locale: Locale;
   ui: UIStrings;
 }

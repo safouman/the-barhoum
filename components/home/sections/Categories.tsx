@@ -4,6 +4,7 @@ import clsx from "classnames";
 import { Container } from "@/components/Container";
 import { Section } from "@/components/Section";
 import { PacksSection } from "./Packages";
+import { HomeLeadForm } from "./LeadFormSection";
 import type { HomeThemeDefinition } from "../types";
 import styles from "./Categories.module.css";
 
@@ -13,6 +14,13 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
   onSelect,
   expandedMobileCategory,
   onMobileToggle,
+  selectedPack,
+  leadFormVisible,
+  activeCategoryLabel,
+  selectedPackageLabel,
+  selectedPackSummary,
+  onPackSelect,
+  onPackContinue,
   locale,
   ui,
 }) => {
@@ -89,9 +97,19 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
                   locale={locale}
                   direction={locale === "ar" ? "rtl" : "ltr"}
                   category={expandedMobileCategory}
-                  onSelect={() => {}}
-                  onContinue={() => {}}
+                  onSelect={onPackSelect}
+                  onContinue={onPackContinue}
                 />
+                {leadFormVisible && selectedPack && selectedPack.category === expandedMobileCategory && (
+                  <div className={clsx("mt-8", styles.mobilePacksContainer)}>
+                    <HomeLeadForm
+                      selectedCategory={activeCategoryLabel}
+                      selectedPackage={selectedPackageLabel}
+                      packSummary={selectedPackSummary}
+                      ui={ui}
+                    />
+                  </div>
+                )}
               </div>
             )}
             </div>
