@@ -1,0 +1,32 @@
+.mobilePacksContainer {
+  width: 100%;
+  animation: slideDown 0.3s ease-out;
+  overflow: hidden;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    max-height: 2000px;
+    transform: translateY(0);
+  }
+}
+
+.chevron {
+  transition: transform 0.2s ease-out;
+}
+
+.chevronExpanded {
+  transform: rotate(180deg);
+}
+
+@media (min-width: 768px) {
+  .mobilePacksContainer {
+    display: none;
+  }
+}

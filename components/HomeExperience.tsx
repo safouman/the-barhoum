@@ -52,6 +52,7 @@ export function HomeExperience({ home, categories, testimonials, ui }: HomeExper
   );
 
   const [activeCategory, setActiveCategory] = useState<Category["id"] | undefined>();
+  const [expandedMobileCategory, setExpandedMobileCategory] = useState<Category["id"] | undefined>();
   const [selectedPack, setSelectedPack] = useState<
     | {
         category: Category["id"];
@@ -113,6 +114,17 @@ export function HomeExperience({ home, categories, testimonials, ui }: HomeExper
     setLeadFormVisible(false);
   };
 
+  const handleMobileCategoryToggle = (id: Category["id"]) => {
+    if (expandedMobileCategory === id) {
+      setExpandedMobileCategory(undefined);
+    } else {
+      setExpandedMobileCategory(id);
+      setActiveCategory(id);
+      setSelectedPack(null);
+      setLeadFormVisible(false);
+    }
+  };
+
   return (
     <>
       <HomeHero hero={home.hero} locale={locale} media={home.media} />
@@ -125,6 +137,9 @@ export function HomeExperience({ home, categories, testimonials, ui }: HomeExper
         categories={localizedCategories}
         activeCategory={activeCategory}
         onSelect={handleCategorySelect}
+        expandedMobileCategory={expandedMobileCategory}
+        onMobileToggle={handleMobileCategoryToggle}
+        locale={locale}
         ui={strings}
       />
 

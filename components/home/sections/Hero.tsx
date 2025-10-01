@@ -1,5 +1,4 @@
 import Image from "next/image";
-import heroImg from "../../../public/images/hero.jpg";
 import clsx from "classnames";
 import { Button } from "@/components/Button";
 import { Container } from "@/components/Container";
@@ -21,7 +20,7 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
                 )}
             >
                 <Image
-                    src={heroImg}
+                    src="/images/hero.jpg"
                     alt="Portrait"
                     className={clsx(
                         styles.imageMedia,

@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import logoImg from "../public/images/logo.png";
 import { Container } from "./Container";
 import { LangSwitch } from "./LangSwitch";
 import { useLocale } from "@/providers/locale-provider";
@@ -43,9 +42,11 @@ export function SiteHeader({ ui, brand, paymentSlug }: SiteHeaderProps) {
                         aria-label={brandLabel}
                     >
                         <Image
-                            src={logoImg}
+                            src="/images/logo.png"
                             alt={brandLabel}
                             priority
+                            width={40}
+                            height={40}
                             className="h-10 w-auto"
                         />
                     </Link>

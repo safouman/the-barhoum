@@ -1,15 +1,40 @@
+"use client";
+import { useState, useEffect } from "react";
 import clsx from "classnames";
 import { Container } from "@/components/Container";
 import { Section } from "@/components/Section";
+import { PacksSection } from "./Packages";
 import type { HomeThemeDefinition } from "../types";
+import styles from "./Categories.module.css";
 
 export const HomeCategories: HomeThemeDefinition["Categories"] = ({
   categories,
   activeCategory,
   onSelect,
+  expandedMobileCategory,
+  onMobileToggle,
+  locale,
   ui,
 }) => {
   const chooseAudienceCopy = (ui as { chooseAudience?: string }).chooseAudience;
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const handleCategoryClick = (id: "individuals" | "couples" | "organizations") => {
+    if (isMobile) {
+      onMobileToggle(id);
+    } else {
+      onSelect(id);
+    }
+  };
 
   return (
     <Section id="categories" title={ui.categories} className="bg-background">
@@ -18,16 +43,20 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
           {chooseAudienceCopy ?? "Choose who you're here for"}
         </p>
         <div className="grid gap-[clamp(2rem,3.5vw,3.5rem)] text-sm sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
-          {categories.map((category) => (
-            <button
-              key={category.id}
+          {categories.map((category) => {
+            const isExpandedOnMobile = isMobile && expandedMobileCategory === category.id;
+            return (
+            <div key={category.id} className="contents">
+              <button
               type="button"
-              onClick={() => onSelect(category.id)}
-              aria-pressed={activeCategory === category.id}
+              onClick={() => handleCategoryClick(category.id)}
+              aria-pressed={isMobile ? isExpandedOnMobile : activeCategory === category.id}
+              aria-expanded={isMobile ? isExpandedOnMobile : undefined}
               className={clsx(
                 "group relative flex h-full flex-col gap-6 rounded-[24px] border border-white/80 bg-white px-12 py-14 text-start shadow-[0_24px_40px_-30px_rgba(15,35,42,0.45)] transition duration-200 ease-out",
                 "hover:-translate-y-1.5 hover:border-primary/35 hover:shadow-[0_28px_55px_-26px_rgba(15,35,42,0.55)]",
-                activeCategory === category.id && "border-primary shadow-[0_32px_60px_-26px_rgba(15,35,42,0.6)]",
+                (isMobile ? isExpandedOnMobile : activeCategory === category.id) && "border-primary shadow-[0_32px_60px_-26px_rgba(15,35,42,0.6)]",
+                isMobile && isExpandedOnMobile && "md:border-white/80 md:shadow-[0_24px_40px_-30px_rgba(15,35,42,0.45)]",
                 "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[6px] focus-visible:outline-primary/60"
               )}
               aria-label={category.label}
@@ -36,7 +65,7 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
                 <h3
                   className={clsx(
                     "font-heading text-[2rem] font-semibold tracking-tight transition-colors",
-                    activeCategory === category.id ? "text-primary" : "text-text",
+                    (isMobile ? isExpandedOnMobile : activeCategory === category.id) ? "text-primary" : "text-text",
                     "group-hover:text-primary"
                   )}
                 >
@@ -50,11 +79,35 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
               <span
                 className={clsx(
                   "pointer-events-none absolute inset-x-0 bottom-0 h-[2px] rounded-b-[24px] bg-primary/0 transition-opacity",
-                  activeCategory === category.id ? "bg-primary/60" : "group-hover:bg-primary/20"
+                  (isMobile ? isExpandedOnMobile : activeCategory === category.id) ? "bg-primary/60" : "group-hover:bg-primary/20"
                 )}
               />
+              {isMobile && (
+                <span
+                  className={clsx(
+                    "absolute right-6 top-6 text-2xl transition-transform duration-200",
+                    styles.chevron,
+                    isExpandedOnMobile && styles.chevronExpanded
+                  )}
+                  aria-hidden="true"
+                >
+                  ▼
+                </span>
+              )}
             </button>
-          ))}
+            {isMobile && isExpandedOnMobile && expandedMobileCategory && (
+              <div className={clsx("md:hidden col-span-1", styles.mobilePacksContainer)}>
+                <PacksSection
+                  locale={locale}
+                  direction={locale === "ar" ? "rtl" : "ltr"}
+                  category={expandedMobileCategory}
+                  onSelect={() => {}}
+                  onContinue={() => {}}
+                />
+              </div>
+            )}
+            </div>
+          )})}
         </div>
       </Container>
     </Section>

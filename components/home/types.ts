@@ -31,6 +31,9 @@ export interface CategoriesProps {
   categories: LocalizedCategory[];
   activeCategory?: Category["id"];
   onSelect: (id: Category["id"]) => void;
+  expandedMobileCategory?: Category["id"];
+  onMobileToggle: (id: Category["id"]) => void;
+  locale: Locale;
   ui: UIStrings;
 }
 
