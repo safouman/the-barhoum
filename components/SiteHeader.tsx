@@ -32,7 +32,7 @@ export function SiteHeader({ ui, brand, paymentSlug }: SiteHeaderProps) {
         <header className=" top-0 z-50  border-border bg-background/70 backdrop-blur">
             <Container className="flex items-center gap-sm py-4">
                 <div
-                    className={`flex flex-1 flex-wrap items-center gap-4 ${isRtl ? "order-2" : "order-1"}`}
+                    className="flex flex-1 flex-wrap items-center gap-4"
                 >
                     <Link
                         href="/"
@@ -66,7 +66,7 @@ export function SiteHeader({ ui, brand, paymentSlug }: SiteHeaderProps) {
                     )}
                 </div>
                 <LangSwitch
-                    className={`flex-shrink-0 ${isRtl ? "order-1" : "order-2"}`}
+                    className={`flex-shrink-0 ${isRtl ? "mr-auto" : "ml-auto"}`}
                     options={[
                         { value: "ar", label: "AR" },
                         { value: "en", label: "EN" },
