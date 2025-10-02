@@ -3,6 +3,8 @@
   top: 0;
   z-index: 50;
   inset-inline: 0;
+  height: 4rem;
+  overflow: visible;
 }
 
 .chrome {

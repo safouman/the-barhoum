@@ -29,23 +29,23 @@ export function SiteHeader({ ui, brand, paymentSlug }: SiteHeaderProps) {
     }
 
     return (
-        <header className=" top-0 z-50  border-border bg-background/70 backdrop-blur">
-            <Container className="flex items-center gap-sm py-4">
+        <header className="sticky top-0 z-50 border-border bg-background/70 backdrop-blur h-16">
+            <Container className="flex items-center gap-sm h-full">
                 <div
                     className="flex flex-1 flex-wrap items-center gap-4"
                 >
                     <Link
                         href="/"
-                        className="inline-flex items-center"
+                        className="inline-flex items-center relative z-10"
                         aria-label={brandLabel}
                     >
                         <Image
                             src="/images/logo.png"
                             alt={brandLabel}
                             priority
-                            width={56}
-                            height={56}
-                            className="h-14 w-auto"
+                            width={80}
+                            height={80}
+                            className="h-20 w-auto"
                         />
                     </Link>
                     {navItems.length > 0 && (
