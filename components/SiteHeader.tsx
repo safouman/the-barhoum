@@ -45,24 +45,24 @@ export function SiteHeader({ ui, brand, paymentSlug }: SiteHeaderProps) {
                             priority
                             width={80}
                             height={80}
-                            className="h-[4rem]  w-auto"
+                            className="h-20 w-auto"
                         />
                     </Link>
-                 //   {navItems.length > 0 && (
-                        // <nav
-                        //     className="flex flex-wrap items-center gap-4"
-                        //     aria-label={brandLabel}
-                        // >
-                        //     {navItems.map((item) => (
-                        //         <Link
-                        //             key={item.href}
-                        //             href={item.href}
-                        //             className="rounded-[8px] px-2 py-1 transition hover:bg-primary/10 hover:text-primary"
-                        //         >
-                        //             {item.label}
-                        //         </Link>
-                        //     ))}
-                        // </nav>
+                    {navItems.length > 0 && (
+                        <nav
+                            className="flex flex-wrap items-center gap-4"
+                            aria-label={brandLabel}
+                        >
+                            {navItems.map((item) => (
+                                <Link
+                                    key={item.href}
+                                    href={item.href}
+                                    className="rounded-[8px] px-2 py-1 transition hover:bg-primary/10 hover:text-primary"
+                                >
+                                    {item.label}
+                                </Link>
+                            ))}
+                        </nav>
                     )}
                 </div>
                 <LangSwitch
