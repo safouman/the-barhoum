@@ -56,12 +56,12 @@ html[dir="rtl"] .text-eyebrow {
 }
 
 html[dir="rtl"] .text-display {
-    font-size: clamp(2.7rem, 6.7vw, 5.5rem);
+    font-size: clamp(2.6rem, 6.5vw, 5.3rem);
 }
 
 html[dir="rtl"] .text-lead {
-    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
-    line-height: 2.05;
+    font-size: clamp(1.18rem, 2.4vw, 1.45rem);
+    line-height: 1.8;
 }
 
 html[dir="rtl"] .text-body-lg {
