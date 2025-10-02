@@ -197,10 +197,6 @@
         mask-image: none;
     }
 
-    .flipX {
-        transform: none;
-    }
-
     .hero::before {
         content: '';
         position: absolute;
