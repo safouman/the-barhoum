@@ -65,19 +65,13 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
                             isRTL ? "justify-end" : "justify-start"
                         )}
                     >
-                        <Button
-                            href="#categories"
-                            className="px-8 py-[0.95rem] text-sm"
-                        >
-                            {hero.cta[locale]}
-                        </Button>
-                        <Button
-                            href="#media"
-                            variant="ghost"
-                            className="px-7 py-[0.9rem] text-sm"
-                        >
-                            {locale === "ar" ? "عرض المنهج" : "View Approach"}
-                        </Button>
+                        <Image
+                            src="/images/logo.png"
+                            alt="Logo"
+                            width={120}
+                            height={120}
+                            className="h-28 w-auto"
+                        />
                     </div>
                 </div>
             </Container>
