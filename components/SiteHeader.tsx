@@ -45,7 +45,7 @@ export function SiteHeader({ ui, brand, paymentSlug }: SiteHeaderProps) {
                             priority
                             width={80}
                             height={80}
-                            className="h-20 w-auto"
+                            className="h-10  w-auto"
                         />
                     </Link>
                     {navItems.length > 0 && (
