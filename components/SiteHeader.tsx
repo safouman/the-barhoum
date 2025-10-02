@@ -30,9 +30,16 @@ export function SiteHeader({ ui, brand, paymentSlug }: SiteHeaderProps) {
 
     return (
         <header className=" top-0 z-50  border-border bg-background/70 backdrop-blur">
-            <Container className={`flex items-center gap-sm py-4 ${isRtl ? "flex-row-reverse" : ""}`}>
+            <Container className="flex items-center gap-sm py-4">
+                <LangSwitch
+                    className={`flex-shrink-0 ${isRtl ? "order-2 ml-auto" : "order-1 mr-auto"}`}
+                    options={[
+                        { value: "ar", label: "AR" },
+                        { value: "en", label: "EN" },
+                    ]}
+                />
                 <div
-                    className="flex flex-1 flex-wrap items-center gap-4"
+                    className={`flex flex-1 flex-wrap items-center gap-4 ${isRtl ? "order-1 justify-end" : "order-2"}`}
                 >
                     <Link
                         href="/"
@@ -65,13 +72,6 @@ export function SiteHeader({ ui, brand, paymentSlug }: SiteHeaderProps) {
                         </nav>
                     )}
                 </div>
-                <LangSwitch
-                    className="flex-shrink-0 ml-auto"
-                    options={[
-                        { value: "ar", label: "AR" },
-                        { value: "en", label: "EN" },
-                    ]}
-                />
             </Container>
         </header>
     );
