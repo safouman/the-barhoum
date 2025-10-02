@@ -30,11 +30,9 @@ export function SiteHeader({ ui, brand, paymentSlug }: SiteHeaderProps) {
 
     return (
         <header className=" top-0 z-50  border-border bg-background/70 backdrop-blur">
-            <Container className="flex items-center gap-sm py-4">
+            <Container className={`flex items-center gap-sm py-4 ${isRtl ? "flex-row-reverse" : ""}`}>
                 <div
-                    className={`flex flex-1 flex-wrap items-center gap-4 ${
-                        isRtl ? "order-2 flex-row-reverse" : "order-1"
-                    }`}
+                    className="flex flex-1 flex-wrap items-center gap-4"
                 >
                     <Link
                         href="/"
@@ -45,16 +43,14 @@ export function SiteHeader({ ui, brand, paymentSlug }: SiteHeaderProps) {
                             src="/images/logo.png"
                             alt={brandLabel}
                             priority
-                            width={40}
-                            height={40}
-                            className="h-10 w-auto"
+                            width={56}
+                            height={56}
+                            className="h-14 w-auto"
                         />
                     </Link>
                     {navItems.length > 0 && (
                         <nav
-                            className={`flex flex-wrap items-center gap-4${
-                                isRtl ? " justify-end" : ""
-                            }`}
+                            className="flex flex-wrap items-center gap-4"
                             aria-label={brandLabel}
                         >
                             {navItems.map((item) => (
@@ -70,9 +66,7 @@ export function SiteHeader({ ui, brand, paymentSlug }: SiteHeaderProps) {
                     )}
                 </div>
                 <LangSwitch
-                    className={`flex-shrink-0 ${
-                        isRtl ? "order-1 mr-auto" : "order-2 ml-auto"
-                    }`}
+                    className="flex-shrink-0 ml-auto"
                     options={[
                         { value: "ar", label: "AR" },
                         { value: "en", label: "EN" },
