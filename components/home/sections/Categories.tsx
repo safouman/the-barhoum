@@ -61,7 +61,7 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
               aria-pressed={isMobile ? isExpandedOnMobile : activeCategory === category.id}
               aria-expanded={isMobile ? isExpandedOnMobile : undefined}
               className={clsx(
-                "group relative flex h-full flex-col gap-6 rounded-[24px] border border-white/80 bg-white px-12 py-14 text-start shadow-[0_24px_40px_-30px_rgba(15,35,42,0.45)] transition duration-200 ease-out",
+                "group relative flex h-full flex-col gap-6 rounded-xl md:rounded-[24px] border border-white/80 bg-white px-6 py-12 md:px-12 md:py-14 text-start shadow-[0_16px_32px_-24px_rgba(15,35,42,0.4)] md:shadow-[0_24px_40px_-30px_rgba(15,35,42,0.45)] transition duration-200 ease-out",
                 "hover:-translate-y-1.5 hover:border-primary/35 hover:shadow-[0_28px_55px_-26px_rgba(15,35,42,0.55)]",
                 (isMobile ? isExpandedOnMobile : activeCategory === category.id) && "border-primary shadow-[0_32px_60px_-26px_rgba(15,35,42,0.6)]",
                 isMobile && isExpandedOnMobile && "md:border-white/80 md:shadow-[0_24px_40px_-30px_rgba(15,35,42,0.45)]",

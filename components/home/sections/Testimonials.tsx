@@ -157,7 +157,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
       cardWidth = 350;
       cardHeight = 520;
     } else {
-      cardWidth = 320;
+      cardWidth = Math.min(320, currentScreenWidth - 32);
       cardHeight = 480;
     }
 
@@ -198,12 +198,12 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
         aria-roledescription="testimonial"
         aria-label={`Testimonial from ${testimonial.name}`}
       >
-        <div 
-          className="relative h-full rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:-translate-y-2 flex flex-col justify-center"
+        <div
+          className="relative h-full rounded-xl md:rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:-translate-y-2 flex flex-col justify-center"
           style={{
             background: 'white',
             border: '1px solid rgba(42, 214, 202, 0.12)',
-            boxShadow: '0 24px 48px rgba(3, 35, 32, 0.12), 0 8px 16px rgba(3, 35, 32, 0.08)',
+            boxShadow: '0 16px 32px rgba(3, 35, 32, 0.1), 0 4px 12px rgba(3, 35, 32, 0.06)',
           }}
         >
           {/* Decorative quote marks in corners */}
@@ -219,7 +219,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
             </svg>
           </div>
 
-          <div className="relative h-full flex flex-col justify-center px-10 py-16 md:px-12 md:py-20">
+          <div className="relative h-full flex flex-col justify-center px-6 py-12 md:px-12 md:py-20">
             {/* Avatar with initials */}
             <div className="flex justify-center mb-10">
               <div 
