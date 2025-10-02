@@ -278,7 +278,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
   return (
     <Section 
       id="testimonials" 
-      className="relative overflow-hidden bg-gradient-to-b from-white to-[#fafffe]"
+      className="relative overflow-hidden bg-gradient-to-b "
     >
       <Container>
         <div 
