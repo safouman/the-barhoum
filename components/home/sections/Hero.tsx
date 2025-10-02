@@ -59,20 +59,7 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
                     >
                         {locale === "ar" ? "و شكرا" : "— with gratitude"}
                     </p>
-                    <div
-                        className={clsx(
-                            "mt-10 flex flex-wrap items-center gap-6",
-                            isRTL ? "justify-end" : "justify-start"
-                        )}
-                    >
-                        <Image
-                            src="/images/logo.png"
-                            alt="Logo"
-                            width={120}
-                            height={120}
-                            className="h-28 w-auto"
-                        />
-                    </div>
+              
                 </div>
             </Container>
         </section>
