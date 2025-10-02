@@ -50,6 +50,7 @@
 
 .textRtl {
     text-align: right;
+    transform: translateY(-3%);
 }
 .textLtr {
     text-align: left;
