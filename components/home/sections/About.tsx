@@ -4,26 +4,13 @@ import { Section } from "@/components/Section";
 import { VideoEmbed } from "@/components/VideoEmbed";
 import type { HomeThemeDefinition } from "../types";
 
-export const HomeAbout: HomeThemeDefinition["About"] = ({ locale, media }) => {
+export const HomeAbout: HomeThemeDefinition["About"] = ({ locale, media, about }) => {
   const isRTL = locale === "ar";
-  
-  // Poetic headline
-  const headline = isRTL 
-    ? "في كل لحظةِ صمت، تولدُ حكمةٌ جديدة"
-    : "In every moment of stillness, wisdom is born";
-  
-  // Flowing narrative paragraph with inline link
-  const narrativeStart = isRTL
-    ? "يؤمن إبراهيم أنّ التحوّل الحقيقي يبدأ من الداخل. يرافق القادة والمبدعين في رحلةٍ هادئةٍ من الاكتشاف، حيث تلتقي البصيرة بالاستراتيجية، والوضوح بالشجاعة الناعمة. في كل جلسة نعيد ترتيب الإيقاع لنستمع إلى ما تهمس به الحكمة الداخلية"
-    : "Ibrahim believes true transformation begins from within. He guides leaders and creatives through a quiet journey of discovery, where strategy meets intuition and clarity embraces soft courage. In each session, we reset the rhythm and listen to what inner wisdom whispers";
 
-  const linkText = isRTL ? "ملف تعريفي" : "intro deck";
+  const headline = about.headline[locale];
+  const narrativeStart = about.narrative[locale];
+  const linkText = about.link.label[locale];
   const linkArrow = isRTL ? " ←" : " →";
-
-  // Small bridge line above video
-  const videoBridge = isRTL
-    ? "ابدأ بلمحة"
-    : "begin with a glimpse";
 
   const pdfs = media.pdfs.length
     ? media.pdfs
@@ -91,7 +78,7 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({ locale, media }) => {
             
                   <VideoEmbed 
                     videoId={video.id} 
-                 title=""
+                 title={video.title[locale]}
                   />
               
               </div>

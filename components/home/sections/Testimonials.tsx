@@ -5,6 +5,7 @@ import type { HomeThemeDefinition } from "../types";
 
 export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({ 
   testimonials, 
+  meta,
   ui,
   locale
 }) => {
@@ -20,12 +21,9 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
   const testimonialCount = testimonials.length;
 
   // Localized content  
-  const eyebrow = isRTL
-    ? "موثوق به من قِبل القادة والمبدعين حول العالم"
-    : "Trusted by founders, leaders, and creatives worldwide";
-
-  const sectionTitle = isRTL ? "شهادات" : "Testimonials";
-  const ctaText = isRTL ? "قصص أخرى ←" : "Read more stories →";
+  const eyebrow = meta.eyebrow[locale];
+  const sectionTitle = ui.testimonials;
+  const ctaText = meta.cta[locale];
 
   // Handle screen width for responsive behavior
   useEffect(() => {

@@ -13,6 +13,7 @@ import clsx from "classnames";
 import { Button } from "@/components/Button";
 import { event } from "@/lib/analytics";
 import { useLocale } from "@/providers/locale-provider";
+import type { LeadFormCopy, Locale } from "@/lib/content";
 
 interface LeadFormLabels {
     title: string;
@@ -29,6 +30,7 @@ type LeadFormVariant = "luxury" | "modern" | "warm";
 
 interface LeadFormProps {
     labels: LeadFormLabels;
+    copy: Record<Locale, LeadFormCopy>;
     selectedCategory?: string;
     selectedPackage?: string;
     packSummary?: {
@@ -96,6 +98,7 @@ const INITIAL_STATE: LeadFormFormState = {
 
 export function LeadForm({
     labels,
+    copy,
     selectedCategory,
     selectedPackage,
     packSummary,
@@ -105,6 +108,22 @@ export function LeadForm({
 }: LeadFormProps) {
     const { locale } = useLocale();
     const isRtl = locale === "ar";
+    const formCopy = copy[locale];
+    const steps = formCopy.steps as StepConfig[];
+    const totalSteps = steps.length;
+    const submitLabel = labels.submit;
+    const validation = formCopy.validation;
+    const actionLabels = formCopy.actionLabels;
+    const thankYouCopy = formCopy.thankYou;
+    const summaryTitle = formCopy.summaryTitle;
+    const privacyCopy = formCopy.privacy;
+    const progressLabelTemplate = formCopy.progressLabelTemplate;
+
+    const formatTemplate = useCallback(
+        (template: string, current: number, total: number) =>
+            template.replace("{current}", `${current}`).replace("{total}", `${total}`),
+        []
+    );
     const [opened, setOpened] = useState(false);
     const [step, setStep] = useState(0);
     const [values, setValues] = useState<LeadFormFormState>(INITIAL_STATE);
@@ -159,224 +178,7 @@ export function LeadForm({
             selectedPackage,
         ]
     );
-
-    const COPY = useMemo(() => {
-        if (locale === "ar") {
-            return {
-                progressLabel: (current: number, total: number) =>
-                    `${current}/${total}`,
-                summaryTitle: "ملخص الباقة",
-                privacy: "معلوماتك سرّية وتُشارك فقط مع مكتب برهوم",
-                steps: [
-                    {
-                        id: "basic",
-                        title: "المعطيات الأساسية",
-                        helper: "خلينا نتعارف عليك أكثر",
-                        fields: [
-                            {
-                                id: "fullName",
-                                label: "الاسم و اللقب",
-                                required: true,
-                            },
-                            {
-                                id: "email",
-                                label: "البريد الإلكتروني",
-                                type: "email",
-                                required: true,
-                            },
-                            {
-                                id: "country",
-                                label: "البلاد الي تعيش فيها",
-                                required: true,
-                            },
-                            {
-                                id: "phone",
-                                label: "رقم الهاتف (واتساب)",
-                                type: "tel",
-                            },
-                            {
-                                id: "age",
-                                label: "العمر",
-                                type: "number",
-                                required: true,
-                            },
-                        ],
-                    },
-                    {
-                        id: "availability",
-                        title: "الوقت و الخلفية",
-                        helper: "باش نضبطوا أحسن توقيت ونفهموا مسارك",
-                        fields: [
-                            {
-                                id: "bestContactTime",
-                                label: "أحسن الأوقات إلي ننجمو نكلموك",
-                                required: true,
-                            },
-                            {
-                                id: "psychologistBefore",
-                                label: "مشيت لطبيب نفساني قبل؟ إن كان نعم: التشخيص",
-                                required: true,
-                            },
-                            {
-                                id: "medicationNow",
-                                label: "تاخذ في دواء؟",
-                                required: true,
-                            },
-                        ],
-                    },
-                    {
-                        id: "motivation",
-                        title: "الدافع و الإطار",
-                        helper: "شاركنا علاش تختار البرهوم اليوم",
-                        fields: [
-                            {
-                                id: "whyCoaching",
-                                label: "علاش إخترت تعمل كونتشينڨ؟",
-                                type: "textarea",
-                                required: true,
-                            },
-                            {
-                                id: "followingDuration",
-                                label: "قداش عندك إتبع في البرهوم",
-                                required: true,
-                            },
-                            {
-                                id: "maritalStatus",
-                                label: "الحالة الإجتماعية",
-                                required: true,
-                                options: ["أعزب", "متزوج", "مطلق"],
-                            },
-                            {
-                                id: "occupation",
-                                label: "المهنة",
-                                required: true,
-                            },
-                            {
-                                id: "passphrase",
-                                label: "كلمة السر",
-                                type: "textarea",
-                            },
-                        ],
-                    },
-                ] as StepConfig[],
-                next: "التالي",
-                back: "السابق",
-                submit: labels.submit,
-                thankYouTitle: "شكراً على ثقتك",
-                thankYouBody:
-                    "توصلك مكالمة أو رسالة من مكتب برهوم للتنسيق خلال الساعات القادمة. تأكد من متابعة بريدك والهاتف.",
-                returnHome: "الرجوع للصفحة الرئيسية",
-                requiredError: "هذا الحقل إجباري",
-                emailError: "رجاءً أدخل بريد إلكتروني صالح",
-                ageError: "رجاءً أدخل عمراً صالحاً (12+)",
-            };
-        }
-        return {
-            progressLabel: (current: number, total: number) =>
-                `${current}/${total}`,
-            summaryTitle: "Pack summary",
-            privacy:
-                "Your information is confidential and shared only with Barhoum’s office.",
-            steps: [
-                {
-                    id: "basic",
-                    title: "Basic info",
-                    helper: "Tell us who you are.",
-                    fields: [
-                        { id: "fullName", label: "Full name", required: true },
-                        {
-                            id: "email",
-                            label: "Email",
-                            type: "email",
-                            required: true,
-                        },
-                        {
-                            id: "country",
-                            label: "Country of residence",
-                            required: true,
-                        },
-                        { id: "phone", label: "WhatsApp number", type: "tel" },
-                        {
-                            id: "age",
-                            label: "Age",
-                            type: "number",
-                            required: true,
-                        },
-                    ],
-                },
-                {
-                    id: "availability",
-                    title: "Availability & background",
-                    helper: "Help us understand the best time to connect.",
-                    fields: [
-                        {
-                            id: "bestContactTime",
-                            label: "Best time to contact",
-                            required: true,
-                        },
-                        {
-                            id: "psychologistBefore",
-                            label: "Seen a psychologist before? If yes, diagnosis",
-                            required: true,
-                        },
-                        {
-                            id: "medicationNow",
-                            label: "Are you taking medication now?",
-                            required: true,
-                        },
-                    ],
-                },
-                {
-                    id: "motivation",
-                    title: "Motivation & context",
-                    helper: "Share why you're choosing coaching now.",
-                    fields: [
-                        {
-                            id: "whyCoaching",
-                            label: "Why did you choose coaching?",
-                            type: "textarea",
-                            required: true,
-                        },
-                        {
-                            id: "followingDuration",
-                            label: "How long following Barhoum?",
-                            required: true,
-                        },
-                        {
-                            id: "maritalStatus",
-                            label: "Marital status",
-                            required: true,
-                            options: ["Single", "Married", "Divorced"],
-                        },
-                        {
-                            id: "occupation",
-                            label: "Occupation",
-                            required: true,
-                        },
-                        {
-                            id: "passphrase",
-                            label: "Passphrase",
-                            type: "textarea",
-                        },
-                    ],
-                },
-            ] as StepConfig[],
-            next: "Next",
-            back: "Back",
-            submit: labels.submit,
-            thankYouTitle: "Thank you for reaching out",
-            thankYouBody:
-                "Our office manager will contact you shortly to coordinate next steps. Keep an eye on your inbox and phone.",
-            returnHome: "Return home",
-            requiredError: "This field is required",
-            emailError: "Please enter a valid email address",
-            ageError: "Please enter a valid age (12+)",
-        };
-    }, [labels.submit, locale]);
-
-    const steps = COPY.steps;
     const currentStep = steps[step];
-    const totalSteps = steps.length;
 
     useEffect(() => {
         onStepChange?.({ index: step, step: currentStep });
@@ -387,24 +189,24 @@ export function LeadForm({
             const value = rawValue.trim();
             if (!field.required && value.length === 0) return "";
             if (field.required && value.length === 0) {
-                return COPY.requiredError;
+                return validation.required;
             }
             if (
                 field.id === "email" &&
                 value &&
                 !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
             ) {
-                return COPY.emailError;
+                return validation.email;
             }
             if (field.id === "age" && value) {
                 const ageNumber = Number(value);
                 if (!Number.isFinite(ageNumber) || ageNumber < 12) {
-                    return COPY.ageError;
+                    return validation.age;
                 }
             }
             return "";
         },
-        [COPY.ageError, COPY.emailError, COPY.requiredError]
+        [validation.age, validation.email, validation.required]
     );
 
     const runStepValidation = useCallback(
@@ -529,22 +331,18 @@ export function LeadForm({
         );
     }, [step, steps, validateField, values]);
 
-    const progressLine =
-        locale === "ar"
-            ? `الخطوة ${step + 1} من ${totalSteps}`
-            : `STEP ${step + 1} OF ${totalSteps}`;
+    const progressLine = formatTemplate(progressLabelTemplate, step + 1, totalSteps);
 
     const helperDescriptionId = `step-${currentStep.id}-helper`;
 
     useEffect(() => {
         if (!stepAnnouncerRef.current) return;
+        const baseLine = formatTemplate(formCopy.chipLabelTemplate, step + 1, totalSteps);
         const announcement =
-            locale === "ar"
-                ? `تم الانتقال إلى الخطوة ${step + 1} من ${totalSteps}`
-                : `Step ${step + 1} of ${totalSteps}`;
+            locale === "ar" ? `تم الانتقال إلى ${baseLine}` : baseLine;
         stepAnnouncerRef.current.textContent = announcement;
         setShakeField(null);
-    }, [locale, step, totalSteps]);
+    }, [formatTemplate, locale, formCopy.chipLabelTemplate, step, totalSteps]);
 
     useEffect(() => {
         const firstFieldId = steps[step]?.fields[0]?.id;
@@ -610,15 +408,15 @@ export function LeadForm({
                 <div className="absolute inset-x-0 top-0 h-[3px] rounded-t-[22px] bg-primary" />
                 <header className="space-y-2 text-text">
                     <h3 className="text-[clamp(1.9rem,2.6vw,2.2rem)] font-heading font-semibold">
-                        {COPY.thankYouTitle}
+                        {thankYouCopy.title}
                     </h3>
                     <p className="text-base text-subtle/90">
-                        {COPY.thankYouBody}
+                        {thankYouCopy.body}
                     </p>
                 </header>
                 <div className="rounded-[18px] border border-border/40 bg-background/30 px-5 py-4 text-start text-sm text-subtle">
                     <p className="font-medium text-text/90">
-                        {COPY.summaryTitle}
+                        {summaryTitle}
                     </p>
                     <p className="mt-1 text-subtle/80">
                         {labels.category}: {selectedCategory ?? "-"}
@@ -628,7 +426,7 @@ export function LeadForm({
                     </p>
                 </div>
                 <Button href="/" variant="ghost">
-                    {COPY.returnHome}
+                    {thankYouCopy.returnHome}
                 </Button>
             </div>
         );
@@ -900,7 +698,7 @@ export function LeadForm({
                                 className="px-5 py-4 sm:min-w-[140px]"
                                 onClick={goToPreviousStep}
                             >
-                                {COPY.back}
+                                {actionLabels.back}
                             </Button>
                         )}
 
@@ -911,7 +709,7 @@ export function LeadForm({
                                 onClick={goToNextStep}
                                 disabled={!stepIsValid}
                             >
-                                {COPY.next}
+                                {actionLabels.next}
                             </Button>
                         )}
 
@@ -921,13 +719,13 @@ export function LeadForm({
                                 className="px-5 py-4 sm:min-w-[180px]"
                                 disabled={!stepIsValid || isSubmitting}
                             >
-                                {isSubmitting ? `${COPY.submit}…` : COPY.submit}
+                                {isSubmitting ? `${submitLabel}…` : submitLabel}
                             </Button>
                         )}
                     </div>
                 </div>
                 <p className="mt-3 text-start text-xs text-subtle/70">
-                    {COPY.privacy}
+                    {privacyCopy}
                 </p>
             </div>
             <style jsx>{`

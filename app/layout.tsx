@@ -7,12 +7,10 @@ import "../styles/globals.css";
 import { LocaleProvider } from "@/providers/locale-provider";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Footer } from "@/components/Footer";
-import { getPayments, getUiStrings, type UIStrings } from "@/lib/content";
+import { getPayments, getSiteConfig, getUiStrings, type UIStrings } from "@/lib/content";
 import { getDirection } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/i18n.server";
 import { getDefaultMetadata } from "@/lib/seo";
-const brand = { ar: "برهوم", en: "Barhoum" };
-
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -31,7 +29,7 @@ export const metadata = getDefaultMetadata();
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = resolveLocale();
   const direction = getDirection(locale);
-  const [ui, payments] = await Promise.all([loadUi(), getPayments()]);
+  const [ui, payments, site] = await Promise.all([loadUi(), getPayments(), getSiteConfig()]);
   const defaultPaymentSlug = payments[0]?.slug;
   const fontClass = inter.variable;
 
@@ -39,9 +37,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={locale} dir={direction} className={fontClass}>
       <body>
         <LocaleProvider initialLocale={locale}>
-          <SiteHeader ui={ui} brand={brand} paymentSlug={defaultPaymentSlug} />
+          <SiteHeader ui={ui} site={site} paymentSlug={defaultPaymentSlug} />
           <main>{children}</main>
-          <Footer ui={ui} />
+          <Footer site={site} />
         </LocaleProvider>
       </body>
     </html>

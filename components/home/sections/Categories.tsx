@@ -14,6 +14,8 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
   onSelect,
   expandedMobileCategory,
   onMobileToggle,
+  packs,
+  formCopy,
   selectedPack,
   leadFormVisible,
   activeCategoryLabel,
@@ -97,6 +99,7 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
                   locale={locale}
                   direction={locale === "ar" ? "rtl" : "ltr"}
                   category={expandedMobileCategory}
+                  packs={packs}
                   onSelect={onPackSelect}
                   onContinue={onPackContinue}
                 />
@@ -107,6 +110,7 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
                       selectedPackage={selectedPackageLabel}
                       packSummary={selectedPackSummary}
                       ui={ui}
+                      copy={formCopy}
                     />
                   </div>
                 )}

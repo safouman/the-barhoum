@@ -28,73 +28,6 @@ type PackSelection = {
   sessionsLabel: string;
 };
 
-const BASE_PACKS: Record<Locale, Pack[]> = {
-  en: [
-    {
-      sessions: 1,
-      title: "Shared language sprint",
-      subtitle: "Focused discovery",
-      bullets: ["One shared practice", "Joint recommendation", "Light follow-up"],
-      priceTotal: 260,
-      pricePerSession: 260,
-      duration: "75–90 minutes",
-    },
-    {
-      sessions: 3,
-      title: "Renewed dialogue rhythm",
-      subtitle: "Grow the conversation",
-      bullets: ["Short rituals between sessions", "Shared next step", "Gentle accountability"],
-      priceTotal: 720,
-      pricePerSession: 240,
-      duration: "3 × 75–90 minutes",
-    },
-    {
-      sessions: 5,
-      title: "Sustained safe space",
-      subtitle: "Keep the cadence",
-      bullets: ["Between-session voice/text", "Light follow-up practice", "Deeper integration"],
-      priceTotal: 1_120,
-      pricePerSession: 224,
-      duration: "5 × 75–90 minutes",
-    },
-  ],
-  ar: [
-    {
-      sessions: 1,
-      title: "لغة مشتركة سريعة",
-      subtitle: "جلسة تعريف سريع",
-      bullets: ["تمرين واحد مشترك", "توصية مشتركة", "متابعة خفيفة"],
-      priceTotal: 260,
-      pricePerSession: 260,
-      duration: "75–90 دقيقة",
-    },
-    {
-      sessions: 3,
-      title: "إيقاع حوار متجدد",
-      subtitle: "تناغم متصاعد",
-      bullets: ["تمارين قصيرة بين الجلسات", "خطوة مشتركة", "متابعة لطيفة"],
-      priceTotal: 720,
-      pricePerSession: 240,
-      duration: "3 × 75–90 دقيقة",
-    },
-    {
-      sessions: 5,
-      title: "مساحة آمنة مستمرة",
-      subtitle: "عمق وثقة",
-      bullets: ["دعم بين الجلسات (صوت/نص)", "تمرين متابعة خفيف", "تكامل أعمق"],
-      priceTotal: 1_120,
-      pricePerSession: 224,
-      duration: "5 × 75–90 دقيقة",
-    },
-  ],
-};
-
-const PACKS: PacksByCategory = {
-  individuals: { en: BASE_PACKS.en, ar: BASE_PACKS.ar },
-  couples: { en: BASE_PACKS.en, ar: BASE_PACKS.ar },
-  organizations: { en: BASE_PACKS.en, ar: BASE_PACKS.ar },
-};
-
 const ACCENT_COPY = {
   en: { ready: "Ready to proceed", button: "Continue", overview: "Pack overview" },
   ar: { ready: "جاهز للمواصلة", button: "استمرار", overview: "نبذة عن الباقة" },
@@ -180,11 +113,12 @@ interface PacksSectionProps {
   locale: Locale;
   direction: "ltr" | "rtl";
   category?: CategoryKey;
+  packs: PacksByCategory;
   onSelect?: (pack: PackSelection) => void;
   onContinue?: (pack: PackSelection) => void;
 }
 
-export function PacksSection({ locale, direction, category, onSelect, onContinue }: PacksSectionProps) {
+export function PacksSection({ locale, direction, category, packs: packsByCategory, onSelect, onContinue }: PacksSectionProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const cardRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const onSelectRef = useRef(onSelect);
@@ -195,8 +129,8 @@ export function PacksSection({ locale, direction, category, onSelect, onContinue
 
   const packs = useMemo(() => {
     if (!category) return [];
-    return PACKS[category]?.[locale] ?? BASE_PACKS[locale];
-  }, [category, locale]);
+    return packsByCategory[category]?.[locale] ?? [];
+  }, [category, locale, packsByCategory]);
 
   useEffect(() => {
     if (!category || !packs.length) {

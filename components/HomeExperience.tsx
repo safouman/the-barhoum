@@ -1,6 +1,6 @@
 "use client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { Category, HomeData, Locale, Testimonial as TestimonialType, UIStrings } from "@/lib/content";
+import type { Category, HomeData, LeadFormCopy, Locale, Testimonial as TestimonialType, UIStrings } from "@/lib/content";
 import { event } from "@/lib/analytics";
 import { useLocale } from "@/providers/locale-provider";
 import {
@@ -18,9 +18,10 @@ interface HomeExperienceProps {
   categories: Category[];
   testimonials: TestimonialType[];
   ui: Record<Locale, UIStrings>;
+  leadFormCopy: Record<Locale, LeadFormCopy>;
 }
 
-export function HomeExperience({ home, categories, testimonials, ui }: HomeExperienceProps) {
+export function HomeExperience({ home, categories, testimonials, ui, leadFormCopy }: HomeExperienceProps) {
   const { locale } = useLocale();
   const strings = ui[locale];
 
@@ -129,9 +130,9 @@ export function HomeExperience({ home, categories, testimonials, ui }: HomeExper
     <>
       <HomeHero hero={home.hero} locale={locale} media={home.media} />
 
-      <HomeAbout locale={locale} media={home.media} />
+      <HomeAbout locale={locale} media={home.media} about={home.about} />
 
-      <HomeTestimonials testimonials={testimonialsToShow} ui={strings} locale={locale} />
+      <HomeTestimonials testimonials={testimonialsToShow} ui={strings} locale={locale} meta={home.testimonials} />
 
       <HomeCategories
         categories={localizedCategories}
@@ -139,6 +140,8 @@ export function HomeExperience({ home, categories, testimonials, ui }: HomeExper
         onSelect={handleCategorySelect}
         expandedMobileCategory={expandedMobileCategory}
         onMobileToggle={handleMobileCategoryToggle}
+        packs={home.packs}
+        formCopy={leadFormCopy}
         selectedPack={selectedPack}
         leadFormVisible={leadFormVisible}
         activeCategoryLabel={activeCategoryLabel}
@@ -171,6 +174,7 @@ export function HomeExperience({ home, categories, testimonials, ui }: HomeExper
             locale={locale}
             direction={locale === "ar" ? "rtl" : "ltr"}
             category={activeCategory}
+            packs={home.packs}
             onSelect={(pack) => {
               event("package_click", {
                 action: "select",
@@ -204,6 +208,7 @@ export function HomeExperience({ home, categories, testimonials, ui }: HomeExper
             selectedPackage={selectedPackageLabel}
             packSummary={selectedPackSummary}
             ui={strings}
+            copy={leadFormCopy}
           />
         </div>
       )}

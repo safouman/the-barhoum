@@ -1,0 +1,65 @@
+{
+  "guidance": {
+    "title": "Basic info",
+    "paragraph": "We’ll start with a few basics so we can prepare for your first session with clarity. Share what’s true for you—no perfect answers needed. The more accurate you are here, the smoother your journey will be."
+  },
+  "chipLabelTemplate": "Step {current} of {total}",
+  "progressLabelTemplate": "STEP {current} OF {total}",
+  "summaryTitle": "Pack summary",
+  "privacy": "Your information is confidential and shared only with Barhoum’s office.",
+  "validation": {
+    "required": "This field is required",
+    "email": "Please enter a valid email address",
+    "age": "Please enter a valid age (12+)"
+  },
+  "thankYou": {
+    "title": "Thank you for reaching out",
+    "body": "Our office manager will contact you shortly to coordinate next steps. Keep an eye on your inbox and phone.",
+    "returnHome": "Return home"
+  },
+  "actionLabels": {
+    "next": "Next",
+    "back": "Back"
+  },
+  "steps": [
+    {
+      "id": "basic",
+      "title": "Basic info",
+      "helper": "Tell us who you are.",
+      "fields": [
+        { "id": "fullName", "label": "Full name", "required": true },
+        { "id": "email", "label": "Email", "type": "email", "required": true },
+        { "id": "country", "label": "Country of residence", "required": true },
+        { "id": "phone", "label": "WhatsApp number", "type": "tel" },
+        { "id": "age", "label": "Age", "type": "number", "required": true }
+      ]
+    },
+    {
+      "id": "availability",
+      "title": "Availability & background",
+      "helper": "Help us understand the best time to connect.",
+      "fields": [
+        { "id": "bestContactTime", "label": "Best time to contact", "required": true },
+        { "id": "psychologistBefore", "label": "Seen a psychologist before? If yes, diagnosis", "required": true },
+        { "id": "medicationNow", "label": "Are you taking medication now?", "required": true }
+      ]
+    },
+    {
+      "id": "motivation",
+      "title": "Motivation & context",
+      "helper": "Share why you're choosing coaching now.",
+      "fields": [
+        { "id": "whyCoaching", "label": "Why did you choose coaching?", "type": "textarea", "required": true },
+        { "id": "followingDuration", "label": "How long following Barhoum?", "required": true },
+        {
+          "id": "maritalStatus",
+          "label": "Marital status",
+          "required": true,
+          "options": ["Single", "Married", "Divorced"]
+        },
+        { "id": "occupation", "label": "Occupation", "required": true },
+        { "id": "passphrase", "label": "Passphrase", "type": "textarea" }
+      ]
+    }
+  ]
+}

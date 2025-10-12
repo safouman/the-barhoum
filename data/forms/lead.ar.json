@@ -1,0 +1,65 @@
+{
+  "guidance": {
+    "title": "المعطيات الأساسية",
+    "paragraph": "باش نبداو ببعض المعطيات الأساسية باش نجهزوا جلستك الأولى بوضوح. شارك اللي صحيح بالنسبة ليك، ما ثماش إجابات مثالية. كل ما تكون صريح أكثر، كل ما يكون المسار أسهل عليك."
+  },
+  "chipLabelTemplate": "الخطوة {current} من {total}",
+  "progressLabelTemplate": "الخطوة {current} من {total}",
+  "summaryTitle": "ملخص الباقة",
+  "privacy": "معلوماتك سرّية وتُشارك فقط مع مكتب برهوم",
+  "validation": {
+    "required": "هذا الحقل إجباري",
+    "email": "رجاءً أدخل بريد إلكتروني صالح",
+    "age": "رجاءً أدخل عمراً صالحاً (12+)"
+  },
+  "thankYou": {
+    "title": "شكراً على ثقتك",
+    "body": "توصلك مكالمة أو رسالة من مكتب برهوم للتنسيق خلال الساعات القادمة. تأكد من متابعة بريدك والهاتف.",
+    "returnHome": "الرجوع للصفحة الرئيسية"
+  },
+  "actionLabels": {
+    "next": "التالي",
+    "back": "السابق"
+  },
+  "steps": [
+    {
+      "id": "basic",
+      "title": "المعطيات الأساسية",
+      "helper": "خلينا نتعارف عليك أكثر",
+      "fields": [
+        { "id": "fullName", "label": "الاسم و اللقب", "required": true },
+        { "id": "email", "label": "البريد الإلكتروني", "type": "email", "required": true },
+        { "id": "country", "label": "البلاد الي تعيش فيها", "required": true },
+        { "id": "phone", "label": "رقم الهاتف (واتساب)", "type": "tel" },
+        { "id": "age", "label": "العمر", "type": "number", "required": true }
+      ]
+    },
+    {
+      "id": "availability",
+      "title": "الوقت و الخلفية",
+      "helper": "باش نضبطوا أحسن توقيت ونفهموا مسارك",
+      "fields": [
+        { "id": "bestContactTime", "label": "أحسن الأوقات إلي ننجمو نكلموك", "required": true },
+        { "id": "psychologistBefore", "label": "مشيت لطبيب نفساني قبل؟ إن كان نعم: التشخيص", "required": true },
+        { "id": "medicationNow", "label": "تاخذ في دواء؟", "required": true }
+      ]
+    },
+    {
+      "id": "motivation",
+      "title": "الدافع و الإطار",
+      "helper": "شاركنا علاش تختار البرهوم اليوم",
+      "fields": [
+        { "id": "whyCoaching", "label": "علاش إخترت تعمل كونتشينڨ؟", "type": "textarea", "required": true },
+        { "id": "followingDuration", "label": "قداش عندك إتبع في البرهوم", "required": true },
+        {
+          "id": "maritalStatus",
+          "label": "الحالة الإجتماعية",
+          "required": true,
+          "options": ["أعزب", "متزوج", "مطلق"]
+        },
+        { "id": "occupation", "label": "المهنة", "required": true },
+        { "id": "passphrase", "label": "كلمة السر", "type": "textarea" }
+      ]
+    }
+  ]
+}

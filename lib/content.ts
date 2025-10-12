@@ -101,11 +101,86 @@ export type Payment = z.infer<typeof paymentSchema>;
 
 export const paymentsSchema = z.array(paymentSchema);
 
+const homePackItemSchema = z.object({
+  sessions: z.union([z.literal(1), z.literal(3), z.literal(5)]),
+  title: z.string(),
+  subtitle: z.string(),
+  bullets: z.array(z.string()),
+  priceTotal: z.number(),
+  pricePerSession: z.number(),
+  duration: z.string(),
+});
+
+const localizedHomePacksSchema = z.object({
+  ar: z.array(homePackItemSchema),
+  en: z.array(homePackItemSchema),
+});
+
+const languageOptionSchema = z.object({
+  value: z.enum(["ar", "en"]),
+  label: z.string(),
+});
+
+const siteNavItemSchema = z.object({
+  href: z.string(),
+  label: localizedSchema,
+});
+
+const siteSocialSchema = z.object({
+  id: z.string(),
+  href: z.string(),
+  label: z.string(),
+});
+
+const leadFormFieldSchema = z.object({
+  id: z.string(),
+  label: z.string(),
+  type: z.enum(["text", "email", "tel", "textarea", "number"]).optional(),
+  required: z.boolean().optional(),
+  options: z.array(z.string()).optional(),
+});
+
+const leadFormStepSchema = z.object({
+  id: z.string(),
+  title: z.string(),
+  helper: z.string(),
+  fields: z.array(leadFormFieldSchema),
+});
+
+export const leadFormSchema = z.object({
+  guidance: z.object({
+    title: z.string(),
+    paragraph: z.string(),
+  }),
+  chipLabelTemplate: z.string(),
+  progressLabelTemplate: z.string(),
+  summaryTitle: z.string(),
+  privacy: z.string(),
+  validation: z.object({
+    required: z.string(),
+    email: z.string(),
+    age: z.string(),
+  }),
+  thankYou: z.object({
+    title: z.string(),
+    body: z.string(),
+    returnHome: z.string(),
+  }),
+  actionLabels: z.object({
+    next: z.string(),
+    back: z.string(),
+  }),
+  steps: z.array(leadFormStepSchema),
+});
+
+export type LeadFormCopy = z.infer<typeof leadFormSchema>;
+
 export const homeSchema = z.object({
   hero: z.object({
     title: localizedSchema,
     subtitle: localizedSchema,
     cta: localizedSchema,
+    signature: localizedSchema,
   }),
   media: z.object({
     videos: z
@@ -125,9 +200,40 @@ export const homeSchema = z.object({
       )
       .default([]),
   }),
+  about: z.object({
+    headline: localizedSchema,
+    narrative: localizedSchema,
+    link: z.object({
+      label: localizedSchema,
+    }),
+  }),
+  testimonials: z.object({
+    eyebrow: localizedSchema,
+    cta: localizedSchema,
+  }),
+  packs: z.object({
+    individuals: localizedHomePacksSchema,
+    couples: localizedHomePacksSchema,
+    organizations: localizedHomePacksSchema,
+  }),
 });
 
 export type HomeData = z.infer<typeof homeSchema>;
+
+export const siteConfigSchema = z.object({
+  brand: z.object({
+    header: localizedSchema,
+    footer: localizedSchema,
+    tagline: localizedSchema,
+  }),
+  languageSwitch: z.object({
+    options: z.array(languageOptionSchema),
+  }),
+  footerNav: z.array(siteNavItemSchema),
+  socials: z.array(siteSocialSchema),
+});
+
+export type SiteConfig = z.infer<typeof siteConfigSchema>;
 
 export const uiSchema = z.object({
   nav: z.object({
@@ -192,6 +298,8 @@ export const getUiStrings = (locale: Locale) => loadJson(`ui.${locale}.json`, ui
 export const getCvData = () => loadJson("cv.json", cvSchema);
 export const getLinksData = () => loadJson("links.json", linksSchema);
 export const getPayments = () => loadJson("payments.json", paymentsSchema);
+export const getSiteConfig = () => loadJson("site.json", siteConfigSchema);
+export const getLeadFormCopy = (locale: Locale) => loadJson(`forms/lead.${locale}.json`, leadFormSchema);
 
 export type Locale = "ar" | "en";
 

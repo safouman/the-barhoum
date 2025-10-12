@@ -7,6 +7,7 @@ import styles from "./HomeHero.module.css";
 
 export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
     const isRTL = locale === "ar";
+    const signature = hero.signature[locale];
 
     return (
         <section className={styles.hero}>
@@ -57,7 +58,7 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
                                 : "font-signature-latin"
                         )}
                     >
-                        {locale === "ar" ? "و شكرا" : "— with gratitude"}
+                        {signature}
                     </p>
               
                 </div>

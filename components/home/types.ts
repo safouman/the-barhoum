@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import type { Category, HomeData, Locale, Testimonial, UIStrings } from "@/lib/content";
+import type { Category, HomeData, LeadFormCopy, Locale, Testimonial, UIStrings } from "@/lib/content";
 
 export interface LocalizedCategory {
   id: Category["id"];
@@ -25,6 +25,7 @@ export interface HeroProps {
 export interface AboutProps {
   locale: Locale;
   media: HomeData["media"];
+  about: HomeData["about"];
 }
 
 export interface CategoriesProps {
@@ -33,6 +34,8 @@ export interface CategoriesProps {
   onSelect: (id: Category["id"]) => void;
   expandedMobileCategory?: Category["id"];
   onMobileToggle: (id: Category["id"]) => void;
+  packs: HomeData["packs"];
+  formCopy: Record<Locale, LeadFormCopy>;
   selectedPack: {
     category: Category["id"];
     sessions: number;
@@ -59,8 +62,9 @@ export interface CategoriesProps {
 
 export interface TestimonialsProps {
   testimonials: LocalizedTestimonial[];
-  ui: UIStrings;
   locale: Locale;
+  meta: HomeData["testimonials"];
+  ui: UIStrings;
 }
 
 export interface LeadFormProps {
@@ -75,6 +79,7 @@ export interface LeadFormProps {
     priceLabel: string;
   };
   ui: UIStrings;
+  copy: Record<Locale, LeadFormCopy>;
 }
 
 export interface HomeThemeDefinition {
