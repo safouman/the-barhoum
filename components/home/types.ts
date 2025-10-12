@@ -28,6 +28,11 @@ export interface AboutProps {
   about: HomeData["about"];
 }
 
+export interface MethodProps {
+  locale: Locale;
+  method: HomeData["method"];
+}
+
 export interface CategoriesProps {
   categories: LocalizedCategory[];
   activeCategory?: Category["id"];
@@ -85,6 +90,7 @@ export interface LeadFormProps {
 export interface HomeThemeDefinition {
   Hero: (props: HeroProps) => ReactElement;
   About: (props: AboutProps) => ReactElement;
+  Method: (props: MethodProps) => ReactElement;
   Categories: (props: CategoriesProps) => ReactElement;
   Testimonials: (props: TestimonialsProps) => ReactElement | null;
   LeadForm: (props: LeadFormProps) => ReactElement;

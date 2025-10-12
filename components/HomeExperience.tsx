@@ -8,6 +8,7 @@ import {
   HomeCategories,
   HomeHero,
   HomeLeadForm,
+  HomeMethod,
   PacksSection,
   HomeTestimonials,
 } from "./home/sections";
@@ -133,6 +134,8 @@ export function HomeExperience({ home, categories, testimonials, ui, leadFormCop
       <HomeAbout locale={locale} media={home.media} about={home.about} />
 
       <HomeTestimonials testimonials={testimonialsToShow} ui={strings} locale={locale} meta={home.testimonials} />
+
+      <HomeMethod locale={locale} method={home.method} />
 
       <HomeCategories
         categories={localizedCategories}

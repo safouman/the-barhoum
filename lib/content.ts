@@ -206,15 +206,19 @@ export const homeSchema = z.object({
             label: localizedSchema,
         }),
     }),
-    testimonials: z.object({
-        eyebrow: localizedSchema,
-        cta: localizedSchema,
-    }),
-    packs: z.object({
-        individuals: localizedHomePacksSchema,
-        couples: localizedHomePacksSchema,
-        organizations: localizedHomePacksSchema,
-    }),
+  testimonials: z.object({
+    eyebrow: localizedSchema,
+    cta: localizedSchema,
+  }),
+  method: z.object({
+    title: localizedSchema,
+    body: localizedSchema,
+  }),
+  packs: z.object({
+    individuals: localizedHomePacksSchema,
+    couples: localizedHomePacksSchema,
+    organizations: localizedHomePacksSchema,
+  }),
 });
 
 export type HomeData = z.infer<typeof homeSchema>;
