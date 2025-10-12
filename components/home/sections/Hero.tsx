@@ -8,6 +8,11 @@ import styles from "./HomeHero.module.css";
 export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
     const isRTL = locale === "ar";
     const signature = hero.signature[locale];
+    const subtitle = hero.subtitle[locale];
+    const subtitleParagraphs = subtitle
+        .split(/\n{2,}/)
+        .map((paragraph) => paragraph.trim())
+        .filter(Boolean);
 
     return (
         <section className={styles.hero}>
@@ -49,7 +54,25 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
                     <h1 className="text-display font-heading">
                         {hero.title[locale]}
                     </h1>
-                    <p className="text-lead">{hero.subtitle[locale]}</p>
+                    <div className="text-lead space-y-4">
+                        {subtitleParagraphs.length > 0 ? (
+                            subtitleParagraphs.map((paragraph, index) => {
+                                const lines = paragraph.split(/\n/);
+                                return (
+                                    <p key={index} className="m-0">
+                                        {lines.map((line, lineIndex) => (
+                                            <span key={lineIndex}>
+                                                {line}
+                                                {lineIndex < lines.length - 1 && <br />}
+                                            </span>
+                                        ))}
+                                    </p>
+                                );
+                            })
+                        ) : (
+                            <p className="m-0">{hero.subtitle[locale]}</p>
+                        )}
+                    </div>
                     <p
                         className={clsx(
                             "mt-4 text-xl text-primary",

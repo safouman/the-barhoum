@@ -6,7 +6,7 @@
     },
     "subtitle": {
       "ar": "مدرب تنموي يرافقك في رحلة شمولية لإعادة بناء علاقتك مع ذاتك والآخرين. أفتح معك حواراً صادقاً حول الهوية والحدود والشجاعة الناعمة، وأصمم مساحات للتأمل والتطبيق العملي. في كل جلسة نعيد ترتيب الإيقاع، نختبر لغة جديدة للوضوح، ونصغي لما تهمس به الحكمة الداخلية.",
-      "en": "A developmental coach who sits beside you to rebuild the way you relate to yourself and those you lead. Together we surface the quiet truths about identity, boundaries, and a softer kind of courage, then translate them into deliberate rituals. Each session resets "
+      "en": "I’m Ibrahim Ben Abdallah, also known as Barhoum the believer — a self-leadership coach and strategic guide.\n I help people turn confusion into clarity, emotional chaos into structure, and pain into purpose. \n My work bridges psychology, spirituality, and strategy — teaching not how to do more, but how to move right.\n I don’t motivate; I realign. \nI believe true change begins when you face yourself honestly and lead from within.\n  My mission is simple: to help you unify your inner forces and build a life that feels coherent, grounded, and deeply yours. "
     },
     "cta": {
       "ar": "ابدأ الرحلة",
@@ -47,11 +47,11 @@
   "about": {
     "headline": {
       "ar": "في كل لحظةِ صمت، تولدُ حكمةٌ جديدة",
-      "en": "In every moment of stillness, wisdom is born"
+      "en": "The 4 Phases of Self-Leadership"
     },
     "narrative": {
       "ar": "يؤمن إبراهيم أنّ التحوّل الحقيقي يبدأ من الداخل. يرافق القادة والمبدعين في رحلةٍ هادئةٍ من الاكتشاف، حيث تلتقي البصيرة بالاستراتيجية، والوضوح بالشجاعة الناعمة. في كل جلسة نعيد ترتيب الإيقاع لنستمع إلى ما تهمس به الحكمة الداخلية",
-      "en": "Ibrahim believes true transformation begins from within. He guides leaders and creatives through a quiet journey of discovery, where strategy meets intuition and clarity embraces soft courage. In each session, we reset the rhythm and listen to what inner wisdom whispers"
+      "en": "This video shares the path I use with my clients — a clear journey of growth in four phases. \n\n 1.⁠ ⁠Awakening — Seeing yourself honestly.\n2.⁠ ⁠Alignment — Healing and rebuilding your inner balance.\n3.⁠ ⁠Leadership — Living with direction and integrity.\n 4.⁠ ⁠Transcendence — Turning your growth into presence and impact.\n\n Each phase is a step from confusion to clarity.\n While you watch, keep a notebook near you —because real change begins the moment you start writing your truth."
     },
     "link": {
       "label": {
@@ -77,7 +77,11 @@
           "sessions": 1,
           "title": "لغة مشتركة سريعة",
           "subtitle": "جلسة تعريف سريع",
-          "bullets": ["تمرين واحد مشترك", "توصية مشتركة", "متابعة خفيفة"],
+          "bullets": [
+            "تمرين واحد مشترك",
+            "توصية مشتركة",
+            "متابعة خفيفة"
+          ],
           "priceTotal": 260,
           "pricePerSession": 260,
           "duration": "75–90 دقيقة"
@@ -86,7 +90,11 @@
           "sessions": 3,
           "title": "إيقاع حوار متجدد",
           "subtitle": "تناغم متصاعد",
-          "bullets": ["تمارين قصيرة بين الجلسات", "خطوة مشتركة", "متابعة لطيفة"],
+          "bullets": [
+            "تمارين قصيرة بين الجلسات",
+            "خطوة مشتركة",
+            "متابعة لطيفة"
+          ],
           "priceTotal": 720,
           "pricePerSession": 240,
           "duration": "3 × 75–90 دقيقة"
@@ -95,7 +103,11 @@
           "sessions": 5,
           "title": "مساحة آمنة مستمرة",
           "subtitle": "عمق وثقة",
-          "bullets": ["دعم بين الجلسات (صوت/نص)", "تمرين متابعة خفيف", "تكامل أعمق"],
+          "bullets": [
+            "دعم بين الجلسات (صوت/نص)",
+            "تمرين متابعة خفيف",
+            "تكامل أعمق"
+          ],
           "priceTotal": 1120,
           "pricePerSession": 224,
           "duration": "5 × 75–90 دقيقة"
@@ -106,7 +118,11 @@
           "sessions": 1,
           "title": "Shared language sprint",
           "subtitle": "Focused discovery",
-          "bullets": ["One shared practice", "Joint recommendation", "Light follow-up"],
+          "bullets": [
+            "One shared practice",
+            "Joint recommendation",
+            "Light follow-up"
+          ],
           "priceTotal": 260,
           "pricePerSession": 260,
           "duration": "75–90 minutes"
@@ -115,7 +131,11 @@
           "sessions": 3,
           "title": "Renewed dialogue rhythm",
           "subtitle": "Grow the conversation",
-          "bullets": ["Short rituals between sessions", "Shared next step", "Gentle accountability"],
+          "bullets": [
+            "Short rituals between sessions",
+            "Shared next step",
+            "Gentle accountability"
+          ],
           "priceTotal": 720,
           "pricePerSession": 240,
           "duration": "3 × 75–90 minutes"
@@ -124,7 +144,11 @@
           "sessions": 5,
           "title": "Sustained safe space",
           "subtitle": "Keep the cadence",
-          "bullets": ["Between-session voice/text", "Light follow-up practice", "Deeper integration"],
+          "bullets": [
+            "Between-session voice/text",
+            "Light follow-up practice",
+            "Deeper integration"
+          ],
           "priceTotal": 1120,
           "pricePerSession": 224,
           "duration": "5 × 75–90 minutes"
@@ -137,7 +161,11 @@
           "sessions": 1,
           "title": "لغة مشتركة سريعة",
           "subtitle": "جلسة تعريف سريع",
-          "bullets": ["تمرين واحد مشترك", "توصية مشتركة", "متابعة خفيفة"],
+          "bullets": [
+            "تمرين واحد مشترك",
+            "توصية مشتركة",
+            "متابعة خفيفة"
+          ],
           "priceTotal": 260,
           "pricePerSession": 260,
           "duration": "75–90 دقيقة"
@@ -146,7 +174,11 @@
           "sessions": 3,
           "title": "إيقاع حوار متجدد",
           "subtitle": "تناغم متصاعد",
-          "bullets": ["تمارين قصيرة بين الجلسات", "خطوة مشتركة", "متابعة لطيفة"],
+          "bullets": [
+            "تمارين قصيرة بين الجلسات",
+            "خطوة مشتركة",
+            "متابعة لطيفة"
+          ],
           "priceTotal": 720,
           "pricePerSession": 240,
           "duration": "3 × 75–90 دقيقة"
@@ -155,7 +187,11 @@
           "sessions": 5,
           "title": "مساحة آمنة مستمرة",
           "subtitle": "عمق وثقة",
-          "bullets": ["دعم بين الجلسات (صوت/نص)", "تمرين متابعة خفيف", "تكامل أعمق"],
+          "bullets": [
+            "دعم بين الجلسات (صوت/نص)",
+            "تمرين متابعة خفيف",
+            "تكامل أعمق"
+          ],
           "priceTotal": 1120,
           "pricePerSession": 224,
           "duration": "5 × 75–90 دقيقة"
@@ -166,7 +202,11 @@
           "sessions": 1,
           "title": "Shared language sprint",
           "subtitle": "Focused discovery",
-          "bullets": ["One shared practice", "Joint recommendation", "Light follow-up"],
+          "bullets": [
+            "One shared practice",
+            "Joint recommendation",
+            "Light follow-up"
+          ],
           "priceTotal": 260,
           "pricePerSession": 260,
           "duration": "75–90 minutes"
@@ -175,7 +215,11 @@
           "sessions": 3,
           "title": "Renewed dialogue rhythm",
           "subtitle": "Grow the conversation",
-          "bullets": ["Short rituals between sessions", "Shared next step", "Gentle accountability"],
+          "bullets": [
+            "Short rituals between sessions",
+            "Shared next step",
+            "Gentle accountability"
+          ],
           "priceTotal": 720,
           "pricePerSession": 240,
           "duration": "3 × 75–90 minutes"
@@ -184,7 +228,11 @@
           "sessions": 5,
           "title": "Sustained safe space",
           "subtitle": "Keep the cadence",
-          "bullets": ["Between-session voice/text", "Light follow-up practice", "Deeper integration"],
+          "bullets": [
+            "Between-session voice/text",
+            "Light follow-up practice",
+            "Deeper integration"
+          ],
           "priceTotal": 1120,
           "pricePerSession": 224,
           "duration": "5 × 75–90 minutes"
@@ -197,7 +245,11 @@
           "sessions": 1,
           "title": "لغة مشتركة سريعة",
           "subtitle": "جلسة تعريف سريع",
-          "bullets": ["تمرين واحد مشترك", "توصية مشتركة", "متابعة خفيفة"],
+          "bullets": [
+            "تمرين واحد مشترك",
+            "توصية مشتركة",
+            "متابعة خفيفة"
+          ],
           "priceTotal": 260,
           "pricePerSession": 260,
           "duration": "75–90 دقيقة"
@@ -206,7 +258,11 @@
           "sessions": 3,
           "title": "إيقاع حوار متجدد",
           "subtitle": "تناغم متصاعد",
-          "bullets": ["تمارين قصيرة بين الجلسات", "خطوة مشتركة", "متابعة لطيفة"],
+          "bullets": [
+            "تمارين قصيرة بين الجلسات",
+            "خطوة مشتركة",
+            "متابعة لطيفة"
+          ],
           "priceTotal": 720,
           "pricePerSession": 240,
           "duration": "3 × 75–90 دقيقة"
@@ -215,7 +271,11 @@
           "sessions": 5,
           "title": "مساحة آمنة مستمرة",
           "subtitle": "عمق وثقة",
-          "bullets": ["دعم بين الجلسات (صوت/نص)", "تمرين متابعة خفيف", "تكامل أعمق"],
+          "bullets": [
+            "دعم بين الجلسات (صوت/نص)",
+            "تمرين متابعة خفيف",
+            "تكامل أعمق"
+          ],
           "priceTotal": 1120,
           "pricePerSession": 224,
           "duration": "5 × 75–90 دقيقة"
@@ -226,7 +286,11 @@
           "sessions": 1,
           "title": "Shared language sprint",
           "subtitle": "Focused discovery",
-          "bullets": ["One shared practice", "Joint recommendation", "Light follow-up"],
+          "bullets": [
+            "One shared practice",
+            "Joint recommendation",
+            "Light follow-up"
+          ],
           "priceTotal": 260,
           "pricePerSession": 260,
           "duration": "75–90 minutes"
@@ -235,7 +299,11 @@
           "sessions": 3,
           "title": "Renewed dialogue rhythm",
           "subtitle": "Grow the conversation",
-          "bullets": ["Short rituals between sessions", "Shared next step", "Gentle accountability"],
+          "bullets": [
+            "Short rituals between sessions",
+            "Shared next step",
+            "Gentle accountability"
+          ],
           "priceTotal": 720,
           "pricePerSession": 240,
           "duration": "3 × 75–90 minutes"
@@ -244,7 +312,11 @@
           "sessions": 5,
           "title": "Sustained safe space",
           "subtitle": "Keep the cadence",
-          "bullets": ["Between-session voice/text", "Light follow-up practice", "Deeper integration"],
+          "bullets": [
+            "Between-session voice/text",
+            "Light follow-up practice",
+            "Deeper integration"
+          ],
           "priceTotal": 1120,
           "pricePerSession": 224,
           "duration": "5 × 75–90 minutes"
