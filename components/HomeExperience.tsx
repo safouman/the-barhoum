@@ -20,11 +20,17 @@ interface HomeExperienceProps {
   testimonials: TestimonialType[];
   ui: Record<Locale, UIStrings>;
   leadFormCopy: Record<Locale, LeadFormCopy>;
+  heroCopy: Record<Locale, string>;
+  aboutCopy: Record<Locale, string>;
+  methodCopy: Record<Locale, string>;
 }
 
-export function HomeExperience({ home, categories, testimonials, ui, leadFormCopy }: HomeExperienceProps) {
+export function HomeExperience({ home, categories, testimonials, ui, leadFormCopy, heroCopy, aboutCopy, methodCopy }: HomeExperienceProps) {
   const { locale } = useLocale();
   const strings = ui[locale];
+  const heroMarkdown = heroCopy[locale];
+  const aboutMarkdown = aboutCopy[locale];
+  const methodMarkdown = methodCopy[locale];
 
   const localizedCategories = useMemo<LocalizedCategory[]>(
     () =>
@@ -129,13 +135,13 @@ export function HomeExperience({ home, categories, testimonials, ui, leadFormCop
 
   return (
     <>
-      <HomeHero hero={home.hero} locale={locale} media={home.media} />
+      <HomeHero hero={home.hero} locale={locale} copy={heroMarkdown} />
 
-      <HomeAbout locale={locale} media={home.media} about={home.about} />
+      <HomeAbout locale={locale} media={home.media} about={home.about} markdown={aboutMarkdown} />
 
       <HomeTestimonials testimonials={testimonialsToShow} ui={strings} locale={locale} meta={home.testimonials} />
 
-      <HomeMethod locale={locale} method={home.method} />
+      <HomeMethod locale={locale} method={home.method} markdown={methodMarkdown} />
 
       <HomeCategories
         categories={localizedCategories}

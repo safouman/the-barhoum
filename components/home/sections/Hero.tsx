@@ -1,18 +1,13 @@
 import Image from "next/image";
 import clsx from "classnames";
-import { Button } from "@/components/Button";
+import ReactMarkdown from "react-markdown";
 import { Container } from "@/components/Container";
 import type { HomeThemeDefinition } from "../types";
 import styles from "./HomeHero.module.css";
 
-export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
+export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale, copy }) => {
     const isRTL = locale === "ar";
     const signature = hero.signature[locale];
-    const subtitle = hero.subtitle[locale];
-    const subtitleParagraphs = subtitle
-        .split(/\n{2,}/)
-        .map((paragraph) => paragraph.trim())
-        .filter(Boolean);
 
     return (
         <section className={styles.hero}>
@@ -53,25 +48,41 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
                     <h1 className="text-display font-heading">
                         {hero.title[locale]}
                     </h1>
-                    <div className="text-lead space-y-4">
-                        {subtitleParagraphs.length > 0 ? (
-                            subtitleParagraphs.map((paragraph, index) => {
-                                const lines = paragraph.split(/\n/);
-                                return (
-                                    <p key={index} className="m-0">
-                                        {lines.map((line, lineIndex) => (
-                                            <span key={lineIndex}>
-                                                {line}
-                                                {lineIndex <
-                                                    lines.length - 1 && <br />}
-                                            </span>
-                                        ))}
-                                    </p>
-                                );
-                            })
-                        ) : (
-                            <p className="m-0">{hero.subtitle[locale]}</p>
-                        )}
+                    <div className="text-lead space-y-4" dir={isRTL ? "rtl" : "ltr"}>
+                        <ReactMarkdown
+                            components={{
+                                p: ({ children }) => <p className="m-0">{children}</p>,
+                                strong: ({ children }) => (
+                                    <strong className="font-semibold">{children}</strong>
+                                ),
+                                em: ({ children }) => <em className="italic">{children}</em>,
+                                ol: ({ children }) => (
+                                    <ol
+                                        className={clsx(
+                                            "list-decimal space-y-3 pl-6",
+                                            isRTL && "pl-0 pr-6"
+                                        )}
+                                        dir={isRTL ? "rtl" : "ltr"}
+                                    >
+                                        {children}
+                                    </ol>
+                                ),
+                                ul: ({ children }) => (
+                                    <ul
+                                        className={clsx(
+                                            "list-disc space-y-3 pl-6",
+                                            isRTL && "pl-0 pr-6"
+                                        )}
+                                        dir={isRTL ? "rtl" : "ltr"}
+                                    >
+                                        {children}
+                                    </ul>
+                                ),
+                                li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+                            }}
+                        >
+                            {copy}
+                        </ReactMarkdown>
                     </div>
                     <p
                         className={clsx(

@@ -1,16 +1,11 @@
 import clsx from "classnames";
+import ReactMarkdown from "react-markdown";
 import { Container } from "@/components/Container";
 import { Section } from "@/components/Section";
 import type { HomeThemeDefinition } from "../types";
 
-export const HomeMethod: HomeThemeDefinition["Method"] = ({ locale, method }) => {
+export const HomeMethod: HomeThemeDefinition["Method"] = ({ locale, method, markdown }) => {
   const isRTL = locale === "ar";
-  const body = method.body[locale];
-
-  const paragraphs = body
-    .split(/\n{2,}/)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean);
 
   return (
     <Section
@@ -26,23 +21,38 @@ export const HomeMethod: HomeThemeDefinition["Method"] = ({ locale, method }) =>
           )}
           dir={isRTL ? "rtl" : "ltr"}
         >
-          {paragraphs.length > 0
-            ? paragraphs.map((paragraph, index) => {
-                const lines = paragraph.split(/\n/);
-                return (
-                  <p key={index} className="m-0">
-                    {lines.map((line, lineIndex) => (
-                      <span key={lineIndex}>
-                        {line}
-                        {lineIndex < lines.length - 1 && <br />}
-                      </span>
-                    ))}
-                  </p>
-                );
-              })
-            : (
-              <p className="m-0">{body}</p>
-            )}
+          <ReactMarkdown
+            components={{
+              p: ({ children }) => <p className="m-0">{children}</p>,
+              strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+              em: ({ children }) => <em className="italic">{children}</em>,
+              ol: ({ children }) => (
+                <ol
+                  className={clsx(
+                    "list-decimal space-y-3 pl-6",
+                    isRTL && "pl-0 pr-6"
+                  )}
+                  dir={isRTL ? "rtl" : "ltr"}
+                >
+                  {children}
+                </ol>
+              ),
+              ul: ({ children }) => (
+                <ul
+                  className={clsx(
+                    "list-disc space-y-3 pl-6",
+                    isRTL && "pl-0 pr-6"
+                  )}
+                  dir={isRTL ? "rtl" : "ltr"}
+                >
+                  {children}
+                </ul>
+              ),
+              li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+            }}
+          >
+            {markdown}
+          </ReactMarkdown>
         </div>
       </Container>
     </Section>

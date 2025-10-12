@@ -19,18 +19,20 @@ export interface LocalizedTestimonial {
 export interface HeroProps {
   hero: HomeData["hero"];
   locale: Locale;
-  media: HomeData["media"];
+  copy: string;
 }
 
 export interface AboutProps {
   locale: Locale;
   media: HomeData["media"];
   about: HomeData["about"];
+  markdown: string;
 }
 
 export interface MethodProps {
   locale: Locale;
   method: HomeData["method"];
+  markdown: string;
 }
 
 export interface CategoriesProps {

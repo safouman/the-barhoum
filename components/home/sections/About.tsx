@@ -1,4 +1,5 @@
 import clsx from "classnames";
+import ReactMarkdown from "react-markdown";
 import { Container } from "@/components/Container";
 import { Section } from "@/components/Section";
 import { VideoEmbed } from "@/components/VideoEmbed";
@@ -8,20 +9,11 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
     locale,
     media,
     about,
+    markdown,
 }) => {
     const isRTL = locale === "ar";
 
     const headline = about.headline[locale];
-    const narrative = about.narrative[locale];
-    const linkText = about.link.label[locale];
-    const linkArrow = isRTL ? " ←" : " →";
-
-    const pdfs = media.pdfs.length
-        ? media.pdfs
-        : Array.from({ length: 1 }, () => ({
-              url: "#",
-              label: { en: "Guided approach", ar: "ملف تعريفي" },
-          }));
 
     const video = media.videos[0];
 
@@ -61,43 +53,52 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
                                     ? "text-body-lg text-[#444] mb-6 space-y-4"
                                     : "text-body-lg leading-relaxed space-y-4"
                             )}
+                            dir={isRTL ? "rtl" : "ltr"}
                         >
-                            {narrative
-                                .split(/\n{2,}/)
-                                .map((paragraph) => paragraph.trim())
-                                .filter(Boolean)
-                                .map((paragraph, index, paragraphs) => {
-                                    const lines = paragraph.split(/\n/);
-                                    const isLast =
-                                        index === paragraphs.length - 1;
-                                    return (
-                                        <p key={index} className="m-0">
-                                            {lines.map((line, lineIndex) => (
-                                                <span key={lineIndex}>
-                                                    {line}
-                                                    {lineIndex <
-                                                        lines.length - 1 && (
-                                                        <br />
-                                                    )}
-                                                </span>
-                                            ))}
-                                            {/* {isLast && (
-                        <>
-                          {" — "}
-                          <a
-                            href={pdfs[0]?.url ?? "#"}
-                            className="text-subtle hover:text-primary transition-colors duration-200 border-b border-transparent hover:border-primary"
-                            rel="noopener noreferrer"
-                            target="_blank"
-                          >
-                            {linkText}
-                            <span className="text-xs" aria-hidden="true">{linkArrow}</span>
-                          </a>
-                        </>
-                      )} */}
-                                        </p>
-                                    );
-                                })}
+                            <ReactMarkdown
+                                components={{
+                                    p: ({ children }) => <p className="m-0">{children}</p>,
+                                    strong: ({ children }) => (
+                                        <strong className="font-semibold">{children}</strong>
+                                    ),
+                                    em: ({ children }) => <em className="italic">{children}</em>,
+                                    ol: ({ children }) => (
+                                        <ol
+                                            className={clsx(
+                                                "list-decimal space-y-3 pl-6 text-start",
+                                                isRTL && "pl-0 pr-6 text-right"
+                                            )}
+                                            dir={isRTL ? "rtl" : "ltr"}
+                                        >
+                                            {children}
+                                        </ol>
+                                    ),
+                                    ul: ({ children }) => (
+                                        <ul
+                                            className={clsx(
+                                                "list-disc space-y-3 pl-6 text-start",
+                                                isRTL && "pl-0 pr-6 text-right"
+                                            )}
+                                            dir={isRTL ? "rtl" : "ltr"}
+                                        >
+                                            {children}
+                                        </ul>
+                                    ),
+                                    li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+                                    a: ({ children, href }) => (
+                                        <a
+                                            href={href}
+                                            className="text-subtle hover:text-primary transition-colors duration-200 border-b border-transparent hover:border-primary"
+                                            target={href?.startsWith("http") ? "_blank" : undefined}
+                                            rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
+                                        >
+                                            {children}
+                                        </a>
+                                    ),
+                                }}
+                            >
+                                {markdown}
+                            </ReactMarkdown>
                         </div>
                     </div>
                 </div>

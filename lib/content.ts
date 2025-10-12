@@ -178,7 +178,6 @@ export type LeadFormCopy = z.infer<typeof leadFormSchema>;
 export const homeSchema = z.object({
     hero: z.object({
         title: localizedSchema,
-        subtitle: localizedSchema,
         signature: localizedSchema,
     }),
     media: z.object({
@@ -201,10 +200,6 @@ export const homeSchema = z.object({
     }),
     about: z.object({
         headline: localizedSchema,
-        narrative: localizedSchema,
-        link: z.object({
-            label: localizedSchema,
-        }),
     }),
   testimonials: z.object({
     eyebrow: localizedSchema,
@@ -212,7 +207,6 @@ export const homeSchema = z.object({
   }),
   method: z.object({
     title: localizedSchema,
-    body: localizedSchema,
   }),
   packs: z.object({
     individuals: localizedHomePacksSchema,
@@ -310,6 +304,24 @@ export const getPayments = () => loadJson("payments.json", paymentsSchema);
 export const getSiteConfig = () => loadJson("site.json", siteConfigSchema);
 export const getLeadFormCopy = (locale: Locale) =>
     loadJson(`forms/lead.${locale}.json`, leadFormSchema);
+
+const loadMarkdown = cache(async (filePath: string) => {
+    const file = await fs.readFile(filePath, "utf8");
+    return file.trim();
+});
+
+export const getHomeMarkdown = (
+    section: "hero" | "about" | "method",
+    locale: Locale
+) => {
+    const filePath = path.join(
+        process.cwd(),
+        "content",
+        "home",
+        `${section}.${locale}.md`
+    );
+    return loadMarkdown(filePath);
+};
 
 export type Locale = "ar" | "en";
 
