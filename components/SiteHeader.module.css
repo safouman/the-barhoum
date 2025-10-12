@@ -1,85 +1,93 @@
 .header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  inset-inline: 0;
-  height: 4rem;
-  overflow: visible;
+    top: 0;
+    z-index: 50;
+    inset-inline: 0;
+    height: 4rem;
+    overflow: visible;
 }
 
 .chrome {
-  position: relative;
-  background: transparent;
-  transition: background 200ms ease-out, border-color 200ms ease-out, box-shadow 200ms ease-out;
+    position: relative;
+    background: transparent;
+    transition: background 200ms ease-out, border-color 200ms ease-out,
+        box-shadow 200ms ease-out;
 }
 
 .scrolled .chrome {
-  background: rgba(255, 255, 255, 0.65);
-  -webkit-backdrop-filter: saturate(1.05) blur(6px);
-  backdrop-filter: saturate(1.05) blur(6px);
-  border-bottom: 1px solid rgba(42, 214, 202, 0.12);
+    background: rgba(255, 255, 255, 0.65);
+    -webkit-backdrop-filter: saturate(1.05) blur(6px);
+    backdrop-filter: saturate(1.05) blur(6px);
+    border-bottom: 1px solid rgba(42, 214, 202, 0.12);
 }
 
 /* Soft wave at the footer of the header */
 .wave {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -12px; /* overlap content by ~12px */
-  height: 12px; /* amplitude ~10–12px at top */
-  pointer-events: none;
-  transition: height 200ms ease-out, bottom 200ms ease-out;
-  /* Soft fade at the bottom so it melts into the page */
-  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -12px; /* overlap content by ~12px */
+    height: 12px; /* amplitude ~10–12px at top */
+    pointer-events: none;
+    transition: height 200ms ease-out, bottom 200ms ease-out;
+    /* Soft fade at the bottom so it melts into the page */
+    -webkit-mask-image: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 0) 100%
+    );
+    mask-image: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 1) 0%,
+        rgba(0, 0, 0, 0) 100%
+    );
 }
 
 .wave svg {
-  display: block;
-  width: 100%;
-  height: 100%;
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 
 .wave path {
-  /* Light tint so the wave remains visible on white pages */
-  fill: #f5f7f7;
-  transition: fill 200ms ease-out;
+    /* Light tint so the wave remains visible on white pages */
+    fill: #f5f7f7;
+    transition: fill 200ms ease-out;
 }
 
 /* Gentle grey→white gradient overlay, keeps the look premium and subtle */
 .wave::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, #f5f7f7 0%, #ffffff 70%);
-  pointer-events: none;
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, #f5f7f7 0%, #ffffff 70%);
+    pointer-events: none;
 }
 
 .scrolled .wave {
-  height: 6px; /* reduce amplitude ~50% when scrolled */
-  bottom: -6px;
+    height: 6px; /* reduce amplitude ~50% when scrolled */
+    bottom: -6px;
 }
 
 /* Nav link pill for active state */
 .nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
 }
 
 .link {
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  transition: background 200ms ease-out, color 200ms ease-out;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    transition: background 200ms ease-out, color 200ms ease-out;
 }
 
 .link:hover {
-  background: rgba(42, 214, 202, 0.10);
-  color: var(--color-primary);
+    background: rgba(42, 214, 202, 0.1);
+    color: var(--color-primary);
 }
 
 .active {
-  background: rgba(42, 214, 202, 0.18);
-  color: var(--color-primary);
+    background: rgba(42, 214, 202, 0.18);
+    color: var(--color-primary);
 }
