@@ -23,14 +23,14 @@ export function SiteHeader({ ui, site, paymentSlug }: SiteHeaderProps) {
         label: option.label,
     }));
 
-    const navItems = [{ href: "/links", label: currentUi.nav.links }];
+    const navItems: { href: string; label: string }[] = [];
 
-    if (paymentSlug) {
-        navItems.push({
-            href: `/pay/${paymentSlug}`,
-            label: currentUi.nav.pay,
-        });
-    }
+    // if (paymentSlug) {
+    //     navItems.push({
+    //         href: `/pay/${paymentSlug}`,
+    //         label: currentUi.nav.pay,
+    //     });
+    // }
 
     return (
         <header className=" top-0 z-50 border-border bg-background/70 backdrop-blur h-16">
