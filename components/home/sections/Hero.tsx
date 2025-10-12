@@ -50,7 +50,6 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
                         isRTL ? styles.textRtl : styles.textLtr
                     )}
                 >
-                    <span className="text-eyebrow">{hero.cta[locale]}</span>
                     <h1 className="text-display font-heading">
                         {hero.title[locale]}
                     </h1>
@@ -63,7 +62,8 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
                                         {lines.map((line, lineIndex) => (
                                             <span key={lineIndex}>
                                                 {line}
-                                                {lineIndex < lines.length - 1 && <br />}
+                                                {lineIndex <
+                                                    lines.length - 1 && <br />}
                                             </span>
                                         ))}
                                     </p>
@@ -83,7 +83,6 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale }) => {
                     >
                         {signature}
                     </p>
-              
                 </div>
             </Container>
         </section>
