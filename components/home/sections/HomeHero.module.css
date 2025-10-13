@@ -15,7 +15,9 @@
     min-height: inherit;
     align-items: center;
     gap: clamp(24px, 5vw, 40px);
-    padding-inline: clamp(1rem, 6vw, 4rem);
+    box-sizing: border-box;
+    padding-inline: clamp(1.5rem, 6vw, 4.75rem);
+    padding-block: clamp(3rem, 7vw, 5rem);
     height: 100vh;
 }
 
@@ -27,13 +29,13 @@
 @media (min-width: 768px) {
     .containerLtr {
         justify-items: end;
-        padding-right: clamp(420px, 48vw, 860px);
-        padding-left: clamp(1rem, 6vw, 4rem);
+        padding-right: clamp(360px, 44vw, 720px);
+        padding-left: clamp(1.5rem, 6vw, 4.75rem);
     }
     .containerRtl {
         justify-items: start;
-        padding-left: clamp(420px, 48vw, 860px);
-        padding-right: clamp(1rem, 6vw, 4rem);
+        padding-left: clamp(360px, 44vw, 720px);
+        padding-right: clamp(1.5rem, 6vw, 4.75rem);
     }
 }
 
@@ -43,7 +45,7 @@
     display: flex;
     grid-area: text;
     align-self: center;
-    max-width: 65ch;
+    max-width: 68ch;
     flex-direction: column;
     gap: clamp(24px, 5vw, 40px);
 }
