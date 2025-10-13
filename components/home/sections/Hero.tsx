@@ -5,7 +5,11 @@ import { Container } from "@/components/Container";
 import type { HomeThemeDefinition } from "../types";
 import styles from "./HomeHero.module.css";
 
-export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale, copy }) => {
+export const HomeHero: HomeThemeDefinition["Hero"] = ({
+    hero,
+    locale,
+    copy,
+}) => {
     const isRTL = locale === "ar";
     const signature = hero.signature[locale];
 
@@ -21,7 +25,7 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale, copy }) =>
                 )}
             >
                 <Image
-                    src="/images/hero.jpg"
+                    src="/images/hero.jpeg"
                     alt="Portrait"
                     className={clsx(
                         styles.imageMedia,
@@ -32,12 +36,17 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale, copy }) =>
                     fill
                     sizes="(min-width: 1024px) 50vw, (min-width: 768px) 60vw, 100vw"
                 />
+                <span
+                    className={clsx(
+                        styles.edgeFade,
+                        isRTL ? styles.edgeFadeRtl : styles.edgeFadeLtr
+                    )}
+                />
             </div>
             <Container
                 className={clsx(
                     styles.container,
-                    isRTL ? styles.containerRtl : styles.containerLtr,
-                    "pt-[12px] md:pt-[18px]"
+                    isRTL ? styles.containerRtl : styles.containerLtr
                 )}
             >
                 <div
@@ -46,24 +55,42 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale, copy }) =>
                         isRTL ? styles.textRtl : styles.textLtr
                     )}
                 >
-                    <h1 className="text-display font-heading leading-[1.2]">
+                    <h1 className="text-display font-heading">
                         {hero.title[locale]}
                     </h1>
-                    <div
-                        className={clsx(
-                            styles.copy,
-                            isRTL ? styles.copyRtl : styles.copyLtr
-                        )}
-                        dir={isRTL ? "rtl" : "ltr"}
-                    >
+                    <div className="text-lead space-y-4" dir={isRTL ? "rtl" : "ltr"}>
                         <ReactMarkdown
                             components={{
-                                p: ({ children }) => <p>{children}</p>,
-                                strong: ({ children }) => <strong>{children}</strong>,
-                                em: ({ children }) => <em>{children}</em>,
-                                ol: ({ children }) => <ol>{children}</ol>,
-                                ul: ({ children }) => <ul>{children}</ul>,
-                                li: ({ children }) => <li>{children}</li>,
+                                p: ({ children }) => <p className="m-0">{children}</p>,
+                                strong: ({ children }) => (
+                                    <strong className="font-semibold">{children}</strong>
+                                ),
+                                em: ({ children }) => <em className="italic">{children}</em>,
+                                ol: ({ children }) => (
+                                    <ol
+                                        className={clsx(
+                                            "list-decimal space-y-3 pl-6",
+                                            isRTL && "pl-0 pr-6"
+                                        )}
+                                        dir={isRTL ? "rtl" : "ltr"}
+                                    >
+                                        {children}
+                                    </ol>
+                                ),
+                                ul: ({ children }) => (
+                                    <ul
+                                        className={clsx(
+                                            "list-disc space-y-3 pl-6",
+                                            isRTL && "pl-0 pr-6"
+                                        )}
+                                        dir={isRTL ? "rtl" : "ltr"}
+                                    >
+                                        {children}
+                                    </ul>
+                                ),
+                                li: ({ children }) => (
+                                    <li className="leading-relaxed">{children}</li>
+                                ),
                             }}
                         >
                             {copy}
