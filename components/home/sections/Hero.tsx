@@ -46,40 +46,24 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale, copy }) =>
                         isRTL ? styles.textRtl : styles.textLtr
                     )}
                 >
-                    <h1 className="text-display font-heading">
+                    <h1 className="text-display font-heading leading-[1.2]">
                         {hero.title[locale]}
                     </h1>
-                    <div className="text-lead space-y-4" dir={isRTL ? "rtl" : "ltr"}>
+                    <div
+                        className={clsx(
+                            styles.copy,
+                            isRTL ? styles.copyRtl : styles.copyLtr
+                        )}
+                        dir={isRTL ? "rtl" : "ltr"}
+                    >
                         <ReactMarkdown
                             components={{
-                                p: ({ children }) => <p className="m-0">{children}</p>,
-                                strong: ({ children }) => (
-                                    <strong className="font-semibold">{children}</strong>
-                                ),
-                                em: ({ children }) => <em className="italic">{children}</em>,
-                                ol: ({ children }) => (
-                                    <ol
-                                        className={clsx(
-                                            "list-decimal space-y-3 pl-6",
-                                            isRTL && "pl-0 pr-6"
-                                        )}
-                                        dir={isRTL ? "rtl" : "ltr"}
-                                    >
-                                        {children}
-                                    </ol>
-                                ),
-                                ul: ({ children }) => (
-                                    <ul
-                                        className={clsx(
-                                            "list-disc space-y-3 pl-6",
-                                            isRTL && "pl-0 pr-6"
-                                        )}
-                                        dir={isRTL ? "rtl" : "ltr"}
-                                    >
-                                        {children}
-                                    </ul>
-                                ),
-                                li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+                                p: ({ children }) => <p>{children}</p>,
+                                strong: ({ children }) => <strong>{children}</strong>,
+                                em: ({ children }) => <em>{children}</em>,
+                                ol: ({ children }) => <ol>{children}</ol>,
+                                ul: ({ children }) => <ul>{children}</ul>,
+                                li: ({ children }) => <li>{children}</li>,
                             }}
                         >
                             {copy}
