@@ -98,7 +98,7 @@
 
 }
 
-@media (min-width: 1680px) {
+@media (min-width: 1600px) {
     .container {
         height: 100vh;
         padding-block: clamp(2.1rem, 4.75vw, 3.75rem);
@@ -116,12 +116,12 @@
     }
 
     .text {
-        max-width: clamp(82ch, 44vw, 90ch);
+        max-width: clamp(78ch, 44vw, 86ch);
         gap: clamp(16px, 2.2vw, 26px);
     }
 
     .text > div {
-        max-width: clamp(78ch, 43vw, 88ch);
+        max-width: clamp(76ch, 43vw, 84ch);
         margin-top: clamp(0.85rem, 1.8vw, 1.3rem);
         line-height: clamp(1.54, 1.8vw, 1.58);
     }
@@ -154,12 +154,12 @@
     }
 
     .text {
-        max-width: clamp(90ch, 45vw, 96ch);
+        max-width: min(75%, clamp(82ch, 45vw, 90ch));
         gap: clamp(16px, 2vw, 24px);
     }
 
     .text > div {
-        max-width: clamp(86ch, 44vw, 94ch);
+        max-width: min(72%, clamp(80ch, 44vw, 88ch));
         margin-top: clamp(0.8rem, 1.5vw, 1.2rem);
         line-height: clamp(1.5, 1.6vw, 1.55);
     }
