@@ -7,6 +7,12 @@
     min-height: 100vh;
 }
 
+.heroLtr {
+}
+
+.heroRtl {
+}
+
 .container {
     position: relative;
     display: grid;
@@ -335,18 +341,46 @@
 
 /* On mobile, full-width background with overlay and centered text */
 @media (max-width: 767px) {
-    .imageLayer {
-        left: 0;
-        right: 0;
-        width: 100%;
-        height: 100%;
-        inset: 0;
+    .hero {
+        position: relative;
+        min-height: min(100svh, 100vh);
+        background-color: #ffffff;
+        background-attachment: scroll;
     }
 
-    .imageMedia {
-        object-fit: cover;
-        object-position: center;
-        opacity: 1;
+    .hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 2;
+        background-image: image-set(
+            url("/images/hero.jpeg") 1x,
+            url("/images/hero.jpeg") 2x
+        );
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center top;
+        transform: none;
+    }
+
+    .heroRtl::before {
+        transform: scaleX(-1);
+        transform-origin: center;
+    }
+
+    .hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 3;
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+    .imageLayer,
+    .edgeFade {
+        display: none;
     }
 
     .maskLtr,
@@ -355,57 +389,36 @@
         mask-image: none;
     }
 
-    .hero::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-            to bottom,
-            rgba(255, 255, 255, 0.85) 0%,
-            rgba(255, 255, 255, 0.92) 48%,
-            rgba(255, 255, 255, 0.98) 100%
-        );
-        z-index: 4;
-        pointer-events: none;
-    }
-
-    .hero::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-            to bottom,
-            rgba(255, 255, 255, 0.85) 0%,
-            rgba(255, 255, 255, 0.8) 50%,
-            rgba(255, 255, 255, 0.85) 100%
-        );
-        z-index: 5;
-        pointer-events: none;
-    }
-
     .container {
         justify-items: center;
         align-items: center;
         text-align: center;
         min-height: auto;
         height: auto;
-        padding-block: clamp(24px, 8vw, 28px);
         padding-inline: clamp(20px, 6vw, 24px);
+        padding-top: calc(clamp(24px, 8vw, 32px) + env(safe-area-inset-top));
+        padding-bottom: calc(clamp(24px, 8vw, 28px) + env(safe-area-inset-bottom));
+        z-index: 4;
     }
 
     .hero h1 {
-        font-size: clamp(2rem, 8vw, 2.25rem);
-        line-height: clamp(1.15, 3vw, 1.2);
-        max-width: clamp(18ch, 80vw, 22ch);
+        font-size: clamp(1.75rem, 6vw, 2.5rem);
+        line-height: 1.05;
+        max-width: clamp(20ch, 82vw, 24ch);
         margin: 0;
-        margin-bottom: clamp(0.6rem, 3.5vw, 0.7rem);
+        margin-bottom: clamp(18px, 3.5vw, 22px);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+        position: relative;
+        z-index: 4;
     }
 
     .text {
         align-items: center;
         text-align: center;
-        max-width: clamp(30ch, 92vw, 34ch);
-        gap: clamp(18px, 6vw, 22px);
+        max-width: clamp(32ch, 92vw, 36ch);
+        gap: clamp(16px, 2.5vw, 20px);
+        position: relative;
+        z-index: 4;
     }
 
     .textRtl,
@@ -417,28 +430,29 @@
 
     .text > div {
         justify-content: center !important;
-        max-width: clamp(30ch, 92vw, 34ch);
-        font-size: clamp(1rem, 3.4vw, 1.06rem);
-        line-height: clamp(1.6, 4vw, 1.7);
-        margin-top: clamp(1.9rem, 6vw, 2.1rem);
+        display: grid;
+        max-width: clamp(32ch, 92vw, 36ch);
+        font-size: clamp(1rem, 3.8vw, 1.1875rem);
+        line-height: clamp(1.45, 3.6vw, 1.5);
+        gap: clamp(16px, 2.5vw, 20px);
+        margin: 0;
+        position: relative;
+        z-index: 4;
     }
 
-    .text > div > * + * {
-        margin-top: clamp(1rem, 3.2vw, 1.15rem);
+    .text > div > * {
+        margin: 0;
     }
 
-    .text > p {
-        margin-top: clamp(1.1rem, 4.5vw, 1.4rem);
-        max-width: clamp(30ch, 92vw, 34ch);
-        text-align: center;
+    .signature {
+        margin-top: clamp(24px, 4vw, 28px);
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+        position: relative;
+        z-index: 4;
     }
 
-    .textRtl {
-        max-width: clamp(32ch, 96vw, 36ch);
-    }
-
-    .textRtl > div {
-        max-width: clamp(32ch, 96vw, 36ch);
+    .hero :where(p, li) {
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
     }
 }
 

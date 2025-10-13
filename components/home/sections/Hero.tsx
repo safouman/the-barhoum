@@ -14,7 +14,12 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({
     const signature = hero.signature[locale];
 
     return (
-        <section className={styles.hero}>
+        <section
+            className={clsx(
+                styles.hero,
+                isRTL ? styles.heroRtl : styles.heroLtr
+            )}
+        >
             {/* Fixed-side image layer */}
             <div
                 className={clsx(
