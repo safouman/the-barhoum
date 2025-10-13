@@ -30,7 +30,7 @@ export function LangSwitch({ options, className }: LangSwitchProps) {
     return (
         <div
             className={clsx(
-                "inline-flex overflow-hidden rounded-[8px] border border-border",
+                "inline-flex overflow-hidden rounded-[6px] border border-border text-[0.7rem] md:text-sm",
                 isRtl ? "flex-row-reverse" : "flex-row",
                 className
             )}
@@ -41,7 +41,7 @@ export function LangSwitch({ options, className }: LangSwitchProps) {
                     type="button"
                     key={option.value}
                     className={clsx(
-                        "px-3 py-1 text-sm transition",
+                        "px-1.5 py-1 md:px-2.5 md:py-1 transition text-[0.7rem] md:text-sm",
                         option.value === locale
                             ? "bg-primary text-accent"
                             : "bg-transparent text-subtle hover:bg-primary/10 hover:text-primary"
