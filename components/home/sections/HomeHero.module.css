@@ -343,7 +343,7 @@
 @media (max-width: 767px) {
     .hero {
         position: relative;
-        min-height: min(100svh, 100vh);
+        min-height: min(100svh, 1200px);
         background-color: #ffffff;
         background-attachment: scroll;
     }
@@ -354,13 +354,14 @@
         inset: 0;
         pointer-events: none;
         z-index: 2;
+        background-image: url("/images/hero.jpeg");
         background-image: image-set(
             url("/images/hero.jpeg") 1x,
             url("/images/hero.jpeg") 2x
         );
         background-size: cover;
         background-repeat: no-repeat;
-        background-position: center top;
+        background-position: center;
         transform: none;
     }
 
@@ -375,7 +376,7 @@
         inset: 0;
         pointer-events: none;
         z-index: 3;
-        background: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.88);
     }
 
     .imageLayer,
@@ -390,24 +391,26 @@
     }
 
     .container {
-        justify-items: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
         align-items: center;
         text-align: center;
-        min-height: auto;
-        height: auto;
+        min-height: 100%;
+        height: 100%;
         padding-inline: clamp(20px, 6vw, 24px);
-        padding-top: calc(clamp(24px, 8vw, 32px) + env(safe-area-inset-top));
-        padding-bottom: calc(clamp(24px, 8vw, 28px) + env(safe-area-inset-bottom));
+        padding-top: calc(clamp(32px, 8vh, 72px) + env(safe-area-inset-top));
+        padding-bottom: calc(clamp(24px, 6vh, 48px) + env(safe-area-inset-bottom));
+        gap: clamp(20px, 3vw, 26px);
         z-index: 4;
     }
 
     .hero h1 {
-        font-size: clamp(1.75rem, 6vw, 2.5rem);
-        line-height: 1.05;
-        max-width: clamp(20ch, 82vw, 24ch);
-        margin: 0;
-        margin-bottom: clamp(18px, 3.5vw, 22px);
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+        font-size: clamp(28px, 6.5vw, 42px);
+        line-height: 1.15;
+        max-width: clamp(22ch, 84vw, 26ch);
+        color: #1a1a1a;
+        margin: 0 0 clamp(8px, 2vh, 16px);
         position: relative;
         z-index: 4;
     }
@@ -415,8 +418,9 @@
     .text {
         align-items: center;
         text-align: center;
-        max-width: clamp(32ch, 92vw, 36ch);
-        gap: clamp(16px, 2.5vw, 20px);
+        max-width: clamp(34ch, 92vw, 36ch);
+        gap: clamp(18px, 2.5vh, 26px);
+        color: #2e2e2e;
         position: relative;
         z-index: 4;
     }
@@ -431,28 +435,34 @@
     .text > div {
         justify-content: center !important;
         display: grid;
-        max-width: clamp(32ch, 92vw, 36ch);
-        font-size: clamp(1rem, 3.8vw, 1.1875rem);
-        line-height: clamp(1.45, 3.6vw, 1.5);
-        gap: clamp(16px, 2.5vw, 20px);
+        max-width: clamp(34ch, 92vw, 36ch);
+        font-size: clamp(15px, 3.8vw, 18px);
+        line-height: 1.55;
+        gap: clamp(18px, 2.5vh, 26px);
         margin: 0;
+        color: #2e2e2e;
         position: relative;
         z-index: 4;
     }
 
     .text > div > * {
         margin: 0;
+        color: inherit;
+    }
+
+    .textRtl {
+        max-width: clamp(30ch, 90vw, 32ch);
+    }
+
+    .textRtl > div {
+        max-width: clamp(30ch, 90vw, 32ch);
     }
 
     .signature {
-        margin-top: clamp(24px, 4vw, 28px);
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+        margin-top: clamp(24px, 4vh, 36px);
+        color: inherit;
         position: relative;
         z-index: 4;
-    }
-
-    .hero :where(p, li) {
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
     }
 }
 
