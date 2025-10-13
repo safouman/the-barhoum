@@ -1,4 +1,4 @@
-I’m Ibrahim Ben Abdallah — also known as Barhoum the believer, a self-leadership coach and strategic guide.
+also known as Barhoum the believer, a self-leadership coach and strategic guide.
 
 I help people turn confusion into clarity, emotional chaos into structure, and pain into purpose. My work bridges psychology, spirituality, and strategy—teaching not how to do more, but how to move right.
 

@@ -33,22 +33,24 @@ export function SiteHeader({ ui, site, paymentSlug }: SiteHeaderProps) {
     // }
 
     return (
-        <header className=" top-0 z-50 border-border bg-background/70 backdrop-blur h-16">
-            <Container className="flex items-center gap-sm h-full">
+        <header className="relative top-0 z-50 border-border bg-background/70 backdrop-blur h-16 overflow-visible">
+            <Container className="flex items-center gap-sm h-full overflow-visible">
                 <div className="flex flex-1 flex-wrap items-center gap-4">
                     <Link
                         href="/"
-                        className="inline-flex items-center relative z-10"
+                        className="inline-flex items-center relative z-10 overflow-visible"
                         aria-label={brandLabel}
                     >
-                        <Image
-                            src="/images/logo.png"
-                            alt={brandLabel}
-                            priority
-                            width={80}
-                            height={80}
-                            className="h-[4rem] w-auto"
-                        />
+                        <span className="relative block translate-y-[12px] md:translate-y-[18px] z-20 overflow-visible">
+                            <Image
+                                src="/images/logo.png"
+                                alt={brandLabel}
+                                priority
+                                width={96}
+                                height={96}
+                                className="h-[4.5rem] md:h-[5rem] w-auto"
+                            />
+                        </span>
                     </Link>
                     {navItems.length > 0 && (
                         <nav

@@ -36,7 +36,8 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({ hero, locale, copy }) =>
             <Container
                 className={clsx(
                     styles.container,
-                    isRTL ? styles.containerRtl : styles.containerLtr
+                    isRTL ? styles.containerRtl : styles.containerLtr,
+                    "pt-[12px] md:pt-[18px]"
                 )}
             >
                 <div
