@@ -39,6 +39,111 @@
     }
 }
 
+@media (min-width: 1440px) {
+    .container {
+        padding-block: clamp(2.5rem, 6vw, 4.25rem);
+        padding-inline: clamp(2.5rem, 7vw, 6rem);
+    }
+
+    .containerLtr {
+        padding-right: clamp(330px, 42vw, 640px);
+        padding-left: clamp(2.5rem, 7vw, 5.5rem);
+    }
+
+    .containerRtl {
+        padding-left: clamp(330px, 42vw, 640px);
+        padding-right: clamp(2.5rem, 7vw, 5.5rem);
+    }
+
+    .text {
+        max-width: clamp(70ch, 42vw, 80ch);
+        gap: clamp(20px, 2.6vw, 30px);
+    }
+
+    .text > div {
+        max-width: clamp(66ch, 40vw, 78ch);
+        margin-top: clamp(1rem, 2.2vw, 1.5rem);
+    }
+
+    .text > div > * + * {
+        margin-top: clamp(1.4rem, 2vw, 1.85rem);
+    }
+
+    .imageLayer {
+        width: clamp(420px, 45vw, 880px);
+    }
+}
+
+@media (min-width: 1680px) {
+    .container {
+        padding-block: clamp(2.25rem, 5vw, 4rem);
+        padding-inline: clamp(2.75rem, 7.5vw, 6.5rem);
+    }
+
+    .containerLtr {
+        padding-right: clamp(320px, 40vw, 620px);
+        padding-left: clamp(2.75rem, 7.5vw, 6rem);
+    }
+
+    .containerRtl {
+        padding-left: clamp(320px, 40vw, 620px);
+        padding-right: clamp(2.75rem, 7.5vw, 6rem);
+    }
+
+    .text {
+        max-width: clamp(78ch, 44vw, 88ch);
+        gap: clamp(18px, 2.4vw, 28px);
+    }
+
+    .text > div {
+        max-width: clamp(74ch, 43vw, 86ch);
+        margin-top: clamp(0.95rem, 1.9vw, 1.4rem);
+    }
+
+    .text > div > * + * {
+        margin-top: clamp(1.35rem, 1.8vw, 1.75rem);
+    }
+
+    .imageLayer {
+        width: clamp(420px, 44vw, 880px);
+    }
+}
+
+@media (min-width: 1920px) {
+    .container {
+        padding-block: clamp(2rem, 4.5vw, 3.75rem);
+        padding-inline: clamp(3rem, 8vw, 7rem);
+    }
+
+    .containerLtr {
+        padding-right: clamp(300px, 38vw, 560px);
+        padding-left: clamp(3rem, 8vw, 6.25rem);
+    }
+
+    .containerRtl {
+        padding-left: clamp(300px, 38vw, 560px);
+        padding-right: clamp(3rem, 8vw, 6.25rem);
+    }
+
+    .text {
+        max-width: clamp(86ch, 45vw, 96ch);
+        gap: clamp(18px, 2vw, 26px);
+    }
+
+    .text > div {
+        max-width: clamp(82ch, 44vw, 94ch);
+        margin-top: clamp(0.9rem, 1.6vw, 1.35rem);
+    }
+
+    .text > div > * + * {
+        margin-top: clamp(1.25rem, 1.6vw, 1.6rem);
+    }
+
+    .imageLayer {
+        width: clamp(420px, 43vw, 880px);
+    }
+}
+
 .text {
     position: relative;
     z-index: 10;
@@ -48,6 +153,15 @@
     max-width: 68ch;
     flex-direction: column;
     gap: clamp(24px, 5vw, 40px);
+}
+
+.text > div {
+    max-width: inherit;
+    margin-top: clamp(1.25rem, 3vw, 1.75rem);
+}
+
+.text > div > * + * {
+    margin-top: clamp(1.5rem, 2.6vw, 2rem);
 }
 
 .textRtl {
