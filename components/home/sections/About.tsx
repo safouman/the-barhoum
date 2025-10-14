@@ -19,22 +19,22 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
 
     return (
         <Section id="about" className="bg-background">
-            <Container>
+            <Container className="pt-20 pb-16 sm:pt-24 sm:pb-20 md:pt-24 md:pb-24">
                 {/* Unified content block with RTL-specific styling */}
                 <div
                     className={clsx(
-                        "mx-auto text-center",
-                        isRTL ? "max-w-4xl space-y-7" : "max-w-4xl space-y-8"
+                        "mx-auto flex w-full max-w-[92vw] flex-col items-center text-center gap-12 sm:max-w-[560px] md:max-w-4xl",
+                        isRTL ? "lg:gap-14" : "lg:gap-16"
                     )}
                     dir={isRTL ? "rtl" : "ltr"}
                 >
                     {/* Quote headline */}
                     <h2
                         className={clsx(
-                            "font-heading text-text text-center",
+                            "font-heading text-text text-center break-words",
                             isRTL
-                                ? "text-section-title font-semibold"
-                                : "text-[clamp(1.8rem,4.2vw,3.2rem)] leading-[1.3] font-medium"
+                                ? "text-[clamp(1.66rem,3.6vw,2.35rem)] leading-[1.32] font-semibold"
+                                : "text-[clamp(1.85rem,4.4vw,3rem)] leading-[1.26] font-medium"
                         )}
                     >
                         {headline}
@@ -43,21 +43,34 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
                     {/* Narrative with inline link */}
                     <div
                         className={clsx(
-                            "mx-auto text-center",
-                            isRTL ? "max-w-[65ch]" : "max-w-3xl"
+                            "mx-auto w-full px-4 text-center sm:px-6",
+                            isRTL ? "max-w-[40ch]" : "max-w-[36ch]"
                         )}
                     >
                         <div
                             className={clsx(
+                                "mb-8 flex flex-col items-center text-left sm:text-center",
                                 isRTL
-                                    ? "text-body-lg text-[#444] mb-6 space-y-4"
-                                    : "text-body-lg leading-relaxed space-y-4"
+                                    ? "space-y-6 text-[clamp(0.86rem,3.2vw,0.98rem)] leading-[1.7] text-[#444]"
+                                    : "space-y-5 text-[clamp(1rem,3.6vw,1.12rem)] leading-[1.6]"
                             )}
                             dir={isRTL ? "rtl" : "ltr"}
                         >
                             <ReactMarkdown
                                 components={{
-                                    p: ({ children }) => <p className="m-0">{children}</p>,
+                                    p: ({ children }) => (
+                                        <p
+                                            className={clsx(
+                                                "m-0 text-center",
+                                                "first:relative first:mx-auto first:max-w-[92%] first:text-[clamp(1.05rem,4vw,1.2rem)] first:font-medium first:pb-5 first:after:absolute first:after:left-1/2 first:after:top-full first:after:h-[1px] first:after:w-12 first:after:-translate-x-1/2 first:after:bg-current",
+                                                isRTL
+                                                    ? "text-[clamp(0.86rem,3.2vw,0.98rem)] leading-[1.7]"
+                                                    : "text-[clamp(1rem,3.6vw,1.12rem)] leading-[1.6]"
+                                            )}
+                                        >
+                                            {children}
+                                        </p>
+                                    ),
                                     strong: ({ children }) => (
                                         <strong className="font-semibold">{children}</strong>
                                     ),
@@ -84,7 +97,11 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
                                             {children}
                                         </ul>
                                     ),
-                                    li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+                                    li: ({ children }) => (
+                                        <li className="leading-relaxed text-center sm:text-left">
+                                            {children}
+                                        </li>
+                                    ),
                                     a: ({ children, href }) => (
                                         <a
                                             href={href}
@@ -107,8 +124,8 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
                 {video && (
                     <div
                         className={clsx(
-                            "text-center space-y-3",
-                            isRTL ? "mt-5 pb-14" : "mt-10 pb-10"
+                            "text-center space-y-4",
+                            isRTL ? "mt-6 pb-16" : "mt-10 pb-12"
                         )}
                         dir={isRTL ? "rtl" : "ltr"}
                     >
