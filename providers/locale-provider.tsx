@@ -46,10 +46,10 @@ export function LocaleProvider({ children, initialLocale = DEFAULT_LOCALE }: { c
 
   useEffect(() => {
     const param = searchParams?.get("lang");
-    if (isLocale(param) && param !== locale) {
-      setLocaleState(param);
-    }
-  }, [searchParams, locale]);
+    if (!isLocale(param)) return;
+
+    setLocaleState((prev) => (param !== prev ? param : prev));
+  }, [searchParams]);
 
   useEffect(() => {
     if (typeof document !== "undefined") {
