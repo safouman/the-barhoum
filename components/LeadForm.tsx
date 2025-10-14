@@ -121,7 +121,9 @@ export function LeadForm({
 
     const formatTemplate = useCallback(
         (template: string, current: number, total: number) =>
-            template.replace("{current}", `${current}`).replace("{total}", `${total}`),
+            template
+                .replace("{current}", `${current}`)
+                .replace("{total}", `${total}`),
         []
     );
     const [opened, setOpened] = useState(false);
@@ -340,7 +342,11 @@ export function LeadForm({
         );
     }, [step, steps, validateField, values]);
 
-    const progressLine = formatTemplate(progressLabelTemplate, step + 1, totalSteps);
+    const progressLine = formatTemplate(
+        progressLabelTemplate,
+        step + 1,
+        totalSteps
+    );
 
     const helperDescriptionId = `step-${currentStep.id}-helper`;
 
@@ -351,7 +357,11 @@ export function LeadForm({
 
     useEffect(() => {
         if (!stepAnnouncerRef.current) return;
-        const baseLine = formatTemplate(formCopy.chipLabelTemplate, step + 1, totalSteps);
+        const baseLine = formatTemplate(
+            formCopy.chipLabelTemplate,
+            step + 1,
+            totalSteps
+        );
         const announcement =
             locale === "ar" ? `تم الانتقال إلى ${baseLine}` : baseLine;
         stepAnnouncerRef.current.textContent = announcement;
@@ -429,9 +439,7 @@ export function LeadForm({
                     </p>
                 </header>
                 <div className="rounded-[18px] border border-border/40 bg-background/30 px-5 py-4 text-start text-sm text-subtle">
-                    <p className="font-medium text-text/90">
-                        {summaryTitle}
-                    </p>
+                    <p className="font-medium text-text/90">{summaryTitle}</p>
                     <p className="mt-1 text-subtle/80">
                         {labels.category}: {selectedCategory ?? "-"}
                     </p>
@@ -448,13 +456,13 @@ export function LeadForm({
 
     return (
         <form
-            className="relative mx-auto flex w-full max-w-[660px] flex-col gap-8 rounded-[22px] border border-border/35 bg-white px-6 pt-8 pb-12 shadow-[0_26px_48px_-22px_rgba(15,23,42,0.18)] sm:pb-10"
+            className="relative mx-auto flex w-full max-w-[660px] flex-col gap-8 rounded-[14px] border border-border/35 bg-white px-7 pt-6 pb-6 shadow-[0_26px_48px_-22px_rgba(15,23,42,0.18)]"
             onSubmit={handleSubmit}
             onFocus={handleFocus}
             dir={isRtl ? "rtl" : "ltr"}
             data-step={currentStep.id}
         >
-            <div className="absolute inset-x-0 top-0 flex h-[3px] overflow-hidden rounded-t-[22px] bg-primary/12">
+            <div className="absolute inset-x-0 top-0 flex h-[3px] overflow-hidden rounded-t-[14px] bg-primary/12">
                 <div
                     className="h-full bg-primary transition-all duration-300 ease-out"
                     style={{ width: `${((step + 1) / totalSteps) * 100}%` }}
@@ -475,39 +483,6 @@ export function LeadForm({
                 aria-live="polite"
                 className="sr-only"
             />
-
-            {(() => {
-                const HeaderTag = showInternalHeader ? "header" : "div";
-                return (
-                    <HeaderTag
-                        className={clsx(
-                            "text-text",
-                            isAvailabilityStep
-                                ? "space-y-4 md:space-y-3"
-                                : "space-y-3"
-                        )}
-                    >
-                        <div className="flex items-center justify-between gap-3 text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-primary/70">
-                            <span>{progressLine}</span>
-                        </div>
-                        {isAvailabilityStep && (
-                            <h2 className="text-[clamp(1.58rem,4.6vw,2.05rem)] font-heading font-semibold leading-[1.14] text-balance text-text md:hidden">
-                                {currentStep.title}
-                            </h2>
-                        )}
-                        <p
-                            id={helperDescriptionId}
-                            className={clsx(
-                                "text-sm leading-relaxed text-subtle/75",
-                                isAvailabilityStep &&
-                                    "text-base leading-relaxed text-subtle/80"
-                            )}
-                        >
-                            {currentStep.helper}
-                        </p>
-                    </HeaderTag>
-                );
-            })()}
 
             <fieldset
                 className={clsx(
@@ -562,7 +537,8 @@ export function LeadForm({
                                         isRtl ? "pl-10 pr-5" : "pr-10",
                                         isAvailabilityStep &&
                                             "h-[56px] text-[1.02rem] sm:h-[52px] sm:text-base",
-                                        error && "border-primary/55 focus:ring-primary/25 focus:border-primary/55",
+                                        error &&
+                                            "border-primary/55 focus:ring-primary/25 focus:border-primary/55",
                                         shakeField === field.id &&
                                             "animate-[leadform-shake_220ms_ease]"
                                     )}
@@ -617,7 +593,8 @@ export function LeadForm({
                                         baseTextareaClasses,
                                         isAvailabilityStep &&
                                             "min-h-[170px] text-[1.02rem] sm:min-h-[150px] sm:text-base",
-                                        error && "border-primary/55 focus:ring-primary/25 focus:border-primary/55",
+                                        error &&
+                                            "border-primary/55 focus:ring-primary/25 focus:border-primary/55",
                                         shakeField === field.id &&
                                             "animate-[leadform-shake_220ms_ease]"
                                     )}
@@ -693,9 +670,7 @@ export function LeadForm({
             </fieldset>
 
             <div className="mt-6 border-t border-[#eeeeee] pt-6">
-                <div
-                    className="flex flex-col items-center gap-6"
-                >
+                <div className="flex flex-col items-center gap-6">
                     <div
                         className={clsx(
                             "flex w-full flex-wrap items-center gap-y-2 gap-x-3 text-sm sm:pr-6",
@@ -823,12 +798,14 @@ export function LeadForm({
                     box-shadow: inset 0 1px 0 rgba(47, 110, 104, 0.08);
                 }
                 .form-navigation :global(.form-nav-button--secondary:hover),
-                .form-navigation :global(.form-nav-button--secondary:focus-visible) {
+                .form-navigation
+                    :global(.form-nav-button--secondary:focus-visible) {
                     background: rgba(58, 207, 192, 0.08);
                     border-color: rgba(58, 207, 192, 0.6);
                     color: #28534f;
                 }
-                .form-navigation :global(.form-nav-button--secondary:focus-visible) {
+                .form-navigation
+                    :global(.form-nav-button--secondary:focus-visible) {
                     box-shadow: 0 0 0 3px rgba(58, 207, 192, 0.15);
                 }
                 .form-navigation :global(.form-nav-button--primary) {
@@ -865,8 +842,7 @@ export function LeadForm({
                     box-shadow: none;
                     transform: none;
                 }
-                .form-navigation
-                    :global(.form-nav-button--primary[disabled]) {
+                .form-navigation :global(.form-nav-button--primary[disabled]) {
                     background: linear-gradient(
                         135deg,
                         rgba(167, 230, 224, 1) 0%,
