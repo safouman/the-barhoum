@@ -36,12 +36,27 @@
     },
     {
       "id": "availability",
-      "title": "Availability & background",
-      "helper": "Help us understand the best time to connect.",
+      "title": "Availability & Background",
+      "helper": "Share the window that suits you best and a quick snapshot of your care history.\n\nA little context now lets Barhoum arrive prepared for you.",
       "fields": [
-        { "id": "bestContactTime", "label": "Best time to contact", "required": true },
-        { "id": "psychologistBefore", "label": "Seen a psychologist before? If yes, diagnosis", "required": true },
-        { "id": "medicationNow", "label": "Are you taking medication now?", "required": true }
+        {
+          "id": "bestContactTime",
+          "label": "Preferred time to reach you",
+          "required": true,
+          "placeholder": "Weekday evenings, 6-8 PM"
+        },
+        {
+          "id": "psychologistBefore",
+          "label": "Have you worked with a psychologist before?",
+          "required": true,
+          "placeholder": "Yes - CBT sessions in 2022"
+        },
+        {
+          "id": "medicationNow",
+          "label": "Are you taking medication currently?",
+          "required": true,
+          "placeholder": "No medication at the moment"
+        }
       ]
     },
     {

@@ -56,12 +56,11 @@ export const HomeLeadForm: HomeThemeDefinition["LeadForm"] = ({
   return (
     <Section
       id="lead-form"
-      title={ui.form.title}
       className="border-t border-border/60 bg-background"
     >
-      <Container className="space-y-16">
-        <div className="text-center text-text">
-          <p className="text-[clamp(2.1rem,4vw,2.6rem)] font-heading font-semibold">
+      <Container className="space-y-12 md:space-y-16">
+        <div className="px-3 text-center text-text sm:px-0">
+          <p className="text-[clamp(2.1rem,4vw,2.6rem)] font-heading font-semibold leading-tight">
             {ui.form.title}
           </p>
         </div>
@@ -69,13 +68,18 @@ export const HomeLeadForm: HomeThemeDefinition["LeadForm"] = ({
         <div className="grid gap-10 md:grid-cols-[minmax(320px,360px)_minmax(0,1fr)] md:items-start">
           <div
             className={clsx(
-              "relative order-1 w-full overflow-hidden rounded-[24px] border border-border/30 bg-white px-5 py-4 text-text shadow-[0_24px_64px_rgba(15,23,42,0.08)]",
+              "relative order-1 w-full overflow-hidden rounded-[22px] border border-border/35 bg-white px-6 py-5 text-text shadow-[0_26px_48px_-22px_rgba(15,23,42,0.18)]",
               "md:max-w-[360px] md:px-7 md:py-7",
               "md:sticky md:top-28",
               isRtl ? "text-right" : "text-left"
             )}
           >
-            <span className="absolute inset-x-0 top-0 h-[3px] bg-primary" aria-hidden="true" />
+            <span
+              className="absolute inset-x-0 top-0 flex h-[3px] overflow-hidden rounded-t-[22px] bg-primary/12"
+              aria-hidden="true"
+            >
+              <span className="w-full bg-primary" />
+            </span>
             <div className="flex flex-col gap-5">
               <span
                 className={clsx(
@@ -85,7 +89,7 @@ export const HomeLeadForm: HomeThemeDefinition["LeadForm"] = ({
               >
                 {chipLabel}
               </span>
-              <p className="text-[clamp(2.1rem,3vw,2.6rem)] font-heading font-semibold text-text">
+              <p className="text-[clamp(2.1rem,3vw,2.6rem)] text-balance font-heading font-semibold text-text">
                 {panelTitle}
               </p>
               <div className="space-y-[10px] text-base leading-[1.65] text-subtle/85">

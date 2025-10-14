@@ -138,6 +138,7 @@ const leadFormFieldSchema = z.object({
     type: z.enum(["text", "email", "tel", "textarea", "number"]).optional(),
     required: z.boolean().optional(),
     options: z.array(z.string()).optional(),
+    placeholder: z.string().optional(),
 });
 
 const leadFormStepSchema = z.object({

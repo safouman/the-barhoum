@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import type {
     ChangeEvent,
     FormEvent,
@@ -71,6 +70,7 @@ type FieldConfig = {
     type?: "text" | "email" | "tel" | "textarea" | "number";
     required?: boolean;
     options?: string[];
+    placeholder?: string;
 };
 
 type StepConfig = {
@@ -179,6 +179,7 @@ export function LeadForm({
         ]
     );
     const currentStep = steps[step];
+    const isAvailabilityStep = currentStep.id === "availability";
 
     useEffect(() => {
         onStepChange?.({ index: step, step: currentStep });
@@ -253,8 +254,16 @@ export function LeadForm({
     const focusField = (fieldId: keyof LeadFormFormState) => {
         const node = fieldRefs.current[fieldId];
         if (node && typeof (node as HTMLElement).focus === "function") {
+            const shouldPreventScroll =
+                typeof window === "undefined"
+                    ? true
+                    : !window.matchMedia("(max-width: 767px)").matches;
             try {
-                (node as HTMLElement).focus({ preventScroll: true });
+                if (shouldPreventScroll) {
+                    (node as HTMLElement).focus({ preventScroll: true });
+                } else {
+                    (node as HTMLElement).focus();
+                }
             } catch (error) {
                 (node as HTMLElement).focus();
             }
@@ -334,6 +343,11 @@ export function LeadForm({
     const progressLine = formatTemplate(progressLabelTemplate, step + 1, totalSteps);
 
     const helperDescriptionId = `step-${currentStep.id}-helper`;
+
+    const baseFieldClasses =
+        "h-[52px] w-full rounded-[18px] border border-border/50 bg-white px-5 text-base text-text transition-shadow transition-colors duration-200 ease-out focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-border/50 placeholder:text-subtle/50";
+    const baseTextareaClasses =
+        "min-h-[150px] w-full rounded-[18px] border border-border/50 bg-white px-5 py-4 text-base text-text transition-shadow transition-colors duration-200 ease-out focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-border/50 placeholder:text-subtle/50";
 
     useEffect(() => {
         if (!stepAnnouncerRef.current) return;
@@ -434,12 +448,13 @@ export function LeadForm({
 
     return (
         <form
-            className="relative mx-auto flex w-full max-w-[660px] flex-col gap-8 rounded-[24px] border border-border/35 bg-white px-6 py-8 shadow-[0_26px_48px_-26px_rgba(15,23,42,0.45)]"
+            className="relative mx-auto flex w-full max-w-[660px] flex-col gap-8 rounded-[22px] border border-border/35 bg-white px-6 pt-8 pb-12 shadow-[0_26px_48px_-22px_rgba(15,23,42,0.18)] sm:pb-10"
             onSubmit={handleSubmit}
             onFocus={handleFocus}
             dir={isRtl ? "rtl" : "ltr"}
+            data-step={currentStep.id}
         >
-            <div className="absolute inset-x-0 top-0 h-[3px] overflow-hidden rounded-t-[24px] bg-primary/15">
+            <div className="absolute inset-x-0 top-0 flex h-[3px] overflow-hidden rounded-t-[22px] bg-primary/12">
                 <div
                     className="h-full bg-primary transition-all duration-300 ease-out"
                     style={{ width: `${((step + 1) / totalSteps) * 100}%` }}
@@ -461,34 +476,44 @@ export function LeadForm({
                 className="sr-only"
             />
 
-            {showInternalHeader ? (
-                <header className="space-y-4 text-text">
-                    <div className="flex items-center justify-between gap-3 text-xs uppercase tracking-[0.32em] text-primary">
-                        <span>{progressLine}</span>
-                    </div>
-                    <p
-                        id={helperDescriptionId}
-                        className="text-base leading-relaxed text-subtle/80"
+            {(() => {
+                const HeaderTag = showInternalHeader ? "header" : "div";
+                return (
+                    <HeaderTag
+                        className={clsx(
+                            "text-text",
+                            isAvailabilityStep
+                                ? "space-y-4 md:space-y-3"
+                                : "space-y-3"
+                        )}
                     >
-                        {currentStep.helper}
-                    </p>
-                </header>
-            ) : (
-                <div className="space-y-3 text-text">
-                    <div className="flex items-center justify-between gap-3 text-xs uppercase tracking-[0.32em] text-primary">
-                        <span>{progressLine}</span>
-                    </div>
-                    <p
-                        id={helperDescriptionId}
-                        className="text-sm leading-relaxed text-subtle/80"
-                    >
-                        {currentStep.helper}
-                    </p>
-                </div>
-            )}
+                        <div className="flex items-center justify-between gap-3 text-[0.72rem] font-semibold uppercase tracking-[0.28em] text-primary/70">
+                            <span>{progressLine}</span>
+                        </div>
+                        {isAvailabilityStep && (
+                            <h2 className="text-[clamp(1.58rem,4.6vw,2.05rem)] font-heading font-semibold leading-[1.14] text-balance text-text md:hidden">
+                                {currentStep.title}
+                            </h2>
+                        )}
+                        <p
+                            id={helperDescriptionId}
+                            className={clsx(
+                                "text-sm leading-relaxed text-subtle/75",
+                                isAvailabilityStep &&
+                                    "text-base leading-relaxed text-subtle/80"
+                            )}
+                        >
+                            {currentStep.helper}
+                        </p>
+                    </HeaderTag>
+                );
+            })()}
 
             <fieldset
-                className="mx-auto flex w-full max-w-[640px] flex-col gap-6"
+                className={clsx(
+                    "mx-auto flex w-full max-w-[640px] flex-col gap-6",
+                    isAvailabilityStep && "gap-7 sm:gap-6"
+                )}
                 aria-describedby={helperDescriptionId}
             >
                 {currentStep.fields.map((field, index) => {
@@ -505,12 +530,19 @@ export function LeadForm({
                             >
                         ) => handleFieldChange(field.id, event.target.value),
                         required: field.required,
+                        placeholder: field.placeholder ?? undefined,
                         dir: isRtl ? "rtl" : "ltr",
                     } as const;
 
                     if (field.options) {
                         return (
-                            <div key={field.id} className="grid gap-2">
+                            <div
+                                key={field.id}
+                                className={clsx(
+                                    "grid gap-2 scroll-mt-28",
+                                    isAvailabilityStep && "gap-2.5"
+                                )}
+                            >
                                 <label
                                     htmlFor={field.id}
                                     className="text-[0.92rem] font-semibold text-subtle/90"
@@ -525,8 +557,12 @@ export function LeadForm({
                                             node ?? null;
                                     }}
                                     className={clsx(
-                                        "w-full rounded-[16px] border border-border/60 bg-white px-5 py-4 text-base text-text transition-all duration-200 ease-out focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30",
-                                        error && "border-primary/60",
+                                        baseFieldClasses,
+                                        "appearance-none",
+                                        isRtl ? "pl-10 pr-5" : "pr-10",
+                                        isAvailabilityStep &&
+                                            "h-[56px] text-[1.02rem] sm:h-[52px] sm:text-base",
+                                        error && "border-primary/55 focus:ring-primary/25 focus:border-primary/55",
                                         shakeField === field.id &&
                                             "animate-[leadform-shake_220ms_ease]"
                                     )}
@@ -556,7 +592,13 @@ export function LeadForm({
 
                     if (field.type === "textarea") {
                         return (
-                            <div key={field.id} className="grid gap-2">
+                            <div
+                                key={field.id}
+                                className={clsx(
+                                    "grid gap-2 scroll-mt-28",
+                                    isAvailabilityStep && "gap-2.5"
+                                )}
+                            >
                                 <label
                                     htmlFor={field.id}
                                     className="text-[0.92rem] font-semibold text-subtle/90"
@@ -572,8 +614,10 @@ export function LeadForm({
                                             null;
                                     }}
                                     className={clsx(
-                                        "min-h-[140px] w-full rounded-[16px] border border-border/60 bg-white px-5 py-4 text-base text-text transition-all duration-200 ease-out focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30",
-                                        error && "border-primary/60",
+                                        baseTextareaClasses,
+                                        isAvailabilityStep &&
+                                            "min-h-[170px] text-[1.02rem] sm:min-h-[150px] sm:text-base",
+                                        error && "border-primary/55 focus:ring-primary/25 focus:border-primary/55",
                                         shakeField === field.id &&
                                             "animate-[leadform-shake_220ms_ease]"
                                     )}
@@ -593,7 +637,13 @@ export function LeadForm({
                     }
 
                     return (
-                        <div key={field.id} className="grid gap-2">
+                        <div
+                            key={field.id}
+                            className={clsx(
+                                "grid gap-2 scroll-mt-28",
+                                isAvailabilityStep && "gap-2.5"
+                            )}
+                        >
                             <label
                                 htmlFor={field.id}
                                 className="text-[0.92rem] font-semibold text-subtle/90"
@@ -609,8 +659,12 @@ export function LeadForm({
                                 }}
                                 type={field.type ?? "text"}
                                 className={clsx(
-                                    "w-full rounded-[16px] border border-border/60 bg-white px-5 py-4 text-base text-text transition-all duration-200 ease-out focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30",
-                                    error && "border-primary/60",
+                                    baseFieldClasses,
+                                    "py-0",
+                                    isAvailabilityStep &&
+                                        "h-[56px] text-[1.02rem] sm:h-[52px] sm:text-base",
+                                    error &&
+                                        "border-primary/55 focus:ring-primary/25 focus:border-primary/55",
                                     shakeField === field.id &&
                                         "animate-[leadform-shake_220ms_ease]"
                                 )}
@@ -638,14 +692,13 @@ export function LeadForm({
                 })}
             </fieldset>
 
-            <div className="mt-10 border-t border-[#eeeeee] pt-5">
+            <div className="mt-6 border-t border-[#eeeeee] pt-6">
                 <div
-                    className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between"
-                    dir="ltr"
+                    className="flex flex-col items-center gap-6"
                 >
                     <div
                         className={clsx(
-                            "flex flex-wrap items-center gap-y-2 gap-x-3 text-sm sm:pr-6",
+                            "flex w-full flex-wrap items-center gap-y-2 gap-x-3 text-sm sm:pr-6",
                             isRtl
                                 ? "justify-end text-right"
                                 : "justify-start text-left"
@@ -690,12 +743,12 @@ export function LeadForm({
                             </>
                         )}
                     </div>
-                    <div className="flex w-full flex-col items-end gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
+                    <div className="form-navigation" dir="ltr">
                         {step > 0 && (
                             <Button
                                 type="button"
                                 variant="ghost"
-                                className="px-5 py-4 sm:min-w-[140px]"
+                                className="form-nav-button form-nav-button--secondary"
                                 onClick={goToPreviousStep}
                             >
                                 {actionLabels.back}
@@ -705,7 +758,7 @@ export function LeadForm({
                         {step < totalSteps - 1 && (
                             <Button
                                 type="button"
-                                className="px-5 py-4 sm:min-w-[160px]"
+                                className="form-nav-button form-nav-button--primary"
                                 onClick={goToNextStep}
                                 disabled={!stepIsValid}
                             >
@@ -716,7 +769,7 @@ export function LeadForm({
                         {step === totalSteps - 1 && (
                             <Button
                                 type="submit"
-                                className="px-5 py-4 sm:min-w-[180px]"
+                                className="form-nav-button form-nav-button--primary"
                                 disabled={!stepIsValid || isSubmitting}
                             >
                                 {isSubmitting ? `${submitLabel}…` : submitLabel}
@@ -724,7 +777,7 @@ export function LeadForm({
                         )}
                     </div>
                 </div>
-                <p className="mt-3 text-start text-xs text-subtle/70">
+                <p className="mt-5 text-start text-xs text-subtle/70">
                     {privacyCopy}
                 </p>
             </div>
@@ -739,6 +792,100 @@ export function LeadForm({
                     }
                     75% {
                         transform: translateX(${isRtl ? "4px" : "-4px"});
+                    }
+                }
+                .form-navigation {
+                    display: flex;
+                    width: 100%;
+                    max-width: 480px;
+                    justify-content: center;
+                    gap: 0.75rem;
+                    padding: 0 1.25rem;
+                    margin: 0 auto;
+                }
+                .form-navigation :global(.form-nav-button) {
+                    border-radius: 12px;
+                    min-height: 52px;
+                    padding: 12px 20px;
+                    font-weight: 500;
+                    letter-spacing: 0.5px;
+                    text-transform: none;
+                    transition: background 0.3s ease, color 0.3s ease,
+                        box-shadow 0.3s ease, transform 0.3s ease,
+                        border-color 0.3s ease;
+                }
+                .form-navigation :global(.form-nav-button--secondary) {
+                    flex: 0.4 1 0;
+                    border-width: 1.5px;
+                    border-color: rgba(47, 110, 104, 0.25);
+                    color: #2f3e3d;
+                    background: rgba(246, 250, 249, 0.6);
+                    box-shadow: inset 0 1px 0 rgba(47, 110, 104, 0.08);
+                }
+                .form-navigation :global(.form-nav-button--secondary:hover),
+                .form-navigation :global(.form-nav-button--secondary:focus-visible) {
+                    background: rgba(58, 207, 192, 0.08);
+                    border-color: rgba(58, 207, 192, 0.6);
+                    color: #28534f;
+                }
+                .form-navigation :global(.form-nav-button--secondary:focus-visible) {
+                    box-shadow: 0 0 0 3px rgba(58, 207, 192, 0.15);
+                }
+                .form-navigation :global(.form-nav-button--primary) {
+                    flex: 0.6 1 0;
+                    background: linear-gradient(
+                        135deg,
+                        rgba(58, 207, 192, 1) 0%,
+                        rgba(42, 180, 167, 1) 100%
+                    );
+                    border-color: rgba(58, 207, 192, 1);
+                    color: #ffffff;
+                    box-shadow: 0 14px 24px -18px rgba(58, 207, 192, 0.95);
+                }
+                .form-navigation :global(.form-nav-button--primary:hover) {
+                    background: linear-gradient(
+                        135deg,
+                        rgba(52, 195, 180, 1) 0%,
+                        rgba(33, 168, 154, 1) 100%
+                    );
+                    transform: translateY(-1px);
+                    box-shadow: 0 18px 28px -18px rgba(58, 207, 192, 0.95);
+                }
+                .form-navigation :global(.form-nav-button--primary:active) {
+                    transform: translateY(0);
+                    box-shadow: 0 8px 16px -12px rgba(58, 207, 192, 0.85);
+                }
+                .form-navigation
+                    :global(.form-nav-button--primary:focus-visible) {
+                    box-shadow: 0 0 0 3px rgba(58, 207, 192, 0.2);
+                }
+                .form-navigation :global(.form-nav-button[disabled]) {
+                    opacity: 0.65;
+                    cursor: not-allowed;
+                    box-shadow: none;
+                    transform: none;
+                }
+                .form-navigation
+                    :global(.form-nav-button--primary[disabled]) {
+                    background: linear-gradient(
+                        135deg,
+                        rgba(167, 230, 224, 1) 0%,
+                        rgba(142, 214, 208, 1) 100%
+                    );
+                    border-color: rgba(142, 214, 208, 1);
+                }
+                @media (max-width: 359px) {
+                    .form-navigation {
+                        flex-direction: column;
+                        max-width: none;
+                        padding: 0 1rem;
+                    }
+                    .form-navigation :global(.form-nav-button) {
+                        width: 100%;
+                    }
+                    .form-navigation :global(.form-nav-button--primary),
+                    .form-navigation :global(.form-nav-button--secondary) {
+                        flex: 1 1 auto;
                     }
                 }
             `}</style>
