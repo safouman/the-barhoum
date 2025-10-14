@@ -132,9 +132,6 @@ export function LeadForm({
     const [errors, setErrors] = useState<FieldErrors>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const [shakeField, setShakeField] = useState<
-        keyof LeadFormFormState | null
-    >(null);
     const stepAnnouncerRef = useRef<HTMLDivElement | null>(null);
     const fieldRefs = useRef<
         Record<keyof LeadFormFormState, HTMLElement | null>
@@ -281,13 +278,6 @@ export function LeadForm({
         );
     };
 
-    const triggerShake = (fieldId: keyof LeadFormFormState) => {
-        setShakeField(fieldId);
-        window.setTimeout(() => {
-            setShakeField((current) => (current === fieldId ? null : current));
-        }, 260);
-    };
-
     const handleSubmit = (eventRef: FormEvent<HTMLFormElement>) => {
         eventRef.preventDefault();
         const validation = runStepValidation(step);
@@ -297,7 +287,6 @@ export function LeadForm({
             );
             const firstInvalidField = validation.invalidFieldIds[0];
             if (firstInvalidField) {
-                triggerShake(firstInvalidField);
                 focusField(firstInvalidField);
             }
             return;
@@ -322,7 +311,6 @@ export function LeadForm({
             );
             const firstInvalidField = validation.invalidFieldIds[0];
             if (firstInvalidField) {
-                triggerShake(firstInvalidField);
                 focusField(firstInvalidField);
             }
             return;
@@ -354,6 +342,8 @@ export function LeadForm({
         "h-[52px] w-full rounded-[18px] border border-border/50 bg-white px-5 text-base text-text transition-shadow transition-colors duration-200 ease-out focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-border/50 placeholder:text-subtle/50";
     const baseTextareaClasses =
         "min-h-[150px] w-full rounded-[18px] border border-border/50 bg-white px-5 py-4 text-base text-text transition-shadow transition-colors duration-200 ease-out focus:outline-none focus:ring-4 focus:ring-primary/20 focus:border-border/50 placeholder:text-subtle/50";
+    const errorFieldClasses =
+        "border-[#E76C6C] focus:border-[#E76C6C] focus:ring-[#E76C6C33]";
 
     useEffect(() => {
         if (!stepAnnouncerRef.current) return;
@@ -365,7 +355,6 @@ export function LeadForm({
         const announcement =
             locale === "ar" ? `تم الانتقال إلى ${baseLine}` : baseLine;
         stepAnnouncerRef.current.textContent = announcement;
-        setShakeField(null);
     }, [formatTemplate, locale, formCopy.chipLabelTemplate, step, totalSteps]);
 
     useEffect(() => {
@@ -400,9 +389,6 @@ export function LeadForm({
             }
             return next;
         });
-        if (shakeField === fieldId) {
-            setShakeField(null);
-        }
     };
 
     const handleFieldBlur = (fieldId: keyof LeadFormFormState) => {
@@ -415,7 +401,6 @@ export function LeadForm({
             const next = { ...prev };
             if (validationMessage) {
                 next[fieldId] = validationMessage;
-                triggerShake(fieldId);
             } else {
                 delete next[fieldId];
             }
@@ -493,6 +478,7 @@ export function LeadForm({
             >
                 {currentStep.fields.map((field, index) => {
                     const error = errors[field.id];
+                    const errorId = `${field.id}-error`;
                     const commonProps = {
                         id: field.id,
                         name: field.id,
@@ -507,26 +493,47 @@ export function LeadForm({
                         required: field.required,
                         placeholder: field.placeholder ?? undefined,
                         dir: isRtl ? "rtl" : "ltr",
+                        "aria-invalid": Boolean(error) || undefined,
                     } as const;
+
+                    const describedBy = error ? errorId : undefined;
+                    const fieldBlur = () => handleFieldBlur(field.id);
+                    const errorMessage = (
+                        <p
+                            id={errorId}
+                            role="alert"
+                            aria-live="polite"
+                            aria-hidden={!error}
+                            className={clsx(
+                                "mt-[4px] text-[0.82rem] leading-snug text-[#E76C6C] transition-opacity duration-200 ease-out",
+                                isRtl ? "text-right" : "text-left",
+                                error ? "opacity-100" : "opacity-0"
+                            )}
+                            dir={isRtl ? "rtl" : "ltr"}
+                        >
+                            {error || "\u00A0"}
+                        </p>
+                    );
 
                     if (field.options) {
                         return (
                             <div
                                 key={field.id}
-                                className={clsx(
-                                    "grid gap-2 scroll-mt-28",
-                                    isAvailabilityStep && "gap-2.5"
-                                )}
+                                className="scroll-mt-28"
                             >
                                 <label
                                     htmlFor={field.id}
-                                    className="text-[0.92rem] font-semibold text-subtle/90"
+                                    className={clsx(
+                                        "mb-[6px] block text-[0.92rem] font-semibold text-subtle/90",
+                                        isAvailabilityStep && "mb-[8px]"
+                                    )}
                                 >
                                     {field.label}
                                     {field.required ? " *" : ""}
                                 </label>
                                 <select
                                     {...commonProps}
+                                    aria-describedby={describedBy}
                                     ref={(node) => {
                                         fieldRefs.current[field.id] =
                                             node ?? null;
@@ -537,13 +544,9 @@ export function LeadForm({
                                         isRtl ? "pl-10 pr-5" : "pr-10",
                                         isAvailabilityStep &&
                                             "h-[56px] text-[1.02rem] sm:h-[52px] sm:text-base",
-                                        error &&
-                                            "border-primary/55 focus:ring-primary/25 focus:border-primary/55",
-                                        shakeField === field.id &&
-                                            "animate-[leadform-shake_220ms_ease]"
+                                        error && errorFieldClasses
                                     )}
-                                    aria-invalid={Boolean(error)}
-                                    onBlur={() => handleFieldBlur(field.id)}
+                                    onBlur={fieldBlur}
                                 >
                                     <option value="" disabled>
                                         --
@@ -554,14 +557,7 @@ export function LeadForm({
                                         </option>
                                     ))}
                                 </select>
-                                {error && (
-                                    <span
-                                        role="alert"
-                                        className="text-xs text-primary/80"
-                                    >
-                                        {error}
-                                    </span>
-                                )}
+                                {errorMessage}
                             </div>
                         );
                     }
@@ -570,20 +566,21 @@ export function LeadForm({
                         return (
                             <div
                                 key={field.id}
-                                className={clsx(
-                                    "grid gap-2 scroll-mt-28",
-                                    isAvailabilityStep && "gap-2.5"
-                                )}
+                                className="scroll-mt-28"
                             >
                                 <label
                                     htmlFor={field.id}
-                                    className="text-[0.92rem] font-semibold text-subtle/90"
+                                    className={clsx(
+                                        "mb-[6px] block text-[0.92rem] font-semibold text-subtle/90",
+                                        isAvailabilityStep && "mb-[8px]"
+                                    )}
                                 >
                                     {field.label}
                                     {field.required ? " *" : ""}
                                 </label>
                                 <textarea
                                     {...(commonProps as TextareaHTMLAttributes<HTMLTextAreaElement>)}
+                                    aria-describedby={describedBy}
                                     ref={(node) => {
                                         fieldRefs.current[field.id] =
                                             (node as HTMLElement | null) ??
@@ -593,22 +590,11 @@ export function LeadForm({
                                         baseTextareaClasses,
                                         isAvailabilityStep &&
                                             "min-h-[170px] text-[1.02rem] sm:min-h-[150px] sm:text-base",
-                                        error &&
-                                            "border-primary/55 focus:ring-primary/25 focus:border-primary/55",
-                                        shakeField === field.id &&
-                                            "animate-[leadform-shake_220ms_ease]"
+                                        error && errorFieldClasses
                                     )}
-                                    aria-invalid={Boolean(error)}
-                                    onBlur={() => handleFieldBlur(field.id)}
+                                    onBlur={fieldBlur}
                                 />
-                                {error && (
-                                    <span
-                                        role="alert"
-                                        className="text-xs text-primary/80"
-                                    >
-                                        {error}
-                                    </span>
-                                )}
+                                {errorMessage}
                             </div>
                         );
                     }
@@ -616,20 +602,21 @@ export function LeadForm({
                     return (
                         <div
                             key={field.id}
-                            className={clsx(
-                                "grid gap-2 scroll-mt-28",
-                                isAvailabilityStep && "gap-2.5"
-                            )}
+                            className="scroll-mt-28"
                         >
                             <label
                                 htmlFor={field.id}
-                                className="text-[0.92rem] font-semibold text-subtle/90"
+                                className={clsx(
+                                    "mb-[6px] block text-[0.92rem] font-semibold text-subtle/90",
+                                    isAvailabilityStep && "mb-[8px]"
+                                )}
                             >
                                 {field.label}
                                 {field.required ? " *" : ""}
                             </label>
                             <input
                                 {...(commonProps as InputHTMLAttributes<HTMLInputElement>)}
+                                aria-describedby={describedBy}
                                 ref={(node) => {
                                     fieldRefs.current[field.id] =
                                         (node as HTMLElement | null) ?? null;
@@ -640,12 +627,8 @@ export function LeadForm({
                                     "py-0",
                                     isAvailabilityStep &&
                                         "h-[56px] text-[1.02rem] sm:h-[52px] sm:text-base",
-                                    error &&
-                                        "border-primary/55 focus:ring-primary/25 focus:border-primary/55",
-                                    shakeField === field.id &&
-                                        "animate-[leadform-shake_220ms_ease]"
+                                    error && errorFieldClasses
                                 )}
-                                aria-invalid={Boolean(error)}
                                 inputMode={
                                     field.id === "phone" ? "tel" : undefined
                                 }
@@ -654,16 +637,9 @@ export function LeadForm({
                                         ? "ltr"
                                         : commonProps.dir
                                 }
-                                onBlur={() => handleFieldBlur(field.id)}
+                                onBlur={fieldBlur}
                             />
-                            {error && (
-                                <span
-                                    role="alert"
-                                    className="text-xs text-primary/80"
-                                >
-                                    {error}
-                                </span>
-                            )}
+                            {errorMessage}
                         </div>
                     );
                 })}
@@ -757,18 +733,6 @@ export function LeadForm({
                 </p>
             </div>
             <style jsx>{`
-                @keyframes leadform-shake {
-                    0%,
-                    100% {
-                        transform: translateX(0);
-                    }
-                    25% {
-                        transform: translateX(${isRtl ? "-4px" : "4px"});
-                    }
-                    75% {
-                        transform: translateX(${isRtl ? "4px" : "-4px"});
-                    }
-                }
                 .form-navigation {
                     display: flex;
                     width: 100%;
