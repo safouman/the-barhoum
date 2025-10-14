@@ -10,14 +10,24 @@ export const HomeMethod: HomeThemeDefinition["Method"] = ({ locale, method, mark
   return (
     <Section
       id="method"
-      title={method.title[locale]}
+      title={
+        <span
+          className={clsx(
+            !isRTL && "tracking-tight md:tracking-normal",
+            isRTL && "tracking-normal"
+          )}
+        >
+          {method.title[locale]}
+        </span>
+      }
       className="bg-surface"
     >
-      <Container>
+      <Container className="px-0 md:px-sm">
         <div
           className={clsx(
-            "mx-auto max-w-3xl text-lg leading-relaxed text-subtle",
-            isRTL ? "text-right space-y-4" : "text-left space-y-4"
+            "mx-auto max-w-3xl text-[1.05rem] leading-[1.85] text-subtle",
+            "space-y-6 px-6 py-6 md:px-0 md:py-0 md:text-lg md:leading-relaxed md:space-y-4",
+            isRTL ? "text-right" : "text-left"
           )}
           dir={isRTL ? "rtl" : "ltr"}
         >
@@ -48,7 +58,11 @@ export const HomeMethod: HomeThemeDefinition["Method"] = ({ locale, method, mark
                   {children}
                 </ul>
               ),
-              li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+              li: ({ children }) => (
+                <li className="leading-[1.75] md:leading-relaxed">
+                  {children}
+                </li>
+              ),
             }}
           >
             {markdown}

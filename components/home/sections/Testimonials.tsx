@@ -244,9 +244,9 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         </svg>
                     </div>
 
-                    <div className="relative h-full flex flex-col justify-center px-6 py-12 md:px-12 md:py-20">
+                    <div className="relative h-full flex flex-col justify-center px-6 py-10 md:px-12 md:py-20">
                         {/* Avatar with initials */}
-                        <div className="flex justify-center mb-10">
+                        <div className="flex justify-center mb-6 md:mb-10">
                             <div
                                 className="w-14 h-14 rounded-full flex items-center justify-center text-[#2AD6CA] font-bold text-base"
                                 style={{ background: "#E9F9F7" }}
@@ -256,18 +256,18 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         </div>
 
                         {/* Quote */}
-                        <div className="flex-1 flex items-center justify-center mb-8">
+                        <div className="flex-1 flex items-center justify-center mb-6 md:mb-8">
                             <blockquote
                                 className="text-center max-w-full px-2"
                                 dir={isRTL ? "rtl" : "ltr"}
                             >
                                 <p
                                     className={`
-                  font-medium leading-relaxed mb-0 text-center
+                  leading-relaxed mb-0 text-center font-normal md:font-medium text-[#0E2D2A]
                   ${
                       isRTL
-                          ? "font-heading text-[clamp(18px,2.2vw,24px)] text-[#0E2D2A]"
-                          : "font-base text-[clamp(16px,2vw,22px)] text-[#0E2D2A]"
+                          ? "font-heading text-[clamp(16px,4vw,22px)]"
+                          : "font-base text-[clamp(15px,3.6vw,20px)]"
                   }
                 `}
                                 >
@@ -280,11 +280,11 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         <footer className="text-center">
                             <div className="w-12 h-px bg-[#2AD6CA] mx-auto mb-6" />
                             <cite className="not-italic">
-                                <div className="font-bold text-[#0E2D2A] text-lg mb-2">
+                                <div className="font-semibold md:font-bold text-[#0E2D2A] text-lg mb-1 md:mb-2">
                                     {testimonial.name}
                                 </div>
                                 {testimonial.role && (
-                                    <div className="text-[#4E716D] text-sm font-light">
+                                    <div className="text-[#4E716D] text-sm font-normal md:font-light">
                                         {testimonial.role}
                                     </div>
                                 )}
@@ -310,7 +310,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
         >
             <Container>
                 <div
-                    className="text-center space-y-12 relative z-10"
+                    className="text-center space-y-10 md:space-y-12 relative z-10"
                     role="region"
                     aria-label="Customer testimonials"
                     onKeyDown={handleKeyDown}
@@ -319,15 +319,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                     onMouseLeave={startAutoPlay}
                 >
                     {/* Section header */}
-                    <div className="space-y-4">
-                        <p
-                            className={`
-              text-sm font-medium text-[#4E716D] tracking-wide
-              ${isRTL ? "font-heading" : "font-base"}
-            `}
-                        >
-                            {eyebrow}
-                        </p>
+                    <div className="space-y-3 md:space-y-4">
                         <h2
                             className={`
               text-2xl font-semibold text-[#0E2D2A]
@@ -337,6 +329,14 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                             {sectionTitle}
                         </h2>
                         <div className="w-12 h-0.5 bg-[#2AD6CA] mx-auto" />
+                        <p
+                            className={`
+              text-sm font-medium text-[#4E716D] tracking-wide
+              ${isRTL ? "font-heading" : "font-base"}
+            `}
+                        >
+                            {eyebrow}
+                        </p>
                     </div>
 
                     {/* Carousel Container */}
@@ -344,7 +344,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         {/* Carousel Track */}
                         <div
                             ref={trackRef}
-                            className="relative h-[540px] md:h-[580px] lg:h-[620px] overflow-visible flex justify-center items-center py-8"
+                            className="relative h-[520px] md:h-[580px] lg:h-[620px] overflow-visible flex justify-center items-center pt-10 pb-8 md:pt-8 md:pb-8"
                             onMouseDown={(e) => handleStart(e.clientX)}
                             onMouseMove={(e) => handleMove(e.clientX)}
                             onMouseUp={handleEnd}
@@ -379,7 +379,9 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                                     }
                                 >
                                     <svg
-                                        className="w-4 h-4"
+                                        className={`w-4 h-4 ${
+                                            isRTL ? "rotate-180" : ""
+                                        }`}
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -406,7 +408,9 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                                     }
                                 >
                                     <svg
-                                        className="w-4 h-4"
+                                        className={`w-4 h-4 ${
+                                            isRTL ? "rotate-180" : ""
+                                        }`}
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -425,7 +429,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         {/* Navigation Dots */}
                         {showDots && (
                             <div
-                                className="flex justify-center items-center gap-2 pt-20"
+                                className="flex justify-center items-center gap-2 pt-24 md:pt-20"
                                 role="tablist"
                                 aria-label="Testimonial navigation"
                             >

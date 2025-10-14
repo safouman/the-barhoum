@@ -184,6 +184,7 @@
     font-weight: 600;
     color: var(--color-text);
     margin: 0;
+    text-wrap: balance;
 }
 
 .detailsMeta {
@@ -319,5 +320,34 @@
     }
     .details {
         order: 2;
+    }
+    .option {
+        padding-block: clamp(0.95rem, 3.4vw, 1.1rem);
+        padding-inline: clamp(1.2rem, 4vw, 1.6rem);
+        min-height: 4.75rem;
+    }
+    .optionContent {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: start;
+        gap: 0.75rem;
+    }
+    .optionMeta {
+        gap: 0.3rem;
+    }
+    .optionSubtitle {
+        font-size: 0.85rem;
+    }
+    .optionPrice {
+        align-items: flex-start;
+        text-align: start;
+        gap: 0.2rem;
+    }
+    .optionPrice span:last-of-type {
+        letter-spacing: 0.24em;
+    }
+    .detailsFooter {
+        padding-block-start: clamp(1.6rem, 5vw, 2.2rem);
     }
 }
