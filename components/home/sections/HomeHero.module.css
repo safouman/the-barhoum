@@ -499,7 +499,8 @@
     }
 
     .heroRtl .heroContent {
-        transform: translateY(calc(env(safe-area-inset-top) * 0.5)) translateX(6px);
+        transform: translateY(calc(env(safe-area-inset-top) * 0.5))
+            translateX(6px);
     }
 
     .heroRtl .text {
@@ -507,14 +508,24 @@
     }
 
     .heroRtl .container h1 {
-        font-size: clamp(26px, 6vw, 36px);
-        margin: clamp(16px, 3vh, 24px) 0 clamp(26px, 3.8vh, 34px);
+        font-size: clamp(25px, 5.5vw, 35px);
+        margin: clamp(16px, 3vh, 24px) 0 clamp(28px, 3.8vh, 36px);
+    }
+
+    .heroRtl .text > div {
+        font-size: clamp(14.5px, 4.5vw, 18.5px);
+        line-height: 1.62;
     }
 
     .heroRtl .text > div p {
         text-align: center;
         word-spacing: 0;
         hyphens: none;
+    }
+
+    .heroRtl .signature {
+        font-size: clamp(18px, 6vw, 21px);
+        line-height: 1.55;
     }
 }
 
