@@ -54,63 +54,65 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({
                     isRTL ? styles.containerRtl : styles.containerLtr
                 )}
             >
-                <div
-                    className={clsx(
-                        styles.text,
-                        isRTL ? styles.textRtl : styles.textLtr
-                    )}
-                >
-                    <h1 className="text-display font-heading">
-                        {hero.title[locale]}
-                    </h1>
-                    <div className="text-lead space-y-4" dir={isRTL ? "rtl" : "ltr"}>
-                        <ReactMarkdown
-                            components={{
-                                p: ({ children }) => <p className="m-0">{children}</p>,
-                                strong: ({ children }) => (
-                                    <strong className="font-semibold">{children}</strong>
-                                ),
-                                em: ({ children }) => <em className="italic">{children}</em>,
-                                ol: ({ children }) => (
-                                    <ol
-                                        className={clsx(
-                                            "list-decimal space-y-3 pl-6",
-                                            isRTL && "pl-0 pr-6"
-                                        )}
-                                        dir={isRTL ? "rtl" : "ltr"}
-                                    >
-                                        {children}
-                                    </ol>
-                                ),
-                                ul: ({ children }) => (
-                                    <ul
-                                        className={clsx(
-                                            "list-disc space-y-3 pl-6",
-                                            isRTL && "pl-0 pr-6"
-                                        )}
-                                        dir={isRTL ? "rtl" : "ltr"}
-                                    >
-                                        {children}
-                                    </ul>
-                                ),
-                                li: ({ children }) => (
-                                    <li className="leading-relaxed">{children}</li>
-                                ),
-                            }}
-                        >
-                            {copy}
-                        </ReactMarkdown>
-                    </div>
-                    <p
+                <div className={styles.heroContent}>
+                    <div
                         className={clsx(
-                            "mt-4 text-xl text-primary",
-                            locale === "ar"
-                                ? "font-signature-arabic"
-                                : "font-signature-latin"
+                            styles.text,
+                            isRTL ? styles.textRtl : styles.textLtr
                         )}
                     >
-                        {signature}
-                    </p>
+                        <h1 className="text-display font-heading">
+                            {hero.title[locale]}
+                        </h1>
+                        <div className="text-lead space-y-4" dir={isRTL ? "rtl" : "ltr"}>
+                            <ReactMarkdown
+                                components={{
+                                    p: ({ children }) => <p className="m-0">{children}</p>,
+                                    strong: ({ children }) => (
+                                        <strong className="font-semibold">{children}</strong>
+                                    ),
+                                    em: ({ children }) => <em className="italic">{children}</em>,
+                                    ol: ({ children }) => (
+                                        <ol
+                                            className={clsx(
+                                                "list-decimal space-y-3 pl-6",
+                                                isRTL && "pl-0 pr-6"
+                                            )}
+                                            dir={isRTL ? "rtl" : "ltr"}
+                                        >
+                                            {children}
+                                        </ol>
+                                    ),
+                                    ul: ({ children }) => (
+                                        <ul
+                                            className={clsx(
+                                                "list-disc space-y-3 pl-6",
+                                                isRTL && "pl-0 pr-6"
+                                            )}
+                                            dir={isRTL ? "rtl" : "ltr"}
+                                        >
+                                            {children}
+                                        </ul>
+                                    ),
+                                    li: ({ children }) => (
+                                        <li className="leading-relaxed">{children}</li>
+                                    ),
+                                }}
+                            >
+                                {copy}
+                            </ReactMarkdown>
+                        </div>
+                        <p
+                            className={clsx(
+                                "mt-4 text-xl text-primary",
+                                locale === "ar"
+                                    ? "font-signature-arabic"
+                                    : "font-signature-latin"
+                            )}
+                        >
+                            {signature}
+                        </p>
+                    </div>
                 </div>
             </Container>
         </section>

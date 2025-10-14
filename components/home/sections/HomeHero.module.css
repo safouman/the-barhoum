@@ -101,7 +101,6 @@
     .imageLayer {
         width: clamp(420px, 45vw, 880px);
     }
-
 }
 
 @media (min-width: 1600px) {
@@ -139,7 +138,6 @@
     .imageLayer {
         width: clamp(420px, 43vw, 860px);
     }
-
 }
 
 @media (min-width: 1920px) {
@@ -177,7 +175,6 @@
     .imageLayer {
         width: clamp(420px, 42vw, 840px);
     }
-
 }
 
 .text {
@@ -199,6 +196,11 @@
 
 .text > div > * + * {
     margin-top: clamp(1.5rem, 2.6vw, 2rem);
+}
+
+.heroContent {
+    width: 100%;
+    display: grid;
 }
 
 .textRtl {
@@ -343,7 +345,7 @@
 @media (max-width: 767px) {
     .hero {
         position: relative;
-        min-height: min(100svh, 1200px);
+        min-height: 100svh;
         background-color: #ffffff;
         background-attachment: scroll;
     }
@@ -376,7 +378,7 @@
         inset: 0;
         pointer-events: none;
         z-index: 3;
-        background: rgba(255, 255, 255, 0.88);
+        background: rgba(255, 255, 255, 0.9);
     }
 
     .imageLayer,
@@ -399,10 +401,20 @@
         min-height: 100%;
         height: 100%;
         padding-inline: clamp(20px, 6vw, 24px);
-        padding-top: calc(clamp(32px, 8vh, 72px) + env(safe-area-inset-top));
-        padding-bottom: calc(clamp(24px, 6vh, 48px) + env(safe-area-inset-bottom));
+        padding-top: calc(clamp(56px, 10vh, 80px) + env(safe-area-inset-top));
+        padding-bottom: calc(
+            clamp(32px, 6vh, 64px) + env(safe-area-inset-bottom)
+        );
         gap: clamp(20px, 3vw, 26px);
+        overflow-y: auto;
+        box-sizing: border-box;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
         z-index: 4;
+    }
+
+    .container::-webkit-scrollbar {
+        display: none;
     }
 
     .hero h1 {
@@ -410,7 +422,7 @@
         line-height: 1.15;
         max-width: clamp(22ch, 84vw, 26ch);
         color: #1a1a1a;
-        margin: 0 0 clamp(8px, 2vh, 16px);
+        margin: 0 0 clamp(12px, 2vh, 20px);
         position: relative;
         z-index: 4;
     }
@@ -422,6 +434,7 @@
         gap: clamp(18px, 2.5vh, 26px);
         color: #2e2e2e;
         position: relative;
+        margin-inline: auto;
         z-index: 4;
     }
 
@@ -429,12 +442,13 @@
     .textLtr {
         text-align: center;
         transform: none;
-        margin: 0;
+        margin-inline: auto;
     }
 
     .text > div {
         justify-content: center !important;
         display: grid;
+        justify-items: center;
         max-width: clamp(34ch, 92vw, 36ch);
         font-size: clamp(15px, 3.8vw, 18px);
         line-height: 1.55;
@@ -451,18 +465,35 @@
     }
 
     .textRtl {
-        max-width: clamp(30ch, 90vw, 32ch);
+        max-width: clamp(34ch, 92vw, 36ch);
     }
 
     .textRtl > div {
-        max-width: clamp(30ch, 90vw, 32ch);
+        max-width: clamp(34ch, 92vw, 36ch);
     }
 
     .signature {
         margin-top: clamp(24px, 4vh, 36px);
         color: inherit;
+        font-size: clamp(13px, 3.2vw, 15px);
+        line-height: 1.4;
         position: relative;
         z-index: 4;
+    }
+
+    .heroContent {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transform: translateY(calc(env(safe-area-inset-top) * 0.5));
+    }
+
+    .heroRtl .text > div p {
+        text-align: center;
+        word-spacing: 0;
+        hyphens: none;
     }
 }
 
