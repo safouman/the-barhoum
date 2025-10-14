@@ -321,6 +321,9 @@
     .details {
         order: 2;
     }
+    .list {
+        gap: 0.85rem;
+    }
     .option {
         padding-block: clamp(0.95rem, 3.4vw, 1.1rem);
         padding-inline: clamp(1.2rem, 4vw, 1.6rem);
@@ -336,18 +339,60 @@
     .optionMeta {
         gap: 0.3rem;
     }
+    .optionSessions {
+        font-size: clamp(1.35rem, 5.4vw, 1.6rem);
+        line-height: 1.1;
+    }
     .optionSubtitle {
         font-size: 0.85rem;
+        line-height: 1.35;
     }
     .optionPrice {
         align-items: flex-start;
         text-align: start;
         gap: 0.2rem;
     }
+    .optionPrice span:first-of-type {
+        font-size: clamp(1.05rem, 4.4vw, 1.2rem);
+        font-weight: 600;
+        line-height: 1.1;
+    }
     .optionPrice span:last-of-type {
         letter-spacing: 0.24em;
     }
+    .detailsCard {
+        padding: clamp(1.4rem, 6vw, 2.1rem);
+        border-radius: 20px;
+    }
+    .detailsContent {
+        gap: clamp(0.9rem, 4vw, 1.4rem);
+    }
+    .detailsHeader {
+        gap: 0.4rem;
+    }
+    .detailsHeader h3 {
+        line-height: 1.2;
+    }
+    .detailsPricing {
+        gap: 0.25rem;
+    }
+    .detailsPriceTotal {
+        font-size: clamp(1.85rem, 6vw, 2.1rem);
+    }
+    .detailsPricePer {
+        font-size: 0.8rem;
+    }
+    .detailsBullets {
+        margin-block-start: 0.35rem;
+        gap: clamp(0.55rem, 3.5vw, 0.75rem);
+        font-size: 0.9rem;
+    }
     .detailsFooter {
         padding-block-start: clamp(1.6rem, 5vw, 2.2rem);
+        gap: 1.1rem;
+    }
+    .detailsSummary {
+        font-size: 0.85rem;
+        text-wrap: balance;
     }
 }
