@@ -643,10 +643,8 @@ export function LeadForm({
                 <div className="flex flex-col items-center gap-6">
                     <div
                         className={clsx(
-                            "flex w-full flex-wrap items-center gap-y-2 gap-x-3 text-sm sm:pr-6",
-                            isRtl
-                                ? "justify-end text-right"
-                                : "justify-start text-left"
+                            "flex w-full flex-wrap items-center gap-y-2 gap-x-3 text-sm sm:pr-6 justify-start",
+                            isRtl ? "text-right" : "text-left"
                         )}
                         dir={isRtl ? "rtl" : "ltr"}
                     >
