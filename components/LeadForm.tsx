@@ -517,14 +517,12 @@ export function LeadForm({
 
                     if (field.options) {
                         return (
-                            <div
-                                key={field.id}
-                                className="scroll-mt-28"
-                            >
+                            <div key={field.id} className="scroll-mt-28">
                                 <label
                                     htmlFor={field.id}
                                     className={clsx(
                                         "mb-[6px] block text-[0.92rem] font-semibold text-subtle/90",
+                                        isRtl ? "text-right" : "text-left",
                                         isAvailabilityStep && "mb-[8px]"
                                     )}
                                 >
@@ -564,14 +562,12 @@ export function LeadForm({
 
                     if (field.type === "textarea") {
                         return (
-                            <div
-                                key={field.id}
-                                className="scroll-mt-28"
-                            >
+                            <div key={field.id} className="scroll-mt-28">
                                 <label
                                     htmlFor={field.id}
                                     className={clsx(
                                         "mb-[6px] block text-[0.92rem] font-semibold text-subtle/90",
+                                        isRtl ? "text-right" : "text-left",
                                         isAvailabilityStep && "mb-[8px]"
                                     )}
                                 >
@@ -600,14 +596,12 @@ export function LeadForm({
                     }
 
                     return (
-                        <div
-                            key={field.id}
-                            className="scroll-mt-28"
-                        >
+                        <div key={field.id} className="scroll-mt-28">
                             <label
                                 htmlFor={field.id}
                                 className={clsx(
                                     "mb-[6px] block text-[0.92rem] font-semibold text-subtle/90",
+                                    isRtl ? "text-right" : "text-left",
                                     isAvailabilityStep && "mb-[8px]"
                                 )}
                             >
