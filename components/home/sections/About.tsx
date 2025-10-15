@@ -23,7 +23,7 @@ type AccordionListProps = {
 
 type AccordionItem = {
     key: string | number;
-    title: ReactNode;
+    title: ReactNode[];
     description: ReactNode[];
 };
 
@@ -33,56 +33,59 @@ const cardBaseClasses =
     "rounded-[18px] border border-border/40 bg-white/90 shadow-[0_26px_48px_-28px_rgba(15,23,42,0.18)]";
 
 const AccordionList = ({ children, isRTL }: AccordionListProps) => {
-    const items = useMemo<AccordionItem[]>(() => {
-        return Children.toArray(children)
-            .map((child, index) => {
-                if (!isValidElement(child)) return null;
-                const childNodes = Children.toArray(child.props.children as ReactNode);
-                if (childNodes.length === 0) return null;
+    const items = useMemo(() => {
+        const result: AccordionItem[] = [];
 
-                const strongIndex = childNodes.findIndex(
-                    (node) => isValidElement(node) && node.type === "strong"
-                );
-                const strongNode =
-                    strongIndex >= 0 && isValidElement(childNodes[strongIndex])
-                        ? childNodes[strongIndex]
-                        : null;
+        Children.toArray(children).forEach((child, index) => {
+            if (!isValidElement(child)) return;
+            const childElement = child as React.ReactElement<{ children?: ReactNode }>;
+            const childNodes = Children.toArray(childElement.props.children as ReactNode);
+            if (childNodes.length === 0) return;
 
-                const title =
-                    strongNode && isValidElement(strongNode)
-                        ? Children.toArray(strongNode.props.children as ReactNode)
-                        : [childNodes[0]];
+            const strongIndex = childNodes.findIndex(
+                (node) => isValidElement(node) && node.type === "strong"
+            );
+            const strongNode =
+                strongIndex >= 0 && isValidElement(childNodes[strongIndex])
+                    ? childNodes[strongIndex]
+                    : null;
 
-                const rawDescription =
-                    strongIndex >= 0
-                        ? childNodes.slice(strongIndex + 1)
-                        : childNodes.slice(1);
+            const title =
+                strongNode && isValidElement(strongNode)
+                    ? Children.toArray((strongNode as React.ReactElement<{ children?: ReactNode }>).props.children as ReactNode)
+                    : [childNodes[0]];
 
-                const cleanedDescription = rawDescription
-                    .map((node, nodeIndex) => {
-                        if (typeof node === "string") {
-                            let text = node;
-                            if (nodeIndex === 0) {
-                                text = text.replace(/^\s*[-–—]\s*/u, "");
-                            }
-                            return text.replace(/^\s+/u, "");
+            const rawDescription =
+                strongIndex >= 0
+                    ? childNodes.slice(strongIndex + 1)
+                    : childNodes.slice(1);
+
+            const cleanedDescription = rawDescription
+                .map((node, nodeIndex) => {
+                    if (typeof node === "string") {
+                        let text = node;
+                        if (nodeIndex === 0) {
+                            text = text.replace(/^\s*[-–—]\s*/, "");
                         }
-                        return node;
-                    })
-                    .filter((node) => {
-                        if (typeof node === "string") {
-                            return node.trim().length > 0;
-                        }
-                        return node !== null && node !== undefined;
-                    });
+                        return text.replace(/^\s+/, "");
+                    }
+                    return node;
+                })
+                .filter((node) => {
+                    if (typeof node === "string") {
+                        return node.trim().length > 0;
+                    }
+                    return node !== null && node !== undefined;
+                });
 
-                return {
-                    key: child.key ?? index,
-                    title,
-                    description: cleanedDescription,
-                };
-            })
-            .filter((item): item is AccordionItem => item !== null);
+            result.push({
+                key: childElement.key ?? index,
+                title,
+                description: cleanedDescription,
+            });
+        });
+
+        return result;
     }, [children]);
 
     const [openIndexes, setOpenIndexes] = useState<number[]>([]);
@@ -243,7 +246,7 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
             className={clsx(
                 "w-full space-y-3 sm:space-y-4",
                 "md:mx-auto",
-                "lg:w-[112%] lg:max-w-none"
+                isRTL ? "lg:w-[110%] lg:max-w-none" : "lg:w-[112%] lg:max-w-none"
             )}
             dir={isRTL ? "rtl" : "ltr"}
             role="list"
@@ -257,10 +260,10 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                         key={item.key}
                         className={clsx(
                             "relative overflow-hidden transition-shadow duration-200",
-                            "before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:rounded-t-[18px] before:bg-primary/60 before:opacity-0 before:transition-opacity before:duration-200 before:ease-out before:content-['']",
+                            "before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:rounded-t-[18px] before:bg-primary before:opacity-0 before:transition-opacity before:duration-200 before:ease-out before:content-['']",
                             cardBaseClasses,
                             isOpen
-                                ? "shadow-[0_32px_56px_-32px_rgba(15,23,42,0.28)] before:opacity-100"
+                                ? "shadow-[0_32px_56px_-32px_rgba(15,23,42,0.28),0_0_0_2px_rgba(42,214,202,0.15)] before:opacity-100"
                                 : "shadow-[0_20px_42px_-34px_rgba(15,23,42,0.2)]"
                         )}
                         role="listitem"
@@ -269,7 +272,8 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                             type="button"
                             onClick={() => toggleItem(index)}
                             className={clsx(
-                                "flex w-full items-baseline gap-4 px-6 py-7 text-left transition-colors duration-200",
+                                "flex w-full items-baseline gap-4 text-left transition-colors duration-200",
+                                isRTL ? "px-6 py-[1.875rem]" : "px-6 py-7",
                                 easingClass,
                                 isRTL
                                     ? "flex-row-reverse text-right"
@@ -289,7 +293,7 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                                     "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border bg-white transition-[transform,color,border-color] duration-300",
                                     easingClass,
                                     isOpen
-                                        ? "border-primary/50 text-primary rotate-180"
+                                        ? "border-primary/50 text-primary/95 rotate-180"
                                         : "border-border/50 text-text/80 rotate-0",
                                     "self-baseline"
                                 )}
@@ -339,7 +343,10 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                                 {item.description.length > 0 && (
                                     <div
                                         className={clsx(
-                                            "px-6 pb-7 pt-2 text-subtle/90 transition-opacity duration-200 ease-out",
+                                            "text-subtle/90 transition-opacity ease-out",
+                                            isRTL
+                                                ? "px-6 pb-[1.875rem] pt-3 duration-[180ms]"
+                                                : "px-6 pb-7 pt-2 duration-200",
                                             isRTL ? "text-right" : "text-left",
                                             isRTL
                                                 ? "text-[clamp(0.99rem,2.9vw,1.1rem)]"
@@ -347,7 +354,10 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                                             isOpen ? "opacity-100" : "opacity-0"
                                         )}
                                     >
-                                        <p className="m-0 whitespace-pre-line font-normal">
+                                        <p className={clsx(
+                                            "m-0 whitespace-pre-line",
+                                            isRTL ? "font-light" : "font-normal"
+                                        )}>
                                             {item.description}
                                         </p>
                                     </div>
