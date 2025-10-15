@@ -98,6 +98,12 @@ export const HomeLeadForm: HomeThemeDefinition["LeadForm"] = ({
         []
     );
 
+    const [panelVisible, setPanelVisible] = useState(true);
+
+    const handleSubmitted = useCallback(() => {
+        setPanelVisible(false);
+    }, []);
+
     return (
         <Section
             id="lead-form"
@@ -111,51 +117,53 @@ export const HomeLeadForm: HomeThemeDefinition["LeadForm"] = ({
                 </div>
 
                 <div className="grid gap-10 md:grid-cols-[minmax(320px,360px)_minmax(0,1fr)] md:items-start">
-                    <div
-                        className={clsx(
-                            "relative order-1 w-full overflow-hidden rounded-[22px] border border-border/35 bg-white px-6 py-5 text-text shadow-[0_26px_48px_-22px_rgba(15,23,42,0.18)]",
-                            "md:max-w-[360px] md:px-7 md:py-7",
-                            "md:sticky md:top-28",
-                            isRtl ? "text-right" : "text-left"
-                        )}
-                    >
-                        <span
-                            className="absolute inset-x-0 top-0 flex h-[3px] overflow-hidden rounded-t-[22px] bg-primary/12"
-                            aria-hidden="true"
+                    {panelVisible && (
+                        <div
+                            className={clsx(
+                                "relative order-1 w-full overflow-hidden rounded-[22px] border border-border/35 bg-white px-6 py-5 text-text shadow-[0_26px_48px_-22px_rgba(15,23,42,0.18)]",
+                                "md:max-w-[360px] md:px-7 md:py-7",
+                                "md:sticky md:top-28",
+                                isRtl ? "text-right" : "text-left"
+                            )}
                         >
-                            <span className="w-full bg-primary" />
-                        </span>
-                        <div className="flex flex-col gap-5">
                             <span
-                                className={clsx(
-                                    "inline-flex w-fit items-center rounded-full bg-subtle/15 px-3 py-1 text-[0.75rem] font-medium text-subtle/70",
-                                    !isRtl && "uppercase tracking-[0.12em]"
-                                )}
+                                className="absolute inset-x-0 top-0 flex h-[3px] overflow-hidden rounded-t-[22px] bg-primary/12"
+                                aria-hidden="true"
                             >
-                                {chipLabel}
+                                <span className="w-full bg-primary" />
                             </span>
-                            <p className="heading-3 tracking-[0.02em] text-text">
-                                {panelTitle}
-                            </p>
-                            <div className="space-y-[10px] text-base text-subtle/85">
-                                {panelParagraphs.length > 0 ? (
-                                    panelParagraphs.map((paragraph, index) => (
-                                        <p
-                                            key={`${index}-${paragraph.slice(
-                                                0,
-                                                8
-                                            )}`}
-                                            className="m-0"
-                                        >
-                                            {paragraph}
-                                        </p>
-                                    ))
-                                ) : (
-                                    <p className="m-0">{panelCopy}</p>
-                                )}
+                            <div className="flex flex-col gap-5">
+                                <span
+                                    className={clsx(
+                                        "inline-flex w-fit items-center rounded-full bg-subtle/15 px-3 py-1 text-[0.75rem] font-medium text-subtle/70",
+                                        !isRtl && "uppercase tracking-[0.12em]"
+                                    )}
+                                >
+                                    {chipLabel}
+                                </span>
+                                <p className="heading-3 tracking-[0.02em] text-text">
+                                    {panelTitle}
+                                </p>
+                                <div className="space-y-[10px] text-base text-subtle/85">
+                                    {panelParagraphs.length > 0 ? (
+                                        panelParagraphs.map((paragraph, index) => (
+                                            <p
+                                                key={`${index}-${paragraph.slice(
+                                                    0,
+                                                    8
+                                                )}`}
+                                                className="m-0"
+                                            >
+                                                {paragraph}
+                                            </p>
+                                        ))
+                                    ) : (
+                                        <p className="m-0">{panelCopy}</p>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    )}
                     <div className="order-2">
                         <LeadForm
                             labels={ui.form}
@@ -166,6 +174,7 @@ export const HomeLeadForm: HomeThemeDefinition["LeadForm"] = ({
                             showInternalHeader
                             copy={copy}
                             onStepChange={handleStepChange}
+                            onSubmitted={handleSubmitted}
                         />
                     </div>
                 </div>

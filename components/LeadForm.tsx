@@ -42,6 +42,7 @@ interface LeadFormProps {
     };
     variant: LeadFormVariant;
     onStepChange?: (payload: { index: number; step: StepConfig }) => void;
+    onSubmitted?: () => void;
     showInternalHeader?: boolean;
 }
 
@@ -104,6 +105,7 @@ export function LeadForm({
     packSummary,
     variant: _variant,
     onStepChange,
+    onSubmitted,
     showInternalHeader = true,
 }: LeadFormProps) {
     const { locale } = useLocale();
@@ -299,6 +301,7 @@ export function LeadForm({
         setTimeout(() => {
             setIsSubmitting(false);
             setSubmitted(true);
+            onSubmitted?.();
         }, 600);
     };
 
