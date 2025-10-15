@@ -23,7 +23,7 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
                 {/* Unified content block with RTL-specific styling */}
                 <div
                     className={clsx(
-                        "mx-auto flex w-full max-w-[92vw] flex-col items-center text-center gap-12 sm:max-w-[560px] md:max-w-4xl",
+                        "mx-auto flex w-full max-w-[92vw] flex-col items-center text-center gap-12 sm:max-w-[560px] md:max-w-4xl lg:max-w-5xl lg:px-8 xl:max-w-6xl xl:px-12",
                         isRTL ? "lg:gap-14" : "lg:gap-16"
                     )}
                     dir={isRTL ? "rtl" : "ltr"}
@@ -36,8 +36,10 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
                     {/* Narrative with inline link */}
                     <div
                         className={clsx(
-                            "mx-auto w-full px-4 text-center sm:px-6",
-                            isRTL ? "max-w-[40ch]" : "max-w-[36ch]"
+                            "mx-auto w-full px-4 text-center sm:px-6 lg:px-10 xl:px-12",
+                            isRTL
+                                ? "max-w-[40ch] lg:max-w-[72ch]"
+                                : "max-w-[36ch] lg:max-w-[70ch]"
                         )}
                     >
                         <div

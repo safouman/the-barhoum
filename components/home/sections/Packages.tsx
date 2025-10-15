@@ -116,9 +116,10 @@ interface PacksSectionProps {
   packs: PacksByCategory;
   onSelect?: (pack: PackSelection) => void;
   onContinue?: (pack: PackSelection) => void;
+  sectionId?: string;
 }
 
-export function PacksSection({ locale, direction, category, packs: packsByCategory, onSelect, onContinue }: PacksSectionProps) {
+export function PacksSection({ locale, direction, category, packs: packsByCategory, onSelect, onContinue, sectionId }: PacksSectionProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const cardRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const onSelectRef = useRef(onSelect);
@@ -193,7 +194,7 @@ export function PacksSection({ locale, direction, category, packs: packsByCatego
     : undefined;
 
   return (
-    <Section title={locale === "ar" ? "الباقات" : "Packs"} className="bg-background">
+    <Section id={sectionId} title={locale === "ar" ? "الباقات" : "Packs"} className="bg-background">
       <Container>
         <div className="mb-10 text-center text-xs uppercase tracking-[0.4em] text-subtle">
           {locale === "ar" ? "اختر وتيرة التقدم" : "Choose your pace"}

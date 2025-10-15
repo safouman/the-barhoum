@@ -73,6 +73,15 @@ export function HomeExperience({ home, categories, testimonials, ui, leadFormCop
   >(null);
   const [leadFormVisible, setLeadFormVisible] = useState(false);
 
+  const scrollToId = useCallback((targetId: string) => {
+    if (typeof window === "undefined") return;
+    const element = document.getElementById(targetId);
+    if (!element) return;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const behavior: ScrollBehavior = prefersReducedMotion ? "auto" : "smooth";
+    element.scrollIntoView({ behavior, block: "start" });
+  }, []);
+
   const formatCurrency = useCallback(
     (amount: number) =>
       new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
@@ -115,6 +124,36 @@ export function HomeExperience({ home, categories, testimonials, ui, leadFormCop
       event("category_view", { category: activeCategory });
     }
   }, [activeCategory]);
+
+  useEffect(() => {
+    if (!activeCategory) return;
+    if (typeof window === "undefined") return;
+    const isDesktop = window.matchMedia("(min-width: 768px)").matches;
+    const targetId = isDesktop ? "desktop-packs" : "mobile-packs";
+    const frame = window.requestAnimationFrame(() => {
+      scrollToId(targetId);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeCategory, scrollToId]);
+
+  useEffect(() => {
+    if (!expandedMobileCategory) return;
+    if (typeof window === "undefined") return;
+    if (window.matchMedia("(min-width: 768px)").matches) return;
+    const frame = window.requestAnimationFrame(() => {
+      scrollToId("mobile-packs");
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [expandedMobileCategory, scrollToId]);
+
+  useEffect(() => {
+    if (!leadFormVisible || !selectedPack) return;
+    if (typeof window === "undefined") return;
+    const frame = window.requestAnimationFrame(() => {
+      scrollToId("lead-form");
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [leadFormVisible, scrollToId, selectedPack]);
 
   const handleCategorySelect = (id: Category["id"]) => {
     setActiveCategory(id);
@@ -184,6 +223,7 @@ export function HomeExperience({ home, categories, testimonials, ui, leadFormCop
             direction={locale === "ar" ? "rtl" : "ltr"}
             category={activeCategory}
             packs={home.packs}
+            sectionId="desktop-packs"
             onSelect={(pack) => {
               event("package_click", {
                 action: "select",
@@ -200,11 +240,6 @@ export function HomeExperience({ home, categories, testimonials, ui, leadFormCop
               });
               setSelectedPack(pack);
               setLeadFormVisible(true);
-              setTimeout(() => {
-                if (typeof window !== "undefined") {
-                  document.getElementById("lead-form")?.scrollIntoView({ behavior: "smooth", block: "start" });
-                }
-              }, 0);
             }}
           />
         </div>

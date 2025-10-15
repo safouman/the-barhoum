@@ -102,6 +102,7 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
                   packs={packs}
                   onSelect={onPackSelect}
                   onContinue={onPackContinue}
+                  sectionId="mobile-packs"
                 />
                 {leadFormVisible && selectedPack && selectedPack.category === expandedMobileCategory && (
                   <div className={clsx("mt-8", styles.mobilePacksContainer)}>

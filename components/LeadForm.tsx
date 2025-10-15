@@ -134,6 +134,8 @@ export function LeadForm({
     const [errors, setErrors] = useState<FieldErrors>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
+    const formRef = useRef<HTMLFormElement | null>(null);
+    const hasScrolledOnMountRef = useRef(false);
     const stepAnnouncerRef = useRef<HTMLDivElement | null>(null);
     const fieldRefs = useRef<
         Record<keyof LeadFormFormState, HTMLElement | null>
@@ -349,6 +351,18 @@ export function LeadForm({
         "border-[#E76C6C] focus:border-[#E76C6C] focus:ring-[#E76C6C33]";
 
     useEffect(() => {
+        if (!formRef.current) return;
+        if (typeof window === "undefined") return;
+        if (!hasScrolledOnMountRef.current) {
+            hasScrolledOnMountRef.current = true;
+            return;
+        }
+        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const behavior: ScrollBehavior = prefersReducedMotion ? "auto" : "smooth";
+        formRef.current.scrollIntoView({ behavior, block: "start" });
+    }, [step]);
+
+    useEffect(() => {
         if (!stepAnnouncerRef.current) return;
         const baseLine = formatTemplate(
             formCopy.chipLabelTemplate,
@@ -415,43 +429,49 @@ export function LeadForm({
 
     if (submitted) {
         return (
-            <div
-                className="relative mx-auto flex w-full max-w-[800px] flex-col gap-8 rounded-[22px] border border-border/30 bg-surface p-[clamp(1.6rem,4vw,2.6rem)] shadow-[0_24px_64px_rgba(15,23,42,0.08)]"
-                dir={isRtl ? "rtl" : "ltr"}
-            >
-                <div className="absolute inset-x-0 top-0 h-[3px] rounded-t-[22px] bg-primary" />
-                <header
-                    className={clsx(
-                        "space-y-2 text-text",
-                        isRtl ? "text-right" : "text-left"
-                    )}
-                >
-                    <h3 className="heading-3">
-                        {thankYouCopy.title}
-                    </h3>
-                    <p className="text-base text-subtle/90">
-                        {thankYouCopy.body}
-                    </p>
-                </header>
+            <div className="flex w-full justify-center md:min-h-[70vh] md:items-center md:justify-center">
                 <div
-                    className={clsx(
-                        "rounded-[18px] border border-border/40 bg-background/30 px-5 py-4 text-sm text-subtle",
-                        isRtl ? "text-right" : "text-left"
-                    )}
+                    className="relative mx-auto flex w-full max-w-[800px] flex-col gap-8 rounded-[22px] border border-border/30 bg-surface p-[clamp(1.6rem,4vw,2.6rem)] shadow-[0_24px_64px_rgba(15,23,42,0.08)]"
+                    dir={isRtl ? "rtl" : "ltr"}
                 >
-                    <p className="font-medium text-text/90">{summaryTitle}</p>
-                    <p className="mt-1 text-subtle/80">
-                        {labels.name}: {submittedFullName || "-"}
-                    </p>
-                    <p className="text-subtle/80">
-                        {labels.category}: {selectedCategory ?? "-"}
-                    </p>
-                    <p className="text-subtle/80">
-                        {labels.package}: {selectedPackage ?? "-"}
-                    </p>
-                    {summary.priceLabel && (
-                        <p className="text-subtle/80">{summary.priceLabel}</p>
-                    )}
+                    <div className="absolute inset-x-0 top-0 h-[3px] rounded-t-[22px] bg-primary" />
+                    <header
+                        className={clsx(
+                            "space-y-2 text-text",
+                            isRtl ? "text-right" : "text-left"
+                        )}
+                    >
+                        <h3 className="heading-3">
+                            {thankYouCopy.title}
+                        </h3>
+                        <p className="text-base text-subtle/90">
+                            {thankYouCopy.body}
+                        </p>
+                    </header>
+                    <div
+                        className={clsx(
+                            "rounded-[18px] border border-border/40 bg-background/30 px-5 py-4 text-sm text-subtle",
+                            isRtl ? "text-right" : "text-left"
+                        )}
+                    >
+                        <p className="font-medium text-text/90">
+                            {summaryTitle}
+                        </p>
+                        <p className="mt-1 text-subtle/80">
+                            {labels.name}: {submittedFullName || "-"}
+                        </p>
+                        <p className="text-subtle/80">
+                            {labels.category}: {selectedCategory ?? "-"}
+                        </p>
+                        <p className="text-subtle/80">
+                            {labels.package}: {selectedPackage ?? "-"}
+                        </p>
+                        {summary.priceLabel && (
+                            <p className="text-subtle/80">
+                                {summary.priceLabel}
+                            </p>
+                        )}
+                    </div>
                 </div>
             </div>
         );
@@ -459,6 +479,7 @@ export function LeadForm({
 
     return (
         <form
+            ref={formRef}
             className="relative mx-auto flex w-full max-w-[660px] flex-col gap-8 rounded-[14px] border border-border/35 bg-white px-7 pt-6 pb-6 shadow-[0_26px_48px_-22px_rgba(15,23,42,0.18)]"
             onSubmit={handleSubmit}
             onFocus={handleFocus}
