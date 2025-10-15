@@ -408,6 +408,8 @@ export function LeadForm({
         });
     };
 
+    const submittedFullName = values.fullName.trim();
+
     if (submitted) {
         return (
             <div
@@ -415,7 +417,12 @@ export function LeadForm({
                 dir={isRtl ? "rtl" : "ltr"}
             >
                 <div className="absolute inset-x-0 top-0 h-[3px] rounded-t-[22px] bg-primary" />
-                <header className="space-y-2 text-text">
+                <header
+                    className={clsx(
+                        "space-y-2 text-text",
+                        isRtl ? "text-right" : "text-left"
+                    )}
+                >
                     <h3 className="heading-3">
                         {thankYouCopy.title}
                     </h3>
@@ -423,18 +430,26 @@ export function LeadForm({
                         {thankYouCopy.body}
                     </p>
                 </header>
-                <div className="rounded-[18px] border border-border/40 bg-background/30 px-5 py-4 text-start text-sm text-subtle">
+                <div
+                    className={clsx(
+                        "rounded-[18px] border border-border/40 bg-background/30 px-5 py-4 text-sm text-subtle",
+                        isRtl ? "text-right" : "text-left"
+                    )}
+                >
                     <p className="font-medium text-text/90">{summaryTitle}</p>
                     <p className="mt-1 text-subtle/80">
+                        {labels.name}: {submittedFullName || "-"}
+                    </p>
+                    <p className="text-subtle/80">
                         {labels.category}: {selectedCategory ?? "-"}
                     </p>
                     <p className="text-subtle/80">
                         {labels.package}: {selectedPackage ?? "-"}
                     </p>
+                    {summary.priceLabel && (
+                        <p className="text-subtle/80">{summary.priceLabel}</p>
+                    )}
                 </div>
-                <Button href="/" variant="ghost">
-                    {thankYouCopy.returnHome}
-                </Button>
             </div>
         );
     }
