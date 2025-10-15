@@ -402,7 +402,7 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
                     {/* Narrative with inline link */}
                     <div
                         className={clsx(
-                            "mx-auto w-full px-4 text-center sm:px-6 lg:px-10 xl:px-12",
+                            "mx-auto w-full px-4 text-center sm:px-6 lg:px-10 xl:px-12 flex flex-col items-center",
                             isRTL
                                 ? "max-w-[40ch] lg:max-w-[72ch]"
                                 : "max-w-[36ch] lg:max-w-[70ch]"
