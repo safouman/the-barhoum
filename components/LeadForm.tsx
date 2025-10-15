@@ -134,7 +134,7 @@ export function LeadForm({
     const [errors, setErrors] = useState<FieldErrors>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
-    const formRef = useRef<HTMLFormElement | null>(null);
+    const scrollContainerRef = useRef<HTMLElement | null>(null);
     const hasScrolledOnMountRef = useRef(false);
     const stepAnnouncerRef = useRef<HTMLDivElement | null>(null);
     const fieldRefs = useRef<
@@ -350,17 +350,31 @@ export function LeadForm({
     const errorFieldClasses =
         "border-[#E76C6C] focus:border-[#E76C6C] focus:ring-[#E76C6C33]";
 
-    useEffect(() => {
-        if (!formRef.current) return;
+    const scrollToLeadFormAnchor = useCallback(() => {
         if (typeof window === "undefined") return;
+        const node = scrollContainerRef.current;
+        if (!node) return;
+        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const behavior: ScrollBehavior = prefersReducedMotion ? "auto" : "smooth";
+        const sectionRoot = node.closest("[data-section=\"true\"]") as HTMLElement | null;
+        const sectionTitle = sectionRoot?.querySelector("[data-lead-form-title]") as HTMLElement | null;
+        const scrollTarget = sectionTitle ?? node;
+        scrollTarget.scrollIntoView({ behavior, block: "start" });
+    }, []);
+
+    useEffect(() => {
+        if (!scrollContainerRef.current) return;
         if (!hasScrolledOnMountRef.current) {
             hasScrolledOnMountRef.current = true;
             return;
         }
-        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        const behavior: ScrollBehavior = prefersReducedMotion ? "auto" : "smooth";
-        formRef.current.scrollIntoView({ behavior, block: "start" });
-    }, [step]);
+        scrollToLeadFormAnchor();
+    }, [scrollToLeadFormAnchor, step]);
+
+    useEffect(() => {
+        if (!submitted) return;
+        scrollToLeadFormAnchor();
+    }, [scrollToLeadFormAnchor, submitted]);
 
     useEffect(() => {
         if (!stepAnnouncerRef.current) return;
@@ -429,7 +443,12 @@ export function LeadForm({
 
     if (submitted) {
         return (
-            <div className="flex w-full justify-center md:min-h-[70vh] md:items-center md:justify-center">
+            <div
+                ref={(node) => {
+                    scrollContainerRef.current = node ?? null;
+                }}
+                className="w-full py-6 md:flex md:min-h-[70vh] md:items-center md:justify-center md:py-12 lg:min-h-[80vh] lg:py-16"
+            >
                 <div
                     className="relative mx-auto flex w-full max-w-[800px] flex-col gap-8 rounded-[22px] border border-border/30 bg-surface p-[clamp(1.6rem,4vw,2.6rem)] shadow-[0_24px_64px_rgba(15,23,42,0.08)]"
                     dir={isRtl ? "rtl" : "ltr"}
@@ -479,7 +498,9 @@ export function LeadForm({
 
     return (
         <form
-            ref={formRef}
+            ref={(node) => {
+                scrollContainerRef.current = node ?? null;
+            }}
             className="relative mx-auto flex w-full max-w-[660px] flex-col gap-8 rounded-[14px] border border-border/35 bg-white px-7 pt-6 pb-6 shadow-[0_26px_48px_-22px_rgba(15,23,42,0.18)]"
             onSubmit={handleSubmit}
             onFocus={handleFocus}

@@ -104,6 +104,17 @@ export const HomeLeadForm: HomeThemeDefinition["LeadForm"] = ({
         setPanelVisible(false);
     }, []);
 
+    const layoutClasses = useMemo(
+        () =>
+            clsx(
+                "gap-10",
+                panelVisible
+                    ? "grid md:grid-cols-[minmax(320px,360px)_minmax(0,1fr)] md:items-start"
+                    : "grid md:grid-cols-1 md:items-center md:justify-items-center"
+            ),
+        [panelVisible]
+    );
+
     return (
         <Section
             id="lead-form"
@@ -111,12 +122,12 @@ export const HomeLeadForm: HomeThemeDefinition["LeadForm"] = ({
         >
             <Container className="space-y-12 md:space-y-16">
                 <div className="px-3 text-center text-text sm:px-0">
-                    <p className="heading-2 text-center">
+                    <p data-lead-form-title className="heading-2 text-center">
                         {ui.form.title}
                     </p>
                 </div>
 
-                <div className="grid gap-10 md:grid-cols-[minmax(320px,360px)_minmax(0,1fr)] md:items-start">
+                <div className={layoutClasses}>
                     {panelVisible && (
                         <div
                             className={clsx(
