@@ -28,22 +28,24 @@ export function PaymentView({ payment, ui }: PaymentViewProps) {
   return (
     <div className="py-[clamp(var(--space-lg),18vh,var(--space-xl))]">
       <div className="mx-auto grid max-w-lg gap-sm rounded-lg border border-border bg-surface p-md shadow-sm">
-        <h1 className="text-2xl font-heading">{strings.payment.title}</h1>
-        <div className="flex justify-between gap-4 text-sm">
-          <span className="text-subtle">{strings.payment.client}</span>
+        <h1>{strings.payment.title}</h1>
+        <div className="flex justify-between gap-4">
+          <span className="text-label text-subtle">{strings.payment.client}</span>
           <span>{payment.client[locale]}</span>
         </div>
-        <div className="flex justify-between gap-4 text-sm">
-          <span className="text-subtle">{strings.payment.price}</span>
+        <div className="flex justify-between gap-4">
+          <span className="text-label text-subtle">{strings.payment.price}</span>
           <span>{payment.packageTitle[locale]}</span>
         </div>
-        <div className="flex justify-between gap-4 text-lg font-bold">
-          <span className="text-subtle">{strings.payment.amount}</span>
-          <span className="font-heading">{fmtAmount(payment.amount, locale)}</span>
+        <div className="flex justify-between gap-4">
+          <span className="text-label text-subtle">{strings.payment.amount}</span>
+          <span className="text-body-lg font-heading font-semibold text-text">
+            {fmtAmount(payment.amount, locale)}
+          </span>
         </div>
         {typeof payment.discount === "number" && (
-          <div className="flex justify-between gap-4 text-sm">
-            <span className="text-subtle">{strings.payment.discount}</span>
+          <div className="flex justify-between gap-4">
+            <span className="text-label text-subtle">{strings.payment.discount}</span>
             <span>{payment.discount}%</span>
           </div>
         )}

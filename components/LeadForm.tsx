@@ -416,7 +416,7 @@ export function LeadForm({
             >
                 <div className="absolute inset-x-0 top-0 h-[3px] rounded-t-[22px] bg-primary" />
                 <header className="space-y-2 text-text">
-                    <h3 className="text-[clamp(1.9rem,2.6vw,2.2rem)] font-heading font-semibold">
+                    <h3 className="heading-3">
                         {thankYouCopy.title}
                     </h3>
                     <p className="text-base text-subtle/90">

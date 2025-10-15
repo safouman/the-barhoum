@@ -31,8 +31,8 @@ export function PackageCard({ id, title, price, features, visible = true, active
       onClick={handleClick}
     >
       <div className="flex items-center justify-between gap-4">
-        <span className="font-heading text-xl font-semibold text-text">{title}</span>
-        <span className="text-lg font-semibold text-subtle">{price}</span>
+        <span className="heading-3 text-text">{title}</span>
+        <span className="text-body-lg font-semibold text-subtle">{price}</span>
       </div>
       <ul className="grid list-disc gap-1 pl-5 text-label">
         {features.map((feature) => (

@@ -105,7 +105,7 @@ export const HomeLeadForm: HomeThemeDefinition["LeadForm"] = ({
         >
             <Container className="space-y-12 md:space-y-16">
                 <div className="px-3 text-center text-text sm:px-0">
-                    <p className="text-[clamp(2.1rem,4vw,2.6rem)] font-heading font-semibold leading-tight">
+                    <p className="heading-2 text-center">
                         {ui.form.title}
                     </p>
                 </div>
@@ -134,10 +134,10 @@ export const HomeLeadForm: HomeThemeDefinition["LeadForm"] = ({
                             >
                                 {chipLabel}
                             </span>
-                            <p className="font-heading text-[1.25rem] font-semibold leading-[1.32] tracking-[0.02em] text-text">
+                            <p className="heading-3 tracking-[0.02em] text-text">
                                 {panelTitle}
                             </p>
-                            <div className="space-y-[10px] text-base leading-[1.65] text-subtle/85">
+                            <div className="space-y-[10px] text-base text-subtle/85">
                                 {panelParagraphs.length > 0 ? (
                                     panelParagraphs.map((paragraph, index) => (
                                         <p

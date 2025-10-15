@@ -248,7 +248,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         {/* Avatar with initials */}
                         <div className="flex justify-center mb-6 md:mb-10">
                             <div
-                                className="w-14 h-14 rounded-full flex items-center justify-center text-[#2AD6CA] font-bold text-base"
+                                className="w-14 h-14 rounded-full flex items-center justify-center text-[#2AD6CA] font-semibold text-base"
                                 style={{ background: "#E9F9F7" }}
                             >
                                 {getInitials(testimonial.name)}
@@ -261,16 +261,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                                 className="text-center max-w-full px-2"
                                 dir={isRTL ? "rtl" : "ltr"}
                             >
-                                <p
-                                    className={`
-                  leading-relaxed mb-0 text-center font-normal md:font-medium text-[#0E2D2A]
-                  ${
-                      isRTL
-                          ? "font-heading text-[clamp(16px,4vw,22px)]"
-                          : "font-base text-[clamp(15px,3.6vw,20px)]"
-                  }
-                `}
-                                >
+                                <p className="text-quote mb-0 text-center text-[#0E2D2A]">
                                     {testimonial.quote}
                                 </p>
                             </blockquote>
@@ -280,7 +271,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         <footer className="text-center">
                             <div className="w-12 h-px bg-[#2AD6CA] mx-auto mb-6" />
                             <cite className="not-italic">
-                                <div className="font-semibold md:font-bold text-[#0E2D2A] text-lg mb-1 md:mb-2">
+                                <div className="heading-3 text-[#0E2D2A] mb-1 md:mb-2">
                                     {testimonial.name}
                                 </div>
                                 {testimonial.role && (
@@ -320,21 +311,11 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                 >
                     {/* Section header */}
                     <div className="space-y-3 md:space-y-4">
-                        <h2
-                            className={`
-              text-2xl font-semibold text-[#0E2D2A]
-              ${isRTL ? "font-heading" : "font-base"}
-            `}
-                        >
+                        <h2 className="text-section-title text-[#0E2D2A]">
                             {sectionTitle}
                         </h2>
                         <div className="w-12 h-0.5 bg-[#2AD6CA] mx-auto" />
-                        <p
-                            className={`
-              text-sm font-medium text-[#4E716D] tracking-wide
-              ${isRTL ? "font-heading" : "font-base"}
-            `}
-                        >
+                        <p className="text-eyebrow text-[#4E716D]">
                             {eyebrow}
                         </p>
                     </div>

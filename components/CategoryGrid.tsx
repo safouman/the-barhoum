@@ -33,8 +33,8 @@ export function CategoryGrid({ categories, selectedId, onSelect }: CategoryGridP
           )}
           onClick={() => handleSelect(category.id)}
         >
-          <span className="font-heading text-xl">{category.label}</span>
-          <span className="text-sm text-subtle">{category.description}</span>
+          <span className="heading-3">{category.label}</span>
+          <span className="text-label text-subtle">{category.description}</span>
         </button>
       ))}
     </div>

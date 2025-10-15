@@ -25,8 +25,8 @@ export const HomeMethod: HomeThemeDefinition["Method"] = ({ locale, method, mark
       <Container className="px-0 md:px-sm">
         <div
           className={clsx(
-            "mx-auto max-w-3xl text-[1.05rem] leading-[1.85] text-subtle",
-            "space-y-6 px-6 py-6 md:px-0 md:py-0 md:text-lg md:leading-relaxed md:space-y-4",
+            "mx-auto max-w-3xl text-body-lg text-subtle",
+            "space-y-6 px-6 py-6 md:px-0 md:py-0 md:space-y-4",
             isRTL ? "text-right" : "text-left"
           )}
           dir={isRTL ? "rtl" : "ltr"}
@@ -58,11 +58,7 @@ export const HomeMethod: HomeThemeDefinition["Method"] = ({ locale, method, mark
                   {children}
                 </ul>
               ),
-              li: ({ children }) => (
-                <li className="leading-[1.75] md:leading-relaxed">
-                  {children}
-                </li>
-              ),
+              li: ({ children }) => <li>{children}</li>,
             }}
           >
             {markdown}

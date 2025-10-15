@@ -61,7 +61,7 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({
                             isRTL ? styles.textRtl : styles.textLtr
                         )}
                     >
-                        <h1 className="text-display font-heading">
+                        <h1 className="text-display">
                             {hero.title[locale]}
                         </h1>
                         <div className="text-lead space-y-4" dir={isRTL ? "rtl" : "ltr"}>
@@ -94,9 +94,7 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({
                                             {children}
                                         </ul>
                                     ),
-                                    li: ({ children }) => (
-                                        <li className="leading-relaxed">{children}</li>
-                                    ),
+                                    li: ({ children }) => <li>{children}</li>,
                                 }}
                             >
                                 {copy}

@@ -16,7 +16,7 @@ export function LinksView({ links, ui }: LinksViewProps) {
   return (
     <div className="py-[clamp(var(--space-lg),18vh,var(--space-xl))]">
       <Container className="space-y-sm">
-        <h1 className="text-3xl font-heading">{strings.links.title}</h1>
+        <h1>{strings.links.title}</h1>
         <p className="text-subtle">{strings.links.description}</p>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-sm pt-sm">
           {links.map((link) => (
@@ -27,8 +27,8 @@ export function LinksView({ links, ui }: LinksViewProps) {
               rel="noopener noreferrer"
               className="grid gap-2 rounded-[8px] border border-border bg-surface p-sm transition duration-200 ease-out hover:-translate-y-0.5 hover:shadow-sm"
             >
-              <span className="font-heading text-xl">{link.title[locale]}</span>
-              <span className="text-sm text-subtle">{link.description[locale]}</span>
+              <span className="heading-3">{link.title[locale]}</span>
+              <span className="text-label text-subtle">{link.description[locale]}</span>
             </a>
           ))}
         </div>

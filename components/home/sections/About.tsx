@@ -29,14 +29,7 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
                     dir={isRTL ? "rtl" : "ltr"}
                 >
                     {/* Quote headline */}
-                    <h2
-                        className={clsx(
-                            "font-heading text-text text-center break-words",
-                            isRTL
-                                ? "text-[clamp(1.66rem,3.6vw,2.35rem)] leading-[1.32] font-semibold"
-                                : "text-[clamp(1.85rem,4.4vw,3rem)] leading-[1.26] font-medium"
-                        )}
-                    >
+                    <h2 className="text-section-title text-center break-words">
                         {headline}
                     </h2>
 
@@ -51,8 +44,8 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
                             className={clsx(
                                 "mb-8 flex flex-col items-center text-left sm:text-center",
                                 isRTL
-                                    ? "space-y-6 text-[clamp(0.86rem,3.2vw,0.98rem)] leading-[1.7] text-[#444]"
-                                    : "space-y-5 text-[clamp(1rem,3.6vw,1.12rem)] leading-[1.6]"
+                                    ? "space-y-6 text-[#444]"
+                                    : "space-y-5"
                             )}
                             dir={isRTL ? "rtl" : "ltr"}
                         >
@@ -64,7 +57,7 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
                                                 "m-0 text-center",
                                                 "first:relative first:mx-auto first:max-w-[92%] first:text-[clamp(1.05rem,4vw,1.2rem)] first:font-medium first:pb-5 first:after:absolute first:after:left-1/2 first:after:top-full first:after:h-[1px] first:after:w-12 first:after:-translate-x-1/2 first:after:bg-current",
                                                 isRTL
-                                                    ? "text-[clamp(0.86rem,3.2vw,0.98rem)] leading-[1.7]"
+                                                    ? "text-[clamp(0.9rem,3.2vw,1.05rem)] leading-[1.6]"
                                                     : "text-[clamp(1rem,3.6vw,1.12rem)] leading-[1.6]"
                                             )}
                                         >
@@ -98,7 +91,7 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
                                         </ul>
                                     ),
                                     li: ({ children }) => (
-                                        <li className="leading-relaxed text-center sm:text-left">
+                                        <li className="text-center sm:text-left">
                                             {children}
                                         </li>
                                     ),

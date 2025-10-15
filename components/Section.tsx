@@ -15,7 +15,7 @@ export function Section({ id, title, subtitle, children, className, ...props }: 
       {(title || subtitle) && (
         <header className="mb-8 md:mb-md grid gap-sm text-center">
           {title && <h2 className="text-section-title">{title}</h2>}
-          {subtitle && <p className="mx-auto max-w-3xl text-[clamp(1rem,2vw,1.3rem)] text-subtle">{subtitle}</p>}
+          {subtitle && <p className="mx-auto max-w-3xl text-body-lg text-subtle">{subtitle}</p>}
         </header>
       )}
       {children}

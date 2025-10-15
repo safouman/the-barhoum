@@ -74,7 +74,7 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
               <div className="space-y-4">
                 <h3
                   className={clsx(
-                    "font-heading text-[2rem] font-semibold tracking-tight transition-colors",
+                    "heading-3 tracking-tight transition-colors",
                     (isMobile ? isExpandedOnMobile : activeCategory === category.id) ? "text-primary" : "text-text",
                     "group-hover:text-primary"
                   )}
@@ -83,7 +83,7 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
                 </h3>
                 <span className="block h-px w-16 bg-primary/15 transition-all group-hover:bg-primary/35" />
               </div>
-              <p className="text-[0.98rem] leading-relaxed text-subtle/80 group-hover:text-text/85 line-clamp-2">
+              <p className="text-subtle/80 group-hover:text-text/85 line-clamp-2">
                 {category.description}
               </p>
               <span
