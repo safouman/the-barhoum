@@ -57,9 +57,9 @@
 }
 
 html[dir="rtl"] {
-    --font-base: "Noto Naskh Arabic", "Amiri", serif;
-    --font-heading: "Noto Naskh Arabic", "Amiri", serif;
-    --font-ui: "Noto Naskh Arabic", "Amiri", serif;
+    --font-base: var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
+    --font-heading: var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
+    --font-ui: var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
 }
 
 html[dir="rtl"] .text-eyebrow {
@@ -130,7 +130,7 @@ html[dir="rtl"] .text-display {
     }
 
     html[dir="rtl"] body {
-        font-family: "Noto Naskh Arabic", "Amiri", serif;
+        font-family: var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
     }
 
     a {

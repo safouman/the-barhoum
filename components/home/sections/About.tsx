@@ -1,5 +1,15 @@
 import clsx from "classnames";
-import { Children, isValidElement, type ReactNode, useMemo, useState } from "react";
+import {
+    Children,
+    isValidElement,
+    type KeyboardEvent,
+    type ReactNode,
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import ReactMarkdown from "react-markdown";
 import { Container } from "@/components/Container";
 import { Section } from "@/components/Section";
@@ -18,6 +28,9 @@ type AccordionItem = {
 };
 
 const easingClass = "ease-[cubic-bezier(0.16,1,0.3,1)]";
+const desktopMediaQuery = "(min-width: 768px)";
+const cardBaseClasses =
+    "rounded-[18px] border border-border/40 bg-white/90 shadow-[0_26px_48px_-28px_rgba(15,23,42,0.18)]";
 
 const AccordionList = ({ children, isRTL }: AccordionListProps) => {
     const items = useMemo<AccordionItem[]>(() => {
@@ -72,7 +85,144 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
             .filter((item): item is AccordionItem => item !== null);
     }, [children]);
 
-    const [openIndex, setOpenIndex] = useState<number | null>(null);
+    const [openIndexes, setOpenIndexes] = useState<number[]>([]);
+    const [isDesktop, setIsDesktop] = useState(false);
+    const triggerRefs = useRef<Array<HTMLButtonElement | null>>([]);
+    const lastOpenedRef = useRef<number | null>(null);
+    const hasInitializedRef = useRef(false);
+
+    useEffect(() => {
+        if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+            return;
+        }
+        const mediaQuery = window.matchMedia(desktopMediaQuery);
+        const updateMatch = (eventOrMedia: MediaQueryList | MediaQueryListEvent) => {
+            setIsDesktop(eventOrMedia.matches);
+        };
+        updateMatch(mediaQuery);
+
+        const listener = (event: MediaQueryListEvent) => updateMatch(event);
+
+        if (typeof mediaQuery.addEventListener === "function") {
+            mediaQuery.addEventListener("change", listener);
+        } else {
+            mediaQuery.addListener(listener);
+        }
+
+        return () => {
+            if (typeof mediaQuery.removeEventListener === "function") {
+                mediaQuery.removeEventListener("change", listener);
+            } else {
+                mediaQuery.removeListener(listener);
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        triggerRefs.current = triggerRefs.current.slice(0, items.length);
+        setOpenIndexes((prev) => prev.filter((index) => index < items.length));
+    }, [items.length]);
+
+    useEffect(() => {
+        if (!hasInitializedRef.current) {
+            hasInitializedRef.current = true;
+            return;
+        }
+        if (!isDesktop) return;
+        setOpenIndexes((prev) => {
+            if (prev.length <= 1) return prev;
+            const latest = prev[prev.length - 1];
+            return [latest];
+        });
+    }, [isDesktop]);
+
+    const scrollItemIntoView = useCallback((index: number) => {
+        if (typeof window === "undefined") return;
+        const target = triggerRefs.current[index];
+        if (!target) return;
+        const prefersReducedMotion = window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+        ).matches;
+        const rect = target.getBoundingClientRect();
+        const viewportHeight =
+            window.innerHeight || document.documentElement.clientHeight;
+        const topComfort = 72;
+        const bottomComfort = viewportHeight - 56;
+        if (rect.top >= topComfort && rect.bottom <= bottomComfort) return;
+
+        const targetOffset = Math.max(rect.top + window.scrollY - topComfort, 0);
+        window.scrollTo({
+            top: targetOffset,
+            behavior: prefersReducedMotion ? "auto" : "smooth",
+        });
+    }, []);
+
+    useEffect(() => {
+        const lastOpened = lastOpenedRef.current;
+        if (lastOpened === null) return;
+        if (!openIndexes.includes(lastOpened)) return;
+        scrollItemIntoView(lastOpened);
+    }, [openIndexes, scrollItemIntoView]);
+
+    const toggleItem = useCallback(
+        (index: number) => {
+            setOpenIndexes((prev) => {
+                const isAlreadyOpen = prev.includes(index);
+
+                if (isDesktop) {
+                    if (isAlreadyOpen) {
+                        lastOpenedRef.current = null;
+                        return [];
+                    }
+                    lastOpenedRef.current = index;
+                    return [index];
+                }
+
+                if (isAlreadyOpen) {
+                    lastOpenedRef.current = null;
+                    return prev.filter((itemIndex) => itemIndex !== index);
+                }
+
+                const next = [...prev, index].sort((a, b) => a - b);
+                lastOpenedRef.current = index;
+                return next;
+            });
+        },
+        [isDesktop]
+    );
+
+    const handleKeyNavigation = useCallback(
+        (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
+            const total = items.length;
+            if (total === 0) return;
+            let targetIndex: number | null = null;
+
+            if (
+                event.key === "ArrowDown" ||
+                (!isRTL && event.key === "ArrowRight") ||
+                (isRTL && event.key === "ArrowLeft")
+            ) {
+                targetIndex = (index + 1) % total;
+            } else if (
+                event.key === "ArrowUp" ||
+                (!isRTL && event.key === "ArrowLeft") ||
+                (isRTL && event.key === "ArrowRight")
+            ) {
+                targetIndex = (index - 1 + total) % total;
+            } else if (event.key === "Home") {
+                targetIndex = 0;
+            } else if (event.key === "End") {
+                targetIndex = total - 1;
+            }
+
+            if (targetIndex !== null) {
+                event.preventDefault();
+                const nextTrigger = triggerRefs.current[targetIndex];
+                nextTrigger?.focus();
+            }
+        },
+        [isRTL, items.length]
+    );
 
     if (items.length === 0) {
         return (
@@ -90,50 +240,45 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
 
     return (
         <div
-            className={clsx(
-                "w-full rounded-[18px] border border-border/40 bg-white/40 px-2 py-3 shadow-[0_18px_42px_-28px_rgba(15,23,42,0.35)] backdrop-blur-[2px]",
-                "space-y-2 sm:space-y-3"
-            )}
+            className={clsx("w-full space-y-3 sm:space-y-4")}
             dir={isRTL ? "rtl" : "ltr"}
             role="list"
         >
             {items.map((item, index) => {
-                const isOpen = openIndex === index;
+                const isOpen = openIndexes.includes(index);
                 const contentId = `about-accordion-panel-${index}`;
                 const triggerId = `about-accordion-trigger-${index}`;
                 return (
                     <div
                         key={item.key}
                         className={clsx(
-                            "overflow-hidden rounded-[14px] border border-border/40 bg-white/90 transition-shadow duration-200",
+                            "overflow-hidden transition-shadow duration-200",
+                            cardBaseClasses,
                             isOpen
-                                ? "shadow-[0_18px_42px_-26px_rgba(15,23,42,0.35)]"
-                                : "shadow-[0_6px_24px_-18px_rgba(15,23,42,0.25)]"
+                                ? "shadow-[0_32px_56px_-32px_rgba(15,23,42,0.28)]"
+                                : "shadow-[0_20px_42px_-34px_rgba(15,23,42,0.2)]"
                         )}
                         role="listitem"
                     >
                         <button
                             type="button"
-                            onClick={() =>
-                                setOpenIndex((prev) => (prev === index ? null : index))
-                            }
+                            onClick={() => toggleItem(index)}
                             className={clsx(
-                                "flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors duration-200",
+                                "flex w-full items-center gap-4 px-6 py-5 text-left transition-colors duration-200",
                                 easingClass,
-                                isRTL ? "text-right" : "text-left",
-                                isOpen ? "bg-primary/5" : "bg-transparent"
+                                isRTL
+                                    ? "flex-row-reverse text-right"
+                                    : "flex-row text-left",
+                                isOpen ? "bg-primary/5" : "bg-white/0"
                             )}
                             aria-expanded={isOpen}
                             aria-controls={contentId}
                             id={triggerId}
+                            onKeyDown={(event) => handleKeyNavigation(event, index)}
+                            ref={(node) => {
+                                triggerRefs.current[index] = node;
+                            }}
                         >
-                            <span
-                                className={clsx(
-                                    "text-[clamp(1.02rem,3vw,1.18rem)] font-semibold leading-tight text-text"
-                                )}
-                            >
-                                {item.title}
-                            </span>
                             <span
                                 className={clsx(
                                     "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/50 bg-white text-text transition-transform duration-300",
@@ -157,6 +302,18 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                                     />
                                 </svg>
                             </span>
+                            <span className="flex-1">
+                                <span
+                                    className={clsx(
+                                        "leading-tight text-text font-semibold",
+                                        isRTL
+                                            ? "text-[clamp(1.07rem,3.1vw,1.24rem)]"
+                                            : "text-[clamp(1.02rem,3vw,1.18rem)]"
+                                    )}
+                                >
+                                    {item.title}
+                                </span>
+                            </span>
                         </button>
                         <div
                             className={clsx(
@@ -175,11 +332,14 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                                 {item.description.length > 0 && (
                                     <div
                                         className={clsx(
-                                            "px-5 pb-5 pt-0 text-[clamp(0.94rem,2.7vw,1.05rem)] leading-[1.75] text-subtle/90",
-                                            isRTL ? "text-right" : "text-left"
+                                            "px-6 pb-5 pt-0 text-subtle/90",
+                                            isRTL ? "text-right" : "text-left",
+                                            isRTL
+                                                ? "text-[clamp(0.99rem,2.9vw,1.1rem)]"
+                                                : "text-[clamp(0.94rem,2.7vw,1.05rem)]"
                                         )}
                                     >
-                                        <p className="m-0 whitespace-pre-line">
+                                        <p className="m-0 whitespace-pre-line font-normal">
                                             {item.description}
                                         </p>
                                     </div>
