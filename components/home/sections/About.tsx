@@ -240,7 +240,11 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
 
     return (
         <div
-            className={clsx("w-full space-y-3 sm:space-y-4")}
+            className={clsx(
+                "w-full space-y-3 sm:space-y-4",
+                "md:mx-auto",
+                "lg:w-[112%] lg:max-w-none"
+            )}
             dir={isRTL ? "rtl" : "ltr"}
             role="list"
         >
@@ -252,10 +256,11 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                     <div
                         key={item.key}
                         className={clsx(
-                            "overflow-hidden transition-shadow duration-200",
+                            "relative overflow-hidden transition-shadow duration-200",
+                            "before:absolute before:inset-x-0 before:top-0 before:h-[2px] before:rounded-t-[18px] before:bg-primary/60 before:opacity-0 before:transition-opacity before:duration-200 before:ease-out before:content-['']",
                             cardBaseClasses,
                             isOpen
-                                ? "shadow-[0_32px_56px_-32px_rgba(15,23,42,0.28)]"
+                                ? "shadow-[0_32px_56px_-32px_rgba(15,23,42,0.28)] before:opacity-100"
                                 : "shadow-[0_20px_42px_-34px_rgba(15,23,42,0.2)]"
                         )}
                         role="listitem"
@@ -264,7 +269,7 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                             type="button"
                             onClick={() => toggleItem(index)}
                             className={clsx(
-                                "flex w-full items-center gap-4 px-6 py-5 text-left transition-colors duration-200",
+                                "flex w-full items-baseline gap-4 px-6 py-7 text-left transition-colors duration-200",
                                 easingClass,
                                 isRTL
                                     ? "flex-row-reverse text-right"
@@ -281,9 +286,12 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                         >
                             <span
                                 className={clsx(
-                                    "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/50 bg-white text-text transition-transform duration-300",
+                                    "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border bg-white transition-[transform,color,border-color] duration-300",
                                     easingClass,
-                                    isOpen ? "rotate-180" : "rotate-0"
+                                    isOpen
+                                        ? "border-primary/50 text-primary rotate-180"
+                                        : "border-border/50 text-text/80 rotate-0",
+                                    "self-baseline"
                                 )}
                                 aria-hidden
                             >
@@ -317,11 +325,10 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                         </button>
                         <div
                             className={clsx(
-                                "grid overflow-hidden transition-all duration-300",
-                                easingClass,
+                                "grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out",
                                 isOpen
-                                    ? "grid-rows-[1fr] opacity-100"
-                                    : "grid-rows-[0fr] opacity-0"
+                                    ? "grid-rows-[1fr]"
+                                    : "grid-rows-[0fr]"
                             )}
                             id={contentId}
                             role="region"
@@ -332,11 +339,12 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                                 {item.description.length > 0 && (
                                     <div
                                         className={clsx(
-                                            "px-6 pb-5 pt-0 text-subtle/90",
+                                            "px-6 pb-7 pt-2 text-subtle/90 transition-opacity duration-200 ease-out",
                                             isRTL ? "text-right" : "text-left",
                                             isRTL
                                                 ? "text-[clamp(0.99rem,2.9vw,1.1rem)]"
-                                                : "text-[clamp(0.94rem,2.7vw,1.05rem)]"
+                                                : "text-[clamp(0.94rem,2.7vw,1.05rem)]",
+                                            isOpen ? "opacity-100" : "opacity-0"
                                         )}
                                     >
                                         <p className="m-0 whitespace-pre-line font-normal">

@@ -41,7 +41,7 @@ const SOCIAL_ICONS: Record<string, JSX.Element> = {
 export function Footer({ site }: FooterProps) {
     const { locale } = useLocale();
     const isRtl = locale === "ar";
-  const brandName = site.brand.footer[locale];
+    const brandName = site.brand.footer[locale];
 
     const navLinks = site.footerNav.map((item) => ({
         href: item.href,
@@ -58,18 +58,18 @@ export function Footer({ site }: FooterProps) {
             <Container className="py-12">
                 <div className="text-center space-y-8">
                     {/* Brand and Tagline */}
-          <div className="flex justify-center">
-            <Image
-              src="/images/logo.png"
-              alt={brandName}
-              width={256}
-              height={256}
-              className="h-32 w-auto md:h-64"
-            />
-          </div>
+                    <div className="flex justify-center">
+                        <Image
+                            src="/images/logo.png"
+                            alt={brandName}
+                            width={256}
+                            height={256}
+                            className="h-32 w-auto md:h-40"
+                        />
+                    </div>
 
-          {/* Divider */}
-          <div className="w-16 h-px bg-[#222] opacity-20 mx-auto"></div>
+                    {/* Divider */}
+                    <div className="w-16 h-px bg-[#222] opacity-20 mx-auto"></div>
 
                     {/* Navigation Links */}
                     <nav
@@ -114,12 +114,12 @@ export function Footer({ site }: FooterProps) {
                         ))}
                     </div>
 
-          {/* Copyright */}
-          <div className="text-xs text-[#222] opacity-60">
-            © 2025 {brandName}
-          </div>
-        </div>
-      </Container>
-    </footer>
-  );
+                    {/* Copyright */}
+                    <div className="text-xs text-[#222] opacity-60">
+                        © 2025 {brandName}
+                    </div>
+                </div>
+            </Container>
+        </footer>
+    );
 }
