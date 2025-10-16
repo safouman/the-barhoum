@@ -278,7 +278,7 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                                 isRTL
                                     ? "flex-row-reverse text-right"
                                     : "flex-row text-left",
-                                isOpen ? "bg-primary/5" : "bg-white/0"
+                                isOpen ? "bg-primary/8" : "bg-white/0 hover:bg-primary/3"
                             )}
                             aria-expanded={isOpen}
                             aria-controls={contentId}
@@ -290,11 +290,11 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                         >
                             <span
                                 className={clsx(
-                                    "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border bg-white transition-[transform,color,border-color] duration-300",
+                                    "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-[transform,color,border-color,background-color] duration-300",
                                     easingClass,
                                     isOpen
-                                        ? "border-primary/50 text-primary/95 rotate-180"
-                                        : "border-border/50 text-text/80 rotate-0",
+                                        ? "border-primary/60 text-primary bg-primary/5 rotate-180"
+                                        : "border-border/50 text-text/80 bg-white rotate-0",
                                     "self-baseline"
                                 )}
                                 aria-hidden
@@ -317,7 +317,8 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                             <span className="flex-1">
                                 <span
                                     className={clsx(
-                                        "leading-tight text-text font-semibold",
+                                        "leading-tight font-semibold transition-colors duration-200",
+                                        isOpen ? "text-primary" : "text-text",
                                         isRTL
                                             ? "text-[clamp(1.07rem,3.1vw,1.24rem)]"
                                             : "text-[clamp(1.02rem,3vw,1.18rem)]"
