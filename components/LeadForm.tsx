@@ -282,7 +282,7 @@ export function LeadForm({
         );
     };
 
-    const handleSubmit = (eventRef: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (eventRef: FormEvent<HTMLFormElement>) => {
         eventRef.preventDefault();
         const validation = runStepValidation(step);
         if (!validation.isValid) {
@@ -300,11 +300,41 @@ export function LeadForm({
             category: selectedCategory ?? "none",
             pack: selectedPackage ?? "none",
         });
-        setTimeout(() => {
+
+        try {
+            const payload = {
+                ...values,
+                category: selectedCategory ?? "",
+                package: selectedPackage ?? "",
+            };
+
+            const response = await fetch("/api/submit-lead", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                setIsSubmitting(false);
+                setSubmitted(true);
+                onSubmitted?.();
+            } else {
+                setIsSubmitting(false);
+                const errorMessage =
+                    result.error || "Failed to submit form. Please try again.";
+                alert(errorMessage);
+            }
+        } catch (error) {
             setIsSubmitting(false);
-            setSubmitted(true);
-            onSubmitted?.();
-        }, 600);
+            console.error("Form submission error:", error);
+            alert(
+                "Network error. Please check your connection and try again."
+            );
+        }
     };
 
     const goToNextStep = (event: MouseEvent<HTMLButtonElement>) => {
