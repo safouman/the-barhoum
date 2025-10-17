@@ -6,6 +6,8 @@ const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
 const RATE_LIMIT_WINDOW = 60 * 60 * 1000;
 const MAX_REQUESTS_PER_WINDOW = 5;
+const MAX_RETRIES = 3;
+const INITIAL_RETRY_DELAY = 1000;
 
 function getRateLimitKey(req: NextRequest): string {
     const forwarded = req.headers.get("x-forwarded-for");
@@ -33,6 +35,55 @@ function checkRateLimit(key: string): { allowed: boolean; remaining: number } {
 
     record.count += 1;
     return { allowed: true, remaining: MAX_REQUESTS_PER_WINDOW - record.count };
+}
+
+async function delay(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchWithRetry(
+    url: string,
+    options: RequestInit,
+    maxRetries: number = MAX_RETRIES
+): Promise<Response> {
+    let lastError: Error | null = null;
+
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+            const response = await fetch(url, options);
+            const clonedResponse = response.clone();
+
+            try {
+                await response.text();
+            } catch (consumeError) {
+                console.warn("Warning: Could not consume response body:", consumeError);
+            }
+
+            return clonedResponse;
+        } catch (error) {
+            lastError = error as Error;
+
+            const isNetworkError =
+                error instanceof Error &&
+                (error.message.includes("fetch failed") ||
+                 error.message.includes("ECONNRESET") ||
+                 error.message.includes("UND_ERR_SOCKET") ||
+                 error.message.includes("other side closed"));
+
+            if (isNetworkError && attempt < maxRetries) {
+                const delayMs = INITIAL_RETRY_DELAY * Math.pow(2, attempt);
+                console.log(
+                    `Retry attempt ${attempt + 1}/${maxRetries} after ${delayMs}ms for URL: ${url}`
+                );
+                await delay(delayMs);
+                continue;
+            }
+
+            throw error;
+        }
+    }
+
+    throw lastError || new Error("Failed after maximum retries");
 }
 
 export async function POST(req: NextRequest) {
@@ -93,24 +144,29 @@ export async function POST(req: NextRequest) {
         };
 
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
 
         try {
-            const response = await fetch(googleScriptUrl, {
+            const response = await fetchWithRetry(googleScriptUrl, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    "User-Agent": "Barhoum-Coaching-Site/1.0",
                 },
                 body: JSON.stringify(payload),
                 signal: controller.signal,
+                keepalive: true,
+                cache: "no-store",
             });
 
             clearTimeout(timeoutId);
 
             if (!response.ok) {
+                const responseText = await response.text().catch(() => "Unable to read response");
                 console.error(
                     "Google Script responded with error:",
-                    response.status
+                    response.status,
+                    responseText
                 );
                 return NextResponse.json(
                     {
@@ -121,7 +177,20 @@ export async function POST(req: NextRequest) {
                 );
             }
 
-            const result = await response.json();
+            const responseText = await response.text();
+            let result;
+            try {
+                result = JSON.parse(responseText);
+            } catch (parseError) {
+                console.error("Failed to parse Google Script response:", responseText);
+                return NextResponse.json(
+                    {
+                        success: false,
+                        error: "Invalid response from server. Please try again.",
+                    },
+                    { status: 500 }
+                );
+            }
 
             if (result.success) {
                 return NextResponse.json({
@@ -147,7 +216,7 @@ export async function POST(req: NextRequest) {
                 fetchError instanceof Error &&
                 fetchError.name === "AbortError"
             ) {
-                console.error("Request to Google Script timed out");
+                console.error("Request to Google Script timed out after 30 seconds");
                 return NextResponse.json(
                     {
                         success: false,
@@ -157,7 +226,12 @@ export async function POST(req: NextRequest) {
                 );
             }
 
-            console.error("Error calling Google Script:", fetchError);
+            console.error("Error calling Google Script after retries:", {
+                message: fetchError instanceof Error ? fetchError.message : String(fetchError),
+                name: fetchError instanceof Error ? fetchError.name : "Unknown",
+                stack: fetchError instanceof Error ? fetchError.stack : undefined,
+            });
+
             return NextResponse.json(
                 {
                     success: false,
