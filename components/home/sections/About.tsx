@@ -172,26 +172,16 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
             setOpenIndexes((prev) => {
                 const isAlreadyOpen = prev.includes(index);
 
-                if (isDesktop) {
-                    if (isAlreadyOpen) {
-                        lastOpenedRef.current = null;
-                        return [];
-                    }
-                    lastOpenedRef.current = index;
-                    return [index];
-                }
-
                 if (isAlreadyOpen) {
                     lastOpenedRef.current = null;
-                    return prev.filter((itemIndex) => itemIndex !== index);
+                    return [];
                 }
 
-                const next = [...prev, index].sort((a, b) => a - b);
                 lastOpenedRef.current = index;
-                return next;
+                return [index];
             });
         },
-        [isDesktop]
+        []
     );
 
     const handleKeyNavigation = useCallback(
