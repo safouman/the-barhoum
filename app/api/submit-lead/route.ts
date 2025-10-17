@@ -5,7 +5,7 @@ import { z } from "zod";
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
 const RATE_LIMIT_WINDOW = 60 * 60 * 1000;
-const MAX_REQUESTS_PER_WINDOW = 5;
+const MAX_REQUESTS_PER_WINDOW = 15;
 const MAX_RETRIES = 3;
 const INITIAL_RETRY_DELAY = 1000;
 
