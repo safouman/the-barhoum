@@ -14,19 +14,36 @@ export async function createPaymentLink(
 ): Promise<string | null> {
   const { email, fullName, country, phone, packageId } = params;
 
+  console.log(`[Stripe] 🔍 Looking up price ID for package: ${packageId}`);
   const priceId = getPriceId(packageId);
+
   if (!priceId) {
-    console.warn(`No Stripe Price ID found for package: ${packageId}`);
+    console.warn(`[Stripe] ⚠️ No Stripe Price ID found for package: ${packageId}`);
+    console.warn(`[Stripe] Available packages:`, Object.keys(require('./config').STRIPE_PRICE_MAP));
     return null;
   }
 
+  console.log(`[Stripe] ✅ Price ID found: ${priceId}`);
+
+  console.log(`[Stripe] 🔧 Initializing Stripe client...`);
   const stripe = getStripeClient();
   if (!stripe) {
-    console.error('Stripe client not available - skipping payment link creation');
+    console.error('[Stripe] ❌ Stripe client not available - skipping payment link creation');
+    console.error('[Stripe] Check STRIPE_SECRET_KEY environment variable');
     return null;
   }
+  console.log(`[Stripe] ✅ Stripe client initialized successfully`);
 
   try {
+    console.log(`[Stripe] 📡 Creating payment link with Stripe API...`);
+    console.log(`[Stripe] Parameters:`, {
+      priceId,
+      customerEmail: email,
+      customerName: fullName,
+      country,
+      packageId,
+    });
+
     const paymentLink = await stripe.paymentLinks.create({
       line_items: [
         {
@@ -60,12 +77,25 @@ export async function createPaymentLink(
       },
     });
 
-    console.log(`Payment link created successfully for package ${packageId}: ${paymentLink.url}`);
+    console.log(`[Stripe] ✅ Payment link created successfully!`);
+    console.log(`[Stripe] Payment Link URL: ${paymentLink.url}`);
+    console.log(`[Stripe] Payment Link ID: ${paymentLink.id}`);
+    console.log(`[Stripe] Payment Link Details:`, {
+      id: paymentLink.id,
+      url: paymentLink.url,
+      active: paymentLink.active,
+      metadata: paymentLink.metadata,
+    });
+
     return paymentLink.url;
   } catch (error) {
-    console.error('Failed to create Stripe payment link:', {
+    console.error('[Stripe] ❌ Failed to create Stripe payment link');
+    console.error('[Stripe] Error details:', {
       error: error instanceof Error ? error.message : String(error),
+      errorType: error instanceof Error ? error.constructor.name : typeof error,
+      stack: error instanceof Error ? error.stack : undefined,
       packageId,
+      priceId,
       email,
     });
     return null;

@@ -9,9 +9,16 @@ export const STRIPE_PRICE_MAP = {
 export type PackageId = keyof typeof STRIPE_PRICE_MAP;
 
 export function getPriceId(packageId: string): string | null {
+  console.log(`[Stripe Config] 📋 Looking up price for package: "${packageId}"`);
+  console.log(`[Stripe Config] Available packages:`, Object.keys(STRIPE_PRICE_MAP));
+
   if (packageId in STRIPE_PRICE_MAP) {
-    return STRIPE_PRICE_MAP[packageId as PackageId];
+    const priceId = STRIPE_PRICE_MAP[packageId as PackageId];
+    console.log(`[Stripe Config] ✅ Found price ID: ${priceId}`);
+    return priceId;
   }
+
+  console.log(`[Stripe Config] ❌ Package "${packageId}" not found in price map`);
   return null;
 }
 

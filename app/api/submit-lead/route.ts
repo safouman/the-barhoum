@@ -89,11 +89,19 @@ async function fetchWithRetry(
 }
 
 export async function POST(req: NextRequest) {
+    const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const startTime = Date.now();
+
+    console.log(`[${requestId}] 🚀 Form submission started at ${new Date().toISOString()}`);
+
     try {
         const rateLimitKey = getRateLimitKey(req);
         const rateLimit = checkRateLimit(rateLimitKey);
 
+        console.log(`[${requestId}] Rate limit check: allowed=${rateLimit.allowed}, remaining=${rateLimit.remaining}`);
+
         if (!rateLimit.allowed) {
+            console.warn(`[${requestId}] ⚠️ Rate limit exceeded for key: ${rateLimitKey}`);
             return NextResponse.json(
                 {
                     success: false,
@@ -104,8 +112,10 @@ export async function POST(req: NextRequest) {
         }
 
         const body = await req.json();
+        console.log(`[${requestId}] 📝 Received form data - category: ${body.category}, package: ${body.package}, email: ${body.email}`);
 
         const validationResult = leadFormSchema.safeParse(body);
+        console.log(`[${requestId}] Validation result: ${validationResult.success ? '✅ passed' : '❌ failed'}`);
 
         if (!validationResult.success) {
             const zodError = validationResult.error;
@@ -113,6 +123,8 @@ export async function POST(req: NextRequest) {
                 field: err.path.join("."),
                 message: err.message,
             }));
+
+            console.error(`[${requestId}] ❌ Validation errors:`, errors);
 
             return NextResponse.json(
                 {
@@ -128,32 +140,48 @@ export async function POST(req: NextRequest) {
 
         let paymentLink = "";
 
-        if (formData.category === "individuals" && requiresPayment(formData.country)) {
+        console.log(`[${requestId}] 💰 Payment eligibility check - category: ${formData.category}, country: ${formData.country}`);
+        const needsPayment = formData.category === "individuals" && requiresPayment(formData.country);
+        console.log(`[${requestId}] Payment required: ${needsPayment ? '✅ YES' : '❌ NO'}`);
+
+        if (needsPayment) {
+            console.log(`[${requestId}] 🔗 Starting payment link generation for package: ${formData.package}`);
             try {
-                const link = await createPaymentLink({
+                const linkParams = {
                     email: formData.email,
                     fullName: formData.fullName,
                     country: formData.country,
                     phone: formData.phone,
                     packageId: formData.package,
-                });
+                };
+                console.log(`[${requestId}] Payment link params:`, linkParams);
+
+                const link = await createPaymentLink(linkParams);
 
                 if (link) {
                     paymentLink = link;
-                    console.log(`Payment link generated for ${formData.email}: ${link}`);
+                    console.log(`[${requestId}] ✅ Payment link generated successfully:`, link);
                 } else {
-                    console.warn(`Failed to generate payment link for package ${formData.package}`);
+                    console.warn(`[${requestId}] ⚠️ Payment link generation returned null for package: ${formData.package}`);
                 }
             } catch (error) {
-                console.error("Error generating payment link:", error);
+                console.error(`[${requestId}] ❌ Error generating payment link:`, {
+                    error: error instanceof Error ? error.message : String(error),
+                    stack: error instanceof Error ? error.stack : undefined,
+                    package: formData.package,
+                });
             }
+        } else {
+            console.log(`[${requestId}] ⏭️ Skipping payment link generation`);
         }
 
         const googleScriptUrl = process.env.GOOGLE_SCRIPT_URL;
         const googleScriptSecret = process.env.GOOGLE_SCRIPT_SECRET;
 
+        console.log(`[${requestId}] Google Script config: URL=${googleScriptUrl ? '✅ present' : '❌ missing'}, Secret=${googleScriptSecret ? '✅ present' : '❌ missing'}`);
+
         if (!googleScriptUrl || !googleScriptSecret) {
-            console.error("Missing Google Script configuration");
+            console.error(`[${requestId}] ❌ Missing Google Script configuration`);
             return NextResponse.json(
                 {
                     success: false,
@@ -169,8 +197,20 @@ export async function POST(req: NextRequest) {
             payment_link: paymentLink,
         };
 
+        console.log(`[${requestId}] 📦 Payload prepared for Google Sheets:`, {
+            hasPaymentLink: !!paymentLink,
+            paymentLinkValue: paymentLink || '(empty)',
+            paymentLinkLength: paymentLink.length,
+            email: formData.email,
+            category: formData.category,
+            package: formData.package,
+            fieldCount: Object.keys(payload).length,
+        });
+
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+        console.log(`[${requestId}] 📤 Sending to Google Sheets...`);
 
         try {
             const response = await fetchWithRetry(googleScriptUrl, {
@@ -187,13 +227,11 @@ export async function POST(req: NextRequest) {
 
             clearTimeout(timeoutId);
 
+            console.log(`[${requestId}] 📥 Google Sheets response received - status: ${response.status}`);
+
             if (!response.ok) {
                 const responseText = await response.text().catch(() => "Unable to read response");
-                console.error(
-                    "Google Script responded with error:",
-                    response.status,
-                    responseText
-                );
+                console.error(`[${requestId}] ❌ Google Script error - status: ${response.status}, response:`, responseText);
                 return NextResponse.json(
                     {
                         success: false,
@@ -204,11 +242,14 @@ export async function POST(req: NextRequest) {
             }
 
             const responseText = await response.text();
+            console.log(`[${requestId}] Google Sheets raw response:`, responseText.substring(0, 500));
+
             let result;
             try {
                 result = JSON.parse(responseText);
+                console.log(`[${requestId}] Parsed response:`, result);
             } catch (parseError) {
-                console.error("Failed to parse Google Script response:", responseText);
+                console.error(`[${requestId}] ❌ Failed to parse Google Script response:`, responseText);
                 return NextResponse.json(
                     {
                         success: false,
@@ -219,12 +260,16 @@ export async function POST(req: NextRequest) {
             }
 
             if (result.success) {
+                const duration = Date.now() - startTime;
+                console.log(`[${requestId}] ✅ Form submitted successfully to Google Sheets in ${duration}ms`);
+                console.log(`[${requestId}] 🏁 Request completed successfully`);
+
                 return NextResponse.json({
                     success: true,
                     message: "Form submitted successfully",
                 });
             } else {
-                console.error("Google Script returned error:", result);
+                console.error(`[${requestId}] ❌ Google Script returned error:`, result);
                 return NextResponse.json(
                     {
                         success: false,
@@ -242,7 +287,7 @@ export async function POST(req: NextRequest) {
                 fetchError instanceof Error &&
                 fetchError.name === "AbortError"
             ) {
-                console.error("Request to Google Script timed out after 30 seconds");
+                console.error(`[${requestId}] ⏱️ Request to Google Script timed out after 30 seconds`);
                 return NextResponse.json(
                     {
                         success: false,
@@ -252,7 +297,7 @@ export async function POST(req: NextRequest) {
                 );
             }
 
-            console.error("Error calling Google Script after retries:", {
+            console.error(`[${requestId}] ❌ Error calling Google Script after retries:`, {
                 message: fetchError instanceof Error ? fetchError.message : String(fetchError),
                 name: fetchError instanceof Error ? fetchError.name : "Unknown",
                 stack: fetchError instanceof Error ? fetchError.stack : undefined,
@@ -267,7 +312,8 @@ export async function POST(req: NextRequest) {
             );
         }
     } catch (error) {
-        console.error("Unexpected error in submit-lead API:", error);
+        const duration = Date.now() - startTime;
+        console.error(`[${requestId}] ❌ Unexpected error in submit-lead API after ${duration}ms:`, error);
         return NextResponse.json(
             {
                 success: false,
