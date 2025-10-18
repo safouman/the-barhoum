@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { leadFormSchema } from "@/lib/validation/lead-form";
 import { z } from "zod";
+import { createPaymentLink } from "@/lib/stripe/payment-links";
+import { requiresPayment } from "@/lib/utils/geo";
 
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
@@ -124,6 +126,29 @@ export async function POST(req: NextRequest) {
 
         const formData = validationResult.data;
 
+        let paymentLink = "";
+
+        if (formData.category === "individuals" && requiresPayment(formData.country)) {
+            try {
+                const link = await createPaymentLink({
+                    email: formData.email,
+                    fullName: formData.fullName,
+                    country: formData.country,
+                    phone: formData.phone,
+                    packageId: formData.package,
+                });
+
+                if (link) {
+                    paymentLink = link;
+                    console.log(`Payment link generated for ${formData.email}: ${link}`);
+                } else {
+                    console.warn(`Failed to generate payment link for package ${formData.package}`);
+                }
+            } catch (error) {
+                console.error("Error generating payment link:", error);
+            }
+        }
+
         const googleScriptUrl = process.env.GOOGLE_SCRIPT_URL;
         const googleScriptSecret = process.env.GOOGLE_SCRIPT_SECRET;
 
@@ -141,6 +166,7 @@ export async function POST(req: NextRequest) {
         const payload = {
             secret: googleScriptSecret,
             ...formData,
+            payment_link: paymentLink,
         };
 
         const controller = new AbortController();

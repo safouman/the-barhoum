@@ -1,9 +1,20 @@
 [
   {
-    "id": "ind-foundation",
+    "id": "ind-1-session",
     "categoryId": "individuals",
-    "title": {"ar": "أساس الوعي", "en": "Awareness Foundation"},
-    "price": {"amount": 180, "currency": "EUR"},
+    "title": {"ar": "جلسة واحدة", "en": "1 session"},
+    "price": {"amount": 100, "currency": "EUR"},
+    "features": {
+      "ar": ["جلسة رقمية واحدة", "تحليل أولي", "توصيات شخصية"],
+      "en": ["1 virtual session", "Initial assessment", "Personalized recommendations"]
+    },
+    "visible": true
+  },
+  {
+    "id": "ind-3-sessions",
+    "categoryId": "individuals",
+    "title": {"ar": "3 جلسات", "en": "3 sessions"},
+    "price": {"amount": 300, "currency": "EUR"},
     "features": {
       "ar": ["3 جلسات رقمية", "تحليل نقاط القوة", "خطة متابعة لمدة شهر"],
       "en": ["3 virtual sessions", "Strengths debrief", "1-month follow-up plan"]
@@ -11,13 +22,13 @@
     "visible": true
   },
   {
-    "id": "ind-immersion",
+    "id": "ind-5-sessions",
     "categoryId": "individuals",
-    "title": {"ar": "رحلة تحول", "en": "Transformative Immersion"},
-    "price": {"amount": 540, "currency": "EUR"},
+    "title": {"ar": "5 جلسات", "en": "5 sessions"},
+    "price": {"amount": 800, "currency": "EUR"},
     "features": {
-      "ar": ["6 جلسات عميقة", "دعم صوتي بين الجلسات", "تمارين موجهة"],
-      "en": ["6 deep-dive sessions", "Voice notes support", "Guided practices"]
+      "ar": ["5 جلسات عميقة", "دعم صوتي بين الجلسات", "تمارين موجهة"],
+      "en": ["5 deep-dive sessions", "Voice notes support", "Guided practices"]
     },
     "visible": true
   },
