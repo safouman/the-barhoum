@@ -102,6 +102,14 @@ export function HomeExperience({ home, categories, testimonials, ui, leadFormCop
     return selectedPack.title;
   }, [selectedPack]);
 
+  // Create a stable package identifier from category + sessions
+  // This will be used by the payment system to identify which package was selected
+  const selectedPackageId = useMemo(() => {
+    if (!selectedPack) return undefined;
+    // Format: "categoryId-Nsessions" (e.g., "individuals-1sessions", "couples-3sessions")
+    return `${selectedPack.category}-${selectedPack.sessions}sessions`;
+  }, [selectedPack]);
+
   const selectedPackSummary = useMemo(() => {
     if (!selectedPack) return undefined;
     return {
@@ -195,6 +203,8 @@ export function HomeExperience({ home, categories, testimonials, ui, leadFormCop
         activeCategoryLabel={activeCategoryLabel}
         selectedPackageLabel={selectedPackageLabel}
         selectedPackSummary={selectedPackSummary}
+        activeCategoryId={activeCategory}
+        selectedPackageId={selectedPackageId}
         onPackSelect={(pack) => {
           event("package_click", {
             action: "select",
@@ -248,8 +258,8 @@ export function HomeExperience({ home, categories, testimonials, ui, leadFormCop
       {leadFormVisible && selectedPack && (
         <div className="hidden md:block">
           <HomeLeadForm
-            selectedCategory={activeCategoryLabel}
-            selectedPackage={selectedPackageLabel}
+            selectedCategory={activeCategory}
+            selectedPackage={selectedPackageId}
             packSummary={selectedPackSummary}
             ui={strings}
             copy={leadFormCopy}

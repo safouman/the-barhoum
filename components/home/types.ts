@@ -61,6 +61,8 @@ export interface CategoriesProps {
     sessionsLabel: string;
     priceLabel: string;
   };
+  activeCategoryId?: Category["id"];
+  selectedPackageId?: string;
   onPackSelect: (pack: { category: Category["id"]; sessions: number; priceTotal: number; title: string; sessionsLabel: string }) => void;
   onPackContinue: (pack: { category: Category["id"]; sessions: number; priceTotal: number; title: string; sessionsLabel: string }) => void;
   locale: Locale;

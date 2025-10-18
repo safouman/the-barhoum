@@ -25,6 +25,8 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
   onPackContinue,
   locale,
   ui,
+  activeCategoryId,
+  selectedPackageId,
 }) => {
   const chooseAudienceCopy = (ui as { chooseAudience?: string }).chooseAudience;
   const [isMobile, setIsMobile] = useState(false);
@@ -107,8 +109,8 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
                 {leadFormVisible && selectedPack && selectedPack.category === expandedMobileCategory && (
                   <div className={clsx("mt-8", styles.mobilePacksContainer)}>
                     <HomeLeadForm
-                      selectedCategory={activeCategoryLabel}
-                      selectedPackage={selectedPackageLabel}
+                      selectedCategory={activeCategoryId}
+                      selectedPackage={selectedPackageId}
                       packSummary={selectedPackSummary}
                       ui={ui}
                       copy={formCopy}

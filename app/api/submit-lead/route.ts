@@ -147,6 +147,7 @@ export async function POST(req: NextRequest) {
         console.log(`[${requestId}] 💰 Payment eligibility check - category: ${formData.category}, country: ${formData.country}`);
         const needsPayment = formData.category === "individuals" && requiresPayment(formData.country, requestId);
         console.log(`[${requestId}] Payment required: ${needsPayment ? '✅ YES' : '❌ NO'}`);
+        console.log(`[${requestId}] Category match check: "${formData.category}" === "individuals" = ${formData.category === "individuals"}`);
 
         if (needsPayment) {
             console.log(`[${requestId}] 🔗 Starting payment link generation for package: ${formData.package}`);
