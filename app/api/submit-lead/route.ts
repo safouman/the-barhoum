@@ -46,22 +46,21 @@ async function delay(ms: number): Promise<void> {
 async function fetchWithRetry(
     url: string,
     options: RequestInit,
-    maxRetries: number = MAX_RETRIES
+    maxRetries: number = MAX_RETRIES,
+    requestId: string = 'unknown'
 ): Promise<Response> {
     let lastError: Error | null = null;
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
         try {
+            console.log(`[${requestId}] 📡 Attempt ${attempt + 1}/${maxRetries + 1} - Sending request to Google Sheets`);
             const response = await fetch(url, options);
-            const clonedResponse = response.clone();
 
-            try {
-                await response.text();
-            } catch (consumeError) {
-                console.warn("Warning: Could not consume response body:", consumeError);
-            }
+            // If we get ANY response (even errors), it means the request reached the server
+            // We should NOT retry in this case to avoid duplicate entries
+            console.log(`[${requestId}] ✅ Received response with status: ${response.status}`);
 
-            return clonedResponse;
+            return response;
         } catch (error) {
             lastError = error as Error;
 
@@ -75,12 +74,17 @@ async function fetchWithRetry(
             if (isNetworkError && attempt < maxRetries) {
                 const delayMs = INITIAL_RETRY_DELAY * Math.pow(2, attempt);
                 console.log(
-                    `Retry attempt ${attempt + 1}/${maxRetries} after ${delayMs}ms for URL: ${url}`
+                    `[${requestId}] ⚠️ Network error on attempt ${attempt + 1}: ${error.message}`
+                );
+                console.log(
+                    `[${requestId}] 🔄 Retrying in ${delayMs}ms (attempt ${attempt + 2}/${maxRetries + 1})`
                 );
                 await delay(delayMs);
                 continue;
             }
 
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            console.log(`[${requestId}] ❌ Non-retryable error: ${errorMessage}`);
             throw error;
         }
     }
@@ -141,7 +145,7 @@ export async function POST(req: NextRequest) {
         let paymentLink = "";
 
         console.log(`[${requestId}] 💰 Payment eligibility check - category: ${formData.category}, country: ${formData.country}`);
-        const needsPayment = formData.category === "individuals" && requiresPayment(formData.country);
+        const needsPayment = formData.category === "individuals" && requiresPayment(formData.country, requestId);
         console.log(`[${requestId}] Payment required: ${needsPayment ? '✅ YES' : '❌ NO'}`);
 
         if (needsPayment) {
@@ -213,17 +217,22 @@ export async function POST(req: NextRequest) {
         console.log(`[${requestId}] 📤 Sending to Google Sheets...`);
 
         try {
-            const response = await fetchWithRetry(googleScriptUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "User-Agent": "Barhoum-Coaching-Site/1.0",
+            const response = await fetchWithRetry(
+                googleScriptUrl,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "User-Agent": "Barhoum-Coaching-Site/1.0",
+                    },
+                    body: JSON.stringify(payload),
+                    signal: controller.signal,
+                    keepalive: true,
+                    cache: "no-store",
                 },
-                body: JSON.stringify(payload),
-                signal: controller.signal,
-                keepalive: true,
-                cache: "no-store",
-            });
+                MAX_RETRIES,
+                requestId
+            );
 
             clearTimeout(timeoutId);
 
