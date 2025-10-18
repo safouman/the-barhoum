@@ -26,6 +26,7 @@ type PackSelection = {
   priceTotal: number;
   title: string;
   sessionsLabel: string;
+  packageId: string;
 };
 
 const ACCENT_COPY = {
@@ -48,6 +49,12 @@ function formatSessionsLabel(sessions: PackSessions, locale: Locale) {
     return "خمس جلسات";
   }
   return `${sessions} Session${sessions > 1 ? "s" : ""}`;
+}
+
+function getPackageId(category: CategoryKey, sessions: PackSessions): string {
+  const categoryPrefix = category === "individuals" ? "ind" : category === "couples" ? "cpl" : "org";
+  const sessionSuffix = sessions === 1 ? "session" : "sessions";
+  return `${categoryPrefix}-${sessions}-${sessionSuffix}`;
 }
 
 interface PackBarProps {
@@ -142,12 +149,14 @@ export function PacksSection({ locale, direction, category, packs: packsByCatego
     cardRefs.current = [];
     const pack = packs[0];
     const sessionsLabel = formatSessionsLabel(pack.sessions, locale);
+    const packageId = getPackageId(category, pack.sessions);
     onSelectRef.current?.({
       category,
       sessions: pack.sessions,
       priceTotal: pack.priceTotal,
       title: pack.title,
       sessionsLabel,
+      packageId,
     });
   }, [category, packs, locale]);
 
@@ -156,12 +165,14 @@ export function PacksSection({ locale, direction, category, packs: packsByCatego
     if (category) {
       const pack = packs[index];
       const sessionsLabel = formatSessionsLabel(pack.sessions, locale);
+      const packageId = getPackageId(category, pack.sessions);
       onSelectRef.current?.({
         category,
         sessions: pack.sessions,
         priceTotal: pack.priceTotal,
         title: pack.title,
         sessionsLabel,
+        packageId,
       });
     }
   };
@@ -267,12 +278,14 @@ export function PacksSection({ locale, direction, category, packs: packsByCatego
                       type="button"
                       onClick={() => {
                         if (category) {
+                          const packageId = getPackageId(category, selectedPack.sessions);
                           onContinue?.({
                             category,
                             sessions: selectedPack.sessions,
                             priceTotal: selectedPack.priceTotal,
                             title: selectedPack.title,
                             sessionsLabel: formatSessionsLabel(selectedPack.sessions, locale),
+                            packageId,
                           });
                         }
                       }}

@@ -49,6 +49,7 @@ export interface CategoriesProps {
     priceTotal: number;
     title: string;
     sessionsLabel: string;
+    packageId: string;
   } | null;
   leadFormVisible: boolean;
   activeCategoryLabel?: string;
@@ -63,8 +64,8 @@ export interface CategoriesProps {
   };
   activeCategoryId?: Category["id"];
   selectedPackageId?: string;
-  onPackSelect: (pack: { category: Category["id"]; sessions: number; priceTotal: number; title: string; sessionsLabel: string }) => void;
-  onPackContinue: (pack: { category: Category["id"]; sessions: number; priceTotal: number; title: string; sessionsLabel: string }) => void;
+  onPackSelect: (pack: { category: Category["id"]; sessions: number; priceTotal: number; title: string; sessionsLabel: string; packageId: string }) => void;
+  onPackContinue: (pack: { category: Category["id"]; sessions: number; priceTotal: number; title: string; sessionsLabel: string; packageId: string }) => void;
   locale: Locale;
   ui: UIStrings;
 }

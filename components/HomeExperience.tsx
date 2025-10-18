@@ -68,6 +68,7 @@ export function HomeExperience({ home, categories, testimonials, ui, leadFormCop
         priceTotal: number;
         title: string;
         sessionsLabel: string;
+        packageId: string;
       }
     | null
   >(null);
@@ -102,12 +103,9 @@ export function HomeExperience({ home, categories, testimonials, ui, leadFormCop
     return selectedPack.title;
   }, [selectedPack]);
 
-  // Create a stable package identifier from category + sessions
-  // This will be used by the payment system to identify which package was selected
   const selectedPackageId = useMemo(() => {
     if (!selectedPack) return undefined;
-    // Format: "categoryId-Nsessions" (e.g., "individuals-1sessions", "couples-3sessions")
-    return `${selectedPack.category}-${selectedPack.sessions}sessions`;
+    return selectedPack.packageId;
   }, [selectedPack]);
 
   const selectedPackSummary = useMemo(() => {
