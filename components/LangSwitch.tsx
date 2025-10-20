@@ -17,7 +17,15 @@ export function LangSwitch({ options, className }: LangSwitchProps) {
     const searchParams = useSearchParams();
     const isRtl = locale === "ar";
 
+    if (!options || options.length <= 1) {
+        return null;
+    }
+
     const handleChange = (value: Locale) => {
+        if (value === locale) {
+            return;
+        }
+
         setLocale(value);
         const params = new URLSearchParams(searchParams?.toString());
         params.set("lang", value);

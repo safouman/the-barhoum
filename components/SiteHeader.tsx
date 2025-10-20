@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Container } from "./Container";
 import { LangSwitch } from "./LangSwitch";
 import { useLocale } from "@/providers/locale-provider";
+import { localizationConfig } from "@/config/localization";
 import type { Locale, SiteConfig, UIStrings } from "@/lib/content";
 
 interface SiteHeaderProps {
@@ -22,6 +23,11 @@ export function SiteHeader({ ui, site, paymentSlug }: SiteHeaderProps) {
         value: option.value as Locale,
         label: option.label,
     }));
+    const filteredLanguageOptions = languageOptions.filter((option) =>
+        localizationConfig.enabledLocales.includes(option.value)
+    );
+    const shouldRenderLanguageSwitcher =
+        localizationConfig.showLanguageSwitcher && filteredLanguageOptions.length > 1;
 
     const navItems: { href: string; label: string }[] = [];
 
@@ -69,10 +75,12 @@ export function SiteHeader({ ui, site, paymentSlug }: SiteHeaderProps) {
                         </nav>
                     )}
                 </div>
-                <LangSwitch
-                    className={`flex-shrink-0 ${isRtl ? "mr-auto" : "ml-auto"}`}
-                    options={languageOptions}
-                />
+                {shouldRenderLanguageSwitcher && (
+                    <LangSwitch
+                        className={`flex-shrink-0 ${isRtl ? "mr-auto" : "ml-auto"}`}
+                        options={filteredLanguageOptions}
+                    />
+                )}
             </Container>
         </header>
     );

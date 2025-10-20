@@ -28,13 +28,15 @@ function readCookie(): Locale | null {
   return null;
 }
 
-function isLocale(value: string | null | undefined): value is Locale {
-  return !!value && (SUPPORTED_LOCALES as readonly string[]).includes(value);
+function isLocale(value: string | Locale | null | undefined): value is Locale {
+  return !!value && SUPPORTED_LOCALES.includes(value as Locale);
 }
 
 export function LocaleProvider({ children, initialLocale = DEFAULT_LOCALE }: { children: React.ReactNode; initialLocale?: Locale; }) {
   const searchParams = useSearchParams();
-  const [locale, setLocaleState] = useState<Locale>(initialLocale);
+  const [locale, setLocaleState] = useState<Locale>(() =>
+    isLocale(initialLocale) ? initialLocale : DEFAULT_LOCALE
+  );
 
   useEffect(() => {
     const existing = readCookie();
@@ -60,8 +62,17 @@ export function LocaleProvider({ children, initialLocale = DEFAULT_LOCALE }: { c
   }, [locale]);
 
   const setLocale = useCallback((value: Locale) => {
-    setLocaleState(value);
-    event("lang_switch", { locale: value });
+    if (!isLocale(value)) {
+      return;
+    }
+
+    setLocaleState((prev) => {
+      if (prev === value) {
+        return prev;
+      }
+      event("lang_switch", { locale: value });
+      return value;
+    });
   }, []);
 
   const direction = getDirection(locale);
