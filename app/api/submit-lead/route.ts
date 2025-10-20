@@ -53,6 +53,125 @@ async function delay(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function sendWhatsAppNotifications({
+    formData,
+    requestId,
+}: {
+    formData: LeadFormData;
+    requestId: string;
+}): Promise<void> {
+    const accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
+    const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+    const adminPhone = process.env.WHATSAPP_ADMIN_PHONE;
+    const managerPhone = process.env.WHATSAPP_MANAGER_PHONE;
+
+    if (!accessToken || !phoneNumberId) {
+        console.warn(
+            `[${requestId}] ⚠️ WhatsApp configuration missing (token or phone number ID); skipping notifications`
+        );
+        return;
+    }
+
+    const recipients = [adminPhone, managerPhone]
+        .map((recipient) =>
+            typeof recipient === "string" ? recipient.trim().replace(/^\+/, "") : ""
+        )
+        .filter((recipient) => recipient.length > 0);
+
+    if (recipients.length === 0) {
+        console.warn(
+            `[${requestId}] ⚠️ No WhatsApp recipients configured; skipping notifications`
+        );
+        return;
+    }
+
+    const endpoint = `https://graph.facebook.com/v22.0/${phoneNumberId}/messages`;
+    const templateName = process.env.WHATSAPP_TEMPLATE_NAME?.trim();
+    const templateLanguage =
+        process.env.WHATSAPP_TEMPLATE_LANGUAGE?.trim() || "en_US";
+    const messageBody = `📩 New form submitted by ${formData.fullName} from ${formData.country}. Please check the Google Sheet for details.`;
+
+    await Promise.all(
+        recipients.map(async (recipient) => {
+            try {
+                const payload = templateName
+                    ? {
+                          messaging_product: "whatsapp",
+                          to: recipient,
+                          type: "template",
+                          template: {
+                              name: templateName,
+                              language: {
+                                  code: templateLanguage,
+                              },
+                              components: [
+                                  {
+                                      type: "body",
+                                      parameters: [
+                                          {
+                                              type: "text",
+                                              text: formData.fullName,
+                                          },
+                                          {
+                                              type: "text",
+                                              text: formData.country,
+                                          },
+                                          {
+                                              type: "text",
+                                              text: messageBody,
+                                          },
+                                      ],
+                                  },
+                              ],
+                          },
+                      }
+                    : {
+                          messaging_product: "whatsapp",
+                          to: recipient,
+                          type: "text",
+                          text: {
+                              body: messageBody,
+                          },
+                      };
+
+                const response = await fetch(endpoint, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                if (!response.ok) {
+                    const errorText = await response
+                        .text()
+                        .catch(() => "Unable to read response");
+                    console.error(
+                        `[${requestId}] ❌ WhatsApp notification failed for ${recipient}`,
+                        {
+                            status: response.status,
+                            body: errorText,
+                        }
+                    );
+                    return;
+                }
+
+                console.log(
+                    `[${requestId}] ✅ WhatsApp notification sent to ${recipient} using ${
+                        templateName ? "template" : "text"
+                    } message`
+                );
+            } catch (error) {
+                console.error(
+                    `[${requestId}] ❌ Error sending WhatsApp notification to ${recipient}`,
+                    error
+                );
+            }
+        })
+    );
+}
+
 async function fetchWithRetry(
     url: string,
     options: RequestInit,
@@ -465,6 +584,24 @@ export async function POST(req: NextRequest) {
                     `[${requestId}] ✅ Form submitted successfully to Google Sheets in ${duration}ms`
                 );
                 console.log(`[${requestId}] 🏁 Request completed successfully`);
+
+                if (!isDuplicate) {
+                    try {
+                        await sendWhatsAppNotifications({
+                            formData,
+                            requestId,
+                        });
+                    } catch (error) {
+                        console.error(
+                            `[${requestId}] ❌ Unexpected error while handling WhatsApp notifications`,
+                            error
+                        );
+                    }
+                } else {
+                    console.log(
+                        `[${requestId}] 🔁 Duplicate lead detected; skipping WhatsApp notification`
+                    );
+                }
 
                 if (!isDuplicate && shouldAttemptStripe) {
                     console.log(
