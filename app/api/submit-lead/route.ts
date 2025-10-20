@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { leadFormSchema, type LeadFormData } from "@/lib/validation/lead-form";
 import { createPaymentLink } from "@/lib/stripe/payment-links";
@@ -274,6 +275,20 @@ export async function POST(req: NextRequest) {
                 },
                 { status: 400 }
             );
+        }
+
+        if (body && typeof body === "object") {
+            const record = body as Record<string, unknown>;
+            const rawLeadId = record.leadId;
+            if (!rawLeadId || typeof rawLeadId !== "string" || !rawLeadId.trim()) {
+                const generatedLeadId = `srv-${Date.now()}-${randomUUID().slice(0, 8)}`;
+                record.leadId = generatedLeadId;
+                console.warn(
+                    `[${requestId}] ⚠️ leadId missing from payload; generated ${generatedLeadId}`
+                );
+            } else if (rawLeadId !== rawLeadId.trim()) {
+                record.leadId = rawLeadId.trim();
+            }
         }
 
         const validationResult = leadFormSchema.safeParse(body);
