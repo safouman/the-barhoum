@@ -5,13 +5,13 @@ const KNOWN_LOCALES: Locale[] = ["ar", "en"];
 type EnvConfig = {
   available: string | undefined;
   defaultLocale: string | undefined;
-  enabled: string | undefined;
+  enabledFlag: string | undefined;
 };
 
 const env: EnvConfig = {
   available: process.env.NEXT_PUBLIC_LOCALIZATION_AVAILABLE_LOCALES,
   defaultLocale: process.env.NEXT_PUBLIC_LOCALIZATION_DEFAULT_LOCALE,
-  enabled: process.env.NEXT_PUBLIC_LOCALIZATION_ENABLED_LOCALES,
+  enabledFlag: process.env.NEXT_PUBLIC_LOCALIZATION_ENABLED_LOCALES,
 };
 
 function isKnownLocale(value: string): value is Locale {
@@ -39,14 +39,12 @@ const defaultLocale =
     ? defaultLocaleFromEnv
     : availableLocales[0];
 
-const enabledLocales = (() => {
-  const fallback: Locale[] = [defaultLocale];
-  const parsed = toLocaleList(env.enabled, fallback, availableLocales).filter((locale) =>
-    availableLocales.includes(locale)
-  );
-
-  return parsed.includes(defaultLocale) ? parsed : [defaultLocale, ...parsed.filter((locale) => locale !== defaultLocale)];
+const enableAllLocales = (() => {
+  const value = env.enabledFlag?.trim().toLowerCase();
+  return value === "true" || value === "1" || value === "yes" || value === "on";
 })();
+
+const enabledLocales: Locale[] = enableAllLocales ? availableLocales : [defaultLocale];
 
 export const localizationConfig = {
   availableLocales,
