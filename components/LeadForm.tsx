@@ -565,6 +565,7 @@ export function LeadForm({
                     isAvailabilityStep && "gap-7 sm:gap-6"
                 )}
                 aria-describedby={helperDescriptionId}
+                disabled={isSubmitting}
             >
                 {currentStep.fields.map((field, index) => {
                     const error = errors[field.id];
@@ -584,6 +585,7 @@ export function LeadForm({
                         placeholder: field.placeholder ?? undefined,
                         dir: isRtl ? "rtl" : "ltr",
                         "aria-invalid": Boolean(error) || undefined,
+                        disabled: isSubmitting || undefined,
                     } as const;
 
                     const describedBy = error ? errorId : undefined;
@@ -783,6 +785,7 @@ export function LeadForm({
                                 variant="ghost"
                                 className="form-nav-button form-nav-button--secondary"
                                 onClick={goToPreviousStep}
+                                disabled={isSubmitting}
                             >
                                 {actionLabels.back}
                             </Button>
@@ -793,7 +796,7 @@ export function LeadForm({
                                 type="button"
                                 className="form-nav-button form-nav-button--primary"
                                 onClick={goToNextStep}
-                                disabled={!stepIsValid}
+                                disabled={!stepIsValid || isSubmitting}
                             >
                                 {actionLabels.next}
                             </Button>
