@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { leadFormSchema } from "@/lib/validation/lead-form";
-import { z } from "zod";
 import { createPaymentLink } from "@/lib/stripe/payment-links";
 import { requiresPayment } from "@/lib/utils/geo";
 
@@ -8,7 +7,7 @@ const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
 const RATE_LIMIT_WINDOW = 60 * 60 * 1000;
 const MAX_REQUESTS_PER_WINDOW = 15;
-const MAX_RETRIES = 3;
+const MAX_ATTEMPTS = 3;
 const INITIAL_RETRY_DELAY = 1000;
 
 function getRateLimitKey(req: NextRequest): string {
@@ -19,11 +18,21 @@ function getRateLimitKey(req: NextRequest): string {
     return ip;
 }
 
+function cleanupRateLimitEntries(currentTime: number): void {
+    for (const [ip, record] of rateLimitMap.entries()) {
+        if (currentTime > record.resetTime) {
+            rateLimitMap.delete(ip);
+        }
+    }
+}
+
 function checkRateLimit(key: string): { allowed: boolean; remaining: number } {
     const now = Date.now();
+    cleanupRateLimitEntries(now);
+
     const record = rateLimitMap.get(key);
 
-    if (!record || now > record.resetTime) {
+    if (!record) {
         rateLimitMap.set(key, {
             count: 1,
             resetTime: now + RATE_LIMIT_WINDOW,
@@ -46,19 +55,23 @@ async function delay(ms: number): Promise<void> {
 async function fetchWithRetry(
     url: string,
     options: RequestInit,
-    maxRetries: number = MAX_RETRIES,
-    requestId: string = 'unknown'
+    maxAttempts: number = MAX_ATTEMPTS,
+    requestId: string = "unknown"
 ): Promise<Response> {
     let lastError: Error | null = null;
 
-    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
         try {
-            console.log(`[${requestId}] 📡 Attempt ${attempt + 1}/${maxRetries + 1} - Sending request to Google Sheets`);
+            console.log(
+                `[${requestId}] 📡 Attempt ${attempt + 1}/${maxAttempts} - Sending request to Google Sheets`
+            );
             const response = await fetch(url, options);
 
             // If we get ANY response (even errors), it means the request reached the server
             // We should NOT retry in this case to avoid duplicate entries
-            console.log(`[${requestId}] ✅ Received response with status: ${response.status}`);
+            console.log(
+                `[${requestId}] ✅ Received response with status: ${response.status}`
+            );
 
             return response;
         } catch (error) {
@@ -67,45 +80,63 @@ async function fetchWithRetry(
             const isNetworkError =
                 error instanceof Error &&
                 (error.message.includes("fetch failed") ||
-                 error.message.includes("ECONNRESET") ||
-                 error.message.includes("UND_ERR_SOCKET") ||
-                 error.message.includes("other side closed"));
+                    error.message.includes("ECONNRESET") ||
+                    error.message.includes("UND_ERR_SOCKET") ||
+                    error.message.includes("other side closed"));
 
-            if (isNetworkError && attempt < maxRetries) {
+            const isLastAttempt = attempt >= maxAttempts - 1;
+
+            if (isNetworkError && !isLastAttempt) {
                 const delayMs = INITIAL_RETRY_DELAY * Math.pow(2, attempt);
                 console.log(
-                    `[${requestId}] ⚠️ Network error on attempt ${attempt + 1}: ${error.message}`
+                    `[${requestId}] ⚠️ Network error on attempt ${
+                        attempt + 1
+                    }: ${error.message}`
                 );
                 console.log(
-                    `[${requestId}] 🔄 Retrying in ${delayMs}ms (attempt ${attempt + 2}/${maxRetries + 1})`
+                    `[${requestId}] 🔄 Retrying in ${delayMs}ms (attempt ${
+                        attempt + 2
+                    }/${maxAttempts})`
                 );
                 await delay(delayMs);
                 continue;
             }
 
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            console.log(`[${requestId}] ❌ Non-retryable error: ${errorMessage}`);
-            throw error;
+            const errorMessage =
+                error instanceof Error ? error.message : String(error);
+            console.log(
+                `[${requestId}] ❌ Non-retryable error: ${errorMessage}`
+            );
+
+            throw lastError;
         }
     }
 
-    throw lastError || new Error("Failed after maximum retries");
+    throw lastError || new Error("Failed after maximum attempts");
 }
 
 export async function POST(req: NextRequest) {
-    const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const requestId = `req_${Date.now()}_${Math.random()
+        .toString(36)
+        .substr(2, 9)}`;
     const startTime = Date.now();
 
-    console.log(`[${requestId}] 🚀 Form submission started at ${new Date().toISOString()}`);
+    console.log(
+        `[${requestId}] 🚀 Form submission started at ${new Date().toISOString()}`
+    );
 
     try {
         const rateLimitKey = getRateLimitKey(req);
         const rateLimit = checkRateLimit(rateLimitKey);
 
-        console.log(`[${requestId}] Rate limit check: allowed=${rateLimit.allowed}, remaining=${rateLimit.remaining}`);
+        console.log(
+            `[${requestId}] Rate limit check: allowed=${rateLimit.allowed}, remaining=${rateLimit.remaining}`
+        );
 
         if (!rateLimit.allowed) {
-            console.warn(`[${requestId}] ⚠️ Rate limit exceeded for key: ${rateLimitKey}`);
+            console.warn(
+                `[${requestId}] ⚠️ Rate limit exceeded for key: ${rateLimitKey}`
+            );
             return NextResponse.json(
                 {
                     success: false,
@@ -115,11 +146,38 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const body = await req.json();
-        console.log(`[${requestId}] 📝 Received form data - category: ${body.category}, package: ${body.package}, email: ${body.email}`);
+        let body: unknown;
+
+        try {
+            body = await req.json();
+            const bodyKeys =
+                body && typeof body === "object"
+                    ? Object.keys(body as Record<string, unknown>)
+                    : [];
+            console.log(
+                `[${requestId}] 📝 Received form data payload with keys: ${
+                    bodyKeys.length ? bodyKeys.join(", ") : "(none)"
+                }`
+            );
+        } catch (parseError) {
+            console.warn(
+                `[${requestId}] ⚠️ Invalid JSON payload received for submit-lead API`
+            );
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: "Invalid JSON body.",
+                },
+                { status: 400 }
+            );
+        }
 
         const validationResult = leadFormSchema.safeParse(body);
-        console.log(`[${requestId}] Validation result: ${validationResult.success ? '✅ passed' : '❌ failed'}`);
+        console.log(
+            `[${requestId}] Validation result: ${
+                validationResult.success ? "✅ passed" : "❌ failed"
+            }`
+        );
 
         if (!validationResult.success) {
             const zodError = validationResult.error;
@@ -144,13 +202,27 @@ export async function POST(req: NextRequest) {
 
         let paymentLink = "";
 
-        console.log(`[${requestId}] 💰 Payment eligibility check - category: ${formData.category}, country: ${formData.country}`);
-        const needsPayment = formData.category === "individuals" && requiresPayment(formData.country, requestId);
-        console.log(`[${requestId}] Payment required: ${needsPayment ? '✅ YES' : '❌ NO'}`);
-        console.log(`[${requestId}] Category match check: "${formData.category}" === "individuals" = ${formData.category === "individuals"}`);
+        console.log(
+            `[${requestId}] 💰 Payment eligibility check - category: ${formData.category}, country: ${formData.country}`
+        );
+        const needsPayment =
+            formData.category === "individuals" &&
+            requiresPayment(formData.country, requestId);
+        console.log(
+            `[${requestId}] Payment required: ${
+                needsPayment ? "✅ YES" : "❌ NO"
+            }`
+        );
+        console.log(
+            `[${requestId}] Category match check: "${
+                formData.category
+            }" === "individuals" = ${formData.category === "individuals"}`
+        );
 
         if (needsPayment) {
-            console.log(`[${requestId}] 🔗 Starting payment link generation for package: ${formData.package}`);
+            console.log(
+                `[${requestId}] 🔗 Starting payment link generation for package: ${formData.package}`
+            );
             try {
                 const linkParams = {
                     email: formData.email,
@@ -165,16 +237,27 @@ export async function POST(req: NextRequest) {
 
                 if (link) {
                     paymentLink = link;
-                    console.log(`[${requestId}] ✅ Payment link generated successfully:`, link);
+                    console.log(
+                        `[${requestId}] ✅ Payment link generated successfully:`,
+                        link
+                    );
                 } else {
-                    console.warn(`[${requestId}] ⚠️ Payment link generation returned null for package: ${formData.package}`);
+                    console.warn(
+                        `[${requestId}] ⚠️ Payment link generation returned null for package: ${formData.package}`
+                    );
                 }
             } catch (error) {
-                console.error(`[${requestId}] ❌ Error generating payment link:`, {
-                    error: error instanceof Error ? error.message : String(error),
-                    stack: error instanceof Error ? error.stack : undefined,
-                    package: formData.package,
-                });
+                console.error(
+                    `[${requestId}] ❌ Error generating payment link:`,
+                    {
+                        error:
+                            error instanceof Error
+                                ? error.message
+                                : String(error),
+                        stack: error instanceof Error ? error.stack : undefined,
+                        package: formData.package,
+                    }
+                );
             }
         } else {
             console.log(`[${requestId}] ⏭️ Skipping payment link generation`);
@@ -183,10 +266,16 @@ export async function POST(req: NextRequest) {
         const googleScriptUrl = process.env.GOOGLE_SCRIPT_URL;
         const googleScriptSecret = process.env.GOOGLE_SCRIPT_SECRET;
 
-        console.log(`[${requestId}] Google Script config: URL=${googleScriptUrl ? '✅ present' : '❌ missing'}, Secret=${googleScriptSecret ? '✅ present' : '❌ missing'}`);
+        console.log(
+            `[${requestId}] Google Script config: URL=${
+                googleScriptUrl ? "✅ present" : "❌ missing"
+            }, Secret=${googleScriptSecret ? "✅ present" : "❌ missing"}`
+        );
 
         if (!googleScriptUrl || !googleScriptSecret) {
-            console.error(`[${requestId}] ❌ Missing Google Script configuration`);
+            console.error(
+                `[${requestId}] ❌ Missing Google Script configuration`
+            );
             return NextResponse.json(
                 {
                     success: false,
@@ -204,7 +293,7 @@ export async function POST(req: NextRequest) {
 
         console.log(`[${requestId}] 📦 Payload prepared for Google Sheets:`, {
             hasPaymentLink: !!paymentLink,
-            paymentLinkValue: paymentLink || '(empty)',
+            paymentLinkValue: paymentLink || "(empty)",
             paymentLinkLength: paymentLink.length,
             email: formData.email,
             category: formData.category,
@@ -231,17 +320,24 @@ export async function POST(req: NextRequest) {
                     keepalive: true,
                     cache: "no-store",
                 },
-                MAX_RETRIES,
+                MAX_ATTEMPTS,
                 requestId
             );
 
             clearTimeout(timeoutId);
 
-            console.log(`[${requestId}] 📥 Google Sheets response received - status: ${response.status}`);
+            console.log(
+                `[${requestId}] 📥 Google Sheets response received - status: ${response.status}`
+            );
 
             if (!response.ok) {
-                const responseText = await response.text().catch(() => "Unable to read response");
-                console.error(`[${requestId}] ❌ Google Script error - status: ${response.status}, response:`, responseText);
+                const responseText = await response
+                    .text()
+                    .catch(() => "Unable to read response");
+                console.error(
+                    `[${requestId}] ❌ Google Script error - status: ${response.status}, response:`,
+                    responseText
+                );
                 return NextResponse.json(
                     {
                         success: false,
@@ -252,14 +348,20 @@ export async function POST(req: NextRequest) {
             }
 
             const responseText = await response.text();
-            console.log(`[${requestId}] Google Sheets raw response:`, responseText.substring(0, 500));
+            console.log(
+                `[${requestId}] Google Sheets raw response:`,
+                responseText.substring(0, 500)
+            );
 
             let result;
             try {
                 result = JSON.parse(responseText);
                 console.log(`[${requestId}] Parsed response:`, result);
             } catch (parseError) {
-                console.error(`[${requestId}] ❌ Failed to parse Google Script response:`, responseText);
+                console.error(
+                    `[${requestId}] ❌ Failed to parse Google Script response:`,
+                    responseText
+                );
                 return NextResponse.json(
                     {
                         success: false,
@@ -271,7 +373,9 @@ export async function POST(req: NextRequest) {
 
             if (result.success) {
                 const duration = Date.now() - startTime;
-                console.log(`[${requestId}] ✅ Form submitted successfully to Google Sheets in ${duration}ms`);
+                console.log(
+                    `[${requestId}] ✅ Form submitted successfully to Google Sheets in ${duration}ms`
+                );
                 console.log(`[${requestId}] 🏁 Request completed successfully`);
 
                 return NextResponse.json({
@@ -279,7 +383,18 @@ export async function POST(req: NextRequest) {
                     message: "Form submitted successfully",
                 });
             } else {
-                console.error(`[${requestId}] ❌ Google Script returned error:`, result);
+                const reportedError =
+                    result && typeof result === "object" && "error" in result
+                        ? (result as { error?: unknown }).error
+                        : undefined;
+
+                console.error(
+                    `[${requestId}] ❌ Google Script indicated failure`,
+                    {
+                        status: response.status,
+                        error: reportedError,
+                    }
+                );
                 return NextResponse.json(
                     {
                         success: false,
@@ -297,7 +412,9 @@ export async function POST(req: NextRequest) {
                 fetchError instanceof Error &&
                 fetchError.name === "AbortError"
             ) {
-                console.error(`[${requestId}] ⏱️ Request to Google Script timed out after 30 seconds`);
+                console.error(
+                    `[${requestId}] ⏱️ Request to Google Script timed out after 30 seconds`
+                );
                 return NextResponse.json(
                     {
                         success: false,
@@ -307,11 +424,23 @@ export async function POST(req: NextRequest) {
                 );
             }
 
-            console.error(`[${requestId}] ❌ Error calling Google Script after retries:`, {
-                message: fetchError instanceof Error ? fetchError.message : String(fetchError),
-                name: fetchError instanceof Error ? fetchError.name : "Unknown",
-                stack: fetchError instanceof Error ? fetchError.stack : undefined,
-            });
+            console.error(
+                `[${requestId}] ❌ Error calling Google Script after retries:`,
+                {
+                    message:
+                        fetchError instanceof Error
+                            ? fetchError.message
+                            : String(fetchError),
+                    name:
+                        fetchError instanceof Error
+                            ? fetchError.name
+                            : "Unknown",
+                    stack:
+                        fetchError instanceof Error
+                            ? fetchError.stack
+                            : undefined,
+                }
+            );
 
             return NextResponse.json(
                 {
@@ -323,7 +452,10 @@ export async function POST(req: NextRequest) {
         }
     } catch (error) {
         const duration = Date.now() - startTime;
-        console.error(`[${requestId}] ❌ Unexpected error in submit-lead API after ${duration}ms:`, error);
+        console.error(
+            `[${requestId}] ❌ Unexpected error in submit-lead API after ${duration}ms:`,
+            error
+        );
         return NextResponse.json(
             {
                 success: false,
