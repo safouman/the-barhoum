@@ -1,6 +1,12 @@
 import { z } from "zod";
 
 export const leadFormSchema = z.object({
+  leadId: z
+    .string()
+    .trim()
+    .min(1, "Lead identifier is required")
+    .max(100, "Lead identifier must be less than 100 characters"),
+
   fullName: z
     .string()
     .trim()

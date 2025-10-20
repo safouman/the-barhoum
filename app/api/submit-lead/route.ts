@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { leadFormSchema } from "@/lib/validation/lead-form";
+import { leadFormSchema, type LeadFormData } from "@/lib/validation/lead-form";
 import { createPaymentLink } from "@/lib/stripe/payment-links";
 import { requiresPayment } from "@/lib/utils/geo";
 
@@ -115,6 +115,110 @@ async function fetchWithRetry(
     throw lastError || new Error("Failed after maximum attempts");
 }
 
+function enqueueStripePaymentLink({
+    requestId,
+    formData,
+    googleScriptUrl,
+    googleScriptSecret,
+}: {
+    requestId: string;
+    formData: LeadFormData;
+    googleScriptUrl: string;
+    googleScriptSecret: string;
+}): void {
+    const jobId = `${requestId}:stripe`;
+
+    Promise.resolve()
+        .then(async () => {
+            console.log(`[${jobId}] 🧵 Starting background Stripe payment link job`);
+
+            const paymentLink = await createPaymentLink({
+                email: formData.email,
+                fullName: formData.fullName,
+                country: formData.country,
+                phone: formData.phone,
+                packageId: formData.package,
+            });
+
+            if (!paymentLink) {
+                console.warn(
+                    `[${jobId}] ⚠️ Stripe payment link could not be created, skipping Google Sheet update`
+                );
+                return;
+            }
+
+            const updatePayload = {
+                secret: googleScriptSecret,
+                operation: "attachPaymentLink",
+                leadId: formData.leadId,
+                payment_link: paymentLink,
+            };
+
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+            try {
+                const response = await fetchWithRetry(
+                    googleScriptUrl,
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "User-Agent": "Barhoum-Coaching-Site/1.0",
+                        },
+                        body: JSON.stringify(updatePayload),
+                        signal: controller.signal,
+                        keepalive: false,
+                        cache: "no-store",
+                    },
+                    MAX_ATTEMPTS,
+                    `${jobId}:update`
+                );
+
+                if (!response.ok) {
+                    const responseText = await response
+                        .text()
+                        .catch(() => "Unable to read response");
+                    console.error(
+                        `[${jobId}] ❌ Failed to update Google Sheet with payment link`,
+                        {
+                            status: response.status,
+                            body: responseText,
+                        }
+                    );
+                    return;
+                }
+
+                const responseText = await response
+                    .text()
+                    .catch(() => "Unable to read response");
+                console.log(
+                    `[${jobId}] ✅ Payment link applied in Google Sheet`,
+                    responseText.substring(0, 500)
+                );
+            } catch (error) {
+                if (error instanceof Error && error.name === "AbortError") {
+                    console.error(
+                        `[${jobId}] ⏱️ Timed out while updating Google Sheet with payment link`
+                    );
+                } else {
+                    console.error(
+                        `[${jobId}] ❌ Unexpected error while updating payment link`,
+                        error
+                    );
+                }
+            } finally {
+                clearTimeout(timeoutId);
+            }
+        })
+        .catch((error) => {
+            console.error(
+                `[${jobId}] ❌ Stripe background worker encountered an error`,
+                error
+            );
+        });
+}
+
 export async function POST(req: NextRequest) {
     const requestId = `req_${Date.now()}_${Math.random()
         .toString(36)
@@ -200,14 +304,15 @@ export async function POST(req: NextRequest) {
 
         const formData = validationResult.data;
 
-        let paymentLink = "";
-
         console.log(
             `[${requestId}] 💰 Payment eligibility check - category: ${formData.category}, country: ${formData.country}`
         );
         const needsPayment =
             formData.category === "individuals" &&
             requiresPayment(formData.country, requestId);
+        const packagePresent = Boolean(formData.package?.trim().length);
+        const shouldAttemptStripe = needsPayment && packagePresent;
+
         console.log(
             `[${requestId}] Payment required: ${
                 needsPayment ? "✅ YES" : "❌ NO"
@@ -219,47 +324,11 @@ export async function POST(req: NextRequest) {
             }" === "individuals" = ${formData.category === "individuals"}`
         );
 
-        if (needsPayment) {
-            console.log(
-                `[${requestId}] 🔗 Starting payment link generation for package: ${formData.package}`
+        if (needsPayment && !packagePresent) {
+            console.warn(
+                `[${requestId}] ⚠️ Payment required but no package selected. Stripe link will not be generated.`
             );
-            try {
-                const linkParams = {
-                    email: formData.email,
-                    fullName: formData.fullName,
-                    country: formData.country,
-                    phone: formData.phone,
-                    packageId: formData.package,
-                };
-                console.log(`[${requestId}] Payment link params:`, linkParams);
-
-                const link = await createPaymentLink(linkParams);
-
-                if (link) {
-                    paymentLink = link;
-                    console.log(
-                        `[${requestId}] ✅ Payment link generated successfully:`,
-                        link
-                    );
-                } else {
-                    console.warn(
-                        `[${requestId}] ⚠️ Payment link generation returned null for package: ${formData.package}`
-                    );
-                }
-            } catch (error) {
-                console.error(
-                    `[${requestId}] ❌ Error generating payment link:`,
-                    {
-                        error:
-                            error instanceof Error
-                                ? error.message
-                                : String(error),
-                        stack: error instanceof Error ? error.stack : undefined,
-                        package: formData.package,
-                    }
-                );
-            }
-        } else {
+        } else if (!needsPayment) {
             console.log(`[${requestId}] ⏭️ Skipping payment link generation`);
         }
 
@@ -287,14 +356,12 @@ export async function POST(req: NextRequest) {
 
         const payload = {
             secret: googleScriptSecret,
+            operation: "createLead",
             ...formData,
-            payment_link: paymentLink,
+            payment_link: "",
         };
 
         console.log(`[${requestId}] 📦 Payload prepared for Google Sheets:`, {
-            hasPaymentLink: !!paymentLink,
-            paymentLinkValue: paymentLink || "(empty)",
-            paymentLinkLength: paymentLink.length,
             email: formData.email,
             category: formData.category,
             package: formData.package,
@@ -372,15 +439,41 @@ export async function POST(req: NextRequest) {
             }
 
             if (result.success) {
+                const isDuplicate =
+                    result &&
+                    typeof result === "object" &&
+                    "duplicate" in result &&
+                    Boolean((result as { duplicate?: unknown }).duplicate);
+
                 const duration = Date.now() - startTime;
                 console.log(
                     `[${requestId}] ✅ Form submitted successfully to Google Sheets in ${duration}ms`
                 );
                 console.log(`[${requestId}] 🏁 Request completed successfully`);
 
+                if (!isDuplicate && shouldAttemptStripe) {
+                    console.log(
+                        `[${requestId}] 🧾 Queueing Stripe payment link generation for leadId=${formData.leadId}`
+                    );
+                    enqueueStripePaymentLink({
+                        requestId,
+                        formData,
+                        googleScriptUrl,
+                        googleScriptSecret,
+                    });
+                } else if (isDuplicate) {
+                    console.log(
+                        `[${requestId}] 🔁 Duplicate lead detected for leadId=${formData.leadId}; skipping Stripe background job`
+                    );
+                }
+
                 return NextResponse.json({
                     success: true,
-                    message: "Form submitted successfully",
+                    message: isDuplicate
+                        ? "Form already submitted. We will be in touch soon."
+                        : "Form submitted successfully",
+                    paymentLinkPending: !isDuplicate && shouldAttemptStripe,
+                    duplicate: isDuplicate,
                 });
             } else {
                 const reportedError =
