@@ -3,6 +3,7 @@ import ReactMarkdown from "react-markdown";
 import { Container } from "@/components/Container";
 import { Section } from "@/components/Section";
 import type { HomeThemeDefinition } from "../types";
+import styles from "./Method.module.css";
 
 export const HomeMethod: HomeThemeDefinition["Method"] = ({ locale, method, markdown }) => {
   const isRTL = locale === "ar";
@@ -20,7 +21,7 @@ export const HomeMethod: HomeThemeDefinition["Method"] = ({ locale, method, mark
           {method.title[locale]}
         </span>
       }
-      className="bg-surface"
+      className={clsx("bg-surface", styles.methodSection)}
     >
       <Container className="px-0 md:px-sm">
         <div

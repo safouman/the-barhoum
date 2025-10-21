@@ -18,8 +18,6 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
     formCopy,
     selectedPack,
     leadFormVisible,
-    activeCategoryLabel,
-    selectedPackageLabel,
     selectedPackSummary,
     onPackSelect,
     onPackContinue,
@@ -145,22 +143,22 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
                                             )}
                                         >
                                             <PacksSection
-                                            locale={locale}
-                                            direction={
-                                                locale === "ar"
-                                                    ? "rtl"
-                                                    : "ltr"
-                                            }
-                                            category={
-                                                expandedMobileCategory
-                                            }
-                                            packs={packs}
-                                            onSelect={onPackSelect}
-                                            onContinue={onPackContinue}
-                                            sectionId="mobile-packs"
-                                            comingSoon={isComingSoon}
-                                            copy={ui.home.packs}
-                                        />
+                                                locale={locale}
+                                                direction={
+                                                    locale === "ar"
+                                                        ? "rtl"
+                                                        : "ltr"
+                                                }
+                                                category={
+                                                    expandedMobileCategory
+                                                }
+                                                packs={packs}
+                                                onSelect={onPackSelect}
+                                                onContinue={onPackContinue}
+                                                sectionId="mobile-packs"
+                                                comingSoon={isComingSoon}
+                                                copy={ui.home.packs}
+                                            />
                                             {!isComingSoon &&
                                                 leadFormVisible &&
                                                 selectedPack &&

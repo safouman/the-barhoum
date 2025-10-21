@@ -1,0 +1,28 @@
+.methodSection {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+    overflow: hidden;
+}
+
+.methodSection::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("/images/logo.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 18%;
+    opacity: 0.1;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.methodSection > * {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+}
