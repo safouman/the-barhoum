@@ -6,6 +6,7 @@ import { useLocale } from "@/providers/locale-provider";
 import {
   HomeAbout,
   HomeCategories,
+  HomeExperienceSection,
   HomeHero,
   HomeLeadForm,
   HomeMethod,
@@ -187,6 +188,8 @@ export function HomeExperience({ home, categories, testimonials, ui, leadFormCop
       <HomeTestimonials testimonials={testimonialsToShow} ui={strings} locale={locale} meta={home.testimonials} />
 
       <HomeMethod locale={locale} method={home.method} markdown={methodMarkdown} />
+
+      <HomeExperienceSection />
 
       <HomeCategories
         categories={localizedCategories}
