@@ -70,16 +70,17 @@ export function HomeExperienceSection() {
     const ensureAudio = useCallback(() => {
         let audio = audioRef.current;
         if (!audio) {
-            audio = new Audio();
-            audio.preload = "none";
+            const element = new Audio();
+            element.preload = "none";
             const sources: Array<{ src: string; type: string }> = [
                 { src: "/audio/experience.wav", type: "audio/wav" },
             ];
             const preferred =
-                sources.find(({ type }) => audio.canPlayType(type)) ??
+                sources.find(({ type }) => element.canPlayType(type)) ??
                 sources[0];
-            audio.src = preferred.src;
-            audioRef.current = audio;
+            element.src = preferred.src;
+            audioRef.current = element;
+            audio = element;
         }
 
         if (audio && !listenersAttachedRef.current) {

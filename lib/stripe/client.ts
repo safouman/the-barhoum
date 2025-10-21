@@ -18,11 +18,10 @@ export function getStripeClient(): Stripe | null {
   }
 
   try {
-    console.log('[Stripe Client] 🔧 Initializing new Stripe instance...');
-    stripeInstance = new Stripe(secretKey, {
-      apiVersion: '2025-09-30.clover',
-      typescript: true,
-    });
+  console.log('[Stripe Client] 🔧 Initializing new Stripe instance...');
+  stripeInstance = new Stripe(secretKey, {
+    typescript: true,
+  });
     console.log('[Stripe Client] ✅ Stripe instance created successfully');
     return stripeInstance;
   } catch (error) {

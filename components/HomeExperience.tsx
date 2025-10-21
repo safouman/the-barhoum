@@ -14,6 +14,8 @@ import {
   HomeTestimonials,
 } from "./home/sections";
 import type { LocalizedCategory, LocalizedTestimonial } from "./home/types";
+import { formatPackCurrency } from "@/lib/commerce/packages";
+import type { PackageId, PackSessions } from "@/lib/commerce/packages";
 
 interface HomeExperienceProps {
   home: HomeData;
@@ -65,11 +67,11 @@ export function HomeExperience({ home, categories, testimonials, ui, leadFormCop
   const [selectedPack, setSelectedPack] = useState<
     | {
         category: Category["id"];
-        sessions: number;
+        sessions: PackSessions;
         priceTotal: number;
         title: string;
         sessionsLabel: string;
-        packageId: string;
+        packageId: PackageId;
       }
     | null
   >(null);
@@ -85,12 +87,7 @@ export function HomeExperience({ home, categories, testimonials, ui, leadFormCop
   }, []);
 
   const formatCurrency = useCallback(
-    (amount: number) =>
-      new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-        style: "currency",
-        currency: "EUR",
-        maximumFractionDigits: 0,
-      }).format(amount),
+    (amount: number) => formatPackCurrency(amount, locale),
     [locale]
   );
 

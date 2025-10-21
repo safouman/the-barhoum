@@ -1,5 +1,6 @@
 import type { ReactElement } from "react";
 import type { Category, HomeData, LeadFormCopy, Locale, Testimonial, UIStrings } from "@/lib/content";
+import type { PackageId, PackSessions } from "@/lib/commerce/packages";
 
 export interface LocalizedCategory {
   id: Category["id"];
@@ -45,11 +46,11 @@ export interface CategoriesProps {
   formCopy: Record<Locale, LeadFormCopy>;
   selectedPack: {
     category: Category["id"];
-    sessions: number;
+    sessions: PackSessions;
     priceTotal: number;
     title: string;
     sessionsLabel: string;
-    packageId: string;
+    packageId: PackageId;
   } | null;
   leadFormVisible: boolean;
   activeCategoryLabel?: string;
@@ -63,9 +64,9 @@ export interface CategoriesProps {
     priceLabel: string;
   };
   activeCategoryId?: Category["id"];
-  selectedPackageId?: string;
-  onPackSelect: (pack: { category: Category["id"]; sessions: number; priceTotal: number; title: string; sessionsLabel: string; packageId: string }) => void;
-  onPackContinue: (pack: { category: Category["id"]; sessions: number; priceTotal: number; title: string; sessionsLabel: string; packageId: string }) => void;
+  selectedPackageId?: PackageId;
+  onPackSelect: (pack: { category: Category["id"]; sessions: PackSessions; priceTotal: number; title: string; sessionsLabel: string; packageId: PackageId }) => void;
+  onPackContinue: (pack: { category: Category["id"]; sessions: PackSessions; priceTotal: number; title: string; sessionsLabel: string; packageId: PackageId }) => void;
   locale: Locale;
   ui: UIStrings;
 }

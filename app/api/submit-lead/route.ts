@@ -20,11 +20,11 @@ function getRateLimitKey(req: NextRequest): string {
 }
 
 function cleanupRateLimitEntries(currentTime: number): void {
-    for (const [ip, record] of rateLimitMap.entries()) {
+    rateLimitMap.forEach((record, ip) => {
         if (currentTime > record.resetTime) {
             rateLimitMap.delete(ip);
         }
-    }
+    });
 }
 
 function checkRateLimit(key: string): { allowed: boolean; remaining: number } {
@@ -248,95 +248,97 @@ function enqueueStripePaymentLink({
 }): void {
     const jobId = `${requestId}:stripe`;
 
-    Promise.resolve()
-        .then(async () => {
-            console.log(`[${jobId}] 🧵 Starting background Stripe payment link job`);
+    const runJob = async () => {
+        console.log(`[${jobId}] 🧵 Starting background Stripe payment link job`);
 
-            const paymentLink = await createPaymentLink({
-                email: formData.email,
-                fullName: formData.fullName,
-                country: formData.country,
-                phone: formData.phone,
-                packageId: formData.package,
-            });
+        const paymentLink = await createPaymentLink({
+            email: formData.email,
+            fullName: formData.fullName,
+            country: formData.country,
+            phone: formData.phone,
+            packageId: formData.package,
+        });
 
-            if (!paymentLink) {
-                console.warn(
-                    `[${jobId}] ⚠️ Stripe payment link could not be created, skipping Google Sheet update`
+        if (!paymentLink) {
+            console.warn(
+                `[${jobId}] ⚠️ Stripe payment link could not be created, skipping Google Sheet update`
+            );
+            return;
+        }
+
+        const updatePayload = {
+            secret: googleScriptSecret,
+            operation: "attachPaymentLink",
+            leadId: formData.leadId,
+            payment_link: paymentLink,
+        };
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+        try {
+            const response = await fetchWithRetry(
+                googleScriptUrl,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "User-Agent": "Barhoum-Coaching-Site/1.0",
+                    },
+                    body: JSON.stringify(updatePayload),
+                    signal: controller.signal,
+                    keepalive: false,
+                    cache: "no-store",
+                },
+                MAX_ATTEMPTS,
+                `${jobId}:update`
+            );
+
+            if (!response.ok) {
+                const responseText = await response
+                    .text()
+                    .catch(() => "Unable to read response");
+                console.error(
+                    `[${jobId}] ❌ Failed to update Google Sheet with payment link`,
+                    {
+                        status: response.status,
+                        body: responseText,
+                    }
                 );
                 return;
             }
 
-            const updatePayload = {
-                secret: googleScriptSecret,
-                operation: "attachPaymentLink",
-                leadId: formData.leadId,
-                payment_link: paymentLink,
-            };
-
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 30000);
-
-            try {
-                const response = await fetchWithRetry(
-                    googleScriptUrl,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "User-Agent": "Barhoum-Coaching-Site/1.0",
-                        },
-                        body: JSON.stringify(updatePayload),
-                        signal: controller.signal,
-                        keepalive: false,
-                        cache: "no-store",
-                    },
-                    MAX_ATTEMPTS,
-                    `${jobId}:update`
+            const responseText = await response
+                .text()
+                .catch(() => "Unable to read response");
+            console.log(
+                `[${jobId}] ✅ Payment link applied in Google Sheet`,
+                responseText.substring(0, 500)
+            );
+        } catch (error) {
+            if (error instanceof Error && error.name === "AbortError") {
+                console.error(
+                    `[${jobId}] ⏱️ Timed out while updating Google Sheet with payment link`
                 );
-
-                if (!response.ok) {
-                    const responseText = await response
-                        .text()
-                        .catch(() => "Unable to read response");
-                    console.error(
-                        `[${jobId}] ❌ Failed to update Google Sheet with payment link`,
-                        {
-                            status: response.status,
-                            body: responseText,
-                        }
-                    );
-                    return;
-                }
-
-                const responseText = await response
-                    .text()
-                    .catch(() => "Unable to read response");
-                console.log(
-                    `[${jobId}] ✅ Payment link applied in Google Sheet`,
-                    responseText.substring(0, 500)
+            } else {
+                console.error(
+                    `[${jobId}] ❌ Unexpected error while updating payment link`,
+                    error
                 );
-            } catch (error) {
-                if (error instanceof Error && error.name === "AbortError") {
-                    console.error(
-                        `[${jobId}] ⏱️ Timed out while updating Google Sheet with payment link`
-                    );
-                } else {
-                    console.error(
-                        `[${jobId}] ❌ Unexpected error while updating payment link`,
-                        error
-                    );
-                }
-            } finally {
-                clearTimeout(timeoutId);
             }
-        })
-        .catch((error) => {
+        } finally {
+            clearTimeout(timeoutId);
+        }
+    };
+
+    setTimeout(() => {
+        runJob().catch((error) => {
             console.error(
                 `[${jobId}] ❌ Stripe background worker encountered an error`,
                 error
             );
         });
+    }, 0);
 }
 
 export async function POST(req: NextRequest) {

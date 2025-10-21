@@ -3,10 +3,15 @@ import clsx from "classnames";
 import { Container } from "@/components/Container";
 import { Section } from "@/components/Section";
 import type { Locale } from "@/lib/content";
+import {
+  formatPackCurrency,
+  formatSessionsLabel,
+  getPackageId,
+  type CategoryKey,
+  type PackageId,
+  type PackSessions,
+} from "@/lib/commerce/packages";
 import styles from "./Packages.module.css";
-
-type CategoryKey = "individuals" | "couples" | "organizations";
-type PackSessions = 1 | 3 | 5;
 
 type Pack = {
   sessions: PackSessions;
@@ -26,36 +31,13 @@ type PackSelection = {
   priceTotal: number;
   title: string;
   sessionsLabel: string;
-  packageId: string;
+  packageId: PackageId;
 };
 
 const ACCENT_COPY = {
   en: { ready: "Ready to proceed", button: "Continue", overview: "Pack overview" },
   ar: { ready: "جاهز للمواصلة", button: "استمرار", overview: "نبذة عن الباقة" },
 };
-
-function formatCurrency(amount: number, locale: Locale, currency: "EUR" | "USD" = "EUR") {
-  return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
-
-function formatSessionsLabel(sessions: PackSessions, locale: Locale) {
-  if (locale === "ar") {
-    if (sessions === 1) return "جلسة واحدة";
-    if (sessions === 3) return "ثلاث جلسات";
-    return "خمس جلسات";
-  }
-  return `${sessions} Session${sessions > 1 ? "s" : ""}`;
-}
-
-function getPackageId(category: CategoryKey, sessions: PackSessions): string {
-  const categoryPrefix = category === "individuals" ? "ind" : category === "couples" ? "cpl" : "org";
-  const sessionSuffix = sessions === 1 ? "session" : "sessions";
-  return `${categoryPrefix}-${sessions}-${sessionSuffix}`;
-}
 
 interface PackBarProps {
   direction: "ltr" | "rtl";
@@ -98,7 +80,7 @@ function PackBar({ direction, locale, pack, selected, onSelect, onKeyStep, butto
       }}
       className={clsx(styles.option, selected && styles.optionSelected)}
       dir={direction}
-      aria-label={`${formatSessionsLabel(pack.sessions, locale)} · ${formatCurrency(pack.priceTotal, locale)}`}
+      aria-label={`${formatSessionsLabel(pack.sessions, locale)} · ${formatPackCurrency(pack.priceTotal, locale)}`}
     >
       <div className={styles.optionContent}>
         <div className={styles.optionMeta}>
@@ -106,9 +88,9 @@ function PackBar({ direction, locale, pack, selected, onSelect, onKeyStep, butto
           <span className={styles.optionSubtitle}>{pack.subtitle}</span>
         </div>
         <div className={styles.optionPrice}>
-          <span>{formatCurrency(pack.priceTotal, locale)}</span>
+          <span>{formatPackCurrency(pack.priceTotal, locale)}</span>
           <span>
-            {formatCurrency(pack.pricePerSession, locale)} / {locale === "ar" ? "جلسة" : "session"}
+            {formatPackCurrency(pack.pricePerSession, locale)} / {locale === "ar" ? "جلسة" : "session"}
           </span>
         </div>
       </div>
@@ -190,8 +172,8 @@ export function PacksSection({ locale, direction, category, packs: packsByCatego
   const selectedPack = packs[selectedIndex];
   const accentCopy = ACCENT_COPY[locale] ?? ACCENT_COPY.en;
 
-  const totalPriceDisplay = selectedPack ? formatCurrency(selectedPack.priceTotal, locale) : "";
-  const perSessionDisplay = selectedPack ? formatCurrency(selectedPack.pricePerSession, locale) : "";
+  const totalPriceDisplay = selectedPack ? formatPackCurrency(selectedPack.priceTotal, locale) : "";
+  const perSessionDisplay = selectedPack ? formatPackCurrency(selectedPack.pricePerSession, locale) : "";
   const sessionTerm = locale === "ar" ? "جلسة" : "session";
   const totalPriceAriaLabel = selectedPack
     ? locale === "ar"
