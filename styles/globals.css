@@ -62,6 +62,11 @@ html[dir="rtl"] {
     --font-ui: var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
 }
 
+html[dir="rtl"] p {
+    font-size: clamp(1.06rem, 4.6vw, 1.18rem);
+    line-height: 1.9;
+}
+
 @media (min-width: 768px) {
     html[dir="rtl"] {
         font-size: 112.5%;
@@ -79,6 +84,11 @@ html[dir="rtl"] {
         --space-md: 3.6rem;
         --space-lg: 5rem;
         --space-xl: 6.6rem;
+    }
+
+    html[dir="rtl"] p {
+        font-size: var(--font-size-body);
+        line-height: var(--leading-body);
     }
 }
 
