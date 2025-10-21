@@ -41,5 +41,18 @@
     "label": "Language",
     "ar": "العربية",
     "en": "English"
+  },
+  "home": {
+    "categories": {
+      "eyebrow": "Choose who you're here for"
+    },
+    "packs": {
+      "eyebrow": "Choose your pace",
+      "selectAriaLabel": "Select a pack",
+      "ready": "Ready to proceed",
+      "button": "Continue",
+      "overview": "Pack overview",
+      "comingSoon": "This section isn't available yet. Check back soon."
+    }
   }
 }

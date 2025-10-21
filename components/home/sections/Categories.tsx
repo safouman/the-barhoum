@@ -28,8 +28,7 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
     activeCategoryId,
     selectedPackageId,
 }) => {
-    const chooseAudienceCopy = (ui as { chooseAudience?: string })
-        .chooseAudience;
+    const chooseAudienceCopy = ui.home.categories.eyebrow;
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
@@ -59,7 +58,7 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
         >
             <Container>
                 <p className="mb-10 text-center text-xs uppercase tracking-[0.4em] text-subtle">
-                    {chooseAudienceCopy ?? "Choose who you're here for"}
+                    {chooseAudienceCopy}
                 </p>
                 <div
                     className="grid gap-[clamp(2rem,3.5vw,3.5rem)] text-sm sm:grid-cols-1 lg:grid-cols-3
@@ -146,21 +145,22 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
                                             )}
                                         >
                                             <PacksSection
-                                                locale={locale}
-                                                direction={
-                                                    locale === "ar"
-                                                        ? "rtl"
-                                                        : "ltr"
-                                                }
-                                                category={
-                                                    expandedMobileCategory
-                                                }
-                                                packs={packs}
-                                                onSelect={onPackSelect}
-                                                onContinue={onPackContinue}
-                                                sectionId="mobile-packs"
-                                                comingSoon={isComingSoon}
-                                            />
+                                            locale={locale}
+                                            direction={
+                                                locale === "ar"
+                                                    ? "rtl"
+                                                    : "ltr"
+                                            }
+                                            category={
+                                                expandedMobileCategory
+                                            }
+                                            packs={packs}
+                                            onSelect={onPackSelect}
+                                            onContinue={onPackContinue}
+                                            sectionId="mobile-packs"
+                                            comingSoon={isComingSoon}
+                                            copy={ui.home.packs}
+                                        />
                                             {!isComingSoon &&
                                                 leadFormVisible &&
                                                 selectedPack &&

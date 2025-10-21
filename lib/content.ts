@@ -278,6 +278,19 @@ export const uiSchema = z.object({
         ar: z.string(),
         en: z.string(),
     }),
+    home: z.object({
+        categories: z.object({
+            eyebrow: z.string(),
+        }),
+        packs: z.object({
+            eyebrow: z.string(),
+            selectAriaLabel: z.string(),
+            ready: z.string(),
+            button: z.string(),
+            overview: z.string(),
+            comingSoon: z.string(),
+        }),
+    }),
 });
 
 export type UIStrings = z.infer<typeof uiSchema>;

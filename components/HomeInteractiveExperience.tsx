@@ -181,6 +181,7 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy 
             packs={packs}
             sectionId="desktop-packs"
             comingSoon={activeCategoryIsComingSoon}
+            copy={strings.home.packs}
             onSelect={(pack) => {
               event("package_click", {
                 action: "select",

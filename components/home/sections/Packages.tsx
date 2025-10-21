@@ -24,9 +24,13 @@ type Pack = {
 
 type PacksByCategory = Record<CategoryKey, Record<Locale, Pack[]>>;
 
-const ACCENT_COPY = {
-  en: { ready: "Ready to proceed", button: "Continue", overview: "Pack overview" },
-  ar: { ready: "جاهز للمواصلة", button: "استمرار", overview: "نبذة عن الباقة" },
+type PacksCopy = {
+  eyebrow: string;
+  selectAriaLabel: string;
+  ready: string;
+  button: string;
+  overview: string;
+  comingSoon: string;
 };
 
 interface PackBarProps {
@@ -97,10 +101,10 @@ interface PacksSectionProps {
   onContinue?: (pack: PackSelection) => void;
   sectionId?: string;
   comingSoon?: boolean;
+  copy: PacksCopy;
 }
 
 const TRANSITION_MS = 240;
-const COMING_SOON_MESSAGE_AR = "هذا القسم غير متاح حالياً، ترقّب قريباً.";
 
 export function PacksSection({
   locale,
@@ -111,6 +115,7 @@ export function PacksSection({
   onContinue,
   sectionId,
   comingSoon = false,
+  copy,
 }: PacksSectionProps) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const cardRefs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -177,8 +182,6 @@ export function PacksSection({
   if (!comingSoon && packs.length === 0) return null;
 
   const selectedPack = packs[selectedIndex];
-  const accentCopy = ACCENT_COPY[locale] ?? ACCENT_COPY.en;
-
   const totalPriceDisplay = selectedPack ? formatPackCurrency(selectedPack.priceTotal, locale) : "";
   const perSessionDisplay = selectedPack ? formatPackCurrency(selectedPack.pricePerSession, locale) : "";
   const sessionTerm = locale === "ar" ? "جلسة" : "session";
@@ -189,8 +192,8 @@ export function PacksSection({
     : undefined;
   const continueAriaLabel = selectedPack
     ? locale === "ar"
-      ? `${accentCopy.button} مع ${formatSessionsLabel(selectedPack.sessions, locale)} - الإجمالي ${totalPriceDisplay}`
-      : `${accentCopy.button} with ${formatSessionsLabel(selectedPack.sessions, locale).toLowerCase()} - total ${totalPriceDisplay}`
+      ? `${copy.button} مع ${formatSessionsLabel(selectedPack.sessions, locale)} - الإجمالي ${totalPriceDisplay}`
+      : `${copy.button} with ${formatSessionsLabel(selectedPack.sessions, locale).toLowerCase()} - total ${totalPriceDisplay}`
     : undefined;
 
   const sectionTitle = comingSoon ? undefined : locale === "ar" ? "الباقات" : "Packs";
@@ -200,7 +203,7 @@ export function PacksSection({
       <Container>
         {renderMode === "packs" && (
           <div className="mb-10 text-center text-xs uppercase tracking-[0.4em] text-subtle">
-            {locale === "ar" ? "اختر وتيرة التقدم" : "Choose your pace"}
+            {copy.eyebrow}
           </div>
         )}
         {renderMode === "comingSoon" && (
@@ -214,7 +217,7 @@ export function PacksSection({
             <div className={clsx(styles.wrap, direction === "rtl" && styles.wrapRtl)}>
               <div
                 role="radiogroup"
-                aria-label={locale === "ar" ? "اختر الباقة" : "Select a pack"}
+                aria-label={copy.selectAriaLabel}
                 className={styles.selector}
               >
                 <div className={styles.list}>
@@ -286,7 +289,7 @@ export function PacksSection({
                           className={styles.detailsButton}
                           aria-label={continueAriaLabel}
                         >
-                          {accentCopy.button}
+                          {copy.button}
                         </button>
                       </div>
                     </div>
@@ -297,10 +300,10 @@ export function PacksSection({
           ) : (
             <div className="flex min-h-[360px] items-center justify-center">
               <div
-                dir="rtl"
+                dir={locale === "ar" ? "rtl" : "ltr"}
                 className="flex w-full max-w-xl flex-col gap-6 rounded-xl border border-white/80 bg-white px-6 py-12 text-center text-lg leading-relaxed text-text shadow-[0_16px_32px_-24px_rgba(15,35,42,0.4)] md:rounded-[24px] md:px-12 md:py-14 md:text-xl md:leading-9 md:shadow-[0_24px_40px_-30px_rgba(15,35,42,0.45)]"
               >
-                <p>{COMING_SOON_MESSAGE_AR}</p>
+                <p>{copy.comingSoon}</p>
               </div>
             </div>
           )}
