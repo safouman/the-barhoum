@@ -182,9 +182,9 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         </svg>
                     </div>
 
-                    <div className="relative h-full flex flex-col justify-center px-6 py-10 md:px-12 md:py-20">
+                    <div className="relative h-full flex flex-col justify-center px-6 py-10 md:px-10 md:py-14 lg:px-12 lg:py-16">
                         {/* Avatar with initials */}
-                        <div className="flex justify-center mb-6 md:mb-10">
+                        <div className="flex justify-center mb-6 md:mb-8">
                             <div
                                 className="w-14 h-14 rounded-full flex items-center justify-center text-[#2AD6CA] font-semibold text-base"
                                 style={{ background: "#E9F9F7" }}
@@ -194,12 +194,12 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         </div>
 
                         {/* Quote */}
-                        <div className="flex-1 flex items-center justify-center mb-6 md:mb-8">
+                        <div className="flex-1 flex items-center justify-center mb-6 md:mb-6">
                             <blockquote
                                 className="text-center max-w-full px-2"
                                 dir={isRTL ? "rtl" : "ltr"}
                             >
-                                <p className="text-quote mb-0 text-center text-[#0E2D2A]">
+                                <p className="text-quote mb-0 text-center text-[#0E2D2A] md:text-[1.4rem] lg:text-[1.55rem] xl:text-[1.65rem] md:leading-relaxed">
                                     {testimonial.quote}
                                 </p>
                             </blockquote>
@@ -207,13 +207,13 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
 
                         {/* Attribution */}
                         <footer className="text-center">
-                            <div className="w-12 h-px bg-[#2AD6CA] mx-auto mb-6" />
+                            <div className="w-12 h-px bg-[#2AD6CA] mx-auto mb-6 md:mb-5" />
                             <cite className="not-italic">
-                                <div className="heading-3 text-[#0E2D2A] mb-1 md:mb-2">
+                                <div className="heading-3 text-[#0E2D2A] mb-1 md:mb-2 md:text-[1.35rem] lg:text-[1.45rem]">
                                     {testimonial.name}
                                 </div>
                                 {testimonial.role && (
-                                    <div className="text-[#4E716D] text-sm font-normal md:font-light">
+                                    <div className="text-[#4E716D] text-sm font-normal md:font-light md:text-[0.85rem] lg:text-[0.95rem]">
                                         {testimonial.role}
                                     </div>
                                 )}
@@ -239,7 +239,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
         >
             <Container>
                 <div
-                    className="text-center space-y-10 md:space-y-12 relative z-10"
+                    className="text-center space-y-10 md:space-y-8 lg:space-y-9 relative z-10"
                     role="region"
                     aria-label="Customer testimonials"
                     onKeyDown={handleKeyDown}
@@ -263,7 +263,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         {/* Carousel Track */}
                         <div
                             ref={trackRef}
-                            className="relative h-[520px] md:h-[580px] lg:h-[620px] overflow-visible flex justify-center items-center pt-10 pb-8 md:pt-8 md:pb-8"
+                            className="relative h-[520px] md:h-[540px] lg:h-[560px] overflow-visible flex justify-center items-center pt-10 pb-8 md:pt-6 md:pb-6"
                             onMouseDown={(e) => handleStart(e.clientX)}
                             onMouseMove={(e) => handleMove(e.clientX)}
                             onMouseUp={handleEnd}
