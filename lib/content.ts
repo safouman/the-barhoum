@@ -20,6 +20,7 @@ export const categorySchema = z.object({
     id: categoryIdSchema,
     label: localizedSchema,
     description: localizedSchema,
+    comingSoon: z.boolean().optional(),
 });
 
 export type Category = z.infer<typeof categorySchema>;

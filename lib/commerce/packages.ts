@@ -33,11 +33,23 @@ const PACKAGE_ID_LOOKUP: Record<CategoryKey, Record<PackSessions, PackageId>> =
         },
     };
 
+const PACKAGE_IDS = Object.freeze(
+    Object.values(PACKAGE_ID_LOOKUP).flatMap((categoryMap) =>
+        Object.values(categoryMap)
+    ) as PackageId[]
+);
+
+export const ALL_PACKAGE_IDS = PACKAGE_IDS;
+
 export function getPackageId(
     category: CategoryKey,
     sessions: PackSessions
 ): PackageId {
     return PACKAGE_ID_LOOKUP[category][sessions];
+}
+
+export function isPackageId(value: unknown): value is PackageId {
+    return typeof value === "string" && PACKAGE_IDS.includes(value as PackageId);
 }
 
 export function formatPackCurrency(

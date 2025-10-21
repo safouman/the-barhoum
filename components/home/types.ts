@@ -1,11 +1,13 @@
 import type { ReactElement } from "react";
 import type { Category, HomeData, LeadFormCopy, Locale, Testimonial, UIStrings } from "@/lib/content";
-import type { PackageId, PackSessions } from "@/lib/commerce/packages";
+import type { PackageId } from "@/lib/commerce/packages";
+import type { PackSelection } from "@/lib/commerce/pack-selections";
 
 export interface LocalizedCategory {
   id: Category["id"];
   label: string;
   description: string;
+  comingSoon?: boolean;
 }
 
 export interface LocalizedTestimonial {
@@ -44,14 +46,7 @@ export interface CategoriesProps {
   onMobileToggle: (id: Category["id"]) => void;
   packs: HomeData["packs"];
   formCopy: Record<Locale, LeadFormCopy>;
-  selectedPack: {
-    category: Category["id"];
-    sessions: PackSessions;
-    priceTotal: number;
-    title: string;
-    sessionsLabel: string;
-    packageId: PackageId;
-  } | null;
+  selectedPack: PackSelection | null;
   leadFormVisible: boolean;
   activeCategoryLabel?: string;
   selectedPackageLabel?: string;
@@ -65,8 +60,8 @@ export interface CategoriesProps {
   };
   activeCategoryId?: Category["id"];
   selectedPackageId?: PackageId;
-  onPackSelect: (pack: { category: Category["id"]; sessions: PackSessions; priceTotal: number; title: string; sessionsLabel: string; packageId: PackageId }) => void;
-  onPackContinue: (pack: { category: Category["id"]; sessions: PackSessions; priceTotal: number; title: string; sessionsLabel: string; packageId: PackageId }) => void;
+  onPackSelect: (pack: PackSelection) => void;
+  onPackContinue: (pack: PackSelection) => void;
   locale: Locale;
   ui: UIStrings;
 }

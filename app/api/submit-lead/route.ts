@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
+import { ALL_PACKAGE_IDS, isPackageId } from "@/lib/commerce/packages";
 import { leadFormSchema, type LeadFormData } from "@/lib/validation/lead-form";
 import { createPaymentLink } from "@/lib/stripe/payment-links";
 import { requiresPayment } from "@/lib/utils/geo";
@@ -466,6 +467,23 @@ export async function POST(req: NextRequest) {
         }
 
         const formData = validationResult.data;
+
+        const normalizedPackageId = formData.package.trim();
+        if (normalizedPackageId && !isPackageId(normalizedPackageId)) {
+            console.warn(
+                `[${requestId}] ⚠️ Unknown package "${normalizedPackageId}" received. Allowed packages: ${ALL_PACKAGE_IDS.join(
+                    ", "
+                )}`
+            );
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: "Invalid package selection. Please refresh and try again.",
+                },
+                { status: 400 }
+            );
+        }
+        formData.package = normalizedPackageId;
 
         console.log(
             `[${requestId}] 💰 Payment eligibility check - category: ${formData.category}, country: ${formData.country}`

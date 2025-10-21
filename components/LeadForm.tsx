@@ -134,6 +134,7 @@ export function LeadForm({
     const [errors, setErrors] = useState<FieldErrors>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
+    const [submissionError, setSubmissionError] = useState<string | null>(null);
     const scrollContainerRef = useRef<HTMLElement | null>(null);
     const hasScrolledOnMountRef = useRef(false);
     const stepAnnouncerRef = useRef<HTMLDivElement | null>(null);
@@ -295,6 +296,7 @@ export function LeadForm({
             }
             return;
         }
+        setSubmissionError(null);
         setIsSubmitting(true);
         event("form_submit", {
             category: selectedCategory ?? "none",
@@ -321,17 +323,18 @@ export function LeadForm({
             if (response.ok && result.success) {
                 setIsSubmitting(false);
                 setSubmitted(true);
+                setSubmissionError(null);
                 onSubmitted?.();
             } else {
                 setIsSubmitting(false);
                 const errorMessage =
                     result.error || "Failed to submit form. Please try again.";
-                alert(errorMessage);
+                setSubmissionError(errorMessage);
             }
         } catch (error) {
             setIsSubmitting(false);
             console.error("Form submission error:", error);
-            alert(
+            setSubmissionError(
                 "Network error. Please check your connection and try again."
             );
         }
@@ -778,6 +781,20 @@ export function LeadForm({
                             </>
                         )}
                     </div>
+                    {submissionError && (
+                        <div
+                            role="alert"
+                            aria-live="assertive"
+                            className={clsx(
+                                "w-full rounded-[16px] border px-5 py-4 text-sm leading-relaxed shadow-[0_18px_36px_-24px_rgba(231,108,108,0.6)] transition-opacity duration-200 ease-out",
+                                isRtl ? "text-right" : "text-left",
+                                "border-[#E76C6C33] bg-[#FEF6F6] text-[#B44C4C]"
+                            )}
+                            dir={isRtl ? "rtl" : "ltr"}
+                        >
+                            {submissionError}
+                        </div>
+                    )}
                     <div className="form-navigation" dir="ltr">
                         {step > 0 && (
                             <Button

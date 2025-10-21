@@ -1,4 +1,4 @@
-import type { PackageId } from '@/lib/commerce/packages';
+import { ALL_PACKAGE_IDS, isPackageId, type PackageId } from '@/lib/commerce/packages';
 
 export const STRIPE_PRODUCT_ID = 'prod_TG5tOBx6jkBpsG';
 
@@ -15,13 +15,9 @@ export const STRIPE_PRICE_MAP: Record<PackageId, string> = {
   'org-5-sessions': 'price_REPLACE_ME_ORG_5',
 };
 
-function isPackageId(value: string): value is PackageId {
-  return Object.prototype.hasOwnProperty.call(STRIPE_PRICE_MAP, value);
-}
-
 export function getPriceId(packageId: string): string | null {
   console.log(`[Stripe Config] 📋 Looking up price for package: "${packageId}"`);
-  console.log(`[Stripe Config] Available packages:`, Object.keys(STRIPE_PRICE_MAP));
+  console.log(`[Stripe Config] Available packages:`, ALL_PACKAGE_IDS);
 
   if (isPackageId(packageId)) {
     const priceId = STRIPE_PRICE_MAP[packageId];

@@ -6,11 +6,10 @@ import type { Locale } from "@/lib/content";
 import {
   formatPackCurrency,
   formatSessionsLabel,
-  getPackageId,
   type CategoryKey,
-  type PackageId,
   type PackSessions,
 } from "@/lib/commerce/packages";
+import { createPackSelection, type PackSelection } from "@/lib/commerce/pack-selections";
 import styles from "./Packages.module.css";
 
 type Pack = {
@@ -24,15 +23,6 @@ type Pack = {
 };
 
 type PacksByCategory = Record<CategoryKey, Record<Locale, Pack[]>>;
-
-type PackSelection = {
-  category: CategoryKey;
-  sessions: PackSessions;
-  priceTotal: number;
-  title: string;
-  sessionsLabel: string;
-  packageId: PackageId;
-};
 
 const ACCENT_COPY = {
   en: { ready: "Ready to proceed", button: "Continue", overview: "Pack overview" },
@@ -130,32 +120,16 @@ export function PacksSection({ locale, direction, category, packs: packsByCatego
     setSelectedIndex(0);
     cardRefs.current = [];
     const pack = packs[0];
-    const sessionsLabel = formatSessionsLabel(pack.sessions, locale);
-    const packageId = getPackageId(category, pack.sessions);
-    onSelectRef.current?.({
-      category,
-      sessions: pack.sessions,
-      priceTotal: pack.priceTotal,
-      title: pack.title,
-      sessionsLabel,
-      packageId,
-    });
+    const selection = createPackSelection({ category, pack, locale });
+    onSelectRef.current?.(selection);
   }, [category, packs, locale]);
 
   const handleSelect = (index: number) => {
     setSelectedIndex(index);
     if (category) {
       const pack = packs[index];
-      const sessionsLabel = formatSessionsLabel(pack.sessions, locale);
-      const packageId = getPackageId(category, pack.sessions);
-      onSelectRef.current?.({
-        category,
-        sessions: pack.sessions,
-        priceTotal: pack.priceTotal,
-        title: pack.title,
-        sessionsLabel,
-        packageId,
-      });
+      const selection = createPackSelection({ category, pack, locale });
+      onSelectRef.current?.(selection);
     }
   };
 
@@ -260,15 +234,8 @@ export function PacksSection({ locale, direction, category, packs: packsByCatego
                       type="button"
                       onClick={() => {
                         if (category) {
-                          const packageId = getPackageId(category, selectedPack.sessions);
-                          onContinue?.({
-                            category,
-                            sessions: selectedPack.sessions,
-                            priceTotal: selectedPack.priceTotal,
-                            title: selectedPack.title,
-                            sessionsLabel: formatSessionsLabel(selectedPack.sessions, locale),
-                            packageId,
-                          });
+                        const selection = createPackSelection({ category, pack: selectedPack, locale });
+                        onContinue?.(selection);
                         }
                       }}
                       className={styles.detailsButton}
