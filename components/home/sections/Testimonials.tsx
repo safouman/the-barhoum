@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Container } from "@/components/Container";
 import { Section } from "@/components/Section";
 import type { HomeThemeDefinition } from "../types";
+import { useTestimonialLayout } from "../hooks/useTestimonialLayout";
 
 export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
     testimonials,
@@ -11,13 +12,11 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
 }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
-    const [screenWidth, setScreenWidth] = useState<number | undefined>(
-        undefined
-    );
     const trackRef = useRef<HTMLDivElement>(null);
     const startXRef = useRef(0);
     const currentXRef = useRef(0);
     const autoPlayRef = useRef<NodeJS.Timeout | undefined>(undefined);
+    const { getLayout } = useTestimonialLayout();
 
     const isRTL = locale === "ar";
     const testimonialCount = testimonials.length;
@@ -26,23 +25,6 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
     const eyebrow = meta.eyebrow[locale];
     const sectionTitle = ui.testimonials;
     const ctaText = meta.cta[locale];
-
-    // Handle screen width for responsive behavior
-    useEffect(() => {
-        const handleResize = () => {
-            setScreenWidth(window.innerWidth);
-        };
-
-        // Set initial width
-        setScreenWidth(window.innerWidth);
-
-        // Add resize listener
-        window.addEventListener("resize", handleResize);
-
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
-    }, []);
 
     // Navigation handlers
     const handlePrevious = useCallback(() => {
@@ -145,67 +127,21 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
 
     // Render testimonial card
     const renderTestimonialCard = (testimonial: any, index: number) => {
-        const isActive = index === currentIndex;
-        const isPrev =
-            index === (currentIndex - 1 + testimonialCount) % testimonialCount;
-        const isNext = index === (currentIndex + 1) % testimonialCount;
+        const layout = getLayout({
+            index,
+            currentIndex,
+            count: testimonialCount,
+        });
 
-        // Only show active and adjacent cards
-        if (!isActive && !isPrev && !isNext) return null;
-
-        let cardClasses = "absolute top-0 transition-all duration-500 ease-out";
-        let cardStyles: React.CSSProperties = {};
-
-        const currentScreenWidth = screenWidth || 768;
-
-        // Portrait card dimensions (height > width, ~55% ratio)
-        let cardWidth: number;
-        let cardHeight: number;
-
-        if (currentScreenWidth >= 1200) {
-            cardWidth = 400;
-            cardHeight = 560;
-        } else if (currentScreenWidth >= 768) {
-            cardWidth = 350;
-            cardHeight = 520;
-        } else {
-            cardWidth = Math.min(320, currentScreenWidth - 32);
-            cardHeight = 480;
-        }
-
-        cardStyles.width = `${cardWidth}px`;
-        cardStyles.height = `${cardHeight}px`;
-
-        // Positioning logic for perfect centering and symmetry
-        if (currentScreenWidth >= 768) {
-            const centerOffset = cardWidth / 2;
-            const sideOffset = cardWidth * 0.7; // 70% overlap for elegant peek
-
-            if (isActive) {
-                cardClasses += " z-30 scale-100 opacity-100";
-                cardStyles.left = `calc(50% - ${centerOffset}px)`;
-            } else if (isPrev) {
-                cardClasses += " z-10 scale-95 opacity-60";
-                cardStyles.left = `calc(50% - ${centerOffset + sideOffset}px)`;
-            } else if (isNext) {
-                cardClasses += " z-10 scale-95 opacity-60";
-                cardStyles.left = `calc(50% - ${centerOffset - sideOffset}px)`;
-            }
-        } else {
-            // Mobile: center single card
-            cardStyles.left = `calc(50% - ${cardWidth / 2}px)`;
-            if (isActive) {
-                cardClasses += " z-30 scale-100 opacity-100";
-            } else {
-                return null; // Hide side cards on mobile
-            }
+        if (!layout.visible) {
+            return null;
         }
 
         return (
             <article
                 key={testimonial.id}
-                className={cardClasses}
-                style={cardStyles}
+                className={layout.className}
+                style={layout.style}
                 role="group"
                 aria-roledescription="testimonial"
                 aria-label={`Testimonial from ${testimonial.name}`}

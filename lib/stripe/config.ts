@@ -2,16 +2,17 @@ import type { PackageId } from '@/lib/commerce/packages';
 
 export const STRIPE_PRODUCT_ID = 'prod_TG5tOBx6jkBpsG';
 
+// TODO: replace placeholder values with the live Stripe Price IDs for each pack.
 export const STRIPE_PRICE_MAP: Record<PackageId, string> = {
   'ind-1-session': 'price_1SJZhwAWdXsiScrur9Ue74CR',
   'ind-3-sessions': 'price_1SJZhwAWdXsiScruB61LUlN6',
   'ind-5-sessions': 'price_1SJZhwAWdXsiScruWpA8eon2',
-  'cpl-1-session': '',
-  'cpl-3-sessions': '',
-  'cpl-5-sessions': '',
-  'org-1-session': '',
-  'org-3-sessions': '',
-  'org-5-sessions': '',
+  'cpl-1-session': 'price_REPLACE_ME_CPL_1',
+  'cpl-3-sessions': 'price_REPLACE_ME_CPL_3',
+  'cpl-5-sessions': 'price_REPLACE_ME_CPL_5',
+  'org-1-session': 'price_REPLACE_ME_ORG_1',
+  'org-3-sessions': 'price_REPLACE_ME_ORG_3',
+  'org-5-sessions': 'price_REPLACE_ME_ORG_5',
 };
 
 function isPackageId(value: string): value is PackageId {

@@ -235,7 +235,12 @@ async function fetchWithRetry(
     throw lastError || new Error("Failed after maximum attempts");
 }
 
-function enqueueStripePaymentLink({
+type StripeJobResult =
+    | { status: "success" }
+    | { status: "skipped"; reason: string }
+    | { status: "failed"; reason: string; details?: unknown };
+
+async function processStripePaymentLink({
     requestId,
     formData,
     googleScriptUrl,
@@ -245,12 +250,19 @@ function enqueueStripePaymentLink({
     formData: LeadFormData;
     googleScriptUrl: string;
     googleScriptSecret: string;
-}): void {
+}): Promise<StripeJobResult> {
     const jobId = `${requestId}:stripe`;
 
-    const runJob = async () => {
-        console.log(`[${jobId}] 🧵 Starting background Stripe payment link job`);
+    console.log(`[${jobId}] 🧵 Starting Stripe payment link workflow`);
 
+    if (!formData.package?.trim()) {
+        console.warn(
+            `[${jobId}] ⚠️ No package provided; skipping payment link generation`
+        );
+        return { status: "skipped", reason: "missing-package" };
+    }
+
+    try {
         const paymentLink = await createPaymentLink({
             email: formData.email,
             fullName: formData.fullName,
@@ -261,9 +273,9 @@ function enqueueStripePaymentLink({
 
         if (!paymentLink) {
             console.warn(
-                `[${jobId}] ⚠️ Stripe payment link could not be created, skipping Google Sheet update`
+                `[${jobId}] ⚠️ Stripe payment link could not be created`
             );
-            return;
+            return { status: "failed", reason: "create-payment-link-failed" };
         }
 
         const updatePayload = {
@@ -305,7 +317,14 @@ function enqueueStripePaymentLink({
                         body: responseText,
                     }
                 );
-                return;
+                return {
+                    status: "failed",
+                    reason: "sheet-update-failed",
+                    details: {
+                        status: response.status,
+                        body: responseText,
+                    },
+                };
             }
 
             const responseText = await response
@@ -315,30 +334,38 @@ function enqueueStripePaymentLink({
                 `[${jobId}] ✅ Payment link applied in Google Sheet`,
                 responseText.substring(0, 500)
             );
+            return { status: "success" };
         } catch (error) {
             if (error instanceof Error && error.name === "AbortError") {
                 console.error(
                     `[${jobId}] ⏱️ Timed out while updating Google Sheet with payment link`
                 );
-            } else {
-                console.error(
-                    `[${jobId}] ❌ Unexpected error while updating payment link`,
-                    error
-                );
+                return { status: "failed", reason: "sheet-update-timeout" };
             }
+
+            console.error(
+                `[${jobId}] ❌ Unexpected error while updating payment link`,
+                error
+            );
+            return {
+                status: "failed",
+                reason: "sheet-update-error",
+                details: error instanceof Error ? error.message : error,
+            };
         } finally {
             clearTimeout(timeoutId);
         }
-    };
-
-    setTimeout(() => {
-        runJob().catch((error) => {
-            console.error(
-                `[${jobId}] ❌ Stripe background worker encountered an error`,
-                error
-            );
-        });
-    }, 0);
+    } catch (error) {
+        console.error(
+            `[${jobId}] ❌ Stripe workflow encountered an error`,
+            error
+        );
+        return {
+            status: "failed",
+            reason: "unexpected-error",
+            details: error instanceof Error ? error.message : error,
+        };
+    }
 }
 
 export async function POST(req: NextRequest) {
@@ -605,20 +632,34 @@ export async function POST(req: NextRequest) {
                     );
                 }
 
+                let paymentLinkStatus: StripeJobResult["status"] | "not-required" =
+                    "not-required";
+                let paymentLinkError: string | undefined;
+
                 if (!isDuplicate && shouldAttemptStripe) {
                     console.log(
-                        `[${requestId}] 🧾 Queueing Stripe payment link generation for leadId=${formData.leadId}`
+                        `[${requestId}] 🧾 Processing Stripe payment link for leadId=${formData.leadId}`
                     );
-                    enqueueStripePaymentLink({
+                    const stripeResult = await processStripePaymentLink({
                         requestId,
                         formData,
                         googleScriptUrl,
                         googleScriptSecret,
                     });
+
+                    paymentLinkStatus = stripeResult.status;
+                    if (stripeResult.status !== "success") {
+                        paymentLinkError = stripeResult.reason;
+                    }
                 } else if (isDuplicate) {
                     console.log(
-                        `[${requestId}] 🔁 Duplicate lead detected for leadId=${formData.leadId}; skipping Stripe background job`
+                        `[${requestId}] 🔁 Duplicate lead detected for leadId=${formData.leadId}; skipping Stripe workflow`
                     );
+                    paymentLinkStatus = "skipped";
+                    paymentLinkError = "duplicate-lead";
+                } else if (needsPayment && !packagePresent) {
+                    paymentLinkStatus = "skipped";
+                    paymentLinkError = "missing-package";
                 }
 
                 return NextResponse.json({
@@ -626,7 +667,8 @@ export async function POST(req: NextRequest) {
                     message: isDuplicate
                         ? "Form already submitted. We will be in touch soon."
                         : "Form submitted successfully",
-                    paymentLinkPending: !isDuplicate && shouldAttemptStripe,
+                    paymentLinkStatus,
+                    paymentLinkError,
                     duplicate: isDuplicate,
                 });
             } else {
