@@ -20,15 +20,32 @@ export function HomeExperienceSection() {
     const [hasInteracted, setHasInteracted] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [showButton, setShowButton] = useState(true);
+    const [showWave, setShowWave] = useState(false);
+
+    const buttonRestoreTimeoutRef = useRef<number | null>(null);
 
     const handleAudioPlay = useCallback(() => {
         setIsLoading(false);
         setIsPlaying(true);
+        if (buttonRestoreTimeoutRef.current) {
+            window.clearTimeout(buttonRestoreTimeoutRef.current);
+            buttonRestoreTimeoutRef.current = null;
+        }
+        setShowButton(false);
+        setShowWave(true);
     }, []);
 
     const handleAudioPause = useCallback(() => {
         setIsPlaying(false);
         setIsLoading(false);
+        setShowWave(false);
+        if (buttonRestoreTimeoutRef.current) {
+            window.clearTimeout(buttonRestoreTimeoutRef.current);
+        }
+        buttonRestoreTimeoutRef.current = window.setTimeout(() => {
+            setShowButton(true);
+        }, 400);
     }, []);
 
     const handleAudioWaiting = useCallback(() => {
@@ -42,13 +59,26 @@ export function HomeExperienceSection() {
     const handleAudioError = useCallback(() => {
         setIsLoading(false);
         setIsPlaying(false);
+        setShowWave(false);
+        if (buttonRestoreTimeoutRef.current) {
+            window.clearTimeout(buttonRestoreTimeoutRef.current);
+            buttonRestoreTimeoutRef.current = null;
+        }
+        setShowButton(true);
     }, []);
 
     const ensureAudio = useCallback(() => {
         let audio = audioRef.current;
         if (!audio) {
-            audio = new Audio("/audio/experience.wav");
+            audio = new Audio();
             audio.preload = "none";
+            const sources: Array<{ src: string; type: string }> = [
+                { src: "/audio/experience.wav", type: "audio/wav" },
+            ];
+            const preferred =
+                sources.find(({ type }) => audio.canPlayType(type)) ??
+                sources[0];
+            audio.src = preferred.src;
             audioRef.current = audio;
         }
 
@@ -84,6 +114,10 @@ export function HomeExperienceSection() {
                 audio.removeEventListener("error", handleAudioError);
                 listenersAttachedRef.current = false;
             }
+            if (buttonRestoreTimeoutRef.current) {
+                window.clearTimeout(buttonRestoreTimeoutRef.current);
+                buttonRestoreTimeoutRef.current = null;
+            }
             audioRef.current = null;
         };
     }, [
@@ -96,6 +130,7 @@ export function HomeExperienceSection() {
 
     const handleButtonClick = useCallback(async () => {
         setHasInteracted(true);
+        setShowButton(false);
         const audio = ensureAudio();
         if (!audio) return;
 
@@ -111,10 +146,10 @@ export function HomeExperienceSection() {
             await audio.play();
         } catch {
             setIsLoading(false);
+            setShowWave(false);
+            setShowButton(true);
         }
     }, [ensureAudio]);
-
-    const buttonLabel = isPlaying ? "إيقاف" : "استمع";
 
     return (
         <Section id="experience" className="bg-primary/10">
@@ -129,27 +164,37 @@ export function HomeExperienceSection() {
                         واضغط استمع.
                     </p>
 
-                    <div className="flex flex-col items-center gap-5">
+                    <div className="relative flex h-16 w-full items-center justify-center">
                         <button
                             type="button"
                             onClick={handleButtonClick}
                             aria-pressed={isPlaying}
-                            aria-label="التبديل بين تشغيل وإيقاف التجربة الصوتية"
+                            aria-label="بدء التجربة الصوتية"
                             aria-busy={isLoading}
                             className={clsx(
-                                "inline-flex min-w-[9rem] items-center justify-center rounded-full bg-primary px-10 py-3 text-base font-semibold tracking-[0.2em] text-white transition-all duration-200 ease-out",
-                                "hover:scale-[1.02] hover:bg-primary/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60",
-                                isPlaying &&
-                                    "shadow-[0_16px_30px_-18px_rgba(24,159,151,0.7)]",
+                                "absolute inline-flex min-w-[9rem] items-center justify-center rounded-full bg-primary px-10 py-3 text-base font-semibold tracking-[0.2em] text-white shadow-[0_4px_20px_rgba(51,196,182,0.25)] transition duration-300 ease-in-out",
+                                "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60",
+                                showButton
+                                    ? "opacity-100 translate-y-0"
+                                    : "pointer-events-none opacity-0 translate-y-2",
                                 isLoading && "cursor-wait opacity-80"
                             )}
-                            disabled={isLoading}
+                            disabled={isLoading || !showButton}
                         >
-                            {buttonLabel}
+                            استمع
                         </button>
 
-                        {(hasInteracted || isPlaying) && (
-                            <ExperienceWave active={isPlaying} />
+                        {(hasInteracted || showWave) && (
+                            <div
+                                className={clsx(
+                                    "absolute flex items-center justify-center transition duration-[400ms] ease-in-out",
+                                    showWave
+                                        ? "opacity-100 translate-y-0"
+                                        : "pointer-events-none opacity-0 translate-y-2"
+                                )}
+                            >
+                                <ExperienceWave active={showWave} />
+                            </div>
                         )}
                     </div>
                 </div>
