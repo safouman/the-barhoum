@@ -62,6 +62,40 @@ html[dir="rtl"] {
     --font-ui: var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
 }
 
+@media (min-width: 768px) {
+    html[dir="rtl"] {
+        font-size: 112.5%;
+        --leading-heading: 1.32;
+        --leading-body: 1.9;
+        --leading-base: var(--leading-body);
+        --leading-relaxed: 2;
+        --font-size-h1: clamp(2.6rem, 6.5vw, 3.3rem);
+        --font-size-h2: clamp(2rem, 5vw, 2.6rem);
+        --font-size-h3: clamp(1.55rem, 3.8vw, 1.95rem);
+        --font-size-body-lg: clamp(1.05rem, 2.8vw, 1.2rem);
+        --font-size-section-title: clamp(2.1rem, 5vw, 2.7rem);
+        --space-xs: 0.95rem;
+        --space-sm: 1.9rem;
+        --space-md: 3.6rem;
+        --space-lg: 5rem;
+        --space-xl: 6.6rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    html[dir="rtl"] {
+        font-size: 118.75%;
+        --font-size-h1: clamp(2.7rem, 5.4vw, 3.2rem);
+        --font-size-h2: clamp(2.1rem, 4vw, 2.5rem);
+        --font-size-h3: clamp(1.6rem, 3.2vw, 1.9rem);
+        --font-size-body-lg: clamp(1.08rem, 2vw, 1.18rem);
+        --font-size-section-title: clamp(2.2rem, 4.2vw, 2.6rem);
+        --space-md: 3.8rem;
+        --space-lg: 5.2rem;
+        --space-xl: 6.8rem;
+    }
+}
+
 html[dir="rtl"] .text-eyebrow {
     letter-spacing: 0.15em;
 }
