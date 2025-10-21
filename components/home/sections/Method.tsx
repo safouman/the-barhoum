@@ -26,8 +26,8 @@ export const HomeMethod: HomeThemeDefinition["Method"] = ({ locale, method, mark
       <Container className="px-0 md:px-sm">
         <div
           className={clsx(
-            "mx-auto max-w-3xl text-body-lg text-subtle",
-            "space-y-6 px-6 py-6 md:px-0 md:py-0 md:space-y-4",
+            "mx-auto max-w-3xl md:max-w-4xl text-body-lg text-subtle md:text-[1.1rem] lg:text-[1.18rem] xl:text-[1.22rem] md:leading-relaxed",
+            "space-y-6 px-6 py-6 md:px-0 md:py-0 md:space-y-5 lg:space-y-6",
             isRTL ? "text-right" : "text-left"
           )}
           dir={isRTL ? "rtl" : "ltr"}
