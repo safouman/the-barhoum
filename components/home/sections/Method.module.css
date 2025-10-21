@@ -26,3 +26,9 @@
     z-index: 1;
     width: 100%;
 }
+
+@media (max-width: 767px) {
+    .methodSection::before {
+        background-size: 50%;
+    }
+}
