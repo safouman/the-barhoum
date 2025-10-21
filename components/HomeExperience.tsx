@@ -15,7 +15,7 @@ import {
 } from "./home/sections";
 import type { LocalizedCategory, LocalizedTestimonial } from "./home/types";
 import { formatPackCurrency } from "@/lib/commerce/packages";
-import type { PackageId, PackSessions } from "@/lib/commerce/packages";
+import type { PackSelection } from "@/lib/commerce/pack-selections";
 
 interface HomeExperienceProps {
   home: HomeData;
@@ -41,6 +41,7 @@ export function HomeExperience({ home, categories, testimonials, ui, leadFormCop
         id: category.id,
         label: category.label[locale],
         description: category.description[locale],
+        comingSoon: category.comingSoon ?? false,
       })),
     [categories, locale]
   );
@@ -64,17 +65,7 @@ export function HomeExperience({ home, categories, testimonials, ui, leadFormCop
 
   const [activeCategory, setActiveCategory] = useState<Category["id"] | undefined>();
   const [expandedMobileCategory, setExpandedMobileCategory] = useState<Category["id"] | undefined>();
-  const [selectedPack, setSelectedPack] = useState<
-    | {
-        category: Category["id"];
-        sessions: PackSessions;
-        priceTotal: number;
-        title: string;
-        sessionsLabel: string;
-        packageId: PackageId;
-      }
-    | null
-  >(null);
+  const [selectedPack, setSelectedPack] = useState<PackSelection | null>(null);
   const [leadFormVisible, setLeadFormVisible] = useState(false);
 
   const scrollToId = useCallback((targetId: string) => {
@@ -117,6 +108,11 @@ export function HomeExperience({ home, categories, testimonials, ui, leadFormCop
       priceLabel: formatCurrency(selectedPack.priceTotal),
     };
   }, [activeCategoryLabel, formatCurrency, selectedPack, strings.form.category, strings.form.package]);
+
+  const activeCategoryIsComingSoon = useMemo(() => {
+    if (!activeCategory) return false;
+    return categories.find((category) => category.id === activeCategory)?.comingSoon ?? false;
+  }, [activeCategory, categories]);
 
   // Show all testimonials, not filtered by category
   const testimonialsToShow = localizedTestimonials;
@@ -232,6 +228,7 @@ export function HomeExperience({ home, categories, testimonials, ui, leadFormCop
             category={activeCategory}
             packs={home.packs}
             sectionId="desktop-packs"
+            comingSoon={activeCategoryIsComingSoon}
             onSelect={(pack) => {
               event("package_click", {
                 action: "select",
@@ -253,7 +250,7 @@ export function HomeExperience({ home, categories, testimonials, ui, leadFormCop
         </div>
       )}
 
-      {leadFormVisible && selectedPack && (
+      {leadFormVisible && selectedPack && !activeCategoryIsComingSoon && (
         <div className="hidden md:block">
           <HomeLeadForm
             selectedCategory={activeCategory}

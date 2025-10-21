@@ -13,7 +13,8 @@
     "description": {
       "ar": "برامج مشتركة لتعزيز التواصل وبناء شراكة أكثر انسجاماً.",
       "en": "Shared programs to deepen communication and cultivate aligned partnership."
-    }
+    },
+    "comingSoon": true
   },
   {
     "id": "organizations",
@@ -21,6 +22,7 @@
     "description": {
       "ar": "حلول قيادية وثقافية تساعد الفرق على الأداء بثقة ومرونة.",
       "en": "Leadership and culture solutions that empower teams to perform with confidence."
-    }
+    },
+    "comingSoon": true
   }
 ]
