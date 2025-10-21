@@ -13,7 +13,7 @@ import { resolveLocale } from "@/lib/i18n.server";
 import { getDefaultMetadata } from "@/lib/seo";
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["400", "500", "600"],
   variable: "--font-inter",
   display: "swap",
   fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"]

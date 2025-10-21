@@ -1,12 +1,28 @@
 "use client";
 
 import clsx from "classnames";
+import dynamic from "next/dynamic";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Container } from "@/components/Container";
-import { LeadForm } from "@/components/LeadForm";
+import type { LeadFormProps } from "@/components/LeadForm";
 import { Section } from "@/components/Section";
 import type { HomeThemeDefinition } from "../types";
 import { useLocale } from "@/providers/locale-provider";
+
+const LeadForm = dynamic<LeadFormProps>(
+    () =>
+        import("@/components/LeadForm").then((mod) => ({
+            default: mod.LeadForm,
+        })),
+    {
+        ssr: false,
+        loading: () => (
+            <div className="flex items-center justify-center p-12" aria-busy="true">
+                <span className="text-subtle">Loading…</span>
+            </div>
+        ),
+    }
+);
 
 export const HomeLeadForm: HomeThemeDefinition["LeadForm"] = ({
     selectedCategory,

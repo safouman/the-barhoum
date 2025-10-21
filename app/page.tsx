@@ -1,10 +1,12 @@
 import { HomeExperience } from "@/components/HomeExperience";
 import { getCategories, getHomeData, getHomeMarkdown, getLeadFormCopy, getTestimonials, getUiStrings } from "@/lib/content";
 import { getPageMetadata } from "@/lib/seo";
+import { resolveLocale } from "@/lib/i18n.server";
 
 export const metadata = getPageMetadata("home");
 
 export default async function Page() {
+  const locale = resolveLocale();
   const [
     home,
     categories,
@@ -45,6 +47,7 @@ export default async function Page() {
       heroCopy={{ ar: heroAr, en: heroEn }}
       aboutCopy={{ ar: aboutAr, en: aboutEn }}
       methodCopy={{ ar: methodAr, en: methodEn }}
+      locale={locale}
     />
   );
 }

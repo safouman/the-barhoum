@@ -27,7 +27,7 @@ interface LeadFormLabels {
 
 type LeadFormVariant = "luxury" | "modern" | "warm";
 
-interface LeadFormProps {
+export interface LeadFormProps {
     labels: LeadFormLabels;
     copy: Record<Locale, LeadFormCopy>;
     selectedCategory?: string;
