@@ -75,7 +75,9 @@ async function sendWhatsAppNotifications({
 
     const recipients = [adminPhone, managerPhone]
         .map((recipient) =>
-            typeof recipient === "string" ? recipient.trim().replace(/^\+/, "") : ""
+            typeof recipient === "string"
+                ? recipient.trim().replace(/^\+/, "")
+                : ""
         )
         .filter((recipient) => recipient.length > 0);
 
@@ -89,8 +91,55 @@ async function sendWhatsAppNotifications({
     const endpoint = `https://graph.facebook.com/v22.0/${phoneNumberId}/messages`;
     const templateName = process.env.WHATSAPP_TEMPLATE_NAME?.trim();
     const templateLanguage =
-        process.env.WHATSAPP_TEMPLATE_LANGUAGE?.trim() || "en_US";
+        process.env.WHATSAPP_TEMPLATE_LANGUAGE?.trim() || "en";
     const messageBody = `📩 New form submitted by ${formData.fullName} from ${formData.country}. Please check the Google Sheet for details.`;
+    const envParameterNames = process.env.WHATSAPP_TEMPLATE_PARAMETER_NAMES
+        ?.split(",")
+        .map((parameter) => parameter.trim())
+        .filter((parameter) => parameter.length > 0);
+    const templateParameterNames = envParameterNames ?? [];
+
+    const resolveTemplateParameterValue = (path: string): string => {
+        const normalizedPath = path.startsWith("formData.")
+            ? path.slice("formData.".length)
+            : path;
+
+        const segments = normalizedPath.split(".");
+        let current: unknown = formData as unknown;
+
+        for (const segment of segments) {
+            if (
+                current &&
+                typeof current === "object" &&
+                segment in (current as Record<string, unknown>)
+            ) {
+                current = (current as Record<string, unknown>)[segment];
+            } else {
+                current = undefined;
+                break;
+            }
+        }
+
+        if (current === undefined || current === null) {
+            return "N/A";
+        }
+
+        if (typeof current === "string") {
+            const trimmed = current.trim();
+            return trimmed.length > 0 ? trimmed : "N/A";
+        }
+
+        const stringified = String(current);
+        return stringified.length > 0 ? stringified : "N/A";
+    };
+
+    const messageParameters =
+        templateName && templateParameterNames.length > 0
+            ? templateParameterNames.map((parameterName) => ({
+                  name: parameterName,
+                  value: resolveTemplateParameterValue(parameterName),
+              }))
+            : [];
 
     await Promise.all(
         recipients.map(async (recipient) => {
@@ -100,30 +149,27 @@ async function sendWhatsAppNotifications({
                           messaging_product: "whatsapp",
                           to: recipient,
                           type: "template",
-                          template: {
+                              template: {
                               name: templateName,
                               language: {
                                   code: templateLanguage,
                               },
-                              components: [
-                                  {
-                                      type: "body",
-                                      parameters: [
-                                          {
-                                              type: "text",
-                                              text: formData.fullName,
-                                          },
-                                          {
-                                              type: "text",
-                                              text: formData.country,
-                                          },
-                                          {
-                                              type: "text",
-                                              text: messageBody,
-                                          },
-                                      ],
-                                  },
-                              ],
+                              components:
+                                  messageParameters.length > 0
+                                      ? [
+                                            {
+                                                type: "body",
+                                                parameters:
+                                                    messageParameters.map(
+                                                        ({ name, value }) => ({
+                                                            type: "text",
+                                                            text: value,
+                                                            parameter_name: name,
+                                                        })
+                                                    ),
+                                            },
+                                        ]
+                                      : undefined,
                           },
                       }
                     : {
@@ -184,7 +230,9 @@ async function fetchWithRetry(
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
         try {
             console.log(
-                `[${requestId}] 📡 Attempt ${attempt + 1}/${maxAttempts} - Sending request to Google Sheets`
+                `[${requestId}] 📡 Attempt ${
+                    attempt + 1
+                }/${maxAttempts} - Sending request to Google Sheets`
             );
             const response = await fetch(url, options);
 
@@ -429,8 +477,15 @@ export async function POST(req: NextRequest) {
         if (body && typeof body === "object") {
             const record = body as Record<string, unknown>;
             const rawLeadId = record.leadId;
-            if (!rawLeadId || typeof rawLeadId !== "string" || !rawLeadId.trim()) {
-                const generatedLeadId = `srv-${Date.now()}-${randomUUID().slice(0, 8)}`;
+            if (
+                !rawLeadId ||
+                typeof rawLeadId !== "string" ||
+                !rawLeadId.trim()
+            ) {
+                const generatedLeadId = `srv-${Date.now()}-${randomUUID().slice(
+                    0,
+                    8
+                )}`;
                 record.leadId = generatedLeadId;
                 console.warn(
                     `[${requestId}] ⚠️ leadId missing from payload; generated ${generatedLeadId}`
@@ -650,8 +705,9 @@ export async function POST(req: NextRequest) {
                     );
                 }
 
-                let paymentLinkStatus: StripeJobResult["status"] | "not-required" =
-                    "not-required";
+                let paymentLinkStatus:
+                    | StripeJobResult["status"]
+                    | "not-required" = "not-required";
                 let paymentLinkError: string | undefined;
 
                 if (!isDuplicate && shouldAttemptStripe) {
