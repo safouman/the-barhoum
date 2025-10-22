@@ -4,7 +4,6 @@ import clsx from "classnames";
 import {
     Children,
     cloneElement,
-    Fragment,
     isValidElement,
     type KeyboardEvent,
     type ReactElement,
@@ -36,115 +35,52 @@ const easingClass = "ease-[cubic-bezier(0.16,1,0.3,1)]";
 const desktopMediaQuery = "(min-width: 768px)";
 const cardBaseClasses =
     "rounded-[18px] border border-border/40 bg-white/90 shadow-[0_26px_48px_-28px_rgba(15,23,42,0.18)]";
-const headingTagNames = new Set(["h2", "h3", "h4"]);
 
-const isFragmentElement = (
-    node: ReactNode
-): node is ReactElement<{ children?: ReactNode }> =>
-    isValidElement(node) && node.type === Fragment;
-
-const isHeadingElement = (
-    node: ReactNode
-): node is ReactElement<{ className?: string; children?: ReactNode }, string> =>
-    isValidElement(node) &&
-    typeof node.type === "string" &&
-    headingTagNames.has(node.type.toLowerCase());
-
-const flattenReactNodes = (nodes: ReactNode[]): ReactNode[] => {
-    const result: ReactNode[] = [];
-
-    nodes.forEach((node) => {
-        if (node === null || node === undefined || typeof node === "boolean") {
-            return;
-        }
-
-        if (Array.isArray(node)) {
-            result.push(...flattenReactNodes(node));
-            return;
-        }
-
-        if (isFragmentElement(node)) {
-            const fragmentChildren = Children.toArray(node.props.children);
-            result.push(...flattenReactNodes(fragmentChildren));
-            return;
-        }
-
-        result.push(node);
-    });
-
-    return result;
-};
-
-const createAccordionDescriptionElements = (nodes: ReactNode[]) => {
-    const segments: ReactNode[][] = [];
-    let current: ReactNode[] = [];
-
-    const pushSegment = () => {
-        const hasContent = current.some((node) => {
-            if (typeof node === "string") {
-                return node.trim().length > 0;
+const findFirstStrongNode = (
+    nodes: ReactNode[]
+): ReactElement<{ children?: ReactNode }> | null => {
+    for (const node of nodes) {
+        if (!isValidElement(node)) {
+            if (Array.isArray(node)) {
+                const result = findFirstStrongNode(node);
+                if (result) return result;
             }
-            return node !== null && node !== undefined && node !== false;
-        });
-
-        if (hasContent) {
-            segments.push(current);
+            continue;
         }
 
-        current = [];
-    };
-
-    flattenReactNodes(nodes).forEach((node) => {
-        if (typeof node === "string") {
-            const parts = node.split(/\n/);
-
-            parts.forEach((part, index) => {
-                const normalized = current.length === 0 ? part.replace(/^\s+/, "") : part;
-
-                if (normalized.trim().length > 0) {
-                    current.push(normalized);
-                }
-
-                if (index < parts.length - 1) {
-                    pushSegment();
-                }
-            });
-            return;
+        if (node.type === "strong") {
+            return node as ReactElement<{ children?: ReactNode }>;
         }
 
-        if (isValidElement(node) && node.type === "br") {
-            pushSegment();
-            return;
-        }
+        const childNodes = Children.toArray(node.props.children as ReactNode);
+        const result = findFirstStrongNode(childNodes);
+        if (result) return result;
+    }
 
-        if (node !== null && node !== undefined && node !== false) {
-            current.push(node);
-        }
-    });
-
-    pushSegment();
-
-    return segments.map((segment, index) => {
-        if (segment.length === 1 && isHeadingElement(segment[0])) {
-            const existingClassName = segment[0].props.className ?? "";
-            return cloneElement(segment[0], {
-                key: `accordion-heading-${index}`,
-                className: clsx("accordion-prose-heading", existingClassName),
-            });
-        }
-
-        return (
-            <p
-                key={`accordion-paragraph-${index}`}
-                className="accordion-prose-paragraph"
-            >
-                {segment.map((child, childIndex) => (
-                    <Fragment key={childIndex}>{child}</Fragment>
-                ))}
-            </p>
-        );
-    });
+    return null;
 };
+
+const findFirstContentNode = (nodes: ReactNode[]): ReactNode | null => {
+    for (const node of nodes) {
+        if (node === null || node === undefined || typeof node === "boolean") {
+            continue;
+        }
+        if (typeof node === "string" && node.trim().length === 0) {
+            continue;
+        }
+        return node;
+    }
+
+    return null;
+};
+
+const removeLeadingWhitespace = (nodes: ReactNode[]): ReactNode[] =>
+    nodes.filter((node) => {
+        if (typeof node === "string") {
+            return node.trim().length > 0;
+        }
+        return node !== null && node !== undefined && node !== false;
+    });
 
 const AccordionList = ({ children, isRTL }: AccordionListProps) => {
     const items = useMemo(() => {
@@ -156,26 +92,56 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
             const childNodes = Children.toArray(childElement.props.children as ReactNode);
             if (childNodes.length === 0) return;
 
-            const strongIndex = childNodes.findIndex(
-                (node) => isValidElement(node) && node.type === "strong"
-            );
-            const strongNode =
-                strongIndex >= 0 && isValidElement(childNodes[strongIndex])
-                    ? childNodes[strongIndex]
-                    : null;
+            const trimmedNodes = childNodes.filter((node) => {
+                if (typeof node === "string") {
+                    return node.trim().length > 0;
+                }
+                return node !== null && node !== undefined;
+            });
 
-            const title =
+            if (trimmedNodes.length === 0) return;
+
+            const strongNode = findFirstStrongNode(trimmedNodes);
+
+            const rawTitleNodes =
                 strongNode && isValidElement(strongNode)
-                    ? Children.toArray((strongNode as React.ReactElement<{ children?: ReactNode }>).props.children as ReactNode)
-                    : [childNodes[0]];
+                    ? Children.toArray((strongNode as ReactElement<{ children?: ReactNode }>).props.children as ReactNode)
+                    : (() => {
+                          const fallbackNode = findFirstContentNode(trimmedNodes);
+                          if (!fallbackNode) return [];
+                          if (isValidElement(fallbackNode) && fallbackNode.props?.children) {
+                              return Children.toArray(fallbackNode.props.children as ReactNode);
+                          }
+                          return [fallbackNode];
+                      })();
 
-            const rawDescription =
-                strongIndex >= 0
-                    ? childNodes.slice(strongIndex + 1)
-                    : childNodes.slice(1);
+            const title = removeLeadingWhitespace(rawTitleNodes);
 
-            const cleanedDescription = rawDescription
-                .map((node, nodeIndex) => {
+            const firstContentNode = findFirstContentNode(trimmedNodes);
+            const firstContentIndex = firstContentNode
+                ? trimmedNodes.indexOf(firstContentNode)
+                : 0;
+
+            let rawDescription: ReactNode[] = [];
+            if (strongNode) {
+                const directStrongIndex = trimmedNodes.indexOf(strongNode);
+                if (directStrongIndex >= 0) {
+                    rawDescription = trimmedNodes.slice(directStrongIndex + 1);
+                } else {
+                    const firstNode =
+                        firstContentIndex >= 0 ? trimmedNodes[firstContentIndex] : null;
+                    const restNodes = trimmedNodes.slice(firstContentIndex + 1);
+                    rawDescription = [
+                        ...(firstNode ? [firstNode] : []),
+                        ...restNodes,
+                    ];
+                }
+            } else {
+                rawDescription = trimmedNodes.slice(firstContentIndex + 1);
+            }
+
+            const cleanedDescription = removeLeadingWhitespace(
+                rawDescription.map((node, nodeIndex) => {
                     if (typeof node === "string") {
                         let text = node;
                         if (nodeIndex === 0) {
@@ -183,14 +149,25 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                         }
                         return text.replace(/^\s+/, "");
                     }
+
+                    if (strongNode && isValidElement(node) && node.type === "p") {
+                        const paragraphChildren = Children.toArray(node.props.children as ReactNode);
+                        const remainingChildren = removeLeadingWhitespace(
+                            paragraphChildren.filter(
+                                (paragraphChild) => paragraphChild !== strongNode
+                            )
+                        );
+                        if (remainingChildren.length === 0) {
+                            return null;
+                        }
+                        return cloneElement(node, {
+                            children: remainingChildren,
+                        });
+                    }
+
                     return node;
                 })
-                .filter((node) => {
-                    if (typeof node === "string") {
-                        return node.trim().length > 0;
-                    }
-                    return node !== null && node !== undefined;
-                });
+            );
 
             result.push({
                 key: childElement.key ?? index,
@@ -456,7 +433,7 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                                             isOpen ? "opacity-100" : "opacity-0"
                                         )}
                                     >
-                                        {createAccordionDescriptionElements(item.description)}
+                                        {Children.toArray(item.description)}
                                     </div>
                                 )}
                             </div>
