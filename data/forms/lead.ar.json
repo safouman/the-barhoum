@@ -10,7 +10,7 @@
   "validation": {
     "required": "هذا الحقل إجباري",
     "email": "رجاءً أدخل بريد إلكتروني صالح",
-    "age": "رجاءً أدخل عمراً صالحاً (12+)"
+    "age": "رجاءً إختر فئة عمرية صالحة"
   },
   "thankYou": {
     "title": "شكراً على ثقتك",
@@ -29,9 +29,19 @@
       "fields": [
         { "id": "fullName", "label": "الاسم و اللقب", "required": true },
         { "id": "email", "label": "البريد الإلكتروني", "type": "email", "required": true },
-        { "id": "country", "label": "البلاد الي تعيش فيها", "required": true },
+        {
+          "id": "country",
+          "label": "البلاد الي تعيش فيها",
+          "required": true,
+          "placeholder": "إختر البلاد"
+        },
         { "id": "phone", "label": "رقم الهاتف (واتساب)", "type": "tel" },
-        { "id": "age", "label": "العمر", "type": "number", "required": true }
+        {
+          "id": "age",
+          "label": "العمر",
+          "required": true,
+          "placeholder": "إختر الفئة العمرية"
+        }
       ]
     },
     {

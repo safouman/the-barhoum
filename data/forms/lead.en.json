@@ -10,7 +10,7 @@
   "validation": {
     "required": "This field is required",
     "email": "Please enter a valid email address",
-    "age": "Please enter a valid age (12+)"
+    "age": "Please select an age range"
   },
   "thankYou": {
     "title": "Thank you for reaching out",
@@ -29,9 +29,19 @@
       "fields": [
         { "id": "fullName", "label": "Full name", "required": true },
         { "id": "email", "label": "Email", "type": "email", "required": true },
-        { "id": "country", "label": "Country of residence", "required": true },
+        {
+          "id": "country",
+          "label": "Country of residence",
+          "required": true,
+          "placeholder": "Select your country"
+        },
         { "id": "phone", "label": "WhatsApp number", "type": "tel" },
-        { "id": "age", "label": "Age", "type": "number", "required": true }
+        {
+          "id": "age",
+          "label": "Age",
+          "required": true,
+          "placeholder": "Select your age range"
+        }
       ]
     },
     {

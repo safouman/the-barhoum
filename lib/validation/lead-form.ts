@@ -1,4 +1,8 @@
 import { z } from "zod";
+import { AGE_RANGE_OPTIONS, COUNTRY_OPTIONS } from "@/lib/constants/lead-form";
+
+const countryOptionsSet = new Set(COUNTRY_OPTIONS);
+const ageOptionsSet = new Set(AGE_RANGE_OPTIONS);
 
 export const leadFormSchema = z.object({
   leadId: z
@@ -24,7 +28,8 @@ export const leadFormSchema = z.object({
     .string()
     .trim()
     .min(1, "Country is required")
-    .max(100, "Country must be less than 100 characters"),
+    .max(100, "Country must be less than 100 characters")
+    .refine((val) => countryOptionsSet.has(val), "Please select a valid country"),
 
   phone: z
     .string()
@@ -37,10 +42,7 @@ export const leadFormSchema = z.object({
     .string()
     .trim()
     .min(1, "Age is required")
-    .refine((val) => {
-      const num = Number(val);
-      return !isNaN(num) && num >= 12 && num <= 150;
-    }, "Please enter a valid age (12+)"),
+    .refine((val) => ageOptionsSet.has(val), "Please select a valid age range"),
 
   bestContactTime: z
     .string()

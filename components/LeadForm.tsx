@@ -13,6 +13,11 @@ import { Button } from "@/components/Button";
 import { event } from "@/lib/analytics";
 import { useLocale } from "@/providers/locale-provider";
 import type { LeadFormCopy, Locale } from "@/lib/content";
+import {
+    AGE_RANGE_OPTIONS,
+    COUNTRY_OPTIONS,
+    type CountryOption,
+} from "@/lib/constants/lead-form";
 
 interface LeadFormLabels {
     title: string;
@@ -81,10 +86,14 @@ type StepConfig = {
     fields: FieldConfig[];
 };
 
+const DEFAULT_COUNTRY: CountryOption = "Tunisia";
+const COUNTRY_OPTIONS_SET = new Set<string>(COUNTRY_OPTIONS);
+const AGE_RANGE_OPTIONS_SET = new Set<string>(AGE_RANGE_OPTIONS);
+
 const INITIAL_STATE: LeadFormFormState = {
     fullName: "",
     email: "",
-    country: "",
+    country: DEFAULT_COUNTRY,
     phone: "",
     age: "",
     bestContactTime: "",
@@ -111,7 +120,27 @@ export function LeadForm({
     const { locale } = useLocale();
     const isRtl = locale === "ar";
     const formCopy = copy[locale];
-    const steps = formCopy.steps as StepConfig[];
+    const steps = useMemo(() => {
+        const baseSteps = formCopy.steps as StepConfig[];
+        return baseSteps.map((stepConfig) => ({
+            ...stepConfig,
+            fields: stepConfig.fields.map((field) => {
+                if (field.id === "country") {
+                    return {
+                        ...field,
+                        options: [...COUNTRY_OPTIONS],
+                    };
+                }
+                if (field.id === "age") {
+                    return {
+                        ...field,
+                        options: [...AGE_RANGE_OPTIONS],
+                    };
+                }
+                return { ...field };
+            }),
+        }));
+    }, [formCopy.steps]);
     const totalSteps = steps.length;
     const submitLabel = labels.submit;
     const validation = formCopy.validation;
@@ -203,9 +232,13 @@ export function LeadForm({
             ) {
                 return validation.email;
             }
+            if (field.id === "country" && value) {
+                if (!COUNTRY_OPTIONS_SET.has(value)) {
+                    return validation.required;
+                }
+            }
             if (field.id === "age" && value) {
-                const ageNumber = Number(value);
-                if (!Number.isFinite(ageNumber) || ageNumber < 12) {
+                if (!AGE_RANGE_OPTIONS_SET.has(value)) {
                     return validation.age;
                 }
             }
@@ -611,6 +644,10 @@ export function LeadForm({
                     );
 
                     if (field.options) {
+                        const placeholderLabel =
+                            field.placeholder ??
+                            (isRtl ? "إختر خيارًا" : "Select an option");
+
                         return (
                             <div key={field.id} className="scroll-mt-28">
                                 <label
@@ -642,7 +679,7 @@ export function LeadForm({
                                     onBlur={fieldBlur}
                                 >
                                     <option value="" disabled>
-                                        --
+                                        {placeholderLabel}
                                     </option>
                                     {field.options.map((option) => (
                                         <option key={option} value={option}>
