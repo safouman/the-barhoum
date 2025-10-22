@@ -234,6 +234,7 @@
     z-index: 1;
     pointer-events: none;
     overflow: hidden;
+    isolation: isolate;
 }
 
 .imageLeft {
@@ -261,6 +262,21 @@
 
 .posRight {
     object-position: center right;
+}
+.imageLayer::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    height: clamp(80px, 14%, 160px);
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.98) 62%,
+        rgba(255, 255, 255, 095) 63%,
+        rgba(255, 255, 255, 0.87) 70%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    z-index: 6;
+    pointer-events: none;
 }
 .maskLtr {
     /* EN (image on right) – fade on LEFT edge (left → right) */
