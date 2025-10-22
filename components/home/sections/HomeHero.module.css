@@ -5,12 +5,15 @@
     background-color: var(--color-background);
     color: var(--color-text);
     min-height: 100vh;
+    --hero-image-scale: 0.85;
+    --hero-image-origin: center right;
 }
 
 .heroLtr {
 }
 
 .heroRtl {
+    --hero-image-origin: center left;
 }
 
 .container {
@@ -247,6 +250,9 @@
     height: 100%;
     object-fit: cover;
     opacity: 0.85;
+    object-position: center right;
+    transform: scale(var(--hero-image-scale));
+    transform-origin: var(--hero-image-origin);
 }
 
 .posLeft {
@@ -299,8 +305,8 @@
     mask-size: 100% 100%;
 }
 .flipX {
-    transform: scaleX(-1);
-    transform-origin: center;
+    transform: scaleX(-1) scale(var(--hero-image-scale));
+    transform-origin: var(--hero-image-origin);
 }
 
 /* Edge-fade overlay element (blurred white gradient) */
@@ -324,8 +330,7 @@
     /* EN (LTR): white on right edge fading inward (right → left) */
     background: linear-gradient(
         to right,
-        rgba(255, 255, 255, 0.95) 4%,
-        rgba(255, 255, 255, 0.85) 2%,
+        rgba(255, 255, 255, 095) 15%,
         rgba(255, 255, 255, 0.6) 30%,
         rgba(255, 255, 255, 0) 60%
     );
@@ -335,8 +340,8 @@
     /* AR (RTL): white on left edge fading inward (left → right) */
     background: linear-gradient(
         to left,
-        rgba(255, 255, 255, 0.95) 4%,
-        rgba(255, 255, 255, 0.85) 2%,
+
+        rgba(255, 255, 255, 095) 15%,
         rgba(255, 255, 255, 0.6) 30%,
         rgba(255, 255, 255, 0) 60%
     );
@@ -349,6 +354,8 @@
         min-height: 100svh;
         background-color: #ffffff;
         background-attachment: scroll;
+        --hero-image-scale: 1;
+        --hero-image-origin: center;
     }
 
     .hero::before {
@@ -369,8 +376,8 @@
     }
 
     .heroRtl::before {
-        transform: scaleX(-1);
-        transform-origin: center;
+        transform: scaleX(-1) scale(var(--hero-image-scale));
+        transform-origin: var(--hero-image-origin);
     }
 
     .hero::after {
