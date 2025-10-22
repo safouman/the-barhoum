@@ -1,8 +1,8 @@
 import { z } from "zod";
 import { AGE_RANGE_OPTIONS, COUNTRY_OPTIONS } from "@/lib/constants/lead-form";
 
-const countryOptionsSet = new Set(COUNTRY_OPTIONS);
-const ageOptionsSet = new Set(AGE_RANGE_OPTIONS);
+const countryOptionsSet = new Set<string>(COUNTRY_OPTIONS);
+const ageOptionsSet = new Set<string>(AGE_RANGE_OPTIONS);
 
 export const leadFormSchema = z.object({
   leadId: z
