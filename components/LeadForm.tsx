@@ -780,7 +780,12 @@ export function LeadForm({
                         )}
                         dir={isRtl ? "rtl" : "ltr"}
                     >
-                        <span className="inline-flex items-baseline gap-2">
+                        <span
+                            className={clsx(
+                                "items-baseline gap-2",
+                                isRtl ? "flex" : "inline-flex"
+                            )}
+                        >
                             <span className="text-[0.78rem] text-subtle/60">
                                 {summary.categoryLabel}:
                             </span>
@@ -791,7 +796,12 @@ export function LeadForm({
                         {summary.packageValue && (
                             <>
                                 <span className="text-subtle/40">·</span>
-                                <span className="inline-flex items-baseline gap-2">
+                                <span
+                                    className={clsx(
+                                        "items-baseline gap-2",
+                                        isRtl ? "flex" : "inline-flex"
+                                    )}
+                                >
                                     <span className="text-[0.78rem] text-subtle/60">
                                         {summary.packageLabel}:
                                     </span>
@@ -886,11 +896,14 @@ export function LeadForm({
                     min-height: 52px;
                     padding: 12px 20px;
                     font-weight: 500;
-                    letter-spacing: 0.5px;
                     text-transform: none;
                     transition: background 0.3s ease, color 0.3s ease,
                         box-shadow 0.3s ease, transform 0.3s ease,
                         border-color 0.3s ease;
+                    letter-spacing: 0.5px;
+                }
+                :global(html[dir="rtl"] .form-navigation .form-nav-button) {
+                    letter-spacing: 0 !important;
                 }
                 .form-navigation :global(.form-nav-button--secondary) {
                     flex: 0.4 1 0;

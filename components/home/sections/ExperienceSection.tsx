@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Section } from "@/components/Section";
 import { Container } from "@/components/Container";
+import { useLocale } from "@/providers/locale-provider";
 
 const ExperienceWave = dynamic(
     () => import("./ExperienceWave").then((mod) => mod.ExperienceWave),
@@ -14,6 +15,8 @@ const ExperienceWave = dynamic(
 );
 
 export function HomeExperienceSection() {
+    const { locale, direction } = useLocale();
+    const isRtl = direction === "rtl";
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const listenersAttachedRef = useRef(false);
 
@@ -156,8 +159,8 @@ export function HomeExperienceSection() {
         <Section id="experience" className="bg-primary/10">
             <Container className="flex min-h-[22rem] flex-col items-center justify-center py-16">
                 <div
-                    dir="rtl"
-                    lang="ar"
+                    dir={direction}
+                    lang={locale}
                     className="flex w-full max-w-xl flex-col items-center gap-8 text-center"
                 >
                     <p className="text-body-lg leading-relaxed text-text md:text-[1.4rem] md:leading-[1.9]">
@@ -173,7 +176,8 @@ export function HomeExperienceSection() {
                             aria-label="بدء التجربة الصوتية"
                             aria-busy={isLoading}
                             className={clsx(
-                                "absolute inline-flex min-w-[9rem] items-center justify-center rounded-full bg-primary px-10 py-3 text-base font-semibold tracking-[0.2em] text-white shadow-[0_4px_20px_rgba(51,196,182,0.25)] transition duration-300 ease-in-out",
+                                "absolute min-w-[9rem] items-center justify-center rounded-full bg-primary px-10 py-3 text-base font-semibold text-white shadow-[0_4px_20px_rgba(51,196,182,0.25)] transition duration-300 ease-in-out",
+                                isRtl ? "flex" : "inline-flex tracking-[0.2em]",
                                 "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60",
                                 showButton
                                     ? "opacity-100 translate-y-0"

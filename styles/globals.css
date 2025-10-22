@@ -62,6 +62,18 @@ html[dir="rtl"] {
     --font-ui: var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
 }
 
+html[dir="rtl"] body,
+html[dir="rtl"] :where(p, h1, h2, h3, h4, h5, h6, a, span, li, blockquote, small, label, button, strong, em) {
+    letter-spacing: 0 !important;
+    font-variant-ligatures: common-ligatures contextual;
+    font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
+    text-rendering: optimizeLegibility;
+}
+
+html[dir="rtl"] [class*="tracking-"] {
+    letter-spacing: 0 !important;
+}
+
 html[dir="rtl"] p {
     font-size: clamp(1.06rem, 4.6vw, 1.18rem);
     line-height: 1.9;
@@ -107,7 +119,7 @@ html[dir="rtl"] p {
 }
 
 html[dir="rtl"] .text-eyebrow {
-    letter-spacing: 0.15em;
+    letter-spacing: 0 !important;
 }
 
 html[dir="rtl"] .text-display {
@@ -175,6 +187,13 @@ html[dir="rtl"] .text-display {
 
     html[dir="rtl"] body {
         font-family: var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
+    }
+
+    @supports (-webkit-touch-callout: none) {
+        html[dir="rtl"] {
+            --leading-body: 1.8;
+            --leading-base: 1.8;
+        }
     }
 
     a {
