@@ -3,8 +3,11 @@
 import clsx from "classnames";
 import {
     Children,
+    cloneElement,
+    Fragment,
     isValidElement,
     type KeyboardEvent,
+    type ReactElement,
     type ReactNode,
     useCallback,
     useEffect,
@@ -33,6 +36,115 @@ const easingClass = "ease-[cubic-bezier(0.16,1,0.3,1)]";
 const desktopMediaQuery = "(min-width: 768px)";
 const cardBaseClasses =
     "rounded-[18px] border border-border/40 bg-white/90 shadow-[0_26px_48px_-28px_rgba(15,23,42,0.18)]";
+const headingTagNames = new Set(["h2", "h3", "h4"]);
+
+const isFragmentElement = (
+    node: ReactNode
+): node is ReactElement<{ children?: ReactNode }> =>
+    isValidElement(node) && node.type === Fragment;
+
+const isHeadingElement = (
+    node: ReactNode
+): node is ReactElement<{ className?: string; children?: ReactNode }, string> =>
+    isValidElement(node) &&
+    typeof node.type === "string" &&
+    headingTagNames.has(node.type.toLowerCase());
+
+const flattenReactNodes = (nodes: ReactNode[]): ReactNode[] => {
+    const result: ReactNode[] = [];
+
+    nodes.forEach((node) => {
+        if (node === null || node === undefined || typeof node === "boolean") {
+            return;
+        }
+
+        if (Array.isArray(node)) {
+            result.push(...flattenReactNodes(node));
+            return;
+        }
+
+        if (isFragmentElement(node)) {
+            const fragmentChildren = Children.toArray(node.props.children);
+            result.push(...flattenReactNodes(fragmentChildren));
+            return;
+        }
+
+        result.push(node);
+    });
+
+    return result;
+};
+
+const createAccordionDescriptionElements = (nodes: ReactNode[]) => {
+    const segments: ReactNode[][] = [];
+    let current: ReactNode[] = [];
+
+    const pushSegment = () => {
+        const hasContent = current.some((node) => {
+            if (typeof node === "string") {
+                return node.trim().length > 0;
+            }
+            return node !== null && node !== undefined && node !== false;
+        });
+
+        if (hasContent) {
+            segments.push(current);
+        }
+
+        current = [];
+    };
+
+    flattenReactNodes(nodes).forEach((node) => {
+        if (typeof node === "string") {
+            const parts = node.split(/\n/);
+
+            parts.forEach((part, index) => {
+                const normalized = current.length === 0 ? part.replace(/^\s+/, "") : part;
+
+                if (normalized.trim().length > 0) {
+                    current.push(normalized);
+                }
+
+                if (index < parts.length - 1) {
+                    pushSegment();
+                }
+            });
+            return;
+        }
+
+        if (isValidElement(node) && node.type === "br") {
+            pushSegment();
+            return;
+        }
+
+        if (node !== null && node !== undefined && node !== false) {
+            current.push(node);
+        }
+    });
+
+    pushSegment();
+
+    return segments.map((segment, index) => {
+        if (segment.length === 1 && isHeadingElement(segment[0])) {
+            const existingClassName = segment[0].props.className ?? "";
+            return cloneElement(segment[0], {
+                key: `accordion-heading-${index}`,
+                className: clsx("accordion-prose-heading", existingClassName),
+            });
+        }
+
+        return (
+            <p
+                key={`accordion-paragraph-${index}`}
+                className="accordion-prose-paragraph"
+            >
+                {segment.map((child, childIndex) => (
+                    <Fragment key={childIndex}>{child}</Fragment>
+                ))}
+            </p>
+        );
+    });
+};
 
 const AccordionList = ({ children, isRTL }: AccordionListProps) => {
     const items = useMemo(() => {
@@ -336,23 +448,15 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                                 {item.description.length > 0 && (
                                     <div
                                         className={clsx(
-                                            "text-subtle/90 transition-opacity ease-out",
+                                            "accordion-prose transition-opacity ease-out",
                                             isRTL
-                                                ? "px-6 pb-[1.875rem] pt-3 duration-[180ms]"
-                                                : "px-6 pb-7 pt-2 duration-200",
+                                                ? "px-6 pb-[1.875rem] pt-3 duration-[180ms] font-light"
+                                                : "px-6 pb-7 pt-3 duration-200",
                                             isRTL ? "text-right" : "text-left",
-                                            isRTL
-                                                ? "text-[clamp(0.99rem,2.9vw,1.1rem)]"
-                                                : "text-[clamp(0.94rem,2.7vw,1.05rem)]",
                                             isOpen ? "opacity-100" : "opacity-0"
                                         )}
                                     >
-                                        <p className={clsx(
-                                            "m-0 whitespace-pre-line",
-                                            isRTL ? "font-light" : "font-normal"
-                                        )}>
-                                            {item.description}
-                                        </p>
+                                        {createAccordionDescriptionElements(item.description)}
                                     </div>
                                 )}
                             </div>

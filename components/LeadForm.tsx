@@ -4,6 +4,7 @@ import type {
     ChangeEvent,
     FormEvent,
     InputHTMLAttributes,
+    JSX,
     MouseEvent,
     TextareaHTMLAttributes,
 } from "react";
@@ -164,6 +165,7 @@ export function LeadForm({
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [submissionError, setSubmissionError] = useState<string | null>(null);
+    const [showThankYouAnimation, setShowThankYouAnimation] = useState(false);
     const scrollContainerRef = useRef<HTMLElement | null>(null);
     const hasScrolledOnMountRef = useRef(false);
     const stepAnnouncerRef = useRef<HTMLDivElement | null>(null);
@@ -443,6 +445,21 @@ export function LeadForm({
     }, [scrollToLeadFormAnchor, submitted]);
 
     useEffect(() => {
+        if (!submitted) {
+            setShowThankYouAnimation(false);
+            return;
+        }
+        if (typeof window === "undefined") {
+            setShowThankYouAnimation(true);
+            return;
+        }
+        const frame = window.requestAnimationFrame(() => {
+            setShowThankYouAnimation(true);
+        });
+        return () => window.cancelAnimationFrame(frame);
+    }, [submitted]);
+
+    useEffect(() => {
         if (!stepAnnouncerRef.current) return;
         const baseLine = formatTemplate(
             formCopy.chipLabelTemplate,
@@ -507,55 +524,243 @@ export function LeadForm({
 
     const submittedFullName = values.fullName.trim();
 
+    const summaryDetails = useMemo(() => {
+        const iconClasses = "h-5 w-5";
+        const details: Array<{
+            key: string;
+            label: string;
+            value: string;
+            icon: JSX.Element;
+        }> = [
+            {
+                key: "fullName",
+                label: labels.name,
+                value: submittedFullName || "-",
+                icon: (
+                    <svg
+                        viewBox="0 0 24 24"
+                        className={iconClasses}
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={1.6}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <circle cx={12} cy={8} r={4} />
+                        <path d="M4 20c0-3.2 3.6-6 8-6s8 2.8 8 6" />
+                    </svg>
+                ),
+            },
+            {
+                key: "category",
+                label: summary.categoryLabel,
+                value: summary.categoryValue || "-",
+                icon: (
+                    <svg
+                        viewBox="0 0 24 24"
+                        className={iconClasses}
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={1.6}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <rect x={3.5} y={4.5} width={7} height={7} rx={2} />
+                        <rect x={13.5} y={4.5} width={7} height={7} rx={2} />
+                        <rect x={3.5} y={14.5} width={7} height={7} rx={2} />
+                        <rect x={13.5} y={14.5} width={7} height={7} rx={2} />
+                    </svg>
+                ),
+            },
+            {
+                key: "package",
+                label: summary.packageLabel,
+                value: summary.packageValue || "-",
+                icon: (
+                    <svg
+                        viewBox="0 0 24 24"
+                        className={iconClasses}
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={1.6}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <path d="M3.5 7.5 12 3l8.5 4.5v9L12 21l-8.5-4.5v-9Z" />
+                        <path d="M12 3v18" />
+                        <path d="M3.5 7.5 12 12l8.5-4.5" />
+                    </svg>
+                ),
+            },
+        ];
+
+        if (summary.priceLabel) {
+            details.push({
+                key: "price",
+                label: locale === "ar" ? "السعر" : "Price",
+                value: summary.priceLabel,
+                icon: (
+                    <svg
+                        viewBox="0 0 24 24"
+                        className={iconClasses}
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth={1.6}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                    >
+                        <path d="M4 7h16" />
+                        <path d="M4 17h16" />
+                        <path d="M12 7v10" />
+                        <path d="M8.5 11.5h7" />
+                    </svg>
+                ),
+            });
+        }
+
+        return details;
+    }, [
+        labels.name,
+        locale,
+        submittedFullName,
+        summary.categoryLabel,
+        summary.categoryValue,
+        summary.packageLabel,
+        summary.packageValue,
+        summary.priceLabel,
+    ]);
+
     if (submitted) {
         return (
             <div
                 ref={(node) => {
                     scrollContainerRef.current = node ?? null;
                 }}
-                className="w-full py-6 md:flex md:min-h-[70vh] md:items-center md:justify-center md:py-12 lg:min-h-[80vh] lg:py-16"
+                className="w-full px-4 py-10 md:flex md:min-h-[70vh] md:items-center md:justify-center md:px-6 md:py-16 lg:px-8 lg:min-h-[80vh] lg:py-20"
             >
                 <div
-                    className="relative mx-auto flex w-full max-w-[800px] flex-col gap-8 rounded-[22px] border border-border/30 bg-surface p-[clamp(1.6rem,4vw,2.6rem)] shadow-[0_24px_64px_rgba(15,23,42,0.08)]"
+                    className="relative mx-auto w-full max-w-[620px]"
                     dir={isRtl ? "rtl" : "ltr"}
                 >
-                    <div className="absolute inset-x-0 top-0 h-[3px] rounded-t-[22px] bg-primary" />
-                    <header
-                        className={clsx(
-                            "space-y-2 text-text",
-                            isRtl ? "text-right" : "text-left"
-                        )}
-                    >
-                        <h3 className="heading-3">
-                            {thankYouCopy.title}
-                        </h3>
-                        <p className="text-base text-subtle/90">
-                            {thankYouCopy.body}
-                        </p>
-                    </header>
+                    <span
+                        className="pointer-events-none absolute inset-x-4 -top-6 -z-[1] h-[220px] rounded-[32px] bg-gradient-to-br from-primary/15 via-primary/5 to-transparent blur-3xl opacity-70"
+                        aria-hidden="true"
+                    />
                     <div
                         className={clsx(
-                            "rounded-[18px] border border-border/40 bg-background/30 px-5 py-4 text-sm text-subtle",
-                            isRtl ? "text-right" : "text-left"
+                            "relative flex flex-col gap-7 overflow-hidden rounded-[30px] border border-border/15 bg-white/85 px-[clamp(1.8rem,4.4vw,2.7rem)] py-[clamp(2rem,5vw,3.1rem)] shadow-[0_28px_68px_-40px_rgba(15,23,42,0.55)] backdrop-blur-sm transition-all duration-700 ease-out motion-reduce:transition-none",
+                            showThankYouAnimation
+                                ? "opacity-100 translate-y-0"
+                                : "opacity-0 translate-y-4"
                         )}
                     >
-                        <p className="font-medium text-text/90">
-                            {summaryTitle}
-                        </p>
-                        <p className="mt-1 text-subtle/80">
-                            {labels.name}: {submittedFullName || "-"}
-                        </p>
-                        <p className="text-subtle/80">
-                            {labels.category}: {selectedCategory ?? "-"}
-                        </p>
-                        <p className="text-subtle/80">
-                            {labels.package}: {selectedPackage ?? "-"}
-                        </p>
-                        {summary.priceLabel && (
-                            <p className="text-subtle/80">
-                                {summary.priceLabel}
+                        <div className="flex justify-center">
+                            <span
+                                className={clsx(
+                                    "relative flex h-20 w-20 items-center justify-center transition-transform duration-700 ease-out motion-reduce:transition-none",
+                                    showThankYouAnimation
+                                        ? "translate-y-0"
+                                        : "translate-y-3"
+                                )}
+                            >
+                                <span
+                                    className="absolute h-full w-full rounded-full bg-primary/18 opacity-80 blur-2xl"
+                                    aria-hidden="true"
+                                />
+                                <span
+                                    className="absolute inline-flex h-full w-full rounded-full bg-gradient-to-br from-primary/20 via-primary/12 to-transparent opacity-70"
+                                    aria-hidden="true"
+                                />
+                                <span className="relative flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-b from-primary via-primary/90 to-[#4dd5ff] text-white shadow-[0_18px_32px_-24px_rgba(15,23,42,0.6)] motion-safe:animate-pulse">
+                                    <svg
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true"
+                                        className="h-8 w-8"
+                                    >
+                                        <path
+                                            d="m9.75 15.75 7.5-7.5"
+                                            stroke="currentColor"
+                                            strokeWidth="1.8"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        />
+                                        <path
+                                            d="m9.75 15.75-3-3"
+                                            stroke="currentColor"
+                                            strokeWidth="1.8"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                        />
+                                    </svg>
+                                </span>
+                            </span>
+                        </div>
+                        <header
+                            className={clsx(
+                                "space-y-2 text-text transition-colors",
+                                isRtl ? "text-right" : "text-left"
+                            )}
+                        >
+                            <h3 className="text-3xl font-medium tracking-tight text-text">
+                                {thankYouCopy.title}
+                            </h3>
+                            <p className="text-lg font-medium text-primary/85">
+                                {locale === "ar"
+                                    ? "تم استلام بياناتك بنجاح 💫"
+                                    : "We received your information successfully 💫"}
                             </p>
-                        )}
+                            <p className="text-base leading-relaxed text-subtle/75">
+                                {thankYouCopy.body}
+                            </p>
+                        </header>
+                        <div
+                            className={clsx(
+                                "rounded-[26px] border border-border/15 bg-white/70 p-6 shadow-[0_24px_48px_-40px_rgba(15,23,42,0.55)] transition-shadow duration-300",
+                                isRtl ? "text-right" : "text-left"
+                            )}
+                        >
+                            <p
+                                className={clsx(
+                                    "text-sm font-semibold text-subtle/60",
+                                    !isRtl && "uppercase tracking-[0.2em]"
+                                )}
+                            >
+                                {summaryTitle}
+                            </p>
+                            <div className="mt-5 flex flex-col gap-4">
+                                {summaryDetails.map((detail) => (
+                                    <div
+                                        key={detail.key}
+                                        className={clsx(
+                                            "flex items-start gap-4 rounded-[20px] bg-white/60 px-4 py-3 shadow-[0_12px_32px_-30px_rgba(15,23,42,0.6)]",
+                                            isRtl ? "flex-row-reverse text-right" : "text-left"
+                                        )}
+                                    >
+                                        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/12 text-primary/80">
+                                            {detail.icon}
+                                        </span>
+                                        <div
+                                            className={clsx(
+                                                "flex flex-1 flex-col",
+                                                isRtl ? "items-end" : "items-start"
+                                            )}
+                                        >
+                                            <span className="text-xs font-medium text-subtle/65">
+                                                {detail.label}
+                                            </span>
+                                            <span className="mt-1 text-base font-semibold text-text/90">
+                                                {detail.value}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            {summary.sessionsLabel && (
+                                <p className="mt-5 text-sm text-subtle/65">
+                                    {summary.sessionsLabel}
+                                </p>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
