@@ -4,9 +4,9 @@
 
 :root {
     color-scheme: light;
-    --font-base: var(--font-inter);
-    --font-heading: var(--font-inter);
-    --font-ui: var(--font-inter);
+    --font-base: var(--font-inter), var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
+    --font-heading: var(--font-inter), var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
+    --font-ui: var(--font-inter), var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
     --font-signature-latin: "Brush Script MT", "Comic Sans MS", cursive;
     --font-signature-arabic: "Arslan Wessam A";
     --font-weight-regular: 400;
@@ -57,9 +57,9 @@
 }
 
 html[dir="rtl"] {
-    --font-base: var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
-    --font-heading: var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
-    --font-ui: var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
+    --font-base: var(--font-inter), var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
+    --font-heading: var(--font-inter), var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
+    --font-ui: var(--font-inter), var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
 }
 
 html[dir="rtl"] body,
@@ -186,7 +186,7 @@ html[dir="rtl"] .text-display {
     }
 
     html[dir="rtl"] body {
-        font-family: var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
+        font-family: var(--font-base), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     @supports (-webkit-touch-callout: none) {
@@ -418,35 +418,28 @@ html[dir="rtl"] .text-display {
     }
 
     .accordion-prose {
-        color: #374151;
+        @apply flex flex-col gap-4 text-gray-700 leading-[1.9];
         font-size: clamp(0.98rem, 2.9vw, 1.09rem);
-        line-height: 1.9;
+        color: #374151;
     }
 
-    .accordion-prose > :where(p, ul, ol, h2, h3, h4, blockquote) {
-        margin: 0;
+    .accordion-prose-paragraph {
+        @apply m-0 whitespace-pre-wrap;
     }
 
-    .accordion-prose > :where(p, ul, ol, h2, h3, h4, blockquote):not(:first-child) {
-        margin-top: 0.9rem;
+    .accordion-prose-paragraph + .accordion-prose-paragraph {
+        @apply mt-3;
     }
 
-    .accordion-prose p {
-        font-weight: 400;
-    }
-
-    .accordion-prose h2,
-    .accordion-prose h3,
-    .accordion-prose h4 {
-        font-weight: 600;
+    .accordion-prose-heading {
+        @apply font-semibold tracking-tight;
         color: rgba(42, 214, 202, 0.9);
         font-size: clamp(1.08rem, 3.2vw, 1.28rem);
-        line-height: 1.6;
-        letter-spacing: -0.01em;
+        line-height: 1.5;
     }
 
     .accordion-prose strong {
-        font-weight: 600;
+        @apply font-semibold;
         color: rgba(42, 214, 202, 0.92);
     }
 
@@ -454,21 +447,18 @@ html[dir="rtl"] .text-display {
         color: rgba(55, 65, 81, 0.85);
     }
 
-    .accordion-prose :where(p:first-of-type em) {
-        font-weight: 500;
+    .accordion-prose p:first-of-type em {
+        @apply font-medium;
         color: rgba(55, 65, 81, 0.92);
     }
 
     .accordion-prose a {
-        text-decoration: underline;
-        text-decoration-color: transparent;
-        transition: color 0.2s ease, text-decoration-color 0.2s ease;
+        @apply underline decoration-transparent transition-colors duration-200;
     }
 
     .accordion-prose a:hover,
     .accordion-prose a:focus-visible {
-        color: var(--color-primary);
-        text-decoration-color: currentColor;
+        @apply decoration-primary text-primary;
     }
 
     @media (min-width: 640px) {
@@ -479,6 +469,7 @@ html[dir="rtl"] .text-display {
 
     @media (min-width: 1024px) {
         .accordion-prose {
+            gap: 1.35rem;
             font-size: clamp(1.05rem, 1.9vw, 1.18rem);
         }
     }
@@ -489,11 +480,9 @@ html[dir="rtl"] .text-display {
         letter-spacing: 0;
     }
 
-    html[dir="rtl"] .accordion-prose h2,
-    html[dir="rtl"] .accordion-prose h3,
-    html[dir="rtl"] .accordion-prose h4 {
+    html[dir="rtl"] .accordion-prose-heading {
         font-size: clamp(1.12rem, 3vw, 1.32rem);
-        line-height: 1.65;
+        line-height: 1.6;
     }
 
     html[dir="rtl"] .accordion-prose strong {
