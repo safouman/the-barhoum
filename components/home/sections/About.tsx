@@ -52,9 +52,11 @@ const findFirstStrongNode = (
             return node as ReactElement<{ children?: ReactNode }>;
         }
 
-        const childNodes = Children.toArray(node.props.children as ReactNode);
-        const result = findFirstStrongNode(childNodes);
-        if (result) return result;
+        if ('props' in node && node.props && typeof node.props === 'object' && 'children' in node.props) {
+            const childNodes = Children.toArray(node.props.children as ReactNode);
+            const result = findFirstStrongNode(childNodes);
+            if (result) return result;
+        }
     }
 
     return null;
@@ -88,6 +90,7 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
 
         Children.toArray(children).forEach((child, index) => {
             if (!isValidElement(child)) return;
+            if (!('props' in child) || !child.props || typeof child.props !== 'object') return;
             const childElement = child as React.ReactElement<{ children?: ReactNode }>;
             const childNodes = Children.toArray(childElement.props.children as ReactNode);
             if (childNodes.length === 0) return;
@@ -109,7 +112,7 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                     : (() => {
                           const fallbackNode = findFirstContentNode(trimmedNodes);
                           if (!fallbackNode) return [];
-                          if (isValidElement(fallbackNode) && fallbackNode.props?.children) {
+                          if (isValidElement(fallbackNode) && 'props' in fallbackNode && fallbackNode.props && typeof fallbackNode.props === 'object' && 'children' in fallbackNode.props) {
                               return Children.toArray(fallbackNode.props.children as ReactNode);
                           }
                           return [fallbackNode];
@@ -119,12 +122,12 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
 
             const firstContentNode = findFirstContentNode(trimmedNodes);
             const firstContentIndex = firstContentNode
-                ? trimmedNodes.indexOf(firstContentNode)
+                ? trimmedNodes.findIndex(node => node === firstContentNode)
                 : 0;
 
             let rawDescription: ReactNode[] = [];
             if (strongNode) {
-                const directStrongIndex = trimmedNodes.indexOf(strongNode);
+                const directStrongIndex = trimmedNodes.findIndex(node => node === strongNode);
                 if (directStrongIndex >= 0) {
                     rawDescription = trimmedNodes.slice(directStrongIndex + 1);
                 } else {
@@ -150,7 +153,7 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                         return text.replace(/^\s+/, "");
                     }
 
-                    if (strongNode && isValidElement(node) && node.type === "p") {
+                    if (strongNode && isValidElement(node) && node.type === "p" && 'props' in node && node.props && typeof node.props === 'object' && 'children' in node.props) {
                         const paragraphChildren = Children.toArray(node.props.children as ReactNode);
                         const remainingChildren = removeLeadingWhitespace(
                             paragraphChildren.filter(
@@ -160,7 +163,7 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                         if (remainingChildren.length === 0) {
                             return null;
                         }
-                        return cloneElement(node, {
+                        return cloneElement(node as ReactElement<{ children?: ReactNode }>, {
                             children: remainingChildren,
                         });
                     }
