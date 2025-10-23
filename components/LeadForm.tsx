@@ -581,7 +581,7 @@ export function LeadForm({
                 >
                     <div
                         className={clsx(
-                            "relative flex flex-col gap-8 overflow-hidden rounded-[14px] border border-border/35 bg-white px-7 pt-7 pb-6 shadow-[0_26px_48px_-22px_rgba(15,23,42,0.18)] transition-all duration-500 ease-out motion-reduce:transition-none",
+                            "relative flex flex-col gap-7 overflow-hidden rounded-[14px] border border-border/35 bg-white px-7 pt-8 pb-7 shadow-[0_26px_48px_-22px_rgba(15,23,42,0.18)] transition-all duration-500 ease-out motion-reduce:transition-none",
                             showThankYouAnimation
                                 ? "opacity-100 translate-y-0"
                                 : "opacity-0 translate-y-3"
@@ -590,7 +590,7 @@ export function LeadForm({
                         <div className="absolute inset-x-0 top-0 h-[3px] rounded-t-[14px] bg-primary" />
                         <header
                             className={clsx(
-                                "space-y-4",
+                                "space-y-3.5",
                                 isRtl ? "text-right" : "text-left"
                             )}
                         >
@@ -622,18 +622,18 @@ export function LeadForm({
                                     />
                                 </svg>
                             </div>
-                            <p className="text-[0.92rem] text-subtle/75">
+                            <p className="text-[0.92rem] text-subtle/75 pt-0.5">
                                 {locale === "ar"
                                     ? "تم استلام بياناتك بنجاح"
                                     : "We received your information successfully"}
                             </p>
-                            <p className="text-base leading-relaxed text-text/85 pt-1">
+                            <p className="text-base leading-relaxed text-text/85 pt-2">
                                 {thankYouCopy.body}
                             </p>
                         </header>
                         <div
                             className={clsx(
-                                "space-y-6",
+                                "space-y-5",
                                 isRtl ? "text-right" : "text-left"
                             )}
                         >
@@ -645,12 +645,12 @@ export function LeadForm({
                             >
                                 {summaryTitle}
                             </p>
-                            <div className="flex flex-col divide-y divide-border/25">
+                            <div className="flex flex-col divide-y divide-border/20">
                                 {summaryDetails.map((detail) => (
                                     <div
                                         key={detail.key}
                                         className={clsx(
-                                            "flex items-baseline gap-3 py-4 first:pt-0",
+                                            "flex items-baseline gap-3 py-3.5 first:pt-0 last:pb-0",
                                             isRtl ? "flex-row-reverse" : "flex-row"
                                         )}
                                     >
@@ -667,7 +667,7 @@ export function LeadForm({
                                 ))}
                             </div>
                             {summary.sessionsLabel && (
-                                <p className="pt-2 text-sm text-subtle/70 border-t border-border/20">
+                                <p className="pt-4 text-sm text-subtle/70 border-t border-border/20">
                                     {summary.sessionsLabel}
                                 </p>
                             )}
