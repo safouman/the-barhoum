@@ -16,7 +16,8 @@ const inter = Inter({
   weight: ["400", "500", "600"],
   variable: "--font-inter",
   display: "swap",
-  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"]
+  fallback: ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
+  preload: true,
 });
 
 const notoNaskhArabic = Noto_Naskh_Arabic({
@@ -24,6 +25,7 @@ const notoNaskhArabic = Noto_Naskh_Arabic({
   weight: ["400", "700"],
   variable: "--font-noto-naskh",
   display: "swap",
+  preload: true,
 });
 
 async function loadUi(): Promise<Record<"ar" | "en", UIStrings>> {
