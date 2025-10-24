@@ -168,7 +168,7 @@ export function HomeExperienceSection() {
                         واضغط استمع.
                     </p>
 
-                    <div className="relative flex h-24 w-full items-center justify-center">
+                    <div className="flex w-full flex-col items-center gap-8">
                         <button
                             type="button"
                             onClick={handleButtonClick}
@@ -176,12 +176,12 @@ export function HomeExperienceSection() {
                             aria-label="بدء التجربة الصوتية"
                             aria-busy={isLoading}
                             className={clsx(
-                                "absolute min-w-[9rem] items-center justify-center rounded-full bg-primary px-10 py-3 text-base font-semibold text-white shadow-[0_4px_20px_rgba(51,196,182,0.25)] transition duration-300 ease-in-out",
+                                "min-w-[9rem] items-center justify-center rounded-full bg-primary px-10 py-3 text-base font-semibold text-white shadow-[0_4px_20px_rgba(51,196,182,0.25)] transition duration-300 ease-in-out",
                                 isRtl ? "flex" : "inline-flex tracking-[0.2em]",
                                 "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/60",
                                 showButton
                                     ? "opacity-100 translate-y-0"
-                                    : "pointer-events-none opacity-0 translate-y-2",
+                                    : "pointer-events-none opacity-0 -translate-y-2",
                                 isLoading && "cursor-wait opacity-80"
                             )}
                             disabled={isLoading || !showButton}
@@ -190,14 +190,7 @@ export function HomeExperienceSection() {
                         </button>
 
                         {(hasInteracted || showWave) && (
-                            <div
-                                className={clsx(
-                                    "absolute flex items-center justify-center transition duration-[400ms] ease-in-out",
-                                    showWave
-                                        ? "opacity-100 translate-y-0"
-                                        : "pointer-events-none opacity-0 translate-y-2"
-                                )}
-                            >
+                            <div className="flex w-full items-center justify-center">
                                 <ExperienceWave active={showWave} />
                             </div>
                         )}
