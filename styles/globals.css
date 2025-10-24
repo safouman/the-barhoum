@@ -4,9 +4,9 @@
 
 :root {
     color-scheme: light;
-    --font-base: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    --font-heading: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    --font-ui: var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-base: "Noto Naskh Arabic", "Inter", var(--font-noto-naskh), var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-heading: "Noto Naskh Arabic", "Inter", var(--font-noto-naskh), var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-ui: "Noto Naskh Arabic", "Inter", var(--font-noto-naskh), var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     --font-signature-latin: "Brush Script MT", "Comic Sans MS", cursive;
     --font-signature-arabic: "Arslan Wessam A";
     --font-weight-regular: 400;
@@ -56,6 +56,53 @@
     font-style: normal;
     font-display: swap;
     unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
+
+/* Custom Noto Naskh Arabic with unicode-range for Arabic characters */
+@font-face {
+    font-family: "Noto Naskh Arabic";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200D, U+25CC;
+    src: local("Noto Naskh Arabic"), local("NotoNaskhArabic-Regular");
+}
+
+@font-face {
+    font-family: "Noto Naskh Arabic";
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200D, U+25CC;
+    src: local("Noto Naskh Arabic Bold"), local("NotoNaskhArabic-Bold");
+}
+
+/* Custom Inter with unicode-range for Latin characters */
+@font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+0100-017F, U+0180-024F, U+1E00-1EFF, U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+FB00-FB4F;
+    src: local("Inter"), local("Inter-Regular");
+}
+
+@font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+0100-017F, U+0180-024F, U+1E00-1EFF, U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+FB00-FB4F;
+    src: local("Inter Medium"), local("Inter-Medium");
+}
+
+@font-face {
+    font-family: "Inter";
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    unicode-range: U+0000-00FF, U+0100-017F, U+0180-024F, U+1E00-1EFF, U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+FB00-FB4F;
+    src: local("Inter SemiBold"), local("Inter-SemiBold");
 }
 
 
@@ -133,7 +180,7 @@ html[dir="rtl"] .text-display {
     h1,
     h2,
     h3 {
-        font-family: var(--font-heading), var(--font-base), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-family: var(--font-heading);
         font-weight: var(--font-weight-bold);
         line-height: var(--leading-heading);
         color: var(--color-text);
@@ -174,16 +221,12 @@ html[dir="rtl"] .text-display {
         margin: 0;
         background: var(--page-gradient, var(--color-background));
         color: var(--color-text);
-        font-family: var(--font-base), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-family: var(--font-base);
         font-weight: var(--font-weight-regular);
         line-height: var(--leading-body);
         transition: background 0.3s ease-out, color 0.3s ease-out;
         position: relative;
         min-height: 100vh;
-    }
-
-    html[dir="rtl"] body {
-        font-family: var(--font-noto-naskh), var(--font-base), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     @supports (-webkit-touch-callout: none) {
@@ -210,7 +253,7 @@ html[dir="rtl"] .text-display {
         cursor: pointer;
         background: transparent;
         border: none;
-        font-family: var(--font-base);
+        font-family: var(--font-ui);
     }
 
     img,
@@ -254,7 +297,7 @@ html[dir="rtl"] .text-display {
     }
 
     .text-display {
-        font-family: var(--font-heading), var(--font-base), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-family: var(--font-heading);
         font-size: var(--font-size-h1);
         line-height: var(--leading-heading);
         letter-spacing: -0.012em;
@@ -277,7 +320,7 @@ html[dir="rtl"] .text-display {
     }
 
     .text-quote {
-        font-family: var(--font-heading), var(--font-base), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-family: var(--font-base);
         font-size: var(--font-size-quote);
         line-height: var(--leading-body);
         color: var(--color-text);
@@ -301,7 +344,7 @@ html[dir="rtl"] .text-display {
     }
 
     .text-section-title {
-        font-family: var(--font-heading), var(--font-base), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-family: var(--font-heading);
         font-size: var(--font-size-section-title);
         line-height: var(--leading-heading);
         color: var(--color-text);
@@ -311,7 +354,7 @@ html[dir="rtl"] .text-display {
     .heading-1,
     .heading-2,
     .heading-3 {
-        font-family: var(--font-heading), var(--font-base), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        font-family: var(--font-heading);
         font-weight: var(--font-weight-bold);
         line-height: var(--leading-heading);
         color: var(--color-text);
