@@ -57,9 +57,9 @@
 }
 
 html[dir="rtl"] {
-    --font-base: var(--font-inter), var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
-    --font-heading: var(--font-inter), var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
-    --font-ui: var(--font-inter), var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
+    --font-base: var(--font-noto-naskh, "Noto Naskh Arabic"), var(--font-inter), "Amiri", serif;
+    --font-heading: var(--font-noto-naskh, "Noto Naskh Arabic"), var(--font-inter), "Amiri", serif;
+    --font-ui: var(--font-noto-naskh, "Noto Naskh Arabic"), var(--font-inter), "Amiri", serif;
 }
 
 html[dir="rtl"] body,
