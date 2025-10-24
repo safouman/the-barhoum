@@ -1,8 +1,10 @@
 .wave {
   display: inline-flex;
   align-items: flex-end;
-  gap: 0.44rem;
-  height: 1.85rem;
+  gap: 0.5rem;
+  height: 4.5rem;
+  width: 40%;
+  max-width: 32rem;
   opacity: 0;
   pointer-events: none;
   transform: scale(0.8);
@@ -20,14 +22,16 @@
 }
 
 .bar {
-  width: 0.28rem;
+  flex: 1;
+  min-width: 0.35rem;
   height: 100%;
-  background: #33c4b6;
+  background: linear-gradient(180deg, #2ad6ca 0%, #33c4b6 100%);
   border-radius: 9999px;
   transform-origin: center bottom;
-  opacity: 0.92;
+  opacity: 0.95;
   animation: none;
   transition: opacity 400ms ease-in-out;
+  box-shadow: 0 0 8px rgba(42, 214, 202, 0.3);
 }
 
 .waveActive .bar {
@@ -35,30 +39,87 @@
 }
 
 .waveActive .bar:nth-child(2) {
-  animation-delay: 180ms;
+  animation-delay: 120ms;
 }
 
 .waveActive .bar:nth-child(3) {
-  animation-delay: 360ms;
+  animation-delay: 240ms;
 }
 
 .waveActive .bar:nth-child(4) {
-  animation-delay: 540ms;
+  animation-delay: 360ms;
+}
+
+.waveActive .bar:nth-child(5) {
+  animation-delay: 480ms;
+}
+
+.waveActive .bar:nth-child(6) {
+  animation-delay: 600ms;
+}
+
+.waveActive .bar:nth-child(7) {
+  animation-delay: 720ms;
+}
+
+.waveActive .bar:nth-child(8) {
+  animation-delay: 840ms;
+}
+
+.waveActive .bar:nth-child(9) {
+  animation-delay: 960ms;
+}
+
+.waveActive .bar:nth-child(10) {
+  animation-delay: 1080ms;
+}
+
+.waveActive .bar:nth-child(11) {
+  animation-delay: 1200ms;
+}
+
+.waveActive .bar:nth-child(12) {
+  animation-delay: 1320ms;
 }
 
 @keyframes wavePulse {
   0%,
   100% {
-    transform: scaleY(0.35);
+    transform: scaleY(0.25);
   }
-  35% {
+  25% {
+    transform: scaleY(0.65);
+  }
+  40% {
     transform: scaleY(0.95);
   }
   55% {
-    transform: scaleY(1.05);
+    transform: scaleY(1.1);
   }
-  75% {
-    transform: scaleY(0.55);
+  70% {
+    transform: scaleY(0.75);
+  }
+  85% {
+    transform: scaleY(0.4);
+  }
+}
+
+@media (max-width: 640px) {
+  .wave {
+    width: 80%;
+    height: 3.5rem;
+    gap: 0.35rem;
+  }
+
+  .bar {
+    min-width: 0.25rem;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .wave {
+    width: 60%;
+    height: 4rem;
   }
 }
 

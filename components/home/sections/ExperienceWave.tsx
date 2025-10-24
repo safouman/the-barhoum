@@ -13,6 +13,14 @@ export function ExperienceWave({ active }: ExperienceWaveProps) {
       <span className={styles.bar} />
       <span className={styles.bar} />
       <span className={styles.bar} />
+      <span className={styles.bar} />
+      <span className={styles.bar} />
+      <span className={styles.bar} />
+      <span className={styles.bar} />
+      <span className={styles.bar} />
+      <span className={styles.bar} />
+      <span className={styles.bar} />
+      <span className={styles.bar} />
     </div>
   );
 }

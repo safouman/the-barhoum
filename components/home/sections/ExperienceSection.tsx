@@ -157,18 +157,18 @@ export function HomeExperienceSection() {
 
     return (
         <Section id="experience" className="bg-primary/10">
-            <Container className="flex min-h-[22rem] flex-col items-center justify-center py-16">
+            <Container className="flex min-h-[28rem] flex-col items-center justify-center py-20">
                 <div
                     dir={direction}
                     lang={locale}
-                    className="flex w-full max-w-xl flex-col items-center gap-8 text-center"
+                    className="flex w-full max-w-3xl flex-col items-center gap-10 text-center"
                 >
                     <p className="text-body-lg leading-relaxed text-text md:text-[1.4rem] md:leading-[1.9]">
                         بما أنك وصلت إلى هنا، حان الوقت أن نتحدث. ضع سماعتك
                         واضغط استمع.
                     </p>
 
-                    <div className="relative flex h-16 w-full items-center justify-center">
+                    <div className="relative flex h-24 w-full items-center justify-center">
                         <button
                             type="button"
                             onClick={handleButtonClick}
