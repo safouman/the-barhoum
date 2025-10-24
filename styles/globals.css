@@ -4,9 +4,9 @@
 
 :root {
     color-scheme: light;
-    --font-base: var(--font-inter), var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
-    --font-heading: var(--font-inter), var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
-    --font-ui: var(--font-inter), var(--font-noto-naskh, "Noto Naskh Arabic"), "Amiri", serif;
+    --font-base: var(--font-inter), var(--font-noto-naskh), sans-serif;
+    --font-heading: var(--font-inter), var(--font-noto-naskh), sans-serif;
+    --font-ui: var(--font-inter), var(--font-noto-naskh), sans-serif;
     --font-signature-latin: "Brush Script MT", "Comic Sans MS", cursive;
     --font-signature-arabic: "Arslan Wessam A";
     --font-weight-regular: 400;
@@ -56,24 +56,10 @@
     font-display: swap;
 }
 
-@font-face {
-    font-family: "Inter Subset";
-    src: local("Inter"), local("system-ui");
-    unicode-range: U+0000-00FF, U+0100-017F, U+0020-007E, U+0030-0039, U+0021-002F, U+003A-0040, U+005B-0060, U+007B-007E;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: "Noto Naskh Arabic Subset";
-    src: local("Noto Naskh Arabic"), local("NotoNaskhArabic");
-    unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+10E60-10E7F, U+1EE00-1EEFF;
-    font-display: swap;
-}
-
 html[dir="rtl"] {
-    --font-base: var(--font-inter), var(--font-noto-naskh, "Noto Naskh Arabic Subset"), "Noto Naskh Arabic", "Amiri", serif;
-    --font-heading: var(--font-inter), var(--font-noto-naskh, "Noto Naskh Arabic Subset"), "Noto Naskh Arabic", "Amiri", serif;
-    --font-ui: var(--font-inter), var(--font-noto-naskh, "Noto Naskh Arabic Subset"), "Noto Naskh Arabic", "Amiri", serif;
+    --font-base: var(--font-noto-naskh), var(--font-inter), sans-serif;
+    --font-heading: var(--font-noto-naskh), var(--font-inter), sans-serif;
+    --font-ui: var(--font-noto-naskh), var(--font-inter), sans-serif;
 }
 
 html[dir="rtl"] body,
