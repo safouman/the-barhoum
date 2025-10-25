@@ -191,7 +191,7 @@ export function HomeExperienceSection() {
 
                         {(hasInteracted || showWave) && (
                             <div className="flex w-full items-center justify-center">
-                                <ExperienceWave active={showWave} />
+                                <ExperienceWave active={showWave} audioElement={audioRef.current} />
                             </div>
                         )}
                     </div>

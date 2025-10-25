@@ -30,59 +30,14 @@
   border-radius: 9999px;
   transform-origin: center bottom;
   opacity: 0.92;
-  animation: none;
-  transition: opacity 400ms ease-in-out;
+  transition: opacity 400ms ease-in-out, transform 50ms ease-out;
+  will-change: transform;
 }
 
 .waveActive .bar {
-  animation: wavePulse 2200ms ease-in-out infinite;
+  opacity: 0.92;
 }
 
-.waveActive .bar:nth-child(2) { animation-delay: 73ms; }
-.waveActive .bar:nth-child(3) { animation-delay: 146ms; }
-.waveActive .bar:nth-child(4) { animation-delay: 219ms; }
-.waveActive .bar:nth-child(5) { animation-delay: 292ms; }
-.waveActive .bar:nth-child(6) { animation-delay: 365ms; }
-.waveActive .bar:nth-child(7) { animation-delay: 438ms; }
-.waveActive .bar:nth-child(8) { animation-delay: 511ms; }
-.waveActive .bar:nth-child(9) { animation-delay: 584ms; }
-.waveActive .bar:nth-child(10) { animation-delay: 657ms; }
-.waveActive .bar:nth-child(11) { animation-delay: 730ms; }
-.waveActive .bar:nth-child(12) { animation-delay: 803ms; }
-.waveActive .bar:nth-child(13) { animation-delay: 876ms; }
-.waveActive .bar:nth-child(14) { animation-delay: 949ms; }
-.waveActive .bar:nth-child(15) { animation-delay: 1022ms; }
-.waveActive .bar:nth-child(16) { animation-delay: 1095ms; }
-.waveActive .bar:nth-child(17) { animation-delay: 1168ms; }
-.waveActive .bar:nth-child(18) { animation-delay: 1241ms; }
-.waveActive .bar:nth-child(19) { animation-delay: 1314ms; }
-.waveActive .bar:nth-child(20) { animation-delay: 1387ms; }
-.waveActive .bar:nth-child(21) { animation-delay: 1460ms; }
-.waveActive .bar:nth-child(22) { animation-delay: 1533ms; }
-.waveActive .bar:nth-child(23) { animation-delay: 1606ms; }
-.waveActive .bar:nth-child(24) { animation-delay: 1679ms; }
-.waveActive .bar:nth-child(25) { animation-delay: 1752ms; }
-.waveActive .bar:nth-child(26) { animation-delay: 1825ms; }
-.waveActive .bar:nth-child(27) { animation-delay: 1898ms; }
-.waveActive .bar:nth-child(28) { animation-delay: 1971ms; }
-.waveActive .bar:nth-child(29) { animation-delay: 2044ms; }
-.waveActive .bar:nth-child(30) { animation-delay: 2117ms; }
-
-@keyframes wavePulse {
-  0%,
-  100% {
-    transform: scaleY(0.35);
-  }
-  35% {
-    transform: scaleY(0.95);
-  }
-  55% {
-    transform: scaleY(1.05);
-  }
-  75% {
-    transform: scaleY(0.55);
-  }
-}
 
 @media (max-width: 640px) {
   .wave {
@@ -108,8 +63,11 @@
     transition: opacity 160ms ease;
   }
 
+  .bar {
+    transition: opacity 400ms ease-in-out;
+  }
+
   .waveActive .bar {
-    animation: none;
-    transform: scaleY(0.6);
+    transform: scaleY(0.6) !important;
   }
 }
