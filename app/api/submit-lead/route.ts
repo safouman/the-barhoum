@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { ALL_PACKAGE_IDS, isPackageId } from "@/lib/commerce/packages";
+import { getAllStripeIdentifiers, resolveStripeSelection, type StripeSelection } from "@/lib/stripe/config";
 import { leadFormSchema, type LeadFormData } from "@/lib/validation/lead-form";
 import { createPaymentLink } from "@/lib/stripe/payment-links";
 import { requiresPayment } from "@/lib/utils/geo";
@@ -62,10 +62,19 @@ function resolveReferrerValue(referer: string | null): string {
     }
 }
 
-function buildAutomationContext(req: NextRequest, formData: LeadFormData): Partial<SharedAnalyticsContext> {
+function buildAutomationContext(
+    req: NextRequest,
+    formData: LeadFormData,
+    stripeSelection?: StripeSelection | null
+): Partial<SharedAnalyticsContext> {
     const referer = req.headers.get("referer");
     const utm = extractUtmFromReferer(referer);
     const trimmedCountry = formData.country?.trim() ?? "";
+    const trimmedPackage = formData.package?.trim() ?? "";
+    const resolvedProgramName =
+        stripeSelection && stripeSelection.type === "individual-program"
+            ? stripeSelection.program.displayName
+            : trimmedPackage || "none";
     return {
         locale: parseLocale(req.headers.get("accept-language")),
         form_country: trimmedCountry || undefined,
@@ -74,7 +83,7 @@ function buildAutomationContext(req: NextRequest, formData: LeadFormData): Parti
         utm_medium: utm.utm_medium,
         utm_campaign: utm.utm_campaign,
         category: formData.category?.trim() || "none",
-        program_name: formData.package?.trim() || "none",
+        program_name: resolvedProgramName,
         referrer: resolveReferrerValue(referer),
     };
 }
@@ -410,12 +419,14 @@ async function processStripePaymentLink({
     googleScriptUrl,
     googleScriptSecret,
     analyticsContext,
+    stripeSelection,
 }: {
     requestId: string;
     formData: LeadFormData;
     googleScriptUrl: string;
     googleScriptSecret: string;
     analyticsContext: Partial<SharedAnalyticsContext>;
+    stripeSelection?: StripeSelection | null;
 }): Promise<StripeJobResult> {
     const jobId = `${requestId}:stripe`;
 
@@ -426,6 +437,56 @@ async function processStripePaymentLink({
             `[${jobId}] ⚠️ No package provided; skipping payment link generation`
         );
         return { status: "skipped", reason: "missing-package" };
+    }
+
+    const resolvedSelection =
+        stripeSelection ??
+        (formData.package
+            ? resolveStripeSelection(formData.package)
+            : null);
+
+    if (resolvedSelection && resolvedSelection.type === "individual-program") {
+        console.log(`[${jobId}] 🎯 Stripe program context`, {
+            programKey: resolvedSelection.program.key,
+            programLabel: resolvedSelection.program.displayName,
+            productId: resolvedSelection.program.productId,
+            priceId: resolvedSelection.program.priceId,
+        });
+    } else if (resolvedSelection && resolvedSelection.type === "legacy-price") {
+        console.log(`[${jobId}] 🎯 Stripe legacy package context`, {
+            packageId: resolvedSelection.packageId,
+            priceId: resolvedSelection.priceId,
+        });
+    } else if (!resolvedSelection) {
+        console.warn(
+            `[${jobId}] ⚠️ Unable to resolve Stripe mapping inside payment workflow for package="${formData.package}"`
+        );
+    }
+
+    const stripeUpdateDetails: Record<string, string> = {};
+
+    if (resolvedSelection) {
+        if (resolvedSelection.type === "individual-program") {
+            stripeUpdateDetails.stripe_product_id =
+                resolvedSelection.program.productId;
+            stripeUpdateDetails.stripe_price_id =
+                resolvedSelection.program.priceId;
+            stripeUpdateDetails.stripe_program_key =
+                resolvedSelection.program.key;
+            stripeUpdateDetails.stripe_program_label =
+                resolvedSelection.program.displayName;
+            stripeUpdateDetails.stripe_program_description =
+                resolvedSelection.program.description;
+            stripeUpdateDetails.stripe_program_sessions = String(
+                resolvedSelection.program.metadata.sessions
+            );
+            stripeUpdateDetails.stripe_program_duration =
+                resolvedSelection.program.metadata.duration;
+        } else {
+            stripeUpdateDetails.stripe_price_id = resolvedSelection.priceId;
+            stripeUpdateDetails.stripe_package_id =
+                resolvedSelection.packageId;
+        }
     }
 
     try {
@@ -450,6 +511,7 @@ async function processStripePaymentLink({
             operation: "attachPaymentLink",
             leadId: formData.leadId,
             payment_link: paymentLink,
+            ...stripeUpdateDetails,
         };
 
         const controller = new AbortController();
@@ -501,11 +563,27 @@ async function processStripePaymentLink({
             `[${jobId}] ✅ Payment link applied in Google Sheet`,
             responseText.substring(0, 500)
         );
+        const analyticsPayload: Record<string, string> = {
+            package_id: formData.package,
+            payment_link_url: paymentLink,
+        };
+
+        if (resolvedSelection?.type === "individual-program") {
+            analyticsPayload.program_key = resolvedSelection.program.key;
+            analyticsPayload.program_label = resolvedSelection.program.displayName;
+            analyticsPayload.stripe_product_id =
+                resolvedSelection.program.productId;
+            analyticsPayload.stripe_price_id =
+                resolvedSelection.program.priceId;
+        } else if (resolvedSelection?.type === "legacy-price") {
+            analyticsPayload.stripe_price_id = resolvedSelection.priceId;
+            analyticsPayload.stripe_package_id =
+                resolvedSelection.packageId;
+        }
+
         await trackAutomationEvent(
             "stripe_link_generated",
-            {
-                package_id: formData.package,
-            },
+            analyticsPayload,
             analyticsContext,
             { clientId: requestId }
         );
@@ -650,23 +728,51 @@ export async function POST(req: NextRequest) {
         const formData = validationResult.data;
 
         const normalizedPackageId = formData.package.trim();
-        if (normalizedPackageId && !isPackageId(normalizedPackageId)) {
-            console.warn(
-                `[${requestId}] ⚠️ Unknown package "${normalizedPackageId}" received. Allowed packages: ${ALL_PACKAGE_IDS.join(
-                    ", "
-                )}`
-            );
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: "Invalid package selection. Please refresh and try again.",
-                },
-                { status: 400 }
-            );
-        }
-        formData.package = normalizedPackageId;
+        let stripeSelectionForLead: StripeSelection | null = null;
 
-        const automationContext = buildAutomationContext(req, formData);
+        if (normalizedPackageId) {
+            stripeSelectionForLead = resolveStripeSelection(normalizedPackageId);
+            if (!stripeSelectionForLead) {
+                console.warn(
+                    `[${requestId}] ⚠️ Unknown package identifier "${normalizedPackageId}" received. Allowed identifiers: ${getAllStripeIdentifiers().join(
+                        ", "
+                    )}`
+                );
+                return NextResponse.json(
+                    {
+                        success: false,
+                        error: "Invalid package selection. Please refresh and try again.",
+                    },
+                    { status: 400 }
+                );
+            }
+
+            console.log(
+                `[${requestId}] 🎯 Resolved package selection`,
+                stripeSelectionForLead.type === "individual-program"
+                    ? {
+                          requested: normalizedPackageId,
+                          programKey: stripeSelectionForLead.program.key,
+                          programLabel: stripeSelectionForLead.program.displayName,
+                          productId: stripeSelectionForLead.program.productId,
+                          priceId: stripeSelectionForLead.program.priceId,
+                      }
+                    : {
+                          packageId: normalizedPackageId,
+                          priceId: stripeSelectionForLead.priceId,
+                      }
+            );
+
+            formData.package = normalizedPackageId;
+        } else {
+            formData.package = "";
+        }
+
+        const automationContext = buildAutomationContext(
+            req,
+            formData,
+            stripeSelectionForLead
+        );
 
         console.log(
             `[${requestId}] 💰 Payment eligibility check - category: ${formData.category}, country: ${formData.country}`
@@ -718,17 +824,52 @@ export async function POST(req: NextRequest) {
             );
         }
 
+        const packageDisplayName =
+            stripeSelectionForLead && stripeSelectionForLead.type === "individual-program"
+                ? stripeSelectionForLead.program.displayName
+                : formData.package;
+
+        const stripeLeadDetails: Record<string, string> = {};
+
+        if (stripeSelectionForLead) {
+            if (stripeSelectionForLead.type === "individual-program") {
+                stripeLeadDetails.stripe_product_id =
+                    stripeSelectionForLead.program.productId;
+                stripeLeadDetails.stripe_price_id =
+                    stripeSelectionForLead.program.priceId;
+                stripeLeadDetails.stripe_program_key =
+                    stripeSelectionForLead.program.key;
+                stripeLeadDetails.stripe_program_label =
+                    stripeSelectionForLead.program.displayName;
+                stripeLeadDetails.stripe_program_description =
+                    stripeSelectionForLead.program.description;
+                stripeLeadDetails.stripe_program_sessions = String(
+                    stripeSelectionForLead.program.metadata.sessions
+                );
+                stripeLeadDetails.stripe_program_duration =
+                    stripeSelectionForLead.program.metadata.duration;
+            } else {
+                stripeLeadDetails.stripe_price_id = stripeSelectionForLead.priceId;
+                stripeLeadDetails.stripe_package_id =
+                    stripeSelectionForLead.packageId;
+            }
+        }
+
         const payload = {
             secret: googleScriptSecret,
             operation: "createLead",
             ...formData,
+            package: packageDisplayName,
+            package_key: formData.package,
+            ...stripeLeadDetails,
             payment_link: "",
         };
 
         console.log(`[${requestId}] 📦 Payload prepared for Google Sheets:`, {
             email: formData.email,
             category: formData.category,
-            package: formData.package,
+            package_key: formData.package,
+            package_label: packageDisplayName,
             fieldCount: Object.keys(payload).length,
         });
 
@@ -849,6 +990,7 @@ export async function POST(req: NextRequest) {
                         googleScriptUrl,
                         googleScriptSecret,
                         analyticsContext: automationContext,
+                        stripeSelection: stripeSelectionForLead,
                     });
 
                     paymentLinkStatus = stripeResult.status;

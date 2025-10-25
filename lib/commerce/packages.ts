@@ -3,34 +3,50 @@ import type { Locale } from "@/lib/content";
 export type CategoryKey = "individuals" | "couples" | "organizations";
 export type PackSessions = 1 | 3 | 5;
 
-export type PackageId =
-    | "ind-1-session"
-    | "ind-3-sessions"
-    | "ind-5-sessions"
+export type IndividualProgramKey =
+    | "program_basic"
+    | "program_growth"
+    | "program_transform";
+
+export type CouplesPackageId =
     | "cpl-1-session"
     | "cpl-3-sessions"
-    | "cpl-5-sessions"
+    | "cpl-5-sessions";
+
+export type OrganizationPackageId =
     | "org-1-session"
     | "org-3-sessions"
     | "org-5-sessions";
 
+export type PackageId =
+    | IndividualProgramKey
+    | CouplesPackageId
+    | OrganizationPackageId;
+
+const INDIVIDUAL_PACKAGE_LOOKUP: Record<PackSessions, IndividualProgramKey> = {
+    1: "program_basic",
+    3: "program_growth",
+    5: "program_transform",
+};
+
+const COUPLES_PACKAGE_LOOKUP: Record<PackSessions, CouplesPackageId> = {
+    1: "cpl-1-session",
+    3: "cpl-3-sessions",
+    5: "cpl-5-sessions",
+};
+
+const ORGANIZATION_PACKAGE_LOOKUP: Record<PackSessions, OrganizationPackageId> =
+    {
+        1: "org-1-session",
+        3: "org-3-sessions",
+        5: "org-5-sessions",
+    };
+
 const PACKAGE_ID_LOOKUP: Record<CategoryKey, Record<PackSessions, PackageId>> =
     {
-        individuals: {
-            1: "ind-1-session",
-            3: "ind-3-sessions",
-            5: "ind-5-sessions",
-        },
-        couples: {
-            1: "cpl-1-session",
-            3: "cpl-3-sessions",
-            5: "cpl-5-sessions",
-        },
-        organizations: {
-            1: "org-1-session",
-            3: "org-3-sessions",
-            5: "org-5-sessions",
-        },
+        individuals: INDIVIDUAL_PACKAGE_LOOKUP,
+        couples: COUPLES_PACKAGE_LOOKUP,
+        organizations: ORGANIZATION_PACKAGE_LOOKUP,
     };
 
 const PACKAGE_IDS = Object.freeze(

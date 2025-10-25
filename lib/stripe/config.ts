@@ -1,12 +1,62 @@
-import { ALL_PACKAGE_IDS, isPackageId, type PackageId } from '@/lib/commerce/packages';
+import {
+  isPackageId,
+  type IndividualProgramKey,
+  type PackageId,
+} from '@/lib/commerce/packages';
 
-export const STRIPE_PRODUCT_ID = 'prod_TG5tOBx6jkBpsG';
+export interface IndividualProgramConfig {
+  key: IndividualProgramKey;
+  category: 'individuals';
+  displayName: string;
+  productId: string;
+  priceId: string;
+  description: string;
+  metadata: {
+    sessions: number;
+    duration: string;
+  };
+}
 
-// TODO: replace placeholder values with the live Stripe Price IDs for each pack.
-export const STRIPE_PRICE_MAP: Record<PackageId, string> = {
-  'ind-1-session': 'price_1SJZhwAWdXsiScrur9Ue74CR',
-  'ind-3-sessions': 'price_1SJZhwAWdXsiScruB61LUlN6',
-  'ind-5-sessions': 'price_1SJZhwAWdXsiScruWpA8eon2',
+const INDIVIDUAL_PROGRAM_MAP: Record<IndividualProgramKey, IndividualProgramConfig> = {
+  program_basic: {
+    key: 'program_basic',
+    category: 'individuals',
+    displayName: 'Program Basic',
+    productId: 'prod_TIg9kUx8vyVaap',
+    priceId: 'price_1SM4nGAWdXsiScrunybZOJ7v',
+    description: 'Single-session reset designed for quick clarity and next steps.',
+    metadata: {
+      sessions: 1,
+      duration: 'single-session intensive',
+    },
+  },
+  program_growth: {
+    key: 'program_growth',
+    category: 'individuals',
+    displayName: 'Program Growth',
+    productId: 'prod_TIg7yIK3BAFPEG',
+    priceId: 'price_1SM4lXAWdXsiScrulprVEcrE',
+    description: 'Three-session coaching arc focused on momentum and accountability.',
+    metadata: {
+      sessions: 3,
+      duration: 'three-session series',
+    },
+  },
+  program_transform: {
+    key: 'program_transform',
+    category: 'individuals',
+    displayName: 'Program Transform',
+    productId: 'prod_TIg75pVk6uOveb',
+    priceId: 'price_1SM4lKAWdXsiScrulTbgMDsm',
+    description: 'Five-session deep dive for sustained change and tailored practices.',
+    metadata: {
+      sessions: 5,
+      duration: 'five-session immersion',
+    },
+  },
+};
+
+const OTHER_CATEGORY_PRICE_MAP: Partial<Record<PackageId, string>> = {
   'cpl-1-session': 'price_REPLACE_ME_CPL_1',
   'cpl-3-sessions': 'price_REPLACE_ME_CPL_3',
   'cpl-5-sessions': 'price_REPLACE_ME_CPL_5',
@@ -15,28 +65,64 @@ export const STRIPE_PRICE_MAP: Record<PackageId, string> = {
   'org-5-sessions': 'price_REPLACE_ME_ORG_5',
 };
 
-export function getPriceId(packageId: string): string | null {
-  console.log(`[Stripe Config] 📋 Looking up price for package: "${packageId}"`);
-  console.log(`[Stripe Config] Available packages:`, ALL_PACKAGE_IDS);
-
-  if (isPackageId(packageId)) {
-    const priceId = STRIPE_PRICE_MAP[packageId];
-
-    if (!priceId || priceId === '') {
-      console.log(`[Stripe Config] ⚠️ Price ID is empty for package: ${packageId}`);
-      return null;
+export type StripeSelection =
+  | {
+      type: 'individual-program';
+      program: IndividualProgramConfig;
     }
+  | {
+      type: 'legacy-price';
+      priceId: string;
+      packageId: PackageId;
+    };
 
-    console.log(`[Stripe Config] ✅ Found price ID: ${priceId}`);
-    return priceId;
+export function isIndividualProgramKey(value: unknown): value is IndividualProgramKey {
+  return (
+    typeof value === 'string' &&
+    (value === 'program_basic' || value === 'program_growth' || value === 'program_transform')
+  );
+}
+
+export function getIndividualProgramByKey(programKey: string): IndividualProgramConfig | null {
+  if (!isIndividualProgramKey(programKey)) {
+    return null;
+  }
+  return INDIVIDUAL_PROGRAM_MAP[programKey] ?? null;
+}
+
+export function resolveStripeSelection(identifier: string): StripeSelection | null {
+  const normalized = identifier?.trim();
+  if (!normalized) return null;
+
+  if (isIndividualProgramKey(normalized)) {
+    const program = INDIVIDUAL_PROGRAM_MAP[normalized];
+    return { type: 'individual-program', program };
   }
 
-  console.log(`[Stripe Config] ❌ Package "${packageId}" not found in price map`);
+  if (isPackageId(normalized)) {
+    const priceId = OTHER_CATEGORY_PRICE_MAP[normalized];
+    if (priceId) {
+      return {
+        type: 'legacy-price',
+        priceId,
+        packageId: normalized,
+      };
+    }
+  }
+
   return null;
 }
 
-export function hasStripePrice(packageId: string): boolean {
-  if (!isPackageId(packageId)) return false;
-  const priceId = STRIPE_PRICE_MAP[packageId];
-  return !!priceId && priceId !== '';
+export function hasStripePrice(identifier: string): boolean {
+  const resolved = resolveStripeSelection(identifier);
+  if (!resolved) return false;
+  if (resolved.type === 'individual-program') {
+    return Boolean(resolved.program.priceId);
+  }
+  return resolved.priceId !== '';
+}
+
+export function getAllStripeIdentifiers(): string[] {
+  const legacyIds = Object.keys(OTHER_CATEGORY_PRICE_MAP) as PackageId[];
+  return [...Object.keys(INDIVIDUAL_PROGRAM_MAP), ...legacyIds];
 }

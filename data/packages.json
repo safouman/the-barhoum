@@ -1,34 +1,34 @@
 [
   {
-    "id": "ind-1-session",
+    "id": "program_basic",
     "categoryId": "individuals",
-    "title": {"ar": "جلسة واحدة", "en": "1 session"},
+    "title": {"ar": "البرنامج الأساسي", "en": "Program Basic"},
     "price": {"amount": 100, "currency": "EUR"},
     "features": {
-      "ar": ["جلسة رقمية واحدة", "تحليل أولي", "توصيات شخصية"],
-      "en": ["1 virtual session", "Initial assessment", "Personalized recommendations"]
+      "ar": ["جلسة تمهيدية واحدة", "تقييم شخصي", "خطة أولية للخطوات القادمة"],
+      "en": ["1 kickoff session", "Personal assessment", "Immediate next steps plan"]
     },
     "visible": true
   },
   {
-    "id": "ind-3-sessions",
+    "id": "program_growth",
     "categoryId": "individuals",
-    "title": {"ar": "3 جلسات", "en": "3 sessions"},
+    "title": {"ar": "برنامج النمو", "en": "Program Growth"},
     "price": {"amount": 300, "currency": "EUR"},
     "features": {
-      "ar": ["3 جلسات رقمية", "تحليل نقاط القوة", "خطة متابعة لمدة شهر"],
-      "en": ["3 virtual sessions", "Strengths debrief", "1-month follow-up plan"]
+      "ar": ["3 جلسات تطويرية", "خطة متابعة لمدة شهر", "متابعة أسبوعية"],
+      "en": ["3 development sessions", "1-month follow-up plan", "Weekly accountability check-ins"]
     },
     "visible": true
   },
   {
-    "id": "ind-5-sessions",
+    "id": "program_transform",
     "categoryId": "individuals",
-    "title": {"ar": "5 جلسات", "en": "5 sessions"},
+    "title": {"ar": "برنامج التحول", "en": "Program Transform"},
     "price": {"amount": 800, "currency": "EUR"},
     "features": {
-      "ar": ["5 جلسات عميقة", "دعم صوتي بين الجلسات", "تمارين موجهة"],
-      "en": ["5 deep-dive sessions", "Voice notes support", "Guided practices"]
+      "ar": ["5 جلسات عميقة", "دعم بين الجلسات", "مسار تدريبات مخصص"],
+      "en": ["5 deep-dive sessions", "Between-session support", "Tailored practice track"]
     },
     "visible": true
   },

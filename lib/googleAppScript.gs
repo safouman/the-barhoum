@@ -173,7 +173,7 @@ function testCreateLead() {
         occupation: "Engineer",
         passphrase: "Test passphrase",
         category: "individuals",
-        package: "ind-3-sessions",
+        package: "program_growth",
         payment_link: "",
     });
     Logger.log(response.getContent());
@@ -215,7 +215,7 @@ function testDoPostCreateLead() {
         occupation: "Designer",
         passphrase: "Sample passphrase",
         category: "individuals",
-        package: "ind-6-sessions",
+        package: "program_transform",
         payment_link: "",
     });
 
@@ -245,7 +245,7 @@ function testDoPostAttachPaymentLink() {
             occupation: "Engineer",
             passphrase: "",
             category: "individuals",
-            package: "ind-3-sessions",
+            package: "program_growth",
             payment_link: "",
         });
     }

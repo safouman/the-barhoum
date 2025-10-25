@@ -1,5 +1,5 @@
 import { getStripeClient } from './client';
-import { getPriceId } from './config';
+import { resolveStripeSelection } from './config';
 
 export interface CreatePaymentLinkParams {
   email: string;
@@ -15,16 +15,36 @@ export async function createPaymentLink(
 ): Promise<string | null> {
   const { email, fullName, country, phone, packageId, category } = params;
 
-  console.log(`[Stripe] 🔍 Looking up price ID for package: ${packageId}`);
-  const priceId = getPriceId(packageId);
+  console.log(`[Stripe] 🔍 Resolving Stripe selection for package: ${packageId}`);
+  const selection = resolveStripeSelection(packageId);
 
-  if (!priceId) {
-    console.warn(`[Stripe] ⚠️ No Stripe Price ID found for package: ${packageId}`);
-    console.warn(`[Stripe] Available packages:`, Object.keys(require('./config').STRIPE_PRICE_MAP));
+  if (!selection) {
+    console.warn(`[Stripe] ⚠️ No Stripe product or price mapping found for identifier: ${packageId}`);
     return null;
   }
 
-  console.log(`[Stripe] ✅ Price ID found: ${priceId}`);
+  const isProgram = selection.type === 'individual-program';
+  const priceId = isProgram ? selection.program.priceId : selection.priceId;
+  const productId = isProgram ? selection.program.productId : null;
+
+  if (!priceId) {
+    console.warn(`[Stripe] ⚠️ Stripe mapping resolved but price ID is missing for identifier: ${packageId}`);
+    return null;
+  }
+
+  if (isProgram) {
+    console.log(`[Stripe] ✅ Resolved individual program`, {
+      identifier: packageId,
+      programKey: selection.program.key,
+      productId: selection.program.productId,
+      priceId: selection.program.priceId,
+    });
+  } else {
+    console.log(`[Stripe] ✅ Resolved legacy package`, {
+      identifier: packageId,
+      priceId,
+    });
+  }
 
   console.log(`[Stripe] 🔧 Initializing Stripe client...`);
   const stripe = getStripeClient();
@@ -36,19 +56,35 @@ export async function createPaymentLink(
   console.log(`[Stripe] ✅ Stripe client initialized successfully`);
 
   try {
-  console.log(`[Stripe] 📡 Creating payment link with Stripe API...`);
-  console.log(`[Stripe] Parameters:`, {
-    priceId,
-    customerEmail: email,
-    customerName: fullName,
-    country,
-    packageId,
-    category,
-  });
+    console.log(`[Stripe] 📡 Creating payment link with Stripe API...`);
+    console.log(`[Stripe] Parameters:`, {
+      priceId,
+      productId: productId ?? undefined,
+      customerEmail: email,
+      customerName: fullName,
+      country,
+      packageId,
+      category,
+    });
 
-  const paymentLink = await stripe.paymentLinks.create({
-    line_items: [
-      {
+    const programMetadata: Record<string, string> = isProgram
+      ? {
+          program_key: selection.program.key,
+          program_label: selection.program.displayName,
+          stripe_product_id: selection.program.productId,
+          stripe_price_id: selection.program.priceId,
+          program_description: selection.program.description,
+          program_sessions: String(selection.program.metadata.sessions),
+          program_duration: selection.program.metadata.duration,
+        }
+      : {
+          stripe_price_id: priceId,
+          program_label: packageId,
+        };
+
+    const paymentLink = await stripe.paymentLinks.create({
+      line_items: [
+        {
           price: priceId,
           quantity: 1,
         },
@@ -56,7 +92,8 @@ export async function createPaymentLink(
       after_completion: {
         type: 'hosted_confirmation',
         hosted_confirmation: {
-          custom_message: 'Thank you for your payment! We will contact you shortly to schedule your sessions.',
+          custom_message:
+            'Thank you for your payment! We will contact you shortly to schedule your sessions.',
         },
       },
       metadata: {
@@ -64,8 +101,9 @@ export async function createPaymentLink(
         customer_email: email,
         customer_country: country,
         customer_phone: phone,
-        package_id: packageId,
         category,
+        package_id: packageId,
+        ...programMetadata,
       },
       customer_creation: 'always',
       invoice_creation: {
@@ -77,6 +115,7 @@ export async function createPaymentLink(
             customer_phone: phone,
             category,
             package_id: packageId,
+            ...programMetadata,
           },
         },
       },
