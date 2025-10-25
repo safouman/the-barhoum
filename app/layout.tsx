@@ -10,12 +10,7 @@ import { LocaleProvider } from "@/providers/locale-provider";
 import { AnalyticsProvider } from "@/providers/analytics-provider";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Footer } from "@/components/Footer";
-import {
-    getPayments,
-    getSiteConfig,
-    getUiStrings,
-    type UIStrings,
-} from "@/lib/content";
+import { getSiteConfig, getUiStrings, type UIStrings } from "@/lib/content";
 import { getDirection } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/i18n.server";
 import { getDefaultMetadata } from "@/lib/seo";
@@ -59,12 +54,7 @@ export default async function RootLayout({
 }) {
     const locale = resolveLocale();
     const direction = getDirection(locale);
-    const [ui, payments, site] = await Promise.all([
-        loadUi(),
-        getPayments(),
-        getSiteConfig(),
-    ]);
-    const defaultPaymentSlug = payments[0]?.slug;
+    const [ui, site] = await Promise.all([loadUi(), getSiteConfig()]);
     const fontClass = `${inter.variable} ${notoNaskhArabic.variable}`;
     const measurementId = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
 
@@ -90,11 +80,7 @@ export default async function RootLayout({
                 <LocaleProvider initialLocale={locale}>
                     <AnalyticsProvider>
                         <VercelAnalytics />
-                        <SiteHeader
-                            ui={ui}
-                            site={site}
-                            paymentSlug={defaultPaymentSlug}
-                        />
+                        <SiteHeader ui={ui} site={site} />
                         <main>{children}</main>
                         <Footer site={site} />
                     </AnalyticsProvider>

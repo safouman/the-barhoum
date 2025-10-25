@@ -125,23 +125,15 @@ export function Footer({ site }: FooterProps) {
                     <div className="text-xs text-[#222] opacity-60">
                         <div>© 2025 {brandName}</div>
                         <div
-                            className={`flex flex-wrap items-center justify-center gap-4 ${
+                            className={`flex flex-wrap items-center justify-center gap-4 mt-4 ${
                                 isRtl ? "flex-row-reverse" : ""
                             }`}
                             dir={isRtl ? "rtl" : "ltr"}
                         >
-                            <a
-                                href="/privacy"
-                                target="_blank"
-                                rel="noreferrer"
-                            >
+                            <a href="/privacy" target="_blank" rel="noreferrer">
                                 Privacy Policy
                             </a>
-                            <a
-                                href="/terms"
-                                target="_blank"
-                                rel="noreferrer"
-                            >
+                            <a href="/terms" target="_blank" rel="noreferrer">
                                 Terms of Service
                             </a>
                         </div>

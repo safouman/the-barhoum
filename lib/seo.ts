@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-type PageKey = "home" | "cv" | "links" | "pay" | "privacy" | "terms";
+type PageKey = "home" | "privacy" | "terms";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://barhoum.coach";
 const defaultOgImage = "/images/logo.png";
@@ -62,30 +62,6 @@ const pageMetadata: Record<PageKey, Metadata> = {
             url: `${siteUrl}/terms`,
         },
     },
-    cv: {
-        title: "Résumé",
-        description:
-            "Explore Ibrahim ben Abdallah's professional journey, projects, and collaborative impact.",
-        openGraph: {
-            url: `${siteUrl}/cv`,
-        },
-    },
-    links: {
-        title: "Curated Links",
-        description:
-            "Follow the articles, talks, and spaces where Ibrahim ben Abdallah is present.",
-        openGraph: {
-            url: `${siteUrl}/links`,
-        },
-    },
-    pay: {
-        title: "Secure Payment",
-        description:
-            "Complete your private coaching or workshop payment with Ibrahim ben Abdallah.",
-        openGraph: {
-            url: `${siteUrl}/pay`,
-        },
-    },
 };
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -125,45 +101,6 @@ export function getDefaultMetadata(): Metadata {
     return mergeMetadata(baseMetadata);
 }
 
-export function getPageMetadata(
-    key: Exclude<PageKey, "pay">,
-    overrides?: Metadata
-): Metadata {
+export function getPageMetadata(key: PageKey, overrides?: Metadata): Metadata {
     return mergeMetadata(baseMetadata, pageMetadata[key], overrides);
-}
-
-interface PaySeoInput {
-    slug: string;
-    clientName: string;
-    packageTitle: string;
-    amountLabel: string;
-}
-
-export function getPayMetadata(
-    payload?: PaySeoInput,
-    overrides?: Metadata
-): Metadata {
-    const paymentMeta: Metadata | undefined = payload
-        ? {
-              title: `${payload.packageTitle} Payment`,
-              description:
-                  `Complete payment for ${payload.clientName} · ${payload.amountLabel}. Secure checkout with Ibrahim ben Abdallah.`.trim(),
-              openGraph: {
-                  title: `${payload.packageTitle} Payment`,
-                  description: `Secure payment link for ${payload.clientName} (${payload.amountLabel}).`,
-                  url: `${siteUrl}/pay/${payload.slug}`,
-              },
-              twitter: {
-                  title: `${payload.packageTitle} Payment`,
-                  description: `Secure payment link for ${payload.clientName} (${payload.amountLabel}).`,
-              },
-          }
-        : undefined;
-
-    return mergeMetadata(
-        baseMetadata,
-        pageMetadata.pay,
-        paymentMeta,
-        overrides
-    );
 }

@@ -11,12 +11,10 @@ import type { Locale, SiteConfig, UIStrings } from "@/lib/content";
 interface SiteHeaderProps {
     ui: Record<Locale, UIStrings>;
     site: SiteConfig;
-    paymentSlug?: string;
 }
 
-export function SiteHeader({ ui, site, paymentSlug }: SiteHeaderProps) {
+export function SiteHeader({ ui: _ui, site }: SiteHeaderProps) {
     const { locale } = useLocale();
-    const currentUi = ui[locale];
     const brandLabel = site.brand.header[locale];
     const isRtl = locale === "ar";
     const languageOptions = site.languageSwitch.options.map((option) => ({
@@ -28,15 +26,6 @@ export function SiteHeader({ ui, site, paymentSlug }: SiteHeaderProps) {
     );
     const shouldRenderLanguageSwitcher =
         localizationConfig.showLanguageSwitcher && filteredLanguageOptions.length > 1;
-
-    const navItems: { href: string; label: string }[] = [];
-
-    // if (paymentSlug) {
-    //     navItems.push({
-    //         href: `/pay/${paymentSlug}`,
-    //         label: currentUi.nav.pay,
-    //     });
-    // }
 
     return (
         <header className="relative top-0 z-50 border-border bg-background/70 backdrop-blur h-16 overflow-visible">
@@ -58,22 +47,6 @@ export function SiteHeader({ ui, site, paymentSlug }: SiteHeaderProps) {
                             />
                         </span>
                     </Link>
-                    {navItems.length > 0 && (
-                        <nav
-                            className="flex flex-wrap items-center gap-4"
-                            aria-label={brandLabel}
-                        >
-                            {navItems.map((item) => (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    className="rounded-[8px] px-2 py-1 transition hover:bg-primary/10 hover:text-primary"
-                                >
-                                    {item.label}
-                                </Link>
-                            ))}
-                        </nav>
-                    )}
                 </div>
                 {shouldRenderLanguageSwitcher && (
                     <LangSwitch
