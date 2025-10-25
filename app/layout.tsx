@@ -4,7 +4,7 @@ export const revalidate = 0;
 export const runtime = "nodejs";
 import Script from "next/script";
 import { Inter, Noto_Naskh_Arabic } from "next/font/google";
-import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import "../styles/globals.css";
 import { LocaleProvider } from "@/providers/locale-provider";
 import { AnalyticsProvider } from "@/providers/analytics-provider";
