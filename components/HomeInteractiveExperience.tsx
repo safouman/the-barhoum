@@ -90,9 +90,9 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy 
 
   useEffect(() => {
     updateAnalyticsContext({
-      category: activeCategoryLabel ?? "none",
+      category: activeCategory ?? "none",
     });
-  }, [activeCategoryLabel]);
+  }, [activeCategory]);
 
   useEffect(() => {
     updateAnalyticsContext({
@@ -110,11 +110,11 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy 
     }
     lastFormOpenKeyRef.current = openKey;
     event("form_opened", {
-      category: activeCategoryLabel ?? activeCategory ?? "none",
+      category: activeCategory ?? "none",
       program_name: selectedPack.title,
       package_id: selectedPack.packageId,
     });
-  }, [leadFormVisible, selectedPack, activeCategory, activeCategoryLabel]);
+  }, [leadFormVisible, selectedPack, activeCategory]);
 
   useEffect(() => {
     if (!activeCategory) return;

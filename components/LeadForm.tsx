@@ -349,19 +349,18 @@ export function LeadForm({
         const attemptNumber = submitAttemptRef.current + 1;
         submitAttemptRef.current = attemptNumber;
 
-        const categoryName =
-            packSummary?.categoryValue ?? selectedCategory ?? "none";
+        const categoryId = selectedCategory ?? "none";
         const programName =
             packSummary?.packageValue ?? selectedPackage ?? "none";
         const sanitizedCountry = values.country?.trim() ?? "";
-        const countryValue = sanitizedCountry || "unknown";
+        const countryValue = sanitizedCountry || undefined;
 
         if (previousFailed) {
             event("form_retry", {
                 attempt: attemptNumber,
-                category: categoryName,
+                category: categoryId,
                 program_name: programName,
-                country: countryValue,
+                ...(countryValue ? { form_country: countryValue } : {}),
             });
         }
 
@@ -394,18 +393,18 @@ export function LeadForm({
                 lastSubmissionFailedRef.current = false;
 
                 event("form_submitted", {
-                    category: categoryName,
+                    category: categoryId,
                     program_name: programName,
-                    country: countryValue,
                     attempt: attemptNumber,
+                    ...(countryValue ? { form_country: countryValue } : {}),
                 });
 
                 if (result.paymentLinkStatus === "success") {
                     event("form_submitted_with_payment", {
-                        category: categoryName,
+                        category: categoryId,
                         program_name: programName,
-                        country: countryValue,
                         attempt: attemptNumber,
+                        ...(countryValue ? { form_country: countryValue } : {}),
                     });
                 }
 
@@ -557,7 +556,8 @@ export function LeadForm({
             return next;
         });
         if (fieldId === "country") {
-            updateAnalyticsContext({ country: value.trim() || "unknown" });
+            const trimmed = value.trim();
+            updateAnalyticsContext({ form_country: trimmed ? trimmed : undefined });
         }
     };
 

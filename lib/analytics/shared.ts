@@ -31,13 +31,13 @@ export type AnalyticsEventPayload = Record<string, AnalyticsPrimitive | undefine
 
 export type SharedAnalyticsContext = {
   locale: string;
-  country: string;
   device_type: string;
   utm_source: string;
   utm_medium: string;
   utm_campaign: string;
   category: string;
   program_name: string;
+  form_country?: string;
   referrer: string;
   page_path?: string;
   page_location?: string;
@@ -47,13 +47,13 @@ export type SharedAnalyticsContext = {
 
 export const ANALYTICS_DEFAULTS: SharedAnalyticsContext = {
   locale: "unknown",
-  country: "unknown",
   device_type: "unknown",
   utm_source: "direct",
   utm_medium: "direct",
   utm_campaign: "none",
   category: "none",
   program_name: "none",
+  form_country: undefined,
   referrer: "direct",
   page_path: undefined,
   page_location: undefined,

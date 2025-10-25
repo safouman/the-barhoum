@@ -10,14 +10,13 @@ type SectionTracker = {
   element: HTMLElement;
   name: string;
   trackEngagement: boolean;
-  thresholdsHit: Set<number>;
   engaged: boolean;
   timerId: number | null;
 };
 
 const SECTION_SELECTOR = "[data-analytics-section]";
 const UTM_STORAGE_KEY = "whispered:utm";
-const SCROLL_THRESHOLDS: Array<{ threshold: number; event: AnalyticsEventName }> = [
+const PAGE_SCROLL_THRESHOLDS: Array<{ threshold: number; event: AnalyticsEventName }> = [
   { threshold: 0.25, event: "scroll_25" },
   { threshold: 0.5, event: "scroll_50" },
   { threshold: 0.75, event: "scroll_75" },
@@ -36,23 +35,6 @@ function detectDeviceType(): string {
   if (/tablet|ipad/.test(ua)) return "tablet";
   if (/mobile|iphone|android/.test(ua)) return "mobile";
   return "desktop";
-}
-
-function detectCountry(): string {
-  if (typeof window === "undefined") return "unknown";
-  try {
-    const resolved = Intl.DateTimeFormat().resolvedOptions().locale;
-    const [, region] = resolved.split("-");
-    if (region) return region.toUpperCase();
-  } catch {
-    // ignore
-  }
-  if (typeof navigator !== "undefined") {
-    const locale = navigator.language || (Array.isArray(navigator.languages) ? navigator.languages[0] : "");
-    const [, region] = (locale || "").split("-");
-    if (region) return region.toUpperCase();
-  }
-  return "unknown";
 }
 
 function resolveReferrer(): string {
@@ -127,7 +109,6 @@ function collectSections(previous: SectionTracker[] = []): SectionTracker[] {
   const nodes = Array.from(document.querySelectorAll<HTMLElement>(SECTION_SELECTOR));
   return nodes.map((element) => ({
     ...(previousMap.get(element) ?? {
-      thresholdsHit: new Set<number>(),
       engaged: false,
       timerId: null,
     }),
@@ -146,6 +127,15 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   const engagementObserverRef = useRef<IntersectionObserver | null>(null);
   const previousPathRef = useRef<string | null>(null);
   const mutationObserverRef = useRef<MutationObserver | null>(null);
+  const pageScrollStateRef = useRef<{
+    thresholds: Array<{ threshold: number; event: AnalyticsEventName }>;
+    nextIndex: number;
+    hasUserScrolled: boolean;
+  }>({
+    thresholds: PAGE_SCROLL_THRESHOLDS,
+    nextIndex: 0,
+    hasUserScrolled: false,
+  });
 
   const search = useMemo(() => searchParams?.toString?.() ?? "", [searchParams]);
 
@@ -155,13 +145,14 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     const utm = resolveUtm(window.location.search);
     initAnalyticsContext({
       locale,
-      country: detectCountry(),
       device_type: detectDeviceType(),
       referrer: resolveReferrer(),
       page_path: window.location.pathname + window.location.search,
       page_location: window.location.href,
       page_title: document.title,
       debug_mode: process.env.NODE_ENV !== "production",
+      category: "none",
+      program_name: "none",
       ...utm,
     });
 
@@ -169,55 +160,33 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     setupEngagementObserver();
 
     const handleScroll = () => {
+      const state = pageScrollStateRef.current;
+      if (!state.hasUserScrolled && window.scrollY <= 0) {
+        return;
+      }
+      state.hasUserScrolled = true;
       if (tickingRef.current) return;
       tickingRef.current = true;
       window.requestAnimationFrame(() => {
         tickingRef.current = false;
-        updateScrollDepth();
+        updatePageScroll();
       });
     };
 
-    const updateScrollDepth = () => {
-      if (typeof window === "undefined") return;
-      const viewportTop = window.scrollY;
-      const viewportBottom = viewportTop + window.innerHeight;
-
-      sectionsRef.current.forEach((section) => {
-        const rect = section.element.getBoundingClientRect();
-        const sectionHeight = rect.height;
-        if (sectionHeight <= 0) return;
-
-        const sectionTop = rect.top + viewportTop;
-        const sectionBottom = sectionTop + sectionHeight;
-
-        if (viewportBottom < sectionTop || viewportTop > sectionBottom) {
-          return;
-        }
-
-        const progress = Math.max(
-          0,
-          Math.min((viewportBottom - sectionTop) / sectionHeight, 1)
-        );
-
-        SCROLL_THRESHOLDS.forEach(({ threshold, event: eventName }) => {
-          if (section.thresholdsHit.has(threshold)) return;
-          if (progress >= threshold) {
-            section.thresholdsHit.add(threshold);
-            event(eventName, { section: section.name });
-          }
-        });
-      });
+    const handleResize = () => {
+      if (!pageScrollStateRef.current.hasUserScrolled) return;
+      updatePageScroll();
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    window.addEventListener("resize", handleScroll);
-
-    updateScrollDepth();
+    window.addEventListener("resize", handleResize);
 
     const observer = new MutationObserver(() => {
       sectionsRef.current = collectSections(sectionsRef.current);
       setupEngagementObserver();
-      updateScrollDepth();
+      if (pageScrollStateRef.current.hasUserScrolled) {
+        updatePageScroll();
+      }
     });
     observer.observe(document.body, { childList: true, subtree: true });
     mutationObserverRef.current = observer;
@@ -226,7 +195,7 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("resize", handleScroll);
+      window.removeEventListener("resize", handleResize);
       teardownEngagementObserver();
       mutationObserverRef.current?.disconnect();
       mutationObserverRef.current = null;
@@ -270,6 +239,14 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     previousPathRef.current = currentPath;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, search]);
+
+  useEffect(() => {
+    pageScrollStateRef.current = {
+      thresholds: PAGE_SCROLL_THRESHOLDS,
+      nextIndex: 0,
+      hasUserScrolled: false,
+    };
+  }, [pathname]);
 
   function setupEngagementObserver() {
     if (typeof window === "undefined") return;
@@ -319,6 +296,28 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     if (engagementObserverRef.current) {
       engagementObserverRef.current.disconnect();
       engagementObserverRef.current = null;
+    }
+  }
+
+  function updatePageScroll() {
+    if (typeof window === "undefined") return;
+    const state = pageScrollStateRef.current;
+    if (!state.hasUserScrolled) return;
+
+    const maxScrollable = document.documentElement.scrollHeight - window.innerHeight;
+    if (maxScrollable <= 0) {
+      return;
+    }
+
+    const progress = Math.min(window.scrollY / maxScrollable, 1);
+
+    while (
+      state.nextIndex < state.thresholds.length &&
+      progress >= state.thresholds[state.nextIndex].threshold
+    ) {
+      const { event: eventName } = state.thresholds[state.nextIndex];
+      state.nextIndex += 1;
+      event(eventName);
     }
   }
 

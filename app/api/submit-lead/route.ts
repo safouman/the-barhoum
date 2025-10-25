@@ -33,9 +33,9 @@ function parseLocale(acceptLanguage: string | null): string {
 
 function extractUtmFromReferer(referer: string | null): Pick<SharedAnalyticsContext, "utm_source" | "utm_medium" | "utm_campaign"> {
     const defaults = {
-        utm_source: "unknown",
-        utm_medium: "unknown",
-        utm_campaign: "unknown",
+        utm_source: "direct",
+        utm_medium: "direct",
+        utm_campaign: "none",
     };
     if (!referer) {
         return defaults;
@@ -65,9 +65,10 @@ function resolveReferrerValue(referer: string | null): string {
 function buildAutomationContext(req: NextRequest, formData: LeadFormData): Partial<SharedAnalyticsContext> {
     const referer = req.headers.get("referer");
     const utm = extractUtmFromReferer(referer);
+    const trimmedCountry = formData.country?.trim() ?? "";
     return {
         locale: parseLocale(req.headers.get("accept-language")),
-        country: formData.country?.trim() || "unknown",
+        form_country: trimmedCountry || undefined,
         device_type: parseDeviceType(req.headers.get("user-agent")),
         utm_source: utm.utm_source,
         utm_medium: utm.utm_medium,

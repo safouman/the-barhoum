@@ -6,14 +6,14 @@ import { trackAutomationEvent } from "@/lib/analytics/server";
 function buildContextFromMetadata(metadata: Stripe.Metadata | null | undefined) {
   return {
     locale: (metadata?.locale as string | undefined) ?? "unknown",
-    country:
+    form_country:
       (metadata?.customer_country as string | undefined) ??
       (metadata?.country as string | undefined) ??
-      "unknown",
+      undefined,
     device_type: "server",
-    utm_source: (metadata?.utm_source as string | undefined) ?? "unknown",
-    utm_medium: (metadata?.utm_medium as string | undefined) ?? "unknown",
-    utm_campaign: (metadata?.utm_campaign as string | undefined) ?? "unknown",
+    utm_source: (metadata?.utm_source as string | undefined) ?? "direct",
+    utm_medium: (metadata?.utm_medium as string | undefined) ?? "direct",
+    utm_campaign: (metadata?.utm_campaign as string | undefined) ?? "none",
     category: (metadata?.category as string | undefined) ?? "none",
     program_name:
       (metadata?.package_id as string | undefined) ??
