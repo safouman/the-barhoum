@@ -4,6 +4,7 @@ export const revalidate = 0;
 export const runtime = 'nodejs';
 import Script from "next/script";
 import { Inter, Noto_Naskh_Arabic } from "next/font/google";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/react";
 import "../styles/globals.css";
 import { LocaleProvider } from "@/providers/locale-provider";
 import { AnalyticsProvider } from "@/providers/analytics-provider";
@@ -44,6 +45,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const defaultPaymentSlug = payments[0]?.slug;
   const fontClass = `${inter.variable} ${notoNaskhArabic.variable}`;
   const measurementId = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
+  const isProduction = process.env.NODE_ENV === "production";
 
   return (
     <html lang={locale} dir={direction} className={fontClass}>
@@ -69,6 +71,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         ) : null}
         <LocaleProvider initialLocale={locale}>
           <AnalyticsProvider>
+            {isProduction ? <VercelAnalytics /> : null}
             <SiteHeader ui={ui} site={site} paymentSlug={defaultPaymentSlug} />
             <main>{children}</main>
             <Footer site={site} />

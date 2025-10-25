@@ -62,7 +62,10 @@ export async function POST(req: NextRequest) {
         {
           amount: session.amount_total ? session.amount_total / 100 : undefined,
           currency: session.currency ?? undefined,
-          payment_intent: session.payment_intent ?? undefined,
+          payment_intent:
+            typeof session.payment_intent === "string"
+              ? session.payment_intent
+              : session.payment_intent?.id,
         },
         context,
         { clientId: session.id }

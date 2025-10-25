@@ -301,6 +301,26 @@ export function LeadForm({
         });
     }, [hasFormStarted, selectedCategory, selectedPackage]);
 
+    const emitFormStepChanged = useCallback(
+        (nextIndex: number, direction: "next" | "back") => {
+            if (nextIndex === step) {
+                return;
+            }
+            const sanitizedCountry = values.country?.trim() ?? "";
+            const payload: Record<string, string | number> = {
+                step_number: nextIndex + 1,
+                direction,
+                category: selectedCategory ?? "none",
+                program_name: packSummary?.packageValue ?? selectedPackage ?? "none",
+            };
+            if (sanitizedCountry) {
+                payload.form_country = sanitizedCountry;
+            }
+            event("form_step_changed", payload);
+        },
+        [packSummary, selectedCategory, selectedPackage, step, values.country]
+    );
+
     const focusField = (fieldId: keyof LeadFormFormState) => {
         const node = fieldRefs.current[fieldId];
         if (node && typeof (node as HTMLElement).focus === "function") {
@@ -331,7 +351,6 @@ export function LeadForm({
 
     const handleSubmit = async (eventRef: FormEvent<HTMLFormElement>) => {
         eventRef.preventDefault();
-        emitFormStarted();
 
         const validation = runStepValidation(step);
         if (!validation.isValid) {
@@ -355,18 +374,22 @@ export function LeadForm({
         const sanitizedCountry = values.country?.trim() ?? "";
         const countryValue = sanitizedCountry || undefined;
 
+        const baseEventPayload = {
+            category: categoryId,
+            program_name: programName,
+            attempt: attemptNumber,
+            ...(countryValue ? { form_country: countryValue } : {}),
+        };
+
         if (previousFailed) {
-            event("form_retry", {
-                attempt: attemptNumber,
-                category: categoryId,
-                program_name: programName,
-                ...(countryValue ? { form_country: countryValue } : {}),
-            });
+            event("form_retry", baseEventPayload);
         }
 
         setSubmissionError(null);
         setIsSubmitting(true);
         lastSubmissionFailedRef.current = false;
+
+        event("form_submitted", baseEventPayload);
 
         try {
             const payload = {
@@ -392,21 +415,18 @@ export function LeadForm({
                 setSubmissionError(null);
                 lastSubmissionFailedRef.current = false;
 
-                event("form_submitted", {
-                    category: categoryId,
-                    program_name: programName,
-                    attempt: attemptNumber,
-                    ...(countryValue ? { form_country: countryValue } : {}),
-                });
-
                 if (result.paymentLinkStatus === "success") {
                     event("form_submitted_with_payment", {
-                        category: categoryId,
-                        program_name: programName,
-                        attempt: attemptNumber,
-                        ...(countryValue ? { form_country: countryValue } : {}),
+                        ...baseEventPayload,
+                        payment_link_status: result.paymentLinkStatus,
                     });
                 }
+
+                event("form_completed", {
+                    ...baseEventPayload,
+                    duplicate: Boolean(result.duplicate),
+                    payment_link_status: result.paymentLinkStatus ?? "not-required",
+                });
 
                 onSubmitted?.();
             } else {
@@ -415,6 +435,10 @@ export function LeadForm({
                 const errorMessage =
                     result.error || "Failed to submit form. Please try again.";
                 setSubmissionError(errorMessage);
+                event("form_error", {
+                    ...baseEventPayload,
+                    error_reason: result.error ? String(result.error) : "server_error",
+                });
             }
         } catch (error) {
             lastSubmissionFailedRef.current = true;
@@ -423,6 +447,10 @@ export function LeadForm({
             setSubmissionError(
                 "Network error. Please check your connection and try again."
             );
+            event("form_error", {
+                ...baseEventPayload,
+                error_reason: error instanceof Error ? error.message : "network_error",
+            });
         }
     };
 
@@ -439,12 +467,22 @@ export function LeadForm({
             }
             return;
         }
-        setStep((prev) => Math.min(prev + 1, totalSteps - 1));
+        const nextStepIndex = Math.min(step + 1, totalSteps - 1);
+        if (nextStepIndex === step) {
+            return;
+        }
+        emitFormStepChanged(nextStepIndex, "next");
+        setStep(nextStepIndex);
     };
 
     const goToPreviousStep = (event: MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        setStep((prev) => Math.max(prev - 1, 0));
+        const previousStepIndex = Math.max(step - 1, 0);
+        if (previousStepIndex === step) {
+            return;
+        }
+        emitFormStepChanged(previousStepIndex, "back");
+        setStep(previousStepIndex);
     };
 
     const stepIsValid = useMemo(() => {
@@ -741,7 +779,6 @@ export function LeadForm({
             }}
             className="relative mx-auto flex w-full max-w-[660px] flex-col gap-8 rounded-[14px] border border-border/35 bg-white px-7 pt-6 pb-6 shadow-[0_26px_48px_-22px_rgba(15,23,42,0.18)]"
             onSubmit={handleSubmit}
-            onFocus={emitFormStarted}
             dir={isRtl ? "rtl" : "ltr"}
             data-step={currentStep.id}
         >

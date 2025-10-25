@@ -127,6 +127,7 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   const engagementObserverRef = useRef<IntersectionObserver | null>(null);
   const previousPathRef = useRef<string | null>(null);
   const mutationObserverRef = useRef<MutationObserver | null>(null);
+  const lastPageViewRef = useRef<string | null>(null);
   const pageScrollStateRef = useRef<{
     thresholds: Array<{ threshold: number; event: AnalyticsEventName }>;
     nextIndex: number;
@@ -229,12 +230,16 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
       referrer: previousReferrer,
     });
 
-    event("page_view", {
-      page_path: currentPath,
-      page_location: currentLocation,
-      page_title: currentTitle,
-      referrer: previousReferrer,
-    });
+    const pageKey = `${currentPath}|${currentLocation}`;
+    if (lastPageViewRef.current !== pageKey) {
+      lastPageViewRef.current = pageKey;
+      event("page_view", {
+        page_path: currentPath,
+        page_location: currentLocation,
+        page_title: currentTitle,
+        referrer: previousReferrer,
+      });
+    }
 
     previousPathRef.current = currentPath;
     // eslint-disable-next-line react-hooks/exhaustive-deps
