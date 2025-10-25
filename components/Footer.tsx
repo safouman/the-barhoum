@@ -123,7 +123,28 @@ export function Footer({ site }: FooterProps) {
 
                     {/* Copyright */}
                     <div className="text-xs text-[#222] opacity-60">
-                        © 2025 {brandName}
+                        <div>© 2025 {brandName}</div>
+                        <div
+                            className={`flex flex-wrap items-center justify-center gap-4 ${
+                                isRtl ? "flex-row-reverse" : ""
+                            }`}
+                            dir={isRtl ? "rtl" : "ltr"}
+                        >
+                            <a
+                                href="/privacy"
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                Privacy Policy
+                            </a>
+                            <a
+                                href="/terms"
+                                target="_blank"
+                                rel="noreferrer"
+                            >
+                                Terms of Service
+                            </a>
+                        </div>
                     </div>
                 </div>
             </Container>

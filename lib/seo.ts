@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-type PageKey = "home" | "cv" | "links" | "pay";
+type PageKey = "home" | "cv" | "links" | "pay" | "privacy" | "terms";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://barhoum.coach";
 const defaultOgImage = "/images/logo.png";
@@ -44,6 +44,22 @@ const pageMetadata: Record<PageKey, Metadata> = {
             "Experience a calm, modern coaching practice shaped by Ibrahim ben Abdallah—strategic guidance, reflective rituals, and human-centered leadership.",
         openGraph: {
             url: `${siteUrl}/`,
+        },
+    },
+    privacy: {
+        title: "Privacy Policy",
+        description:
+            "Learn how Barhoum Coaching collects, uses, and protects personal information across all services.",
+        openGraph: {
+            url: `${siteUrl}/privacy`,
+        },
+    },
+    terms: {
+        title: "Terms of Service",
+        description:
+            "Understand the terms and conditions that guide your experience with Barhoum Coaching offerings.",
+        openGraph: {
+            url: `${siteUrl}/terms`,
         },
     },
     cv: {
