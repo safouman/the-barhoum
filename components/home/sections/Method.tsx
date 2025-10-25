@@ -22,6 +22,7 @@ export const HomeMethod: HomeThemeDefinition["Method"] = ({ locale, method, mark
         </span>
       }
       className={clsx("bg-surface", styles.methodSection)}
+      data-analytics-section="Method"
     >
       <Container className="px-0 md:px-sm">
         <div

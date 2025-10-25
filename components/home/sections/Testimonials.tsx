@@ -236,6 +236,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
         <Section
             id="testimonials"
             className="relative overflow-hidden bg-gradient-to-b "
+            data-analytics-section="Testimonials"
         >
             <Container>
                 <div

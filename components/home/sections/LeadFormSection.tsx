@@ -135,6 +135,8 @@ export const HomeLeadForm: HomeThemeDefinition["LeadForm"] = ({
         <Section
             id="lead-form"
             className="border-t border-border/60 bg-background"
+            data-analytics-section="Form"
+            data-analytics-engage="true"
         >
             <Container className="space-y-12 md:space-y-16">
                 <div className="px-3 text-center text-text sm:px-0">

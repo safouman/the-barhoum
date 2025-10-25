@@ -53,6 +53,8 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
             id="categories"
             title={ui.categories}
             className="bg-background"
+            data-analytics-section="Categories"
+            data-analytics-engage="true"
         >
             <Container>
                 <p className="mb-10 text-center text-xs uppercase tracking-[0.4em] text-subtle">

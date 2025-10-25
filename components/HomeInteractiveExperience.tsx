@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { Category, LeadFormCopy, Locale, UIStrings, HomeData } from "@/lib/content";
-import { event } from "@/lib/analytics";
+import { event, updateAnalyticsContext } from "@/lib/analytics";
 import { useLocale } from "@/providers/locale-provider";
 import {
   HomeCategories,
@@ -39,6 +39,7 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy 
   const [expandedMobileCategory, setExpandedMobileCategory] = useState<Category["id"] | undefined>();
   const [selectedPack, setSelectedPack] = useState<PackSelection | null>(null);
   const [leadFormVisible, setLeadFormVisible] = useState(false);
+  const lastFormOpenKeyRef = useRef<string | null>(null);
 
   const scrollToId = useCallback((targetId: string) => {
     if (typeof window === "undefined") return;
@@ -86,6 +87,34 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy 
       event("category_view", { category: activeCategory });
     }
   }, [activeCategory]);
+
+  useEffect(() => {
+    updateAnalyticsContext({
+      category: activeCategoryLabel ?? "none",
+    });
+  }, [activeCategoryLabel]);
+
+  useEffect(() => {
+    updateAnalyticsContext({
+      program_name: selectedPack?.title ?? "none",
+    });
+  }, [selectedPack]);
+
+  useEffect(() => {
+    if (!leadFormVisible || !selectedPack) {
+      return;
+    }
+    const openKey = `${selectedPack.packageId ?? "unknown"}|${activeCategory ?? "none"}`;
+    if (lastFormOpenKeyRef.current === openKey) {
+      return;
+    }
+    lastFormOpenKeyRef.current = openKey;
+    event("form_opened", {
+      category: activeCategoryLabel ?? activeCategory ?? "none",
+      program_name: selectedPack.title,
+      package_id: selectedPack.packageId,
+    });
+  }, [leadFormVisible, selectedPack, activeCategory, activeCategoryLabel]);
 
   useEffect(() => {
     if (!activeCategory) return;
@@ -151,23 +180,25 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy 
         selectedPackSummary={selectedPackSummary}
         activeCategoryId={activeCategory}
         selectedPackageId={selectedPackageId}
-        onPackSelect={(pack) => {
-          event("package_click", {
-            action: "select",
-            category: pack.category,
-            sessions: pack.sessions,
-          });
-          setSelectedPack(pack);
-        }}
-        onPackContinue={(pack) => {
-          event("package_click", {
-            action: "continue",
-            category: pack.category,
-            sessions: pack.sessions,
-          });
-          setSelectedPack(pack);
-          setLeadFormVisible(true);
-        }}
+    onPackSelect={(pack) => {
+      event("package_click", {
+        action: "select",
+        category: pack.category,
+        sessions: pack.sessions,
+      });
+      setSelectedPack(pack);
+      updateAnalyticsContext({ program_name: pack.title });
+    }}
+    onPackContinue={(pack) => {
+      event("package_click", {
+        action: "continue",
+        category: pack.category,
+        sessions: pack.sessions,
+      });
+      setSelectedPack(pack);
+      updateAnalyticsContext({ program_name: pack.title });
+      setLeadFormVisible(true);
+    }}
         locale={locale}
         ui={strings}
       />
@@ -189,6 +220,7 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy 
                 sessions: pack.sessions,
               });
               setSelectedPack(pack);
+              updateAnalyticsContext({ program_name: pack.title });
             }}
             onContinue={(pack) => {
               event("package_click", {
@@ -197,6 +229,7 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy 
                 sessions: pack.sessions,
               });
               setSelectedPack(pack);
+              updateAnalyticsContext({ program_name: pack.title });
               setLeadFormVisible(true);
             }}
           />

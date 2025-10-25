@@ -4,6 +4,8 @@ import { ALL_PACKAGE_IDS, isPackageId } from "@/lib/commerce/packages";
 import { leadFormSchema, type LeadFormData } from "@/lib/validation/lead-form";
 import { createPaymentLink } from "@/lib/stripe/payment-links";
 import { requiresPayment } from "@/lib/utils/geo";
+import type { SharedAnalyticsContext } from "@/lib/analytics/shared";
+import { trackAutomationEvent } from "@/lib/analytics/server";
 
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
@@ -11,6 +13,70 @@ const RATE_LIMIT_WINDOW = 60 * 60 * 1000;
 const MAX_REQUESTS_PER_WINDOW = 15;
 const MAX_ATTEMPTS = 3;
 const INITIAL_RETRY_DELAY = 1000;
+
+function parseDeviceType(userAgent: string | null): string {
+    if (!userAgent) return "unknown";
+    const ua = userAgent.toLowerCase();
+    if (ua.includes("tablet") || ua.includes("ipad")) return "tablet";
+    if (ua.includes("mobile") || ua.includes("iphone") || ua.includes("android")) return "mobile";
+    return "desktop";
+}
+
+function parseLocale(acceptLanguage: string | null): string {
+    if (!acceptLanguage) return "unknown";
+    const primary = acceptLanguage.split(",")[0] ?? "";
+    const [raw] = primary.split(";");
+    const normalized = raw?.trim() ?? "";
+    if (!normalized) return "unknown";
+    return normalized.length > 5 ? normalized.slice(0, 5) : normalized;
+}
+
+function extractUtmFromReferer(referer: string | null): Pick<SharedAnalyticsContext, "utm_source" | "utm_medium" | "utm_campaign"> {
+    const defaults = {
+        utm_source: "unknown",
+        utm_medium: "unknown",
+        utm_campaign: "unknown",
+    };
+    if (!referer) {
+        return defaults;
+    }
+    try {
+        const url = new URL(referer);
+        return {
+            utm_source: url.searchParams.get("utm_source") ?? defaults.utm_source,
+            utm_medium: url.searchParams.get("utm_medium") ?? defaults.utm_medium,
+            utm_campaign: url.searchParams.get("utm_campaign") ?? defaults.utm_campaign,
+        };
+    } catch {
+        return defaults;
+    }
+}
+
+function resolveReferrerValue(referer: string | null): string {
+    if (!referer) return "server";
+    try {
+        const refUrl = new URL(referer);
+        return refUrl.origin + refUrl.pathname;
+    } catch {
+        return referer;
+    }
+}
+
+function buildAutomationContext(req: NextRequest, formData: LeadFormData): Partial<SharedAnalyticsContext> {
+    const referer = req.headers.get("referer");
+    const utm = extractUtmFromReferer(referer);
+    return {
+        locale: parseLocale(req.headers.get("accept-language")),
+        country: formData.country?.trim() || "unknown",
+        device_type: parseDeviceType(req.headers.get("user-agent")),
+        utm_source: utm.utm_source,
+        utm_medium: utm.utm_medium,
+        utm_campaign: utm.utm_campaign,
+        category: formData.category?.trim() || "none",
+        program_name: formData.package?.trim() || "none",
+        referrer: resolveReferrerValue(referer),
+    };
+}
 
 function getRateLimitKey(req: NextRequest): string {
     const forwarded = req.headers.get("x-forwarded-for");
@@ -57,9 +123,11 @@ async function delay(ms: number): Promise<void> {
 async function sendWhatsAppNotifications({
     formData,
     requestId,
+    analyticsContext,
 }: {
     formData: LeadFormData;
     requestId: string;
+    analyticsContext: Partial<SharedAnalyticsContext>;
 }): Promise<void> {
     const accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
     const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
@@ -69,6 +137,14 @@ async function sendWhatsAppNotifications({
     if (!accessToken || !phoneNumberId) {
         console.warn(
             `[${requestId}] ⚠️ WhatsApp configuration missing (token or phone number ID); skipping notifications`
+        );
+        await trackAutomationEvent(
+            "whatsapp_failed",
+            {
+                reason: "missing-configuration",
+            },
+            analyticsContext,
+            { clientId: requestId }
         );
         return;
     }
@@ -84,6 +160,14 @@ async function sendWhatsAppNotifications({
     if (recipients.length === 0) {
         console.warn(
             `[${requestId}] ⚠️ No WhatsApp recipients configured; skipping notifications`
+        );
+        await trackAutomationEvent(
+            "whatsapp_failed",
+            {
+                reason: "missing-recipient",
+            },
+            analyticsContext,
+            { clientId: requestId }
         );
         return;
     }
@@ -201,6 +285,15 @@ async function sendWhatsAppNotifications({
                             body: errorText,
                         }
                     );
+                    await trackAutomationEvent(
+                        "whatsapp_failed",
+                        {
+                            recipient,
+                            status: response.status,
+                        },
+                        analyticsContext,
+                        { clientId: requestId }
+                    );
                     return;
                 }
 
@@ -209,10 +302,31 @@ async function sendWhatsAppNotifications({
                         templateName ? "template" : "text"
                     } message`
                 );
+                await trackAutomationEvent(
+                    "whatsapp_sent",
+                    {
+                        recipient,
+                        template: templateName ? "template" : "text",
+                    },
+                    analyticsContext,
+                    { clientId: requestId }
+                );
             } catch (error) {
                 console.error(
                     `[${requestId}] ❌ Error sending WhatsApp notification to ${recipient}`,
                     error
+                );
+                await trackAutomationEvent(
+                    "whatsapp_failed",
+                    {
+                        recipient,
+                        reason:
+                            error instanceof Error
+                                ? error.message
+                                : "unknown-error",
+                    },
+                    analyticsContext,
+                    { clientId: requestId }
                 );
             }
         })
@@ -294,11 +408,13 @@ async function processStripePaymentLink({
     formData,
     googleScriptUrl,
     googleScriptSecret,
+    analyticsContext,
 }: {
     requestId: string;
     formData: LeadFormData;
     googleScriptUrl: string;
     googleScriptSecret: string;
+    analyticsContext: Partial<SharedAnalyticsContext>;
 }): Promise<StripeJobResult> {
     const jobId = `${requestId}:stripe`;
 
@@ -318,6 +434,7 @@ async function processStripePaymentLink({
             country: formData.country,
             phone: formData.phone,
             packageId: formData.package,
+            category: formData.category,
         });
 
         if (!paymentLink) {
@@ -337,12 +454,12 @@ async function processStripePaymentLink({
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-        try {
-            const response = await fetchWithRetry(
-                googleScriptUrl,
-                {
-                    method: "POST",
-                    headers: {
+    try {
+        const response = await fetchWithRetry(
+            googleScriptUrl,
+            {
+                method: "POST",
+                headers: {
                         "Content-Type": "application/json",
                         "User-Agent": "Barhoum-Coaching-Site/1.0",
                     },
@@ -355,7 +472,7 @@ async function processStripePaymentLink({
                 `${jobId}:update`
             );
 
-            if (!response.ok) {
+        if (!response.ok) {
                 const responseText = await response
                     .text()
                     .catch(() => "Unable to read response");
@@ -374,16 +491,24 @@ async function processStripePaymentLink({
                         body: responseText,
                     },
                 };
-            }
+        }
 
-            const responseText = await response
-                .text()
-                .catch(() => "Unable to read response");
-            console.log(
-                `[${jobId}] ✅ Payment link applied in Google Sheet`,
-                responseText.substring(0, 500)
-            );
-            return { status: "success" };
+        const responseText = await response
+            .text()
+            .catch(() => "Unable to read response");
+        console.log(
+            `[${jobId}] ✅ Payment link applied in Google Sheet`,
+            responseText.substring(0, 500)
+        );
+        await trackAutomationEvent(
+            "stripe_link_generated",
+            {
+                package_id: formData.package,
+            },
+            analyticsContext,
+            { clientId: requestId }
+        );
+        return { status: "success" };
         } catch (error) {
             if (error instanceof Error && error.name === "AbortError") {
                 console.error(
@@ -540,6 +665,8 @@ export async function POST(req: NextRequest) {
         }
         formData.package = normalizedPackageId;
 
+        const automationContext = buildAutomationContext(req, formData);
+
         console.log(
             `[${requestId}] 💰 Payment eligibility check - category: ${formData.category}, country: ${formData.country}`
         );
@@ -692,6 +819,7 @@ export async function POST(req: NextRequest) {
                         await sendWhatsAppNotifications({
                             formData,
                             requestId,
+                            analyticsContext: automationContext,
                         });
                     } catch (error) {
                         console.error(
@@ -719,6 +847,7 @@ export async function POST(req: NextRequest) {
                         formData,
                         googleScriptUrl,
                         googleScriptSecret,
+                        analyticsContext: automationContext,
                     });
 
                     paymentLinkStatus = stripeResult.status;

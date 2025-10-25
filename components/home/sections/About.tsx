@@ -461,7 +461,12 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
     const video = media.videos[0];
 
     return (
-        <Section id="about" className="bg-background">
+        <Section
+            id="about"
+            className="bg-background"
+            data-analytics-section="About"
+            data-analytics-engage="true"
+        >
             <Container className="pt-20 pb-16 sm:pt-24 sm:pb-20 md:pt-24 md:pb-24">
                 {/* Unified content block with RTL-specific styling */}
                 <div

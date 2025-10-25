@@ -5,6 +5,7 @@ import type { JSX } from "react";
 import { useLocale } from "@/providers/locale-provider";
 import { Container } from "./Container";
 import type { SiteConfig } from "@/lib/content";
+import { event } from "@/lib/analytics";
 
 interface FooterProps {
     site: SiteConfig;
@@ -108,6 +109,12 @@ export function Footer({ site }: FooterProps) {
                                 rel="noopener noreferrer"
                                 className="w-10 h-10 rounded-lg bg-gray-50 hover:bg-[#2AD6CA] hover:text-white flex items-center justify-center text-[#222] transition-all duration-200 hover:scale-105"
                                 aria-label={social.label}
+                                onClick={() =>
+                                    event("social_link_clicked", {
+                                        platform: social.id,
+                                        href: social.href,
+                                    })
+                                }
                             >
                                 {social.icon}
                             </a>

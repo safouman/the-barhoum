@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Section } from "@/components/Section";
 import { Container } from "@/components/Container";
 import { useLocale } from "@/providers/locale-provider";
+import { event } from "@/lib/analytics";
 
 const ExperienceWave = dynamic(
     () => import("./ExperienceWave").then((mod) => mod.ExperienceWave),
@@ -19,6 +20,8 @@ export function HomeExperienceSection() {
     const isRtl = direction === "rtl";
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const listenersAttachedRef = useRef(false);
+    const audioPlayedRef = useRef(false);
+    const audioCompletedRef = useRef(false);
 
     const [hasInteracted, setHasInteracted] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -31,6 +34,10 @@ export function HomeExperienceSection() {
     const handleAudioPlay = useCallback(() => {
         setIsLoading(false);
         setIsPlaying(true);
+        if (!audioPlayedRef.current) {
+            audioPlayedRef.current = true;
+            event("audio_played", { section: "Experience" });
+        }
         if (buttonRestoreTimeoutRef.current) {
             window.clearTimeout(buttonRestoreTimeoutRef.current);
             buttonRestoreTimeoutRef.current = null;
@@ -70,6 +77,21 @@ export function HomeExperienceSection() {
         setShowButton(true);
     }, []);
 
+    const handleAudioTimeUpdate = useCallback(() => {
+        const audio = audioRef.current;
+        if (!audio || audioCompletedRef.current) return;
+        const duration = audio.duration;
+        if (!duration || Number.isNaN(duration)) return;
+        const progress = audio.currentTime / duration;
+        if (progress >= 0.95) {
+            audioCompletedRef.current = true;
+            event("audio_completed", {
+                section: "Experience",
+                duration: Math.round(duration),
+            });
+        }
+    }, []);
+
     const ensureAudio = useCallback(() => {
         let audio = audioRef.current;
         if (!audio) {
@@ -93,6 +115,7 @@ export function HomeExperienceSection() {
             audio.addEventListener("waiting", handleAudioWaiting);
             audio.addEventListener("canplay", handleAudioCanPlay);
             audio.addEventListener("error", handleAudioError);
+            audio.addEventListener("timeupdate", handleAudioTimeUpdate);
             listenersAttachedRef.current = true;
         }
 
@@ -102,6 +125,7 @@ export function HomeExperienceSection() {
         handleAudioError,
         handleAudioPause,
         handleAudioPlay,
+        handleAudioTimeUpdate,
         handleAudioWaiting,
     ]);
 
@@ -116,6 +140,7 @@ export function HomeExperienceSection() {
                 audio.removeEventListener("waiting", handleAudioWaiting);
                 audio.removeEventListener("canplay", handleAudioCanPlay);
                 audio.removeEventListener("error", handleAudioError);
+                audio.removeEventListener("timeupdate", handleAudioTimeUpdate);
                 listenersAttachedRef.current = false;
             }
             if (buttonRestoreTimeoutRef.current) {
@@ -129,6 +154,7 @@ export function HomeExperienceSection() {
         handleAudioError,
         handleAudioPause,
         handleAudioPlay,
+        handleAudioTimeUpdate,
         handleAudioWaiting,
     ]);
 
@@ -156,7 +182,11 @@ export function HomeExperienceSection() {
     }, [ensureAudio]);
 
     return (
-        <Section id="experience" className="bg-primary/10">
+        <Section
+            id="experience"
+            className="bg-primary/10"
+            data-analytics-section="Experience"
+        >
             <Container className="flex min-h-[28rem] flex-col items-center justify-center py-20">
                 <div
                     dir={direction}

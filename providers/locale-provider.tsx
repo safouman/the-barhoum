@@ -4,7 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { useSearchParams } from "next/navigation";
 import type { Locale } from "@/lib/content";
 import { DEFAULT_LOCALE, getDirection, SUPPORTED_LOCALES } from "@/lib/i18n";
-import { event } from "@/lib/analytics";
+import { event, updateAnalyticsContext } from "@/lib/analytics";
 
 const LOCALE_COOKIE = "barhoum_locale";
 
@@ -70,7 +70,8 @@ export function LocaleProvider({ children, initialLocale = DEFAULT_LOCALE }: { c
       if (prev === value) {
         return prev;
       }
-      event("lang_switch", { locale: value });
+      event("locale_switch", { from: prev, to: value });
+      updateAnalyticsContext({ locale: value });
       return value;
     });
   }, []);

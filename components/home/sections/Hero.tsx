@@ -15,6 +15,9 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({
 
     return (
         <section
+            id="hero"
+            data-analytics-section="Hero"
+            data-analytics-engage="true"
             className={clsx(
                 styles.hero,
                 isRTL ? styles.heroRtl : styles.heroLtr

@@ -7,12 +7,13 @@ export interface CreatePaymentLinkParams {
   country: string;
   phone: string;
   packageId: string;
+  category: string;
 }
 
 export async function createPaymentLink(
   params: CreatePaymentLinkParams
 ): Promise<string | null> {
-  const { email, fullName, country, phone, packageId } = params;
+  const { email, fullName, country, phone, packageId, category } = params;
 
   console.log(`[Stripe] 🔍 Looking up price ID for package: ${packageId}`);
   const priceId = getPriceId(packageId);
@@ -35,18 +36,19 @@ export async function createPaymentLink(
   console.log(`[Stripe] ✅ Stripe client initialized successfully`);
 
   try {
-    console.log(`[Stripe] 📡 Creating payment link with Stripe API...`);
-    console.log(`[Stripe] Parameters:`, {
-      priceId,
-      customerEmail: email,
-      customerName: fullName,
-      country,
-      packageId,
-    });
+  console.log(`[Stripe] 📡 Creating payment link with Stripe API...`);
+  console.log(`[Stripe] Parameters:`, {
+    priceId,
+    customerEmail: email,
+    customerName: fullName,
+    country,
+    packageId,
+    category,
+  });
 
-    const paymentLink = await stripe.paymentLinks.create({
-      line_items: [
-        {
+  const paymentLink = await stripe.paymentLinks.create({
+    line_items: [
+      {
           price: priceId,
           quantity: 1,
         },
@@ -63,6 +65,7 @@ export async function createPaymentLink(
         customer_country: country,
         customer_phone: phone,
         package_id: packageId,
+        category,
       },
       customer_creation: 'always',
       invoice_creation: {
@@ -72,6 +75,8 @@ export async function createPaymentLink(
             customer_name: fullName,
             customer_country: country,
             customer_phone: phone,
+            category,
+            package_id: packageId,
           },
         },
       },

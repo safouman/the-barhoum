@@ -11,7 +11,7 @@ import type {
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import clsx from "classnames";
 import { Button } from "@/components/Button";
-import { event } from "@/lib/analytics";
+import { event, updateAnalyticsContext } from "@/lib/analytics";
 import { useLocale } from "@/providers/locale-provider";
 import type { LeadFormCopy, Locale } from "@/lib/content";
 import {
@@ -158,7 +158,7 @@ export function LeadForm({
                 .replace("{total}", `${total}`),
         []
     );
-    const [opened, setOpened] = useState(false);
+    const [hasFormStarted, setHasFormStarted] = useState(false);
     const [step, setStep] = useState(0);
     const [values, setValues] = useState<LeadFormFormState>(INITIAL_STATE);
     const [errors, setErrors] = useState<FieldErrors>({});
@@ -186,6 +186,9 @@ export function LeadForm({
         occupation: null,
         passphrase: null,
     });
+    const submitAttemptRef = useRef(0);
+    const lastSubmissionFailedRef = useRef(false);
+    const reportedErrorFieldsRef = useRef(new Set<keyof LeadFormFormState>());
 
     const hiddenValues = useMemo(
         () => ({
@@ -260,6 +263,13 @@ export function LeadForm({
                 if (error) {
                     stepErrors[field.id] = error;
                     invalidFieldIds.push(field.id);
+                    if (!reportedErrorFieldsRef.current.has(field.id)) {
+                        reportedErrorFieldsRef.current.add(field.id);
+                        event("form_error", {
+                            field: field.id,
+                            step: stepIndex + 1,
+                        });
+                    }
                 }
             });
 
@@ -280,15 +290,16 @@ export function LeadForm({
         [steps, validateField, values]
     );
 
-    const handleFocus = () => {
-        if (!opened) {
-            event("form_open", {
-                category: selectedCategory ?? "none",
-                pack: selectedPackage ?? "none",
-            });
-            setOpened(true);
+    const emitFormStarted = useCallback(() => {
+        if (hasFormStarted) {
+            return;
         }
-    };
+        setHasFormStarted(true);
+        event("form_started", {
+            category: selectedCategory ?? "none",
+            program_name: selectedPackage ?? "none",
+        });
+    }, [hasFormStarted, selectedCategory, selectedPackage]);
 
     const focusField = (fieldId: keyof LeadFormFormState) => {
         const node = fieldRefs.current[fieldId];
@@ -320,6 +331,8 @@ export function LeadForm({
 
     const handleSubmit = async (eventRef: FormEvent<HTMLFormElement>) => {
         eventRef.preventDefault();
+        emitFormStarted();
+
         const validation = runStepValidation(step);
         if (!validation.isValid) {
             validation.invalidFieldIds.forEach((fieldId) =>
@@ -331,16 +344,35 @@ export function LeadForm({
             }
             return;
         }
+
+        const previousFailed = lastSubmissionFailedRef.current;
+        const attemptNumber = submitAttemptRef.current + 1;
+        submitAttemptRef.current = attemptNumber;
+
+        const categoryName =
+            packSummary?.categoryValue ?? selectedCategory ?? "none";
+        const programName =
+            packSummary?.packageValue ?? selectedPackage ?? "none";
+        const sanitizedCountry = values.country?.trim() ?? "";
+        const countryValue = sanitizedCountry || "unknown";
+
+        if (previousFailed) {
+            event("form_retry", {
+                attempt: attemptNumber,
+                category: categoryName,
+                program_name: programName,
+                country: countryValue,
+            });
+        }
+
         setSubmissionError(null);
         setIsSubmitting(true);
-        event("form_submit", {
-            category: selectedCategory ?? "none",
-            pack: selectedPackage ?? "none",
-        });
+        lastSubmissionFailedRef.current = false;
 
         try {
             const payload = {
                 ...values,
+                country: sanitizedCountry,
                 category: selectedCategory ?? "",
                 package: selectedPackage ?? "",
             };
@@ -359,14 +391,34 @@ export function LeadForm({
                 setIsSubmitting(false);
                 setSubmitted(true);
                 setSubmissionError(null);
+                lastSubmissionFailedRef.current = false;
+
+                event("form_submitted", {
+                    category: categoryName,
+                    program_name: programName,
+                    country: countryValue,
+                    attempt: attemptNumber,
+                });
+
+                if (result.paymentLinkStatus === "success") {
+                    event("form_submitted_with_payment", {
+                        category: categoryName,
+                        program_name: programName,
+                        country: countryValue,
+                        attempt: attemptNumber,
+                    });
+                }
+
                 onSubmitted?.();
             } else {
+                lastSubmissionFailedRef.current = true;
                 setIsSubmitting(false);
                 const errorMessage =
                     result.error || "Failed to submit form. Please try again.";
                 setSubmissionError(errorMessage);
             }
         } catch (error) {
+            lastSubmissionFailedRef.current = true;
             setIsSubmitting(false);
             console.error("Form submission error:", error);
             setSubmissionError(
@@ -488,6 +540,7 @@ export function LeadForm({
         fieldId: keyof LeadFormFormState,
         value: string
     ) => {
+        emitFormStarted();
         setValues((prev) => ({ ...prev, [fieldId]: value }));
         const fieldConfig = steps
             .flatMap((stepConfig) => stepConfig.fields)
@@ -503,6 +556,9 @@ export function LeadForm({
             }
             return next;
         });
+        if (fieldId === "country") {
+            updateAnalyticsContext({ country: value.trim() || "unknown" });
+        }
     };
 
     const handleFieldBlur = (fieldId: keyof LeadFormFormState) => {
@@ -685,7 +741,7 @@ export function LeadForm({
             }}
             className="relative mx-auto flex w-full max-w-[660px] flex-col gap-8 rounded-[14px] border border-border/35 bg-white px-7 pt-6 pb-6 shadow-[0_26px_48px_-22px_rgba(15,23,42,0.18)]"
             onSubmit={handleSubmit}
-            onFocus={handleFocus}
+            onFocus={emitFormStarted}
             dir={isRtl ? "rtl" : "ltr"}
             data-step={currentStep.id}
         >
