@@ -20,7 +20,30 @@ export type SeoPageConfig = {
     locales: LocaleValueMap<PageLocaleEntry>;
 };
 
+export type SeoBrandConfig = {
+    organization: {
+        name: string;
+        legalName: string;
+        slogan: LocaleValueMap<string>;
+    };
+    person: {
+        name: string;
+        alternateName: string[];
+        jobTitle: string;
+        description: string;
+        image: string;
+    };
+    domains: {
+        primary: string;
+        secondary: string[];
+    };
+    socials: string[];
+    areaServed: string[];
+    availableLanguages: string[];
+};
+
 export type SeoConfig = {
+    brand: SeoBrandConfig;
     defaultTitle: LocaleValueMap<string>;
     titleTemplate: LocaleValueMap<string>;
     siteName: LocaleValueMap<string>;
@@ -42,6 +65,34 @@ export type SeoConfig = {
 };
 
 export const seoConfig: SeoConfig = {
+    brand: {
+        organization: {
+            name: "Barhoum Coaching",
+            legalName: "Whispered Life OÜ",
+            slogan: {
+                en: "For a Better World",
+                ar: "من أجل عالم أفضل",
+            },
+        },
+        person: {
+            name: "Ibrahim Ben Abdallah",
+            alternateName: ["إبراهيم بن عبد الله", "Barhoum"],
+            jobTitle: "Self-leadership coach and facilitator",
+            description:
+                "Coach and strategic guide helping leaders, couples, and creatives transform confusion into grounded action.",
+            image: "/images/hero.jpeg",
+        },
+        domains: {
+            primary: "https://ibrahimbenabdallah.com",
+            secondary: ["https://ibrahimbenabdallah.training"],
+        },
+        socials: [
+            "https://instagram.com/barhoum",
+            "https://youtube.com/@barhoum",
+        ],
+        areaServed: ["Global (Online)", "Tunisia"],
+        availableLanguages: ["en", "ar", "fr"],
+    },
     defaultTitle: {
         en: "Barhoum Coaching",
         ar: "برهوم كوتشنغ",
@@ -55,7 +106,7 @@ export const seoConfig: SeoConfig = {
         ar: "برهوم كوتشنغ",
     },
     description: {
-        en: "Personal coaching with Ibrahim ben Abdallah—guiding leaders, teams, and creatives through grounded transformation and human-centered strategy.",
+        en: "Personal coaching with Ibrahim Ben Abdallah—guiding leaders, teams, and creatives through grounded transformation and human-centered strategy.",
         ar: "تدريب شخصي مع إبراهيم بن عبد الله لمساندة القادة والفرق والمبدعين عبر إستراتيجيات إنسانية وتحولات واعية.",
     },
     openGraphLocale: {
@@ -63,7 +114,7 @@ export const seoConfig: SeoConfig = {
         ar: "ar_TN",
     },
     openGraphDescription: {
-        en: "Personal coaching with Ibrahim ben Abdallah—grounded transformation for leaders, teams, and creatives.",
+        en: "Personal coaching with Ibrahim Ben Abdallah—grounded transformation for leaders, teams, and creatives.",
         ar: "إرشاد هادئ وحديث في التدريب الشخصي والقيادة مع إبراهيم بن عبد الله.",
     },
     openGraphImage: {
@@ -82,7 +133,7 @@ export const seoConfig: SeoConfig = {
             ar: "برهوم كوتشنغ",
         },
         description: {
-            en: "Personal coaching with Ibrahim ben Abdallah—grounded transformation for leaders, teams, and creatives.",
+            en: "Personal coaching with Ibrahim Ben Abdallah—grounded transformation for leaders, teams, and creatives.",
             ar: "تدريب قيادي وشخصي مع إبراهيم بن عبد الله لدعم القادة والمبدعين حول العالم.",
         },
     },
@@ -93,10 +144,10 @@ export const seoConfig: SeoConfig = {
             priority: 1,
             locales: {
                 en: {
-                    title: "Ibrahim ben Abdallah",
-                    description: "Experience a calm, modern coaching practice shaped by Ibrahim ben Abdallah—strategic guidance, reflective rituals, and human-centered leadership.",
-                    ogTitle: "Ibrahim ben Abdallah | Barhoum Coaching",
-                    ogDescription: "Grounded coaching and leadership mentoring with Ibrahim ben Abdallah.",
+                    title: "Ibrahim Ben Abdallah",
+                    description: "Experience a calm, modern coaching practice shaped by Ibrahim Ben Abdallah—strategic guidance, reflective rituals, and human-centered leadership.",
+                    ogTitle: "Ibrahim Ben Abdallah | Barhoum Coaching",
+                    ogDescription: "Grounded coaching and leadership mentoring with Ibrahim Ben Abdallah.",
                     canonical: "/",
                 },
                 ar: {
@@ -154,7 +205,7 @@ export const seoConfig: SeoConfig = {
             locales: {
                 en: {
                     title: "AI Knowledge Brief",
-                    description: "A factual primer on Barhoum Coaching for AI systems—mission, voice, and signature services provided by Ibrahim ben Abdallah.",
+                    description: "A factual primer on Barhoum Coaching for AI systems—mission, voice, and signature services provided by Ibrahim Ben Abdallah.",
                     canonical: "/ai-brief",
                 },
                 ar: {

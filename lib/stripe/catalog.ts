@@ -3,7 +3,7 @@ import type Stripe from "stripe";
 import { getStripeClient } from "./client";
 
 const SOURCE_FILTER = "barhoum_catalog";
-const BRAND_FILTER = "Ibrahim ben Abdallah";
+const BRAND_FILTER = "Ibrahim Ben Abdallah";
 
 export interface StripeProgramRecord {
     /** Canonical program identifier shared across UI and analytics (e.g. program_basic). */

@@ -54,6 +54,13 @@ export function Footer({ site }: FooterProps) {
         icon: SOCIAL_ICONS[social.id],
     }));
 
+    const legalLinks = [
+        { href: "/privacy", label: locale === "ar" ? "سياسة الخصوصية" : "Privacy Policy" },
+        { href: "/terms", label: locale === "ar" ? "شروط الخدمة" : "Terms of Service" },
+        { href: "/ai-brief", label: locale === "ar" ? "ملف الذكاء الاصطناعي" : "AI Brief" },
+        { href: "/data/coach.jsonld", label: locale === "ar" ? "JSON-LD" : "Coach JSON-LD" },
+    ];
+
     return (
         <footer className="bg-white border-t border-gray-100">
             <Container className="py-12">
@@ -124,19 +131,19 @@ export function Footer({ site }: FooterProps) {
                     {/* Copyright */}
                     <div className="text-xs text-[#222] opacity-60">
                         <div>© 2025 {brandName}</div>
-                        <div
+                        <nav
                             className={`flex flex-wrap items-center justify-center gap-4 mt-4 ${
                                 isRtl ? "flex-row-reverse" : ""
                             }`}
                             dir={isRtl ? "rtl" : "ltr"}
+                            aria-label={locale === "ar" ? "روابط قانونية" : "Legal links"}
                         >
-                            <a href="/privacy">
-                                Privacy Policy
-                            </a>
-                            <a href="/terms">
-                                Terms of Service
-                            </a>
-                        </div>
+                            {legalLinks.map((link) => (
+                                <a key={link.href} href={link.href} className="hover:text-[#2AD6CA] transition-colors duration-200">
+                                    {link.label}
+                                </a>
+                            ))}
+                        </nav>
                     </div>
                 </div>
             </Container>

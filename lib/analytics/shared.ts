@@ -23,6 +23,7 @@ export type AnalyticsEventName =
   | "stripe_link_generated"
   | "video_play"
   | "pdf_download"
+  | "ai_brief_view"
   | "category_view"
   | "package_click"
   | "pay_page_view";

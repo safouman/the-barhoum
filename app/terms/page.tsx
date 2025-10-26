@@ -44,6 +44,9 @@ export default function TermsPage() {
                         updates.
                     </p>
                 </div>
+                <p className="text-sm text-subtle/70">
+                    Barhoum Coaching operates as the public-facing brand of Whispered Life OÜ.
+                </p>
             </Container>
         </div>
     );

@@ -5,9 +5,11 @@ import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from "@/lib/i18n";
 
 export type PageKey = SeoPageKey;
 
+const fallbackSiteUrl = seoConfig.brand.domains.primary.replace(/\/+$/, "");
+
 export const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ??
-    "https://barhoum.coach";
+    fallbackSiteUrl;
 
 const baseMetadata: Metadata = {
     metadataBase: new URL(siteUrl),
@@ -63,14 +65,15 @@ function getLocalizedValue<T>(
     return map[locale] ?? map[DEFAULT_LOCALE];
 }
 
-function toAbsoluteUrl(path: string): string {
+function toAbsoluteUrl(path: string, domain?: string): string {
     if (path.startsWith("http://") || path.startsWith("https://")) {
         return path;
     }
+    const base = (domain ?? siteUrl).replace(/\/+$/, "");
     if (path.startsWith("/")) {
-        return `${siteUrl}${path}`;
+        return `${base}${path}`;
     }
-    return `${siteUrl}/${path}`;
+    return `${base}/${path}`;
 }
 
 function getPageConfig(key: PageKey) {
@@ -96,17 +99,30 @@ export function getPageCanonicalPath(
 
 export function getPageCanonicalUrl(
     key: PageKey,
-    locale: Locale
+    locale: Locale,
+    domain?: string
 ): string {
-    return toAbsoluteUrl(getPageCanonicalPath(key, locale));
+    return toAbsoluteUrl(getPageCanonicalPath(key, locale), domain);
 }
 
 function buildLanguageAlternates(key: PageKey): Record<string, string> {
     const alternates: Record<string, string> = {};
     const defaultUrl = getPageCanonicalUrl(key, DEFAULT_LOCALE);
+    const { secondary } = seoConfig.brand.domains;
 
     for (const locale of SUPPORTED_LOCALES) {
         alternates[locale] = getPageCanonicalUrl(key, locale);
+        secondary.forEach((alternateDomain, index) => {
+            const languageKey =
+                secondary.length === 1
+                    ? `${locale}-x-alt`
+                    : `${locale}-x-alt-${index + 1}`;
+            alternates[languageKey] = getPageCanonicalUrl(
+                key,
+                locale,
+                alternateDomain
+            );
+        });
     }
 
     alternates["x-default"] = defaultUrl;

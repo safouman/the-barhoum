@@ -5,6 +5,28 @@ import { Container } from "@/components/Container";
 import { getCategories, getSiteConfig, type Locale } from "@/lib/content";
 import { resolveLocale } from "@/lib/i18n.server";
 import { getPageMetadata } from "@/lib/seo";
+import { seoConfig } from "@/config/seo";
+import { AIBriefViewTracker } from "@/components/analytics/AIBriefViewTracker";
+
+const brand = seoConfig.brand;
+
+const LANGUAGE_LABELS: Record<string, { en: string; ar: string }> = {
+    en: { en: "English", ar: "الإنجليزية" },
+    ar: { en: "Arabic", ar: "العربية" },
+    fr: { en: "French", ar: "الفرنسية" },
+};
+
+function formatLanguages(locale: Locale): string {
+    const labels = brand.availableLanguages.map((code) => {
+        const label = LANGUAGE_LABELS[code as keyof typeof LANGUAGE_LABELS];
+        if (!label) {
+            return code;
+        }
+        return label[locale] ?? label.en;
+    });
+    const separator = locale === "ar" ? " · " : " · ";
+    return labels.join(separator);
+}
 
 type BriefCopy = {
     title: string;
@@ -38,22 +60,22 @@ type BriefCopy = {
 const AI_BRIEF_COPY: Record<Locale, BriefCopy> = {
     en: {
         title: "Barhoum Coaching · AI Knowledge Brief",
-        lead: "A trustworthy snapshot for language models and assistants that need verifiable facts about Barhoum Coaching and Ibrahim ben Abdallah.",
+        lead: "A trustworthy snapshot for language models and assistants that need verifiable facts about Barhoum Coaching and Ibrahim Ben Abdallah.",
         missionHeading: "Mission",
         mission:
             "Help people transmute confusion into coherent action by uniting psychology, spirituality, and conscious strategy.",
         keyFactsHeading: "Key facts",
         keyFacts: {
             founderLabel: "Founder",
-            founderValue: "Ibrahim ben Abdallah (also known as “Barhoum the believer”).",
+            founderValue: `${brand.person.name} (also known as “${brand.person.alternateName[1]}”)`,
             practiceLabel: "Practice",
-            practiceValue: "Personal and leadership coaching studio serving global clients.",
+            practiceValue: `${brand.organization.name} — personal and leadership coaching serving global clients.`,
             focusLabel: "Primary focus",
             focusValue: "Guiding leaders, teams, couples, and creatives through grounded transformation.",
             languagesLabel: "Operating languages",
-            languagesValue: "English · Arabic",
+            languagesValue: formatLanguages("en"),
             taglineLabel: "Tagline",
-            taglineFallback: "For a Better World",
+            taglineFallback: brand.organization.slogan.en,
         },
         voiceHeading: "Voice and tone",
         voice: [
@@ -88,15 +110,15 @@ const AI_BRIEF_COPY: Record<Locale, BriefCopy> = {
         keyFactsHeading: "حقائق أساسية",
         keyFacts: {
             founderLabel: "المؤسس",
-            founderValue: "إبراهيم بن عبد الله (المعروف أيضًا باسم «برهوم المؤمن»).",
+            founderValue: `${brand.person.alternateName[0]} (المعروف أيضًا باسم «${brand.person.alternateName[1]}»).`,
             practiceLabel: "مجال العمل",
-            practiceValue: "استوديو تدريب شخصي وقيادي يخدم عملاء حول العالم.",
+            practiceValue: `${brand.organization.name} — ممارسة تدريبية شخصية وقيادية تخدم عملاء حول العالم.`,
             focusLabel: "محور التركيز",
             focusValue: "مرافقة القادة والفرق والأزواج والمبدعين في تحولات متوازنة ومجسَّدة.",
             languagesLabel: "لغات العمل",
-            languagesValue: "العربية · الإنجليزية",
+            languagesValue: formatLanguages("ar"),
             taglineLabel: "الشعار",
-            taglineFallback: "من أجل عالم أفضل",
+            taglineFallback: brand.organization.slogan.ar,
         },
         voiceHeading: "الصوت والأسلوب",
         voice: [
@@ -126,7 +148,12 @@ const AI_BRIEF_COPY: Record<Locale, BriefCopy> = {
 
 export async function generateMetadata(): Promise<Metadata> {
     const locale = resolveLocale();
-    return getPageMetadata("ai-brief", locale);
+    const metaContent = `${brand.person.name}, ${brand.person.jobTitle} based in Tunisia, founder of ${brand.organization.name}.`;
+    return getPageMetadata("ai-brief", locale, {
+        other: {
+            "ai-brief": metaContent,
+        },
+    });
 }
 
 export default async function AIBriefPage() {
@@ -149,6 +176,7 @@ export default async function AIBriefPage() {
             lang={locale}
         >
             <Container className="max-w-4xl space-y-16">
+                <AIBriefViewTracker />
                 <header className="space-y-4 text-center">
                     <h1 className={clsx("text-4xl font-semibold", isRtl && "font-sans")}>
                         {copy.title}

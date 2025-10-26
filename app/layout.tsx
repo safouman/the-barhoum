@@ -14,6 +14,17 @@ import { getSiteConfig, getUiStrings, type UIStrings } from "@/lib/content";
 import { getDirection } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/i18n.server";
 import { getDefaultMetadata, siteUrl } from "@/lib/seo";
+import { seoConfig } from "@/config/seo";
+
+function toAbsoluteAssetUrl(path: string): string {
+    if (path.startsWith("http://") || path.startsWith("https://")) {
+        return path;
+    }
+    if (path.startsWith("/")) {
+        return `${siteUrl}${path}`;
+    }
+    return `${siteUrl}/${path}`;
+}
 const inter = Inter({
     subsets: ["latin"],
     weight: ["400", "500", "600"],
@@ -57,26 +68,28 @@ export default async function RootLayout({
     const [ui, site] = await Promise.all([loadUi(), getSiteConfig()]);
     const fontClass = `${inter.variable} ${notoNaskhArabic.variable}`;
     const measurementId = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
-    const sameAs =
-        site.socials?.map((social) => social.href).filter(Boolean) ?? [];
+    const brand = seoConfig.brand;
+    const sameAs = brand.socials;
     const organizationId = `${siteUrl}#organization`;
     const personId = `${siteUrl}#ibrahim-ben-abdallah`;
+    const availableLanguage = brand.availableLanguages;
 
     const organizationJsonLd = {
         "@context": "https://schema.org",
         "@type": "Organization",
         "@id": organizationId,
-        name: site.brand.footer.en ?? "Barhoum Coaching",
-        alternateName: site.brand.footer.ar ?? "برهوم",
-        url: siteUrl,
+        name: brand.organization.name,
+        legalName: brand.organization.legalName,
+        alternateName: brand.person.alternateName,
+        url: brand.domains.primary,
         logo: `${siteUrl}/images/logo.png`,
-        slogan: site.brand.tagline.en ?? "For a Better World",
-        areaServed: "Worldwide",
+        slogan: brand.organization.slogan.en,
+        areaServed: brand.areaServed,
         contactPoint: [
             {
                 "@type": "ContactPoint",
                 contactType: "customer service",
-                availableLanguage: ["en", "ar"],
+                availableLanguage,
             },
         ],
         ...(sameAs.length ? { sameAs } : {}),
@@ -86,35 +99,35 @@ export default async function RootLayout({
         "@context": "https://schema.org",
         "@type": "Person",
         "@id": personId,
-        name: "Ibrahim ben Abdallah",
-        alternateName: ["إبراهيم بن عبد الله", "Barhoum"],
-        jobTitle: "Coach and facilitator",
-        url: siteUrl,
-        image: `${siteUrl}/images/hero.jpeg`,
+        name: brand.person.name,
+        alternateName: brand.person.alternateName,
+        jobTitle: brand.person.jobTitle,
+        description: brand.person.description,
+        url: brand.domains.primary,
+        image: toAbsoluteAssetUrl(brand.person.image),
         worksFor: {
             "@id": organizationId,
         },
-        knowsLanguage: ["en", "ar"],
+        knowsLanguage: brand.availableLanguages,
         ...(sameAs.length ? { sameAs } : {}),
     };
 
     const serviceJsonLd = {
         "@context": "https://schema.org",
         "@type": "Service",
-        name: "Barhoum Coaching",
-        description:
-            "Personal and leadership coaching programs that blend psychology, spirituality, and strategy to help leaders, teams, and creatives move with clarity.",
+        name: brand.organization.name,
+        description: brand.person.description,
         provider: {
-            "@id": organizationId,
+            "@id": personId,
         },
         serviceType: [
             "Leadership coaching",
             "Team facilitation",
             "Creative mentoring",
         ],
-        availableLanguage: ["en", "ar"],
-        areaServed: "Worldwide",
-        url: siteUrl,
+        availableLanguage,
+        areaServed: brand.areaServed,
+        url: brand.domains.primary,
     };
 
     const faqJsonLd = {
@@ -126,7 +139,7 @@ export default async function RootLayout({
                 name: "What is Barhoum Coaching?",
                 acceptedAnswer: {
                     "@type": "Answer",
-                    text: "Barhoum Coaching is the personal practice of Ibrahim ben Abdallah, offering reflective and strategic coaching for people seeking grounded transformation.",
+                    text: "Barhoum Coaching is the personal practice of Ibrahim Ben Abdallah, offering reflective and strategic coaching for people seeking grounded transformation.",
                 },
             },
             {
@@ -157,6 +170,13 @@ export default async function RootLayout({
 
     return (
         <html lang={locale} dir={direction} className={fontClass}>
+            <head>
+                <link
+                    rel="alternate"
+                    type="application/ld+json"
+                    href="/data/coach.jsonld"
+                />
+            </head>
             <body>
                 {measurementId ? (
                     <>

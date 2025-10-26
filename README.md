@@ -56,3 +56,28 @@ public/docs/         Downloadable assets
 - Swap JSON placeholders with production content
 - Plug analytics event wrapper into your provider of choice
 - Refine visuals: add imagery, adjust grids, and expand the design system tokens
+
+## AIEO refresh checklist
+
+- Update `/ai-brief` copy with the latest positioning and offerings
+- Regenerate `/data/coach.jsonld` (served dynamically) to reflect new testimonials or services
+- Re-submit the sitemap in Google Search Console and verify crawl status
+- Validate structured data via Google's Rich Results Test and monitor GA4 events (e.g., `ai_brief_view`)
+
+## Where to update SEO & AIEO
+
+- `config/seo.ts` – single source of truth for brand profile, domain canonicals, social links, and per-page metadata
+- `lib/seo.ts` – helpers that consume the shared config (no copy changes here unless the merge logic evolves)
+- `app/layout.tsx` – emits Organization/Person/Service/FAQ JSON-LD; reads from `config/seo.ts`
+- `app/data/coach.jsonld/route.ts` – serves the machine-readable coach profile based on the same config
+- `app/ai-brief/page.tsx` – AI knowledge brief content and GA4 tracking hook
+- `app/sitemap.ts` & `app/robots.txt/route.ts` – sitemap/robots outputs derived from the central config
+- `app/oembed/route.ts` – JSON/XML oEmbed endpoints generated from shared SEO data
+
+## Where to update UI data
+
+- `data/` directory – localized copy for hero, categories, testimonials, pricing, site navigation, etc.
+- `content/` directory – Markdown sections (hero/about/method) consumed on the homepage
+- `public/docs/`, `public/images/` – downloadable assets and imagery referenced in content JSON
+- `components/home/*` – presentation components that render structured UI from the data layer
+- `styles/`, `design/` – token and Tailwind configuration for visual updates
