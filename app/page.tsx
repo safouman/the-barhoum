@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { HomeExperience } from "@/components/HomeExperience";
 import {
   getCategories,
@@ -65,7 +66,10 @@ function buildPacksByCategory(
   return result;
 }
 
-export const metadata = getPageMetadata("home");
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = resolveLocale();
+  return getPageMetadata("home", locale);
+}
 
 export default async function Page() {
   const locale = resolveLocale();

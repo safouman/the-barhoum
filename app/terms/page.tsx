@@ -1,7 +1,12 @@
+import type { Metadata } from "next";
 import { Container } from "@/components/Container";
 import { getPageMetadata } from "@/lib/seo";
+import { resolveLocale } from "@/lib/i18n.server";
 
-export const metadata = getPageMetadata("terms");
+export async function generateMetadata(): Promise<Metadata> {
+    const locale = resolveLocale();
+    return getPageMetadata("terms", locale);
+}
 
 export default function TermsPage() {
     return (

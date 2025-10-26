@@ -130,10 +130,10 @@ export function Footer({ site }: FooterProps) {
                             }`}
                             dir={isRtl ? "rtl" : "ltr"}
                         >
-                            <a href="/privacy" target="_blank" rel="noreferrer">
+                            <a href="/privacy">
                                 Privacy Policy
                             </a>
-                            <a href="/terms" target="_blank" rel="noreferrer">
+                            <a href="/terms">
                                 Terms of Service
                             </a>
                         </div>

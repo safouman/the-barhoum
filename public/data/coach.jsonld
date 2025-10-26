@@ -1,0 +1,21 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": "https://barhoum.coach#ibrahim-ben-abdallah",
+  "name": "Ibrahim ben Abdallah",
+  "alternateName": ["إبراهيم بن عبد الله", "Barhoum"],
+  "description": "Coach and strategic guide helping leaders, couples, and creatives transform confusion into grounded action.",
+  "jobTitle": "Coach and facilitator",
+  "url": "https://barhoum.coach/",
+  "image": "https://barhoum.coach/images/hero.jpeg",
+  "sameAs": [
+    "https://instagram.com/barhoum",
+    "https://youtube.com/@barhoum"
+  ],
+  "knowsLanguage": ["en", "ar"],
+  "worksFor": {
+    "@type": "Organization",
+    "@id": "https://barhoum.coach#organization",
+    "name": "Barhoum Coaching"
+  }
+}

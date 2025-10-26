@@ -34,7 +34,7 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({
             >
                 <Image
                     src="/images/hero.jpeg"
-                    alt="Portrait"
+                    alt="Portrait of Ibrahim ben Abdallah, founder of Barhoum Coaching"
                     className={clsx(
                         styles.imageMedia,
                         isRTL ? styles.posLeft : styles.posRight,
