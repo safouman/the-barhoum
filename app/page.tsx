@@ -35,17 +35,22 @@ function buildPacksByCategory(
       const copy = program.copy[locale];
       if (!copy) return;
 
+      const title = copy.title || program.programId;
+      const subtitle = copy.subtitle || "—";
+      const bullets = copy.bullets.length ? copy.bullets : ["—"];
+      const duration = program.durationLabel || "—";
+
       const pack: Pack = {
         programKey: program.programId as PackageId,
         sessions,
-        title: copy.title,
-        subtitle: copy.subtitle,
-        bullets: copy.bullets,
+        title,
+        subtitle,
+        bullets,
         priceTotal,
         priceAmountMinor: program.priceAmountMinor,
         pricePerSession,
         currency: program.currency,
-        duration: program.durationLabel ?? "",
+        duration,
       };
 
       result.individuals[locale].push(pack);

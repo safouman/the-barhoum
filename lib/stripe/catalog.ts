@@ -5,13 +5,21 @@ import { getStripeClient } from "./client";
 const SOURCE_FILTER = "Ibrahim ben Abdallah";
 
 export interface StripeProgramRecord {
+    /** Canonical program identifier shared across UI and analytics (e.g. program_basic). */
     programId: string;
+    /** Stripe product id backing this program. */
     productId: string;
+    /** Stripe price id used when creating payment links. */
     priceId: string;
+    /** Price amount in minor units (cents). */
     priceAmount: number;
+    /** ISO currency code (uppercase). */
     currency: string;
+    /** Number of sessions advertised in metadata, when provided. */
     sessions?: number;
+    /** Optional human friendly duration text from metadata. */
     durationLabel?: string;
+    /** Full Stripe metadata blob for debugging and analytics. */
     metadata: Stripe.Metadata;
 }
 
@@ -130,10 +138,22 @@ async function fetchStripePrograms(): Promise<StripeCatalogResult> {
             warnings.push(message);
         }
 
+        if (!sessionsRaw) {
+            const message = `[Stripe Catalog] ⚠️ Product "${product.id}" missing metadata.sessions.`;
+            console.warn(message);
+            warnings.push(message);
+        }
+
         const durationLabel =
             product.metadata?.duration_label ??
             product.metadata?.duration ??
             "";
+
+        if (!durationLabel) {
+            const message = `[Stripe Catalog] ⚠️ Product "${product.id}" missing metadata.duration_label.`;
+            console.warn(message);
+            warnings.push(message);
+        }
 
         programs.push({
             programId,
