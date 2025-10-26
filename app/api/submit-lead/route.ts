@@ -323,6 +323,7 @@ async function processStripePaymentLink({
             phone: formData.phone,
             packageId: packageIdForStripe,
             category: formData.category,
+            leadId: formData.leadId,
         });
 
         if (!paymentLink) {

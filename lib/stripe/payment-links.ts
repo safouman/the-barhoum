@@ -8,12 +8,13 @@ export interface CreatePaymentLinkParams {
   phone: string;
   packageId: string;
   category: string;
+  leadId?: string;
 }
 
 export async function createPaymentLink(
   params: CreatePaymentLinkParams
 ): Promise<string | null> {
-  const { email, fullName, country, phone, packageId, category } = params;
+  const { email, fullName, country, phone, packageId, category, leadId } = params;
 
   console.log(
     `[Stripe] 🔍 Resolving Stripe selection for package: ${packageId}`
@@ -100,6 +101,10 @@ export async function createPaymentLink(
           stripe_price_id: priceId,
           program_label: packageId,
         };
+    const sharedMetadata: Record<string, string> = {
+      ...programMetadata,
+      ...(leadId ? { lead_id: leadId } : {}),
+    };
 
     const paymentLink = await stripe.paymentLinks.create({
       line_items: [
@@ -122,9 +127,19 @@ export async function createPaymentLink(
         customer_phone: phone,
         category,
         package_id: packageId,
-        ...programMetadata,
+        ...sharedMetadata,
       },
       customer_creation: "always",
+      payment_intent_data: {
+        metadata: {
+          customer_name: fullName,
+          customer_country: country,
+          customer_phone: phone,
+          category,
+          package_id: packageId,
+          ...sharedMetadata,
+        },
+      },
       invoice_creation: {
         enabled: true,
         invoice_data: {
@@ -134,7 +149,7 @@ export async function createPaymentLink(
             customer_phone: phone,
             category,
             package_id: packageId,
-            ...programMetadata,
+            ...sharedMetadata,
           },
         },
       },

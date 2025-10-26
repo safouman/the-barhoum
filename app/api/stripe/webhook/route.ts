@@ -24,6 +24,82 @@ function buildContextFromMetadata(metadata: Stripe.Metadata | null | undefined) 
   };
 }
 
+async function markLeadAsPaidInSheet({
+  requestId,
+  leadId,
+  amountMinor,
+  currency,
+  programName,
+}: {
+  requestId: string;
+  leadId: string | null;
+  amountMinor: number | null | undefined;
+  currency: string | null | undefined;
+  programName: string | null | undefined;
+}): Promise<void> {
+  if (!leadId) {
+    console.warn(
+      `[Stripe Webhook] Skipping markPaid update for ${requestId} because leadId is missing`
+    );
+    return;
+  }
+
+  const googleScriptUrl = process.env.GOOGLE_SCRIPT_URL;
+  const googleScriptSecret = process.env.GOOGLE_SCRIPT_SECRET;
+
+  if (!googleScriptUrl || !googleScriptSecret) {
+    console.warn(
+      `[Stripe Webhook] Google Script credentials missing; cannot mark lead ${leadId} as paid`
+    );
+    return;
+  }
+
+  const payload = {
+    secret: googleScriptSecret,
+    operation: "markPaid",
+    leadId,
+    payment_status: "Paid",
+    paid_at: new Date().toISOString(),
+    amount_minor: amountMinor ?? null,
+    currency: currency ?? null,
+    program_name: programName ?? null,
+  };
+
+  try {
+    const response = await fetch(googleScriptUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "User-Agent": "Barhoum-Coaching-Webhook/1.0",
+      },
+      body: JSON.stringify(payload),
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      const responseText = await response
+        .text()
+        .catch(() => "Unable to read response");
+      console.error(
+        `[Stripe Webhook] Failed to mark lead ${leadId} as paid`,
+        {
+          status: response.status,
+          body: responseText,
+        }
+      );
+    } else {
+      console.log(
+        `[Stripe Webhook] ✅ Lead ${leadId} marked as paid in Google Sheet`
+      );
+    }
+  } catch (error) {
+    console.error(
+      `[Stripe Webhook] Error while marking lead ${leadId} as paid`,
+      error
+    );
+  }
+}
+
 export async function POST(req: NextRequest) {
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!webhookSecret) {
@@ -98,6 +174,8 @@ export async function POST(req: NextRequest) {
         readMetadataValue("program_name") ??
         readMetadataValue("package_id") ??
         readMetadataValue("packageId");
+      const leadId =
+        readMetadataValue("lead_id") ?? readMetadataValue("leadId");
 
       try {
         await sendPaymentWhatsAppNotification({
@@ -115,6 +193,14 @@ export async function POST(req: NextRequest) {
           notificationError
         );
       }
+
+      await markLeadAsPaidInSheet({
+        requestId: session.id,
+        leadId,
+        amountMinor: session.amount_total ?? null,
+        currency: session.currency ?? null,
+        programName,
+      });
     } else if (event.type === "payment_intent.succeeded") {
       const intent = event.data.object as Stripe.PaymentIntent;
       const metadata = intent.metadata ?? null;

@@ -6,6 +6,8 @@ const SECRET_KEY =
 const COL_TIMESTAMP = 1;
 const COL_LEAD_ID = 2;
 const COL_PAYMENT_LINK = 18;
+const COL_PAYMENT_STATUS = 19;
+const COL_PAID_AT = 20;
 const HEADER_ROWS = 1; // adjust if your sheet uses more headers
 
 function jsonResponse(payload) {
@@ -79,6 +81,8 @@ function handleCreateLead(sheet, requestData) {
         requestData.category || "",
         requestData.package || "",
         requestData.payment_link || "",
+        requestData.payment_status || "",
+        requestData.paid_at || "",
     ];
 
     sheet.appendRow(newRow);
@@ -122,6 +126,47 @@ function handleAttachPaymentLink(sheet, requestData) {
     });
 }
 
+function handleMarkPaid(sheet, requestData) {
+    const leadId = (requestData.leadId || "").trim();
+    if (!leadId) {
+        return jsonResponse({
+            success: false,
+            error: "Missing leadId for markPaid operation",
+        });
+    }
+
+    const row = findLeadRow(sheet, leadId);
+
+    if (row === -1) {
+        return jsonResponse({
+            success: false,
+            error: "Lead not found for markPaid operation",
+        });
+    }
+
+    const statusRaw = (requestData.payment_status || "Paid").toString().trim();
+    const status = statusRaw || "Paid";
+    const paidAtRaw = requestData.paid_at;
+    let paidAtValue = new Date();
+    if (paidAtRaw) {
+        const parsedDate = new Date(paidAtRaw);
+        if (!isNaN(parsedDate.getTime())) {
+            paidAtValue = parsedDate;
+        }
+    }
+
+    sheet.getRange(row, COL_PAYMENT_STATUS).setValue(status);
+    sheet.getRange(row, COL_PAID_AT).setValue(paidAtValue);
+    sheet.getRange(row, COL_TIMESTAMP).setValue(new Date());
+
+    return jsonResponse({
+        success: true,
+        message: "Lead marked as paid successfully",
+        row,
+        status,
+    });
+}
+
 function doPost(e) {
     try {
         const requestData = JSON.parse(e.postData.contents || "{}");
@@ -138,6 +183,8 @@ function doPost(e) {
                 return handleCreateLead(sheet, requestData);
             case "attachPaymentLink":
                 return handleAttachPaymentLink(sheet, requestData);
+            case "markPaid":
+                return handleMarkPaid(sheet, requestData);
             default:
                 return jsonResponse({
                     success: false,
@@ -184,6 +231,16 @@ function testAttachPaymentLink() {
     const response = handleAttachPaymentLink(sheet, {
         leadId: "test-lead-123",
         payment_link: "https://buy.stripe.com/test_123456789",
+    });
+    Logger.log(response.getContent());
+}
+
+function testMarkPaid() {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    const response = handleMarkPaid(sheet, {
+        leadId: "test-lead-123",
+        payment_status: "Paid",
+        paid_at: new Date().toISOString(),
     });
     Logger.log(response.getContent());
 }
