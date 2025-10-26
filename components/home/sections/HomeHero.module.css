@@ -368,10 +368,12 @@
     .hero {
         position: relative;
         min-height: 100svh;
+        overflow: visible;
         background-color: #ffffff;
         background-attachment: scroll;
         --hero-image-scale: 1;
         --hero-image-origin: center;
+        --mobile-header-height: 4rem;
     }
 
     .hero::before {
@@ -403,6 +405,15 @@
         pointer-events: none;
         z-index: 3;
         background: rgba(255, 255, 255, 0.88);
+    }
+
+    .hero::before,
+    .hero::after {
+        top: calc(-1 * var(--mobile-header-height, 4rem));
+        bottom: auto;
+        left: 0;
+        right: 0;
+        height: calc(100% + var(--mobile-header-height, 4rem));
     }
 
     .imageLayer,

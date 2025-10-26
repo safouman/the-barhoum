@@ -28,7 +28,7 @@ export function SiteHeader({ ui: _ui, site }: SiteHeaderProps) {
         localizationConfig.showLanguageSwitcher && filteredLanguageOptions.length > 1;
 
     return (
-        <header className="relative top-0 z-50 border-border bg-background/70 backdrop-blur h-16 overflow-visible">
+        <header className="relative top-0 z-50 border-border bg-transparent md:bg-background/70 backdrop-blur-none md:backdrop-blur h-16 overflow-visible">
             <Container className="flex items-center gap-sm h-full overflow-visible">
                 <div className="flex flex-1 flex-wrap items-center gap-4">
                     <Link
@@ -43,7 +43,7 @@ export function SiteHeader({ ui: _ui, site }: SiteHeaderProps) {
                                 priority
                                 width={96}
                                 height={96}
-                                className="h-[4.5rem] md:h-[5rem] w-auto"
+                                className="h-16 md:h-[5rem] w-auto"
                             />
                         </span>
                     </Link>
