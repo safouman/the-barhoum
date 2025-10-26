@@ -1,188 +1,19 @@
 import type { Metadata } from "next";
+import { seoConfig, type SeoPageKey } from "@/config/seo";
 import type { Locale } from "@/lib/content";
-import { DEFAULT_LOCALE } from "@/lib/i18n";
+import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from "@/lib/i18n";
 
-type PageKey = "home" | "privacy" | "terms" | "ai-brief";
+export type PageKey = SeoPageKey;
 
 export const siteUrl =
     process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ??
     "https://barhoum.coach";
 
-const defaultOgImage = "/images/logo.png";
-
-export const languageAlternates: Record<Locale, string> = {
-    en: `${siteUrl}/`,
-    ar: `${siteUrl}/?lang=ar`,
-};
-
 const baseMetadata: Metadata = {
     metadataBase: new URL(siteUrl),
-    title: {
-        default: "Barhoum Coaching",
-        template: "%s | Barhoum Coaching",
-    },
-    description:
-        "Personal coaching with Ibrahim ben Abdallah—guiding leaders, teams, and creatives through grounded transformation and human-centered strategy.",
-    openGraph: {
-        type: "website",
-        url: siteUrl,
-        siteName: "Barhoum Coaching",
-        images: [
-            {
-                url: defaultOgImage,
-                width: 476,
-                height: 668,
-                alt: "Barhoum Coaching logo in teal on white background",
-            },
-        ],
-    },
-    twitter: {
-        card: "summary_large_image",
-        creator: "@barhoum",
-        images: [defaultOgImage],
-    },
     icons: {
         icon: "/images/favicon.ico",
         shortcut: "/images/favicon.ico",
-    },
-    alternates: {
-        canonical: languageAlternates.en,
-        languages: {
-            en: languageAlternates.en,
-            ar: languageAlternates.ar,
-        },
-    },
-};
-
-const localizedBaseMetadata: Record<Locale, Metadata> = {
-    en: {
-        description:
-            "Personal coaching with Ibrahim ben Abdallah—guiding leaders, teams, and creatives through grounded transformation and human-centered strategy.",
-        openGraph: {
-            locale: "en_US",
-            alternateLocale: ["ar_TN"],
-        },
-        twitter: {
-            title: "Barhoum Coaching",
-            description:
-                "Personal coaching with Ibrahim ben Abdallah—grounded transformation for leaders, teams, and creatives.",
-        },
-        alternates: {
-            canonical: languageAlternates.en,
-        },
-    },
-    ar: {
-        title: {
-            default: "برهوم كوتشنغ",
-            template: "%s | برهوم كوتشنغ",
-        },
-        description:
-            "تدريب شخصي مع إبراهيم بن عبد الله لمساندة القادة والفرق والمبدعين عبر إستراتيجيات إنسانية وتحولات واعية.",
-        openGraph: {
-            locale: "ar_TN",
-            alternateLocale: ["en_US"],
-            title: "برهوم كوتشنغ",
-            description:
-                "إرشاد هادئ وحديث في التدريب الشخصي والقيادة مع إبراهيم بن عبد الله.",
-        },
-        twitter: {
-            title: "برهوم كوتشنغ",
-            description:
-                "تدريب قيادي وشخصي مع إبراهيم بن عبد الله لدعم القادة والمبدعين حول العالم.",
-        },
-        alternates: {
-            canonical: languageAlternates.ar,
-        },
-    },
-};
-
-const pageMetadata: Record<PageKey, Record<Locale, Metadata>> = {
-    home: {
-        en: {
-            title: "Ibrahim ben Abdallah",
-            description:
-                "Experience a calm, modern coaching practice shaped by Ibrahim ben Abdallah—strategic guidance, reflective rituals, and human-centered leadership.",
-            openGraph: {
-                url: `${siteUrl}/`,
-                title: "Ibrahim ben Abdallah | Barhoum Coaching",
-                description:
-                    "Grounded coaching and leadership mentoring with Ibrahim ben Abdallah.",
-            },
-        },
-        ar: {
-            title: "إبراهيم بن عبد الله",
-            description:
-                "اكتشف ممارسة تدريب هادئة وعصرية بإشراف إبراهيم بن عبد الله—إرشاد استراتيجي وطقوس واعية وقيادة إنسانية.",
-            openGraph: {
-                url: `${siteUrl}/?lang=ar`,
-                title: "إبراهيم بن عبد الله | برهوم كوتشنغ",
-                description:
-                    "تدريب قيادي وإنساني يرتكز على الخبرة والهدوء مع إبراهيم بن عبد الله.",
-            },
-        },
-    },
-    privacy: {
-        en: {
-            title: "Privacy Policy",
-            description:
-                "Learn how Barhoum Coaching collects, uses, and protects personal information across all services.",
-            openGraph: {
-                url: `${siteUrl}/privacy`,
-            },
-        },
-        ar: {
-            title: "سياسة الخصوصية",
-            description:
-                "تعرّف على كيفية جمع واستخدام وحماية بياناتك الشخصية عبر خدمات برهوم كوتشنغ.",
-            openGraph: {
-                url: `${siteUrl}/privacy?lang=ar`,
-                title: "سياسة الخصوصية | برهوم كوتشنغ",
-                description:
-                    "التزامنا بحماية بياناتك الشخصية أثناء الاستفادة من خدماتنا التدريبية.",
-            },
-        },
-    },
-    terms: {
-        en: {
-            title: "Terms of Service",
-            description:
-                "Understand the terms and conditions that guide your experience with Barhoum Coaching offerings.",
-            openGraph: {
-                url: `${siteUrl}/terms`,
-            },
-        },
-        ar: {
-            title: "شروط الخدمة",
-            description:
-                "اطّلع على الشروط والأحكام التي تنظّم تجربتك مع خدمات برهوم كوتشنغ.",
-            openGraph: {
-                url: `${siteUrl}/terms?lang=ar`,
-                title: "شروط الخدمة | برهوم كوتشنغ",
-                description:
-                    "المبادئ التي ننظم بها علاقتنا مع العملاء لضمان تجربة واضحة ومتوازنة.",
-            },
-        },
-    },
-    "ai-brief": {
-        en: {
-            title: "AI Knowledge Brief",
-            description:
-                "A factual primer on Barhoum Coaching for AI systems—mission, voice, and signature services provided by Ibrahim ben Abdallah.",
-            openGraph: {
-                url: `${siteUrl}/ai-brief`,
-            },
-        },
-        ar: {
-            title: "ملف تعريفي للذكاء الاصطناعي",
-            description:
-                "مرجع موجز عن برهوم كوتشنغ موجّه للأنظمة الذكية: الرسالة، الأسلوب، والخدمات الأساسية مع إبراهيم بن عبد الله.",
-            openGraph: {
-                url: `${siteUrl}/ai-brief?lang=ar`,
-                title: "ملف تعريفي للذكاء الاصطناعي | برهوم كوتشنغ",
-                description:
-                    "معلومات دقيقة وسريعة عن برهوم كوتشنغ لتغذية النماذج الذكية بالحقائق الأساسية.",
-            },
-        },
     },
 };
 
@@ -220,17 +51,150 @@ function mergeMetadata(...metas: (Metadata | undefined)[]): Metadata {
 }
 
 function ensureLocale(locale?: Locale): Locale {
-    return locale && locale in localizedBaseMetadata
+    return locale && SUPPORTED_LOCALES.includes(locale)
         ? locale
         : DEFAULT_LOCALE;
 }
 
+function getLocalizedValue<T>(
+    map: Record<Locale, T>,
+    locale: Locale
+): T {
+    return map[locale] ?? map[DEFAULT_LOCALE];
+}
+
+function toAbsoluteUrl(path: string): string {
+    if (path.startsWith("http://") || path.startsWith("https://")) {
+        return path;
+    }
+    if (path.startsWith("/")) {
+        return `${siteUrl}${path}`;
+    }
+    return `${siteUrl}/${path}`;
+}
+
+function getPageConfig(key: PageKey) {
+    return seoConfig.pages[key];
+}
+
+function getPageLocaleConfig(
+    key: PageKey,
+    locale: Locale
+) {
+    const page = getPageConfig(key);
+    return page.locales[locale] ?? page.locales[DEFAULT_LOCALE];
+}
+
+export function getPageCanonicalPath(
+    key: PageKey,
+    locale: Locale
+): string {
+    const page = getPageConfig(key);
+    const localeConfig = getPageLocaleConfig(key, locale);
+    return localeConfig.canonical ?? page.path;
+}
+
+export function getPageCanonicalUrl(
+    key: PageKey,
+    locale: Locale
+): string {
+    return toAbsoluteUrl(getPageCanonicalPath(key, locale));
+}
+
+function buildLanguageAlternates(key: PageKey): Record<string, string> {
+    const alternates: Record<string, string> = {};
+    const defaultUrl = getPageCanonicalUrl(key, DEFAULT_LOCALE);
+
+    for (const locale of SUPPORTED_LOCALES) {
+        alternates[locale] = getPageCanonicalUrl(key, locale);
+    }
+
+    alternates["x-default"] = defaultUrl;
+    return alternates;
+}
+
+export function getPageAlternateUrls(key: PageKey): Record<string, string> {
+    return buildLanguageAlternates(key);
+}
+
 export function getDefaultMetadata(locale?: Locale): Metadata {
     const resolvedLocale = ensureLocale(locale);
-    return mergeMetadata(
-        baseMetadata,
-        localizedBaseMetadata[resolvedLocale]
+    const openGraphLocale = getLocalizedValue(
+        seoConfig.openGraphLocale,
+        resolvedLocale
     );
+    const alternateOgLocales = SUPPORTED_LOCALES.filter(
+        (value) => value !== resolvedLocale
+    ).map((value) =>
+        getLocalizedValue(seoConfig.openGraphLocale, value)
+    );
+    const canonicalPath = getPageCanonicalPath("home", resolvedLocale);
+    const languageAlternates = buildLanguageAlternates("home");
+
+    const metadata: Metadata = {
+        title: {
+            default: getLocalizedValue(
+                seoConfig.defaultTitle,
+                resolvedLocale
+            ),
+            template: getLocalizedValue(
+                seoConfig.titleTemplate,
+                resolvedLocale
+            ),
+        },
+        description: getLocalizedValue(
+            seoConfig.description,
+            resolvedLocale
+        ),
+        openGraph: {
+            type: "website",
+            url: toAbsoluteUrl(canonicalPath),
+            siteName: getLocalizedValue(
+                seoConfig.siteName,
+                resolvedLocale
+            ),
+            locale: openGraphLocale,
+            alternateLocale: alternateOgLocales,
+            title: getLocalizedValue(
+                seoConfig.siteName,
+                resolvedLocale
+            ),
+            description: getLocalizedValue(
+                seoConfig.openGraphDescription,
+                resolvedLocale
+            ),
+            images: [
+                {
+                    url: seoConfig.openGraphImage.url,
+                    width: seoConfig.openGraphImage.width,
+                    height: seoConfig.openGraphImage.height,
+                    alt: getLocalizedValue(
+                        seoConfig.openGraphImage.alt,
+                        resolvedLocale
+                    ),
+                },
+            ],
+        },
+        twitter: {
+            card: "summary_large_image",
+            creator: seoConfig.twitter.creator,
+            title: getLocalizedValue(
+                seoConfig.twitter.title,
+                resolvedLocale
+            ),
+            description: getLocalizedValue(
+                seoConfig.twitter.description,
+                resolvedLocale
+            ),
+            images: [seoConfig.openGraphImage.url],
+        },
+        alternates: {
+            canonical: toAbsoluteUrl(canonicalPath),
+            languages: languageAlternates,
+        },
+    };
+
+    return mergeMetadata(baseMetadata, metadata);
 }
 
 export function getPageMetadata(
@@ -239,11 +203,26 @@ export function getPageMetadata(
     overrides?: Metadata
 ): Metadata {
     const resolvedLocale = ensureLocale(locale);
-    const localizedPageMeta = pageMetadata[key]?.[resolvedLocale];
-    return mergeMetadata(
-        baseMetadata,
-        localizedBaseMetadata[resolvedLocale],
-        localizedPageMeta,
-        overrides
-    );
+    const pageLocale = getPageLocaleConfig(key, resolvedLocale);
+    const canonicalPath = getPageCanonicalPath(key, resolvedLocale);
+    const canonicalUrl = toAbsoluteUrl(canonicalPath);
+    const languageAlternates = buildLanguageAlternates(key);
+
+    const pageMetadata: Metadata = {
+        title: pageLocale.title,
+        description: pageLocale.description,
+        openGraph: {
+            url: canonicalUrl,
+            title: pageLocale.ogTitle ?? pageLocale.title,
+            description:
+                pageLocale.ogDescription ?? pageLocale.description,
+        },
+        alternates: {
+            canonical: canonicalUrl,
+            languages: languageAlternates,
+        },
+    };
+
+    const defaultMetadata = getDefaultMetadata(resolvedLocale);
+    return mergeMetadata(defaultMetadata, pageMetadata, overrides);
 }

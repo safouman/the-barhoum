@@ -1,40 +1,23 @@
 import type { MetadataRoute } from "next";
-import { siteUrl } from "@/lib/seo";
-
-type RouteEntry = {
-    path: string;
-    changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
-    priority: number;
-};
-
-const routes: RouteEntry[] = [
-    { path: "/", changeFrequency: "weekly", priority: 1 },
-    { path: "/privacy", changeFrequency: "yearly", priority: 0.3 },
-    { path: "/terms", changeFrequency: "yearly", priority: 0.3 },
-    { path: "/ai-brief", changeFrequency: "monthly", priority: 0.6 },
-];
-
-const toAbsoluteUrl = (path: string) =>
-    `${siteUrl}${path === "/" ? "/" : path}`;
+import { seoConfig, type SeoPageKey } from "@/config/seo";
+import { DEFAULT_LOCALE } from "@/lib/i18n";
+import {
+    getPageAlternateUrls,
+    getPageCanonicalUrl,
+} from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const now = new Date();
 
-    return routes.map(({ path, changeFrequency, priority }) => {
-        const absolute = toAbsoluteUrl(path);
-        const arabicUrl = `${absolute}${absolute.includes("?") ? "&" : "?"}lang=ar`;
-
-        return {
-            url: absolute,
-            lastModified: now,
-            changeFrequency,
-            priority,
-            alternates: {
-                languages: {
-                    en: absolute,
-                    ar: arabicUrl,
-                },
-            },
-        };
-    });
+    return (Object.entries(seoConfig.pages) as Array<
+        [SeoPageKey, (typeof seoConfig.pages)[SeoPageKey]]
+    >).map(([key, page]) => ({
+        url: getPageCanonicalUrl(key, DEFAULT_LOCALE),
+        lastModified: now,
+        changeFrequency: page.changeFrequency,
+        priority: page.priority,
+        alternates: {
+            languages: getPageAlternateUrls(key),
+        },
+    }));
 }
