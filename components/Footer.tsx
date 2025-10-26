@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import type { JSX } from "react";
-import { useLocale } from "@/providers/locale-provider";
 import { Container } from "./Container";
 import type { SiteConfig } from "@/lib/content";
 import { event } from "@/lib/analytics";
+import { triggerConsentPreferences } from "@/lib/consent";
+import { useLocale } from "@/providers/locale-provider";
 
 interface FooterProps {
     site: SiteConfig;
@@ -54,11 +55,32 @@ export function Footer({ site }: FooterProps) {
         icon: SOCIAL_ICONS[social.id],
     }));
 
-    const legalLinks = [
-        { href: "/privacy", label: locale === "ar" ? "سياسة الخصوصية" : "Privacy Policy" },
-        { href: "/terms", label: locale === "ar" ? "شروط الخدمة" : "Terms of Service" },
-        { href: "/ai-brief", label: locale === "ar" ? "ملف الذكاء الاصطناعي" : "AI Brief" },
-        { href: "/data/coach.jsonld", label: locale === "ar" ? "JSON-LD" : "Coach JSON-LD" },
+    const legalLinks: Array<
+        | { href: string; label: string; onClick?: undefined }
+        | { href?: undefined; label: string; onClick: () => void }
+    > = [
+        {
+            href: "/privacy",
+            label: locale === "ar" ? "سياسة الخصوصية" : "Privacy Policy",
+        },
+        {
+            href: "/terms",
+            label: locale === "ar" ? "شروط الخدمة" : "Terms of Service",
+        },
+        {
+            href: "/ai-brief",
+            label: locale === "ar" ? "ملف الذكاء الاصطناعي" : "AI Brief",
+        },
+        {
+            href: "/data/coach.jsonld",
+            label: locale === "ar" ? "JSON-LD" : "Coach JSON-LD",
+        },
+        {
+            onClick: () => {
+                triggerConsentPreferences();
+            },
+            label: locale === "ar" ? "تفضيلات ملفات الارتباط" : "Cookie Preferences",
+        },
     ];
 
     return (
@@ -133,20 +155,39 @@ export function Footer({ site }: FooterProps) {
                         <div>© 2025 {brandName}</div>
                         <nav
                             className={`flex flex-wrap items-center justify-center gap-4 mt-4 ${
-                                isRtl ? "flex-row-reverse" : ""
-                            }`}
-                            dir={isRtl ? "rtl" : "ltr"}
-                            aria-label={locale === "ar" ? "روابط قانونية" : "Legal links"}
-                        >
-                            {legalLinks.map((link) => (
-                                <a key={link.href} href={link.href} className="hover:text-[#2AD6CA] transition-colors duration-200">
+                        isRtl ? "flex-row-reverse" : ""
+                    }`}
+                    dir={isRtl ? "rtl" : "ltr"}
+                    aria-label={locale === "ar" ? "روابط قانونية" : "Legal links"}
+                >
+                    {legalLinks.map((link) => {
+                        const key = link.href ?? link.label;
+                        if (link.onClick) {
+                            return (
+                                <button
+                                    key={key}
+                                    type="button"
+                                    className="hover:text-[#2AD6CA] transition-colors duration-200"
+                                    onClick={link.onClick}
+                                >
                                     {link.label}
-                                </a>
-                            ))}
-                        </nav>
-                    </div>
-                </div>
-            </Container>
-        </footer>
+                                </button>
+                            );
+                        }
+                        return (
+                            <a
+                                key={key}
+                                href={link.href}
+                                className="hover:text-[#2AD6CA] transition-colors duration-200"
+                            >
+                                {link.label}
+                            </a>
+                        );
+                    })}
+                </nav>
+            </div>
+        </div>
+    </Container>
+</footer>
     );
 }

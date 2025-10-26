@@ -1,9 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
+import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import type { AnalyticsEventName } from "@/lib/analytics/shared";
 import { event, getAnalyticsContext, initAnalyticsContext, updateAnalyticsContext } from "@/lib/analytics";
+import { CookieConsentBanner } from "@/components/cookies/CookieConsentBanner";
+import { hasAnalyticsConsent } from "@/lib/consent";
 import { useLocale } from "@/providers/locale-provider";
 
 type SectionTracker = {
@@ -122,6 +126,13 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { locale } = useLocale();
+  const disableConsent = process.env.NEXT_PUBLIC_DISABLE_CONSENT === "true";
+  const measurementId = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
+  const [shouldLoadAnalytics, setShouldLoadAnalytics] = useState<boolean>(() =>
+    disableConsent ? Boolean(measurementId) : hasAnalyticsConsent()
+  );
+  const gaReadyRef = useRef(false);
+  const pendingConsentEventRef = useRef<"accepted" | null>(null);
   const sectionsRef = useRef<SectionTracker[]>([]);
   const tickingRef = useRef(false);
   const engagementObserverRef = useRef<IntersectionObserver | null>(null);
@@ -139,6 +150,66 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   });
 
   const search = useMemo(() => searchParams?.toString?.() ?? "", [searchParams]);
+
+  useEffect(() => {
+    if (disableConsent) {
+      setShouldLoadAnalytics(Boolean(measurementId));
+      return;
+    }
+    if (hasAnalyticsConsent()) {
+      setShouldLoadAnalytics(true);
+    }
+  }, [disableConsent, measurementId]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !measurementId) {
+      return;
+    }
+    (window as typeof window & Record<string, unknown>)[
+      `ga-disable-${measurementId}`
+    ] = !shouldLoadAnalytics;
+  }, [measurementId, shouldLoadAnalytics]);
+
+  const handleGaScriptLoaded = useCallback(() => {
+    gaReadyRef.current = true;
+    if (typeof window !== "undefined" && measurementId) {
+      (window as typeof window & Record<string, unknown>)[
+        `ga-disable-${measurementId}`
+      ] = false;
+      if (typeof window.gtag === "function") {
+        window.gtag("consent", "update", { analytics_storage: "granted" });
+      }
+    }
+    if (pendingConsentEventRef.current === "accepted") {
+      pendingConsentEventRef.current = null;
+      event("cookie_consent_given", { source: "banner" });
+    }
+  }, [measurementId]);
+
+  const handleConsentGranted = useCallback(() => {
+    setShouldLoadAnalytics(true);
+    if (gaReadyRef.current) {
+      event("cookie_consent_given", { source: "banner" });
+    } else {
+      pendingConsentEventRef.current = "accepted";
+    }
+  }, []);
+
+  const handleConsentRejected = useCallback(() => {
+    pendingConsentEventRef.current = null;
+    setShouldLoadAnalytics((previous) => (previous ? previous : false));
+    if (gaReadyRef.current) {
+      event("cookie_consent_rejected", { source: "banner" });
+    }
+    if (typeof window !== "undefined" && measurementId) {
+      (window as typeof window & Record<string, unknown>)[
+        `ga-disable-${measurementId}`
+      ] = true;
+      if (typeof window.gtag === "function") {
+        window.gtag("consent", "update", { analytics_storage: "denied" });
+      }
+    }
+  }, [measurementId]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -326,5 +397,31 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      {shouldLoadAnalytics && measurementId ? (
+        <>
+          <Script
+            src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
+            strategy="afterInteractive"
+            onLoad={handleGaScriptLoaded}
+          />
+          <Script id="ga4-init" strategy="afterInteractive">
+            {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${measurementId}', { send_page_view: false });
+              `}
+          </Script>
+        </>
+      ) : null}
+      {shouldLoadAnalytics ? <VercelAnalytics /> : null}
+      {children}
+      <CookieConsentBanner
+        onConsentGranted={handleConsentGranted}
+        onConsentRejected={handleConsentRejected}
+      />
+    </>
+  );
 }

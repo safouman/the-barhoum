@@ -4,7 +4,6 @@ export const revalidate = 0;
 export const runtime = "nodejs";
 import Script from "next/script";
 import { Inter, Noto_Naskh_Arabic } from "next/font/google";
-import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import "../styles/globals.css";
 import { LocaleProvider } from "@/providers/locale-provider";
 import { AnalyticsProvider } from "@/providers/analytics-provider";
@@ -67,7 +66,6 @@ export default async function RootLayout({
     const direction = getDirection(locale);
     const [ui, site] = await Promise.all([loadUi(), getSiteConfig()]);
     const fontClass = `${inter.variable} ${notoNaskhArabic.variable}`;
-    const measurementId = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
     const brand = seoConfig.brand;
     const sameAs = brand.socials;
     const organizationId = `${siteUrl}#organization`;
@@ -178,22 +176,6 @@ export default async function RootLayout({
                 />
             </head>
             <body>
-                {measurementId ? (
-                    <>
-                        <Script
-                            src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
-                            strategy="afterInteractive"
-                        />
-                        <Script id="ga4-init" strategy="afterInteractive">
-                            {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${measurementId}', { send_page_view: false });
-              `}
-                        </Script>
-                    </>
-                ) : null}
                 <Script
                     id="structured-data"
                     type="application/ld+json"
@@ -203,7 +185,6 @@ export default async function RootLayout({
                 </Script>
                 <LocaleProvider initialLocale={locale}>
                     <AnalyticsProvider>
-                        <VercelAnalytics />
                         <SiteHeader ui={ui} site={site} />
                         <main>{children}</main>
                         <Footer site={site} />

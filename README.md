@@ -13,6 +13,31 @@ npm run dev
 - Production build: `npm run build` then `npm start`
 - Type check & lint: `npm run typecheck` / `npm run lint`
 
+## Environment configuration
+
+Set secrets in `.env.local` (keep `.env` out of version control). Restart the dev server after updating values.
+
+- **Core URLs & localization**
+  - `NEXT_PUBLIC_SITE_URL` – canonical base URL used for metadata and oEmbed responses.
+  - `NEXT_PUBLIC_LOCALIZATION_AVAILABLE_LOCALES`, `NEXT_PUBLIC_LOCALIZATION_DEFAULT_LOCALE`, `NEXT_PUBLIC_LOCALIZATION_ENABLED_LOCALES` – optional overrides for supported languages when you diverge from the defaults in `config/localization.ts`.
+- **Analytics (GA4)**
+  - `NEXT_PUBLIC_GA4_MEASUREMENT_ID` – exposed to the client; required for browser analytics and JSON-LD metrics.
+  - `GA4_MEASUREMENT_ID` (optional) – server-side override; falls back to the public value.
+  - `GA4_API_SECRET` – required when the lead/checkout automations send Measurement Protocol hits.
+- **WhatsApp automations**
+  - `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID` – credentials for the Meta WhatsApp Cloud API (v22.0).
+  - `WHATSAPP_ADMIN_PHONE`, `WHATSAPP_MANAGER_PHONE` – recipient numbers (E.164, with or without the `+`).
+  - Optional template knobs when you have approved message templates:
+    - Lead notifications: `WHATSAPP_TEMPLATE_NAME`, `WHATSAPP_TEMPLATE_LANGUAGE`, `WHATSAPP_TEMPLATE_PARAMETER_NAMES`.
+    - Payment notifications: `WHATSAPP_PAYMENT_TEMPLATE_NAME`, `WHATSAPP_PAYMENT_TEMPLATE_LANGUAGE`, `WHATSAPP_PAYMENT_TEMPLATE_PARAMETER_NAMES`.
+    - If templates are omitted, the API falls back to plain-text alerts but still requires valid credentials.
+- **Stripe billing**
+  - `STRIPE_SECRET_KEY` – required for creating payment links and refreshing the program catalog.
+  - `STRIPE_WEBHOOK_SECRET` – required to validate `app/api/stripe/webhook`; in development run `stripe listen --forward-to http://localhost:3000/api/stripe/webhook` to obtain a test secret.
+  - Map package IDs to Stripe prices in `lib/stripe/config.ts` and keep product metadata (`program_id`, `sessions`, `duration_label`, `source=barhoum_catalog`, `brand=Ibrahim Ben Abdallah`) aligned so catalog refreshes succeed.
+- **Lead automation**
+  - `GOOGLE_SCRIPT_URL`, `GOOGLE_SCRIPT_SECRET` – optional. When configured, lead submissions POST to your Apps Script endpoint before triggering WhatsApp notifications.
+
 ## Content & configuration
 
 All editable content lives under `data/`:

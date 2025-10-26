@@ -26,7 +26,9 @@ export type AnalyticsEventName =
   | "ai_brief_view"
   | "category_view"
   | "package_click"
-  | "pay_page_view";
+  | "pay_page_view"
+  | "cookie_consent_given"
+  | "cookie_consent_rejected";
 
 export type AnalyticsPrimitive = string | number | boolean;
 

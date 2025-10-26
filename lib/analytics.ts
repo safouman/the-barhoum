@@ -1,5 +1,8 @@
+"use client";
+
 import type { AnalyticsEventName, AnalyticsEventPayload, SharedAnalyticsContext } from "@/lib/analytics/shared";
 import { ANALYTICS_DEFAULTS, sanitizeAnalyticsParams } from "@/lib/analytics/shared";
+import { hasAnalyticsConsent } from "@/lib/consent";
 
 type GtagFunction = (command: "event" | "config", target: string, params?: Record<string, unknown>) => void;
 
@@ -75,12 +78,20 @@ export function getAnalyticsContext(): SharedAnalyticsContext {
 }
 
 export function event(name: AnalyticsEventName, props: AnalyticsEventPayload = {}) {
-  const measurementId = getMeasurementId();
   const sanitizedProps = sanitizeAnalyticsParams(props);
   const payload: AnalyticsEventPayload = {
     ...sharedContext,
     ...sanitizedProps,
   };
+
+  if (!hasAnalyticsConsent()) {
+    if (process.env.NODE_ENV !== "production") {
+      console.info("[analytics-blocked]", name, payload);
+    }
+    return;
+  }
+
+  const measurementId = getMeasurementId();
 
   if (!measurementId) {
     if (process.env.NODE_ENV !== "production") {
