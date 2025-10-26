@@ -96,6 +96,8 @@ export const leadFormSchema = z.object({
   category: z.string().optional().transform((val) => val || ""),
 
   package: z.string().optional().transform((val) => val || ""),
+
+  packageId: z.string().optional().transform((val) => val || ""),
 });
 
 export type LeadFormData = z.infer<typeof leadFormSchema>;

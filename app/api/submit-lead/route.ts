@@ -432,6 +432,7 @@ async function processStripePaymentLink({
     googleScriptSecret,
     analyticsContext,
     stripeSelection,
+    packageIdentifier,
 }: {
     requestId: string;
     formData: LeadFormData;
@@ -439,6 +440,7 @@ async function processStripePaymentLink({
     googleScriptSecret: string;
     analyticsContext: Partial<SharedAnalyticsContext>;
     stripeSelection?: StripeSelection | null;
+    packageIdentifier?: string | null;
 }): Promise<StripeJobResult> {
     const jobId = `${requestId}:stripe`;
 
@@ -451,11 +453,24 @@ async function processStripePaymentLink({
         return { status: "skipped", reason: "missing-package" };
     }
 
+    const selectionIdentifier = packageIdentifier ?? formData.package;
     const resolvedSelection =
         stripeSelection ??
-        (formData.package
-            ? await resolveStripeSelection(formData.package)
+        (selectionIdentifier
+            ? await resolveStripeSelection(selectionIdentifier)
             : null);
+
+    const packageIdForStripe =
+        resolvedSelection && resolvedSelection.type === "individual-program"
+            ? resolvedSelection.program.programId
+            : resolvedSelection && resolvedSelection.type === "legacy-price"
+              ? resolvedSelection.packageId
+              : packageIdentifier ?? formData.package;
+
+    const packageLabelForStripe =
+        resolvedSelection && resolvedSelection.type === "individual-program"
+            ? resolveProgramLabel(resolvedSelection.program)
+            : formData.package;
 
     if (resolvedSelection && resolvedSelection.type === "individual-program") {
         console.log(`[${jobId}] 🎯 Stripe program context`, {
@@ -486,7 +501,7 @@ async function processStripePaymentLink({
             stripeUpdateDetails.stripe_program_key =
                 resolvedSelection.program.programId;
             stripeUpdateDetails.stripe_program_label =
-                resolveProgramLabel(resolvedSelection.program);
+                packageLabelForStripe;
             stripeUpdateDetails.stripe_program_description =
                 resolveProgramDescription(resolvedSelection.program);
             stripeUpdateDetails.stripe_program_sessions = String(
@@ -517,7 +532,7 @@ async function processStripePaymentLink({
             fullName: formData.fullName,
             country: formData.country,
             phone: formData.phone,
-            packageId: formData.package,
+            packageId: packageIdForStripe,
             category: formData.category,
         });
 
@@ -534,6 +549,8 @@ async function processStripePaymentLink({
             leadId: formData.leadId,
             payment_link: paymentLink,
             ...stripeUpdateDetails,
+            package_key: packageIdentifier ?? "",
+            package_label: packageLabelForStripe,
         };
 
         const controller = new AbortController();
@@ -586,7 +603,8 @@ async function processStripePaymentLink({
             responseText.substring(0, 500)
         );
         const analyticsPayload: Record<string, string> = {
-            package_id: formData.package,
+            package_id: packageIdForStripe,
+            package_label: packageLabelForStripe,
             payment_link_url: paymentLink,
         };
 
@@ -754,15 +772,19 @@ export async function POST(req: NextRequest) {
 
         const formData = validationResult.data;
 
-        const normalizedPackageId = formData.package.trim();
+        const rawPackageLabelInput = formData.package.trim();
+        const rawPackageIdInput = formData.packageId?.trim?.() ?? "";
+        const identifierCandidate = rawPackageIdInput || rawPackageLabelInput;
         let stripeSelectionForLead: StripeSelection | null = null;
+        let packageIdentifier: string | null = rawPackageIdInput || null;
+        let packageDisplayLabel: string = rawPackageLabelInput || rawPackageIdInput || "";
 
-        if (normalizedPackageId) {
-            stripeSelectionForLead = await resolveStripeSelection(normalizedPackageId);
+        if (identifierCandidate) {
+            stripeSelectionForLead = await resolveStripeSelection(identifierCandidate);
             if (!stripeSelectionForLead) {
                 const allowedIdentifiers = await getAllStripeIdentifiers();
                 console.warn(
-                    `[${requestId}] ⚠️ Unknown package identifier "${normalizedPackageId}" received. Allowed identifiers: ${allowedIdentifiers.join(
+                    `[${requestId}] ⚠️ Unknown package identifier "${identifierCandidate}" received. Allowed identifiers: ${allowedIdentifiers.join(
                         ", "
                     )}`
                 );
@@ -779,26 +801,38 @@ export async function POST(req: NextRequest) {
                 `[${requestId}] 🎯 Resolved package selection`,
                 stripeSelectionForLead.type === "individual-program"
                     ? {
-                          requested: normalizedPackageId,
+                          requested: identifierCandidate,
                           programKey: stripeSelectionForLead.program.programId,
                           programLabel: resolveProgramLabel(stripeSelectionForLead.program),
                           productId: stripeSelectionForLead.program.productId,
                           priceId: stripeSelectionForLead.program.priceId,
                       }
                     : {
-                          packageId: normalizedPackageId,
+                          packageId: identifierCandidate,
                           priceId: stripeSelectionForLead.priceId,
                       }
             );
 
             if (stripeSelectionForLead.type === "individual-program") {
-                formData.package = stripeSelectionForLead.program.programId;
+                packageIdentifier = stripeSelectionForLead.program.programId;
+                if (!packageDisplayLabel) {
+                    packageDisplayLabel = resolveProgramLabel(
+                        stripeSelectionForLead.program
+                    );
+                }
             } else {
-                formData.package = normalizedPackageId;
+                packageIdentifier = stripeSelectionForLead.packageId;
+                if (!packageDisplayLabel) {
+                    packageDisplayLabel = identifierCandidate;
+                }
             }
         } else {
-            formData.package = "";
+            packageIdentifier = rawPackageIdInput || null;
+            packageDisplayLabel = rawPackageLabelInput;
         }
+
+        formData.package = packageDisplayLabel;
+        formData.packageId = packageIdentifier ?? "";
 
         const automationContext = buildAutomationContext(
             req,
@@ -856,10 +890,7 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const packageDisplayName =
-            stripeSelectionForLead && stripeSelectionForLead.type === "individual-program"
-                ? resolveProgramLabel(stripeSelectionForLead.program)
-                : formData.package;
+        const packageDisplayName = packageDisplayLabel || formData.package;
 
         const stripeLeadDetails: Record<string, string> = {};
 
@@ -872,7 +903,7 @@ export async function POST(req: NextRequest) {
                 stripeLeadDetails.stripe_program_key =
                     stripeSelectionForLead.program.programId;
                 stripeLeadDetails.stripe_program_label =
-                    resolveProgramLabel(stripeSelectionForLead.program);
+                    packageDisplayName;
                 stripeLeadDetails.stripe_program_description =
                     resolveProgramDescription(stripeSelectionForLead.program);
                 stripeLeadDetails.stripe_program_sessions = String(
@@ -902,7 +933,7 @@ export async function POST(req: NextRequest) {
             operation: "createLead",
             ...formData,
             package: packageDisplayName,
-            package_key: formData.package,
+            package_key: packageIdentifier ?? "",
             ...stripeLeadDetails,
             payment_link: "",
         };
@@ -910,7 +941,7 @@ export async function POST(req: NextRequest) {
         console.log(`[${requestId}] 📦 Payload prepared for Google Sheets:`, {
             email: formData.email,
             category: formData.category,
-            package_key: formData.package,
+            package_key: packageIdentifier ?? "",
             package_label: packageDisplayName,
             fieldCount: Object.keys(payload).length,
         });
@@ -1033,6 +1064,7 @@ export async function POST(req: NextRequest) {
                         googleScriptSecret,
                         analyticsContext: automationContext,
                         stripeSelection: stripeSelectionForLead,
+                        packageIdentifier,
                     });
 
                     paymentLinkStatus = stripeResult.status;

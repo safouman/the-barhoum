@@ -396,7 +396,8 @@ export function LeadForm({
                 ...values,
                 country: sanitizedCountry,
                 category: selectedCategory ?? "",
-                package: selectedPackage ?? "",
+                package: packSummary?.packageValue ?? selectedPackage ?? "",
+                packageId: selectedPackage ?? "",
             };
 
             const response = await fetch("/api/submit-lead", {
