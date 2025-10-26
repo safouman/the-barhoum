@@ -181,6 +181,8 @@ export async function getPrograms(): Promise<ProgramCatalogResult> {
                 const warning = "no-live-programs";
                 if (!warnings.includes(warning)) warnings.push(warning);
 
+                console.warn("[Programs] ⚠️ Serving stale catalog data (no live programs)");
+
                 return {
                     status: "stale",
                     programs: fallbackPrograms,
@@ -232,6 +234,10 @@ export async function getPrograms(): Promise<ProgramCatalogResult> {
             ...(snapshotCache?.warnings ?? []),
             "catalog-fetch-error",
         ];
+
+        if (fallbackPrograms.length) {
+            console.warn("[Programs] ⚠️ Serving stale catalog data");
+        }
 
         return {
             status: fallbackPrograms.length ? "stale" : "unavailable",
