@@ -11,7 +11,9 @@ npm run dev
 
 - Development server: http://localhost:3000
 - Production build: `npm run build` then `npm start`
-- Type check & lint: `npm run typecheck` / `npm run lint`
+- Quality gate: `npm run check` (runs lint + type-check with zero-warning policy)
+- On-save fixes: `npm run lint:staged` (used by the pre-commit hook, can be run manually)
+- Bypass hooks (rarely): prefix with `HUSKY=0 ` when you understand the trade-offs
 
 ## Environment configuration
 
@@ -69,6 +71,13 @@ styles/globals.css   Tailwind entrypoint + token plumbing
 tailwind.config.ts   Utility extensions bound to design tokens
 public/docs/         Downloadable assets
 ```
+
+## Developer workflow
+
+- Pre-commit hooks lint only staged files (`lint-staged`) and then run `npm run check`.
+- Pre-push hooks rerun `npm run check` and then `npm run build` to catch integration breakage early.
+- Hooks install automatically via the `prepare` script; re-run `npm install` if they ever go missing.
+- Skip hooks only when necessary by prefixing commands with `HUSKY=0 ` (e.g., `HUSKY=0 git commit …`).
 
 ## Accessibility & RTL
 

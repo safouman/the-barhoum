@@ -8,11 +8,11 @@ import type {
 import { ANALYTICS_DEFAULTS, sanitizeAnalyticsParams } from "@/lib/analytics/shared";
 import { hasAnalyticsConsent } from "@/lib/consent";
 
-interface GtagFunction {
+export type GtagFunction = {
   (command: "event", eventName: string, params?: Record<string, unknown>): void;
   (command: "config", target: string, params?: Record<string, unknown>): void;
   (command: "consent", action: "default" | "update", params: Record<string, unknown>): void;
-}
+};
 
 declare global {
   interface Window {

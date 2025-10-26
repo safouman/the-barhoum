@@ -5,7 +5,13 @@ import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
 import type { AnalyticsEventName } from "@/lib/analytics/shared";
-import { event, getAnalyticsContext, initAnalyticsContext, updateAnalyticsContext } from "@/lib/analytics";
+import {
+  event,
+  getAnalyticsContext,
+  initAnalyticsContext,
+  updateAnalyticsContext,
+  type GtagFunction,
+} from "@/lib/analytics";
 import { CookieConsentBanner } from "@/components/cookies/CookieConsentBanner";
 import { hasAnalyticsConsent } from "@/lib/consent";
 import { useLocale } from "@/providers/locale-provider";
@@ -81,6 +87,14 @@ function loadStoredUtm(): Partial<Record<UtmKeys, string>> {
   } catch {
     return {};
   }
+}
+
+function resolveGtag(): GtagFunction | undefined {
+  if (typeof window === "undefined") {
+    return undefined;
+  }
+  const gtag = window.gtag;
+  return typeof gtag === "function" ? gtag : undefined;
 }
 
 function persistUtm(data: Record<UtmKeys, string>) {
@@ -176,8 +190,9 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
       (window as typeof window & Record<string, unknown>)[
         `ga-disable-${measurementId}`
       ] = false;
-      if (typeof window.gtag === "function") {
-        window.gtag("consent", "update", { analytics_storage: "granted" });
+      const gtag = resolveGtag();
+      if (gtag) {
+        gtag("consent", "update", { analytics_storage: "granted" });
       }
     }
     if (pendingConsentEventRef.current === "accepted") {
@@ -205,8 +220,9 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
       (window as typeof window & Record<string, unknown>)[
         `ga-disable-${measurementId}`
       ] = true;
-      if (typeof window.gtag === "function") {
-        window.gtag("consent", "update", { analytics_storage: "denied" });
+      const gtag = resolveGtag();
+      if (gtag) {
+        gtag("consent", "update", { analytics_storage: "denied" });
       }
     }
   }, [measurementId]);
