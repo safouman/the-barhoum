@@ -1,0 +1,60 @@
+{
+  "ar": {
+    "program_basic": {
+      "title": "لغة مشتركة سريعة",
+      "subtitle": "جلسة تعريف سريع",
+      "bullets": [
+        "تمرين واحد مشترك",
+        "توصية مشتركة",
+        "متابعة خفيفة"
+      ]
+    },
+    "program_growth": {
+      "title": "إيقاع حوار متجدد",
+      "subtitle": "تناغم متصاعد",
+      "bullets": [
+        "تمارين قصيرة بين الجلسات",
+        "خطوة مشتركة",
+        "متابعة لطيفة"
+      ]
+    },
+    "program_transform": {
+      "title": "مساحة آمنة مستمرة",
+      "subtitle": "عمق وثقة",
+      "bullets": [
+        "دعم بين الجلسات (صوت/نص)",
+        "تمرين متابعة خفيف",
+        "تكامل أعمق"
+      ]
+    }
+  },
+  "en": {
+    "program_basic": {
+      "title": "Shared language sprint",
+      "subtitle": "Focused discovery",
+      "bullets": [
+        "One shared practice",
+        "Joint recommendation",
+        "Light follow-up"
+      ]
+    },
+    "program_growth": {
+      "title": "Renewed dialogue rhythm",
+      "subtitle": "Grow the conversation",
+      "bullets": [
+        "Short rituals between sessions",
+        "Shared next step",
+        "Gentle accountability"
+      ]
+    },
+    "program_transform": {
+      "title": "Sustained safe space",
+      "subtitle": "Keep the cadence",
+      "bullets": [
+        "Between-session voice/text",
+        "Light follow-up practice",
+        "Deeper integration"
+      ]
+    }
+  }
+}

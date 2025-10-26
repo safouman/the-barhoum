@@ -15,6 +15,7 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
     expandedMobileCategory,
     onMobileToggle,
     packs,
+    packsCopy,
     formCopy,
     selectedPack,
     leadFormVisible,
@@ -159,7 +160,7 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
                                                 onContinue={onPackContinue}
                                                 sectionId="mobile-packs"
                                                 comingSoon={isComingSoon}
-                                                copy={ui.home.packs}
+                                                copy={packsCopy}
                                             />
                                             {!isComingSoon &&
                                                 leadFormVisible &&

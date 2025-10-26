@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { Category, LeadFormCopy, Locale, UIStrings, HomeData } from "@/lib/content";
+import type { Category, LeadFormCopy, Locale, UIStrings } from "@/lib/content";
 import { event, updateAnalyticsContext } from "@/lib/analytics";
 import { useLocale } from "@/providers/locale-provider";
 import {
@@ -12,17 +12,21 @@ import {
 import type { LocalizedCategory } from "@/components/home/types";
 import { formatPackCurrency } from "@/lib/commerce/packages";
 import type { PackSelection } from "@/lib/commerce/pack-selections";
+import type { PacksByCategory } from "@/components/home/sections/Packages";
 
 interface HomeInteractiveExperienceProps {
   categories: Category[];
-  packs: HomeData["packs"];
+  packs: PacksByCategory;
   ui: Record<Locale, UIStrings>;
   leadFormCopy: Record<Locale, LeadFormCopy>;
+  catalogStatus: "ok" | "empty" | "unavailable";
 }
 
-export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy }: HomeInteractiveExperienceProps) {
+export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy, catalogStatus }: HomeInteractiveExperienceProps) {
   const { locale } = useLocale();
   const strings = ui[locale];
+  const individualsUnavailable =
+    catalogStatus !== "ok" || (packs.individuals?.[locale] ?? []).length === 0;
 
   const localizedCategories = useMemo<LocalizedCategory[]>(
     () =>
@@ -30,9 +34,12 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy 
         id: category.id,
         label: category.label[locale],
         description: category.description[locale],
-        comingSoon: category.comingSoon ?? false,
+        comingSoon:
+          category.id === "individuals"
+            ? individualsUnavailable
+            : category.comingSoon ?? false,
       })),
-    [categories, locale]
+    [categories, locale, individualsUnavailable]
   );
 
   const [activeCategory, setActiveCategory] = useState<Category["id"] | undefined>();
@@ -51,7 +58,8 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy 
   }, []);
 
   const formatCurrency = useCallback(
-    (amount: number) => formatPackCurrency(amount, locale),
+    (amount: number, currency: string) =>
+      formatPackCurrency(amount, locale, currency),
     [locale]
   );
 
@@ -71,14 +79,14 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy 
       packageLabel: strings.form.package,
       packageValue: selectedPack.title,
       sessionsLabel: selectedPack.sessionsLabel,
-      priceLabel: formatCurrency(selectedPack.priceTotal),
+      priceLabel: formatCurrency(selectedPack.priceTotal, selectedPack.currency),
     };
   }, [activeCategoryLabel, formatCurrency, selectedPack, strings.form.category, strings.form.package]);
 
   const activeCategoryIsComingSoon = useMemo(() => {
     if (!activeCategory) return false;
-    return categories.find((category) => category.id === activeCategory)?.comingSoon ?? false;
-  }, [activeCategory, categories]);
+    return localizedCategories.find((category) => category.id === activeCategory)?.comingSoon ?? false;
+  }, [activeCategory, localizedCategories]);
 
   const seenCategoriesRef = useRef(new Set<string>());
   useEffect(() => {
@@ -163,6 +171,18 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy 
     }
   };
 
+  const packsCopy = useMemo(() => {
+    if (catalogStatus === "unavailable") {
+      const message = locale === "ar" ? "الكاتالوج غير متوفر مؤقتًا." : "Catalog temporarily unavailable.";
+      return { ...strings.home.packs, comingSoon: message };
+    }
+    if (catalogStatus === "empty") {
+      const message = locale === "ar" ? "قريبًا." : "Coming soon.";
+      return { ...strings.home.packs, comingSoon: message };
+    }
+    return strings.home.packs;
+  }, [catalogStatus, locale, strings.home.packs]);
+
   return (
     <>
       <HomeCategories
@@ -172,6 +192,7 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy 
         expandedMobileCategory={expandedMobileCategory}
         onMobileToggle={handleMobileCategoryToggle}
         packs={packs}
+        packsCopy={packsCopy}
         formCopy={leadFormCopy}
         selectedPack={selectedPack}
         leadFormVisible={leadFormVisible}
@@ -180,25 +201,25 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy 
         selectedPackSummary={selectedPackSummary}
         activeCategoryId={activeCategory}
         selectedPackageId={selectedPackageId}
-    onPackSelect={(pack) => {
-      event("package_click", {
-        action: "select",
-        category: pack.category,
-        sessions: pack.sessions,
-      });
-      setSelectedPack(pack);
-      updateAnalyticsContext({ program_name: pack.title });
-    }}
-    onPackContinue={(pack) => {
-      event("package_click", {
-        action: "continue",
-        category: pack.category,
-        sessions: pack.sessions,
-      });
-      setSelectedPack(pack);
-      updateAnalyticsContext({ program_name: pack.title });
-      setLeadFormVisible(true);
-    }}
+        onPackSelect={(pack) => {
+          event("package_click", {
+            action: "select",
+            category: pack.category,
+            sessions: pack.sessions,
+          });
+          setSelectedPack(pack);
+          updateAnalyticsContext({ program_name: pack.title });
+        }}
+        onPackContinue={(pack) => {
+          event("package_click", {
+            action: "continue",
+            category: pack.category,
+            sessions: pack.sessions,
+          });
+          setSelectedPack(pack);
+          updateAnalyticsContext({ program_name: pack.title });
+          setLeadFormVisible(true);
+        }}
         locale={locale}
         ui={strings}
       />
@@ -212,7 +233,7 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy 
             packs={packs}
             sectionId="desktop-packs"
             comingSoon={activeCategoryIsComingSoon}
-            copy={strings.home.packs}
+            copy={packsCopy}
             onSelect={(pack) => {
               event("package_click", {
                 action: "select",

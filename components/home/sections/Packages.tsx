@@ -7,24 +7,29 @@ import {
   formatPackCurrency,
   formatSessionsLabel,
   type CategoryKey,
+  type IndividualProgramKey,
+  type PackageId,
   type PackSessions,
 } from "@/lib/commerce/packages";
 import { createPackSelection, type PackSelection } from "@/lib/commerce/pack-selections";
 import styles from "./Packages.module.css";
 
-type Pack = {
+export type Pack = {
+  programKey?: IndividualProgramKey | PackageId;
   sessions: PackSessions;
   title: string;
   subtitle: string;
   bullets: string[];
   priceTotal: number;
+  priceAmountMinor: number;
   pricePerSession: number;
+  currency: string;
   duration: string;
 };
 
-type PacksByCategory = Record<CategoryKey, Record<Locale, Pack[]>>;
+export type PacksByCategory = Record<CategoryKey, Record<Locale, Pack[]>>;
 
-type PacksCopy = {
+export type PacksCopy = {
   eyebrow: string;
   selectAriaLabel: string;
   ready: string;
@@ -74,7 +79,7 @@ function PackBar({ direction, locale, pack, selected, onSelect, onKeyStep, butto
       }}
       className={clsx(styles.option, selected && styles.optionSelected)}
       dir={direction}
-      aria-label={`${formatSessionsLabel(pack.sessions, locale)} · ${formatPackCurrency(pack.priceTotal, locale)}`}
+      aria-label={`${formatSessionsLabel(pack.sessions, locale)} · ${formatPackCurrency(pack.priceTotal, locale, pack.currency)}`}
     >
       <div className={styles.optionContent}>
         <div className={styles.optionMeta}>
@@ -82,9 +87,9 @@ function PackBar({ direction, locale, pack, selected, onSelect, onKeyStep, butto
           <span className={styles.optionSubtitle}>{pack.subtitle}</span>
         </div>
         <div className={styles.optionPrice}>
-          <span>{formatPackCurrency(pack.priceTotal, locale)}</span>
+          <span>{formatPackCurrency(pack.priceTotal, locale, pack.currency)}</span>
           <span>
-            {formatPackCurrency(pack.pricePerSession, locale)} / {locale === "ar" ? "جلسة" : "session"}
+            {formatPackCurrency(pack.pricePerSession, locale, pack.currency)} / {locale === "ar" ? "جلسة" : "session"}
           </span>
         </div>
       </div>
@@ -182,8 +187,8 @@ export function PacksSection({
   if (!comingSoon && packs.length === 0) return null;
 
   const selectedPack = packs[selectedIndex];
-  const totalPriceDisplay = selectedPack ? formatPackCurrency(selectedPack.priceTotal, locale) : "";
-  const perSessionDisplay = selectedPack ? formatPackCurrency(selectedPack.pricePerSession, locale) : "";
+  const totalPriceDisplay = selectedPack ? formatPackCurrency(selectedPack.priceTotal, locale, selectedPack.currency) : "";
+  const perSessionDisplay = selectedPack ? formatPackCurrency(selectedPack.pricePerSession, locale, selectedPack.currency) : "";
   const sessionTerm = locale === "ar" ? "جلسة" : "session";
   const totalPriceAriaLabel = selectedPack
     ? locale === "ar"
@@ -223,7 +228,7 @@ export function PacksSection({
                 <div className={styles.list}>
                   {packs.map((pack, index) => (
                     <PackBar
-                      key={`${category}-${pack.sessions}`}
+                      key={`${category}-${pack.programKey ?? pack.sessions}`}
                       direction={direction}
                       locale={locale}
                       pack={pack}

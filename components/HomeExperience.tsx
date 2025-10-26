@@ -29,6 +29,9 @@ const HomeExperienceSection = dynamic(
   { ssr: false, loading: () => null }
 );
 
+import type { PacksByCategory } from "@/components/home/sections/Packages";
+import type { ProgramCatalogResult } from "@/lib/programs";
+
 interface HomeExperienceProps {
   locale: Locale;
   home: HomeData;
@@ -39,6 +42,8 @@ interface HomeExperienceProps {
   heroCopy: Record<Locale, string>;
   aboutCopy: Record<Locale, string>;
   methodCopy: Record<Locale, string>;
+  packs: PacksByCategory;
+  catalogStatus: ProgramCatalogResult["status"];
 }
 
 export function HomeExperience({
@@ -51,6 +56,8 @@ export function HomeExperience({
   heroCopy,
   aboutCopy,
   methodCopy,
+  packs,
+  catalogStatus,
 }: HomeExperienceProps) {
   const localizedTestimonials: LocalizedTestimonial[] = testimonials.map((testimonial) => ({
     id: testimonial.id,
@@ -80,9 +87,10 @@ export function HomeExperience({
 
       <HomeInteractiveExperience
         categories={categories}
-        packs={home.packs}
+        packs={packs}
         ui={ui}
         leadFormCopy={leadFormCopy}
+        catalogStatus={catalogStatus}
       />
     </>
   );

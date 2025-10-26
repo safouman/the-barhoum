@@ -2,6 +2,7 @@ import type { ReactElement } from "react";
 import type { Category, HomeData, LeadFormCopy, Locale, Testimonial, UIStrings } from "@/lib/content";
 import type { PackageId } from "@/lib/commerce/packages";
 import type { PackSelection } from "@/lib/commerce/pack-selections";
+import type { PacksByCategory, PacksCopy } from "@/components/home/sections/Packages";
 
 export interface LocalizedCategory {
   id: Category["id"];
@@ -44,7 +45,8 @@ export interface CategoriesProps {
   onSelect: (id: Category["id"]) => void;
   expandedMobileCategory?: Category["id"];
   onMobileToggle: (id: Category["id"]) => void;
-  packs: HomeData["packs"];
+  packs: PacksByCategory;
+  packsCopy: PacksCopy;
   formCopy: Record<Locale, LeadFormCopy>;
   selectedPack: PackSelection | null;
   leadFormVisible: boolean;

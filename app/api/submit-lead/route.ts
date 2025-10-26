@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { getAllStripeIdentifiers, resolveStripeSelection, type StripeSelection } from "@/lib/stripe/config";
+import { getAllStripeIdentifiers, resolveStripeSelection, type StripeSelection, type IndividualProgramConfig } from "@/lib/stripe/config";
 import { leadFormSchema, type LeadFormData } from "@/lib/validation/lead-form";
 import { createPaymentLink } from "@/lib/stripe/payment-links";
 import { requiresPayment } from "@/lib/utils/geo";
@@ -8,6 +8,18 @@ import type { SharedAnalyticsContext } from "@/lib/analytics/shared";
 import { trackAutomationEvent } from "@/lib/analytics/server";
 
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+
+function resolveProgramLabel(program: IndividualProgramConfig): string {
+    return (
+        program.metadata?.program_label ??
+        program.metadata?.title_en ??
+        program.programId
+    );
+}
+
+function resolveProgramDescription(program: IndividualProgramConfig): string {
+    return program.metadata?.description ?? "";
+}
 
 const RATE_LIMIT_WINDOW = 60 * 60 * 1000;
 const MAX_REQUESTS_PER_WINDOW = 15;
@@ -73,7 +85,7 @@ function buildAutomationContext(
     const trimmedPackage = formData.package?.trim() ?? "";
     const resolvedProgramName =
         stripeSelection && stripeSelection.type === "individual-program"
-            ? stripeSelection.program.displayName
+            ? resolveProgramLabel(stripeSelection.program)
             : trimmedPackage || "none";
     return {
         locale: parseLocale(req.headers.get("accept-language")),
@@ -442,13 +454,13 @@ async function processStripePaymentLink({
     const resolvedSelection =
         stripeSelection ??
         (formData.package
-            ? resolveStripeSelection(formData.package)
+            ? await resolveStripeSelection(formData.package)
             : null);
 
     if (resolvedSelection && resolvedSelection.type === "individual-program") {
         console.log(`[${jobId}] 🎯 Stripe program context`, {
-            programKey: resolvedSelection.program.key,
-            programLabel: resolvedSelection.program.displayName,
+            programKey: resolvedSelection.program.programId,
+            programLabel: resolveProgramLabel(resolvedSelection.program),
             productId: resolvedSelection.program.productId,
             priceId: resolvedSelection.program.priceId,
         });
@@ -472,16 +484,26 @@ async function processStripePaymentLink({
             stripeUpdateDetails.stripe_price_id =
                 resolvedSelection.program.priceId;
             stripeUpdateDetails.stripe_program_key =
-                resolvedSelection.program.key;
+                resolvedSelection.program.programId;
             stripeUpdateDetails.stripe_program_label =
-                resolvedSelection.program.displayName;
+                resolveProgramLabel(resolvedSelection.program);
             stripeUpdateDetails.stripe_program_description =
-                resolvedSelection.program.description;
+                resolveProgramDescription(resolvedSelection.program);
             stripeUpdateDetails.stripe_program_sessions = String(
-                resolvedSelection.program.metadata.sessions
+                resolvedSelection.program.sessions ??
+                    resolvedSelection.program.metadata?.sessions ??
+                    ""
             );
             stripeUpdateDetails.stripe_program_duration =
-                resolvedSelection.program.metadata.duration;
+                resolvedSelection.program.durationLabel ??
+                resolvedSelection.program.metadata?.duration_label ??
+                resolvedSelection.program.metadata?.duration ??
+                "";
+            stripeUpdateDetails.stripe_program_currency =
+                resolvedSelection.program.currency;
+            stripeUpdateDetails.stripe_program_amount_minor = String(
+                resolvedSelection.program.priceAmount
+            );
         } else {
             stripeUpdateDetails.stripe_price_id = resolvedSelection.priceId;
             stripeUpdateDetails.stripe_package_id =
@@ -569,12 +591,17 @@ async function processStripePaymentLink({
         };
 
         if (resolvedSelection?.type === "individual-program") {
-            analyticsPayload.program_key = resolvedSelection.program.key;
-            analyticsPayload.program_label = resolvedSelection.program.displayName;
+            analyticsPayload.program_key = resolvedSelection.program.programId;
+            analyticsPayload.program_label = resolveProgramLabel(resolvedSelection.program);
             analyticsPayload.stripe_product_id =
                 resolvedSelection.program.productId;
             analyticsPayload.stripe_price_id =
                 resolvedSelection.program.priceId;
+            analyticsPayload.program_currency =
+                resolvedSelection.program.currency;
+            analyticsPayload.program_amount_minor = String(
+                resolvedSelection.program.priceAmount
+            );
         } else if (resolvedSelection?.type === "legacy-price") {
             analyticsPayload.stripe_price_id = resolvedSelection.priceId;
             analyticsPayload.stripe_package_id =
@@ -731,10 +758,11 @@ export async function POST(req: NextRequest) {
         let stripeSelectionForLead: StripeSelection | null = null;
 
         if (normalizedPackageId) {
-            stripeSelectionForLead = resolveStripeSelection(normalizedPackageId);
+            stripeSelectionForLead = await resolveStripeSelection(normalizedPackageId);
             if (!stripeSelectionForLead) {
+                const allowedIdentifiers = await getAllStripeIdentifiers();
                 console.warn(
-                    `[${requestId}] ⚠️ Unknown package identifier "${normalizedPackageId}" received. Allowed identifiers: ${getAllStripeIdentifiers().join(
+                    `[${requestId}] ⚠️ Unknown package identifier "${normalizedPackageId}" received. Allowed identifiers: ${allowedIdentifiers.join(
                         ", "
                     )}`
                 );
@@ -752,8 +780,8 @@ export async function POST(req: NextRequest) {
                 stripeSelectionForLead.type === "individual-program"
                     ? {
                           requested: normalizedPackageId,
-                          programKey: stripeSelectionForLead.program.key,
-                          programLabel: stripeSelectionForLead.program.displayName,
+                          programKey: stripeSelectionForLead.program.programId,
+                          programLabel: resolveProgramLabel(stripeSelectionForLead.program),
                           productId: stripeSelectionForLead.program.productId,
                           priceId: stripeSelectionForLead.program.priceId,
                       }
@@ -763,7 +791,11 @@ export async function POST(req: NextRequest) {
                       }
             );
 
-            formData.package = normalizedPackageId;
+            if (stripeSelectionForLead.type === "individual-program") {
+                formData.package = stripeSelectionForLead.program.programId;
+            } else {
+                formData.package = normalizedPackageId;
+            }
         } else {
             formData.package = "";
         }
@@ -826,7 +858,7 @@ export async function POST(req: NextRequest) {
 
         const packageDisplayName =
             stripeSelectionForLead && stripeSelectionForLead.type === "individual-program"
-                ? stripeSelectionForLead.program.displayName
+                ? resolveProgramLabel(stripeSelectionForLead.program)
                 : formData.package;
 
         const stripeLeadDetails: Record<string, string> = {};
@@ -838,16 +870,26 @@ export async function POST(req: NextRequest) {
                 stripeLeadDetails.stripe_price_id =
                     stripeSelectionForLead.program.priceId;
                 stripeLeadDetails.stripe_program_key =
-                    stripeSelectionForLead.program.key;
+                    stripeSelectionForLead.program.programId;
                 stripeLeadDetails.stripe_program_label =
-                    stripeSelectionForLead.program.displayName;
+                    resolveProgramLabel(stripeSelectionForLead.program);
                 stripeLeadDetails.stripe_program_description =
-                    stripeSelectionForLead.program.description;
+                    resolveProgramDescription(stripeSelectionForLead.program);
                 stripeLeadDetails.stripe_program_sessions = String(
-                    stripeSelectionForLead.program.metadata.sessions
+                    stripeSelectionForLead.program.sessions ??
+                        stripeSelectionForLead.program.metadata?.sessions ??
+                        ""
                 );
                 stripeLeadDetails.stripe_program_duration =
-                    stripeSelectionForLead.program.metadata.duration;
+                    stripeSelectionForLead.program.durationLabel ??
+                    stripeSelectionForLead.program.metadata?.duration_label ??
+                    stripeSelectionForLead.program.metadata?.duration ??
+                    "";
+                stripeLeadDetails.stripe_program_currency =
+                    stripeSelectionForLead.program.currency;
+                stripeLeadDetails.stripe_program_amount_minor = String(
+                    stripeSelectionForLead.program.priceAmount
+                );
             } else {
                 stripeLeadDetails.stripe_price_id = stripeSelectionForLead.priceId;
                 stripeLeadDetails.stripe_package_id =

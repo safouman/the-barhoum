@@ -102,21 +102,6 @@ export type Payment = z.infer<typeof paymentSchema>;
 
 export const paymentsSchema = z.array(paymentSchema);
 
-const homePackItemSchema = z.object({
-    sessions: z.union([z.literal(1), z.literal(3), z.literal(5)]),
-    title: z.string(),
-    subtitle: z.string(),
-    bullets: z.array(z.string()),
-    priceTotal: z.number(),
-    pricePerSession: z.number(),
-    duration: z.string(),
-});
-
-const localizedHomePacksSchema = z.object({
-    ar: z.array(homePackItemSchema),
-    en: z.array(homePackItemSchema),
-});
-
 const languageOptionSchema = z.object({
     value: z.enum(["ar", "en"]),
     label: z.string(),
@@ -209,11 +194,6 @@ export const homeSchema = z.object({
   }),
   method: z.object({
     title: localizedSchema,
-  }),
-  packs: z.object({
-    individuals: localizedHomePacksSchema,
-    couples: localizedHomePacksSchema,
-    organizations: localizedHomePacksSchema,
   }),
 });
 
@@ -319,6 +299,7 @@ export const getPayments = () => loadJson("payments.json", paymentsSchema);
 export const getSiteConfig = () => loadJson("site.json", siteConfigSchema);
 export const getLeadFormCopy = (locale: Locale) =>
     loadJson(`forms/lead.${locale}.json`, leadFormSchema);
+export const getProgramCopy = () => loadJson("programs.json", programCopySchema);
 
 const loadMarkdown = cache(async (filePath: string) => {
     const file = await fs.readFile(filePath, "utf8");
@@ -348,3 +329,13 @@ export function resolveLocalized<T extends LocalizedField>(
 ) {
     return field[locale];
 }
+const programCopyItemSchema = z.object({
+    title: z.string(),
+    subtitle: z.string(),
+    bullets: z.array(z.string()),
+});
+
+const programCopySchema = z.object({
+    ar: z.record(z.string(), programCopyItemSchema),
+    en: z.record(z.string(), programCopyItemSchema),
+});
