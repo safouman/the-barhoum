@@ -28,6 +28,7 @@ function buildPacksByCategory(
 
   programs.forEach((program) => {
     const sessions = program.sessions && program.sessions > 0 ? program.sessions : 1;
+    const currency = program.currency || "EUR";
     const priceTotal = program.priceAmountMinor / 100;
     const pricePerSession = priceTotal / Math.max(sessions, 1);
 
@@ -49,7 +50,7 @@ function buildPacksByCategory(
         priceTotal,
         priceAmountMinor: program.priceAmountMinor,
         pricePerSession,
-        currency: program.currency,
+        currency,
         duration,
       };
 

@@ -2,7 +2,8 @@ import { cache } from "react";
 import type Stripe from "stripe";
 import { getStripeClient } from "./client";
 
-const SOURCE_FILTER = "Ibrahim ben Abdallah";
+const SOURCE_FILTER = "barhoum_catalog";
+const BRAND_FILTER = "Ibrahim ben Abdallah";
 
 export interface StripeProgramRecord {
     /** Canonical program identifier shared across UI and analytics (e.g. program_basic). */
@@ -40,7 +41,7 @@ async function fetchStripePrograms(): Promise<StripeCatalogResult> {
     const programs: StripeProgramRecord[] = [];
     const warnings: string[] = [];
 
-    const query = "metadata['brand']:'Ibrahim ben Abdallah'";
+    const query = `metadata['brand']:'${BRAND_FILTER}'`;
     let result = await stripe.products.search({
         query,
         limit: 100,
@@ -55,15 +56,12 @@ async function fetchStripePrograms(): Promise<StripeCatalogResult> {
             return;
         }
 
-        const sourceTag = product.metadata?.brand;
+        const sourceTag = product.metadata?.source;
         if (sourceTag !== SOURCE_FILTER) {
-            console.log(
-                "[Stripe Catalog] Skipping product with mismatched source",
-                {
-                    productId: product.id,
-                    brand: sourceTag,
-                }
-            );
+            console.log("[Stripe Catalog] Skipping product with mismatched source", {
+                productId: product.id,
+                metadataSource: sourceTag,
+            });
             return;
         }
 

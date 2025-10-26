@@ -19,14 +19,13 @@ interface HomeInteractiveExperienceProps {
   packs: PacksByCategory;
   ui: Record<Locale, UIStrings>;
   leadFormCopy: Record<Locale, LeadFormCopy>;
-  catalogStatus: "ok" | "empty" | "unavailable";
+  catalogStatus: "ok" | "stale" | "empty" | "unavailable";
 }
 
 export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy, catalogStatus }: HomeInteractiveExperienceProps) {
   const { locale } = useLocale();
   const strings = ui[locale];
-  const individualsUnavailable =
-    catalogStatus !== "ok" || (packs.individuals?.[locale] ?? []).length === 0;
+  const individualsUnavailable = (packs.individuals?.[locale] ?? []).length === 0;
 
   const localizedCategories = useMemo<LocalizedCategory[]>(
     () =>
@@ -185,6 +184,20 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy,
 
   return (
     <>
+      {catalogStatus === "stale" && (
+        <div className="mb-6 rounded-xl border border-amber-300/70 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          {locale === "ar"
+            ? "نعرض بيانات الكاتالوج من نسخة احتياطية مؤقتة حتى نستعيد الاتصال بسترايب."
+            : "Showing cached catalog data while Stripe is unreachable."}
+        </div>
+      )}
+      {catalogStatus === "unavailable" && (
+        <div className="mb-6 rounded-xl border border-red-300/70 bg-red-50 px-4 py-3 text-sm text-red-900">
+          {locale === "ar"
+            ? "الكاتالوج غير متوفر الآن. جرّب زيارة هذه الصفحة لاحقًا أو تواصل معنا."
+            : "The catalog is currently unavailable. Please check back soon or contact us."}
+        </div>
+      )}
       <HomeCategories
         categories={localizedCategories}
         activeCategory={activeCategory}

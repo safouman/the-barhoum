@@ -1,0 +1,95 @@
+{
+  "updatedAt": "2025-10-26T09:04:35.734Z",
+  "hash": "ffd389e0e1333c9a41e20e8c3edc8882ded94c7857007cb4f40667a1679abc97",
+  "programs": [
+    {
+      "programId": "program_basic",
+      "stripeProductId": "prod_TIg75pVk6uOveb",
+      "stripePriceId": "price_1SM4lKAWdXsiScrulTbgMDsm",
+      "priceAmountMinor": 30000,
+      "currency": "EUR",
+      "sessions": 2,
+      "copy": {
+        "ar": {
+          "title": "لغة مشتركة سريعة",
+          "subtitle": "جلسة تعريف سريع",
+          "bullets": [
+            "تمرين واحد مشترك",
+            "توصية مشتركة",
+            "متابعة خفيفة"
+          ]
+        },
+        "en": {
+          "title": "Shared language sprint",
+          "subtitle": "Focused discovery",
+          "bullets": [
+            "One shared practice",
+            "Joint recommendation",
+            "Light follow-up"
+          ]
+        }
+      }
+    },
+    {
+      "programId": "program_growth",
+      "stripeProductId": "prod_TIg7yIK3BAFPEG",
+      "stripePriceId": "price_1SM4lXAWdXsiScrulprVEcrE",
+      "priceAmountMinor": 40000,
+      "currency": "EUR",
+      "sessions": 3,
+      "copy": {
+        "ar": {
+          "title": "إيقاع حوار متجدد",
+          "subtitle": "تناغم متصاعد",
+          "bullets": [
+            "تمارين قصيرة بين الجلسات",
+            "خطوة مشتركة",
+            "متابعة لطيفة"
+          ]
+        },
+        "en": {
+          "title": "Renewed dialogue rhythm",
+          "subtitle": "Grow the conversation",
+          "bullets": [
+            "Short rituals between sessions",
+            "Shared next step",
+            "Gentle accountability"
+          ]
+        }
+      }
+    },
+    {
+      "programId": "program_transform",
+      "stripeProductId": "prod_TIg9kUx8vyVaap",
+      "stripePriceId": "price_1SM4nGAWdXsiScrunybZOJ7v",
+      "priceAmountMinor": 80000,
+      "currency": "EUR",
+      "sessions": 5,
+      "copy": {
+        "ar": {
+          "title": "مساحة آمنة مستمرة",
+          "subtitle": "عمق وثقة",
+          "bullets": [
+            "دعم بين الجلسات (صوت/نص)",
+            "تمرين متابعة خفيف",
+            "تكامل أعمق"
+          ]
+        },
+        "en": {
+          "title": "Sustained safe space",
+          "subtitle": "Keep the cadence",
+          "bullets": [
+            "Between-session voice/text",
+            "Light follow-up practice",
+            "Deeper integration"
+          ]
+        }
+      }
+    }
+  ],
+  "warnings": [
+    "[Stripe Catalog] ⚠️ Product \"prod_TIg9kUx8vyVaap\" missing metadata.duration_label.",
+    "[Stripe Catalog] ⚠️ Product \"prod_TIg7yIK3BAFPEG\" missing metadata.duration_label.",
+    "[Stripe Catalog] ⚠️ Product \"prod_TIg75pVk6uOveb\" missing metadata.duration_label."
+  ]
+}
