@@ -1,10 +1,18 @@
 "use client";
 
-import type { AnalyticsEventName, AnalyticsEventPayload, SharedAnalyticsContext } from "@/lib/analytics/shared";
+import type {
+  AnalyticsEventName,
+  AnalyticsEventPayload,
+  SharedAnalyticsContext,
+} from "@/lib/analytics/shared";
 import { ANALYTICS_DEFAULTS, sanitizeAnalyticsParams } from "@/lib/analytics/shared";
 import { hasAnalyticsConsent } from "@/lib/consent";
 
-type GtagFunction = (command: "event" | "config", target: string, params?: Record<string, unknown>) => void;
+interface GtagFunction {
+  (command: "event", eventName: string, params?: Record<string, unknown>): void;
+  (command: "config", target: string, params?: Record<string, unknown>): void;
+  (command: "consent", action: "default" | "update", params: Record<string, unknown>): void;
+}
 
 declare global {
   interface Window {
