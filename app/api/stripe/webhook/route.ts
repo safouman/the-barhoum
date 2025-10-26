@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { getStripeClient } from "@/lib/stripe/client";
 import { trackAutomationEvent } from "@/lib/analytics/server";
+import { sendPaymentWhatsAppNotification } from "@/lib/whatsapp/notifications";
 
 function buildContextFromMetadata(metadata: Stripe.Metadata | null | undefined) {
   return {
@@ -70,6 +71,50 @@ export async function POST(req: NextRequest) {
         context,
         { clientId: session.id }
       );
+
+      const readMetadataValue = (key: string): string | null => {
+        if (!metadata) return null;
+        const value = metadata[key];
+        if (typeof value !== "string") {
+          return null;
+        }
+        const trimmed = value.trim();
+        return trimmed.length > 0 ? trimmed : null;
+      };
+
+      const customerName =
+        session.customer_details?.name ??
+        readMetadataValue("customer_name") ??
+        readMetadataValue("customerName");
+
+      const customerCountry =
+        readMetadataValue("customer_country") ??
+        readMetadataValue("country") ??
+        session.customer_details?.address?.country ??
+        null;
+
+      const programName =
+        readMetadataValue("program_label") ??
+        readMetadataValue("program_name") ??
+        readMetadataValue("package_id") ??
+        readMetadataValue("packageId");
+
+      try {
+        await sendPaymentWhatsAppNotification({
+          requestId: session.id,
+          analyticsContext: context,
+          customerName,
+          customerCountry,
+          programName,
+          amountMinor: session.amount_total ?? null,
+          currency: session.currency ?? null,
+        });
+      } catch (notificationError) {
+        console.error(
+          `[Stripe Webhook] ❌ Failed to send WhatsApp payment notification for checkout session ${session.id}`,
+          notificationError
+        );
+      }
     } else if (event.type === "payment_intent.succeeded") {
       const intent = event.data.object as Stripe.PaymentIntent;
       const metadata = intent.metadata ?? null;

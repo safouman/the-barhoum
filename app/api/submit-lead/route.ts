@@ -6,6 +6,7 @@ import { createPaymentLink } from "@/lib/stripe/payment-links";
 import { requiresPayment } from "@/lib/utils/geo";
 import type { SharedAnalyticsContext } from "@/lib/analytics/shared";
 import { trackAutomationEvent } from "@/lib/analytics/server";
+import { sendLeadWhatsAppNotification } from "@/lib/whatsapp/notifications";
 
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
@@ -142,218 +143,6 @@ async function delay(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function sendWhatsAppNotifications({
-    formData,
-    requestId,
-    analyticsContext,
-}: {
-    formData: LeadFormData;
-    requestId: string;
-    analyticsContext: Partial<SharedAnalyticsContext>;
-}): Promise<void> {
-    const accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
-    const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
-    const adminPhone = process.env.WHATSAPP_ADMIN_PHONE;
-    const managerPhone = process.env.WHATSAPP_MANAGER_PHONE;
-
-    if (!accessToken || !phoneNumberId) {
-        console.warn(
-            `[${requestId}] ⚠️ WhatsApp configuration missing (token or phone number ID); skipping notifications`
-        );
-        await trackAutomationEvent(
-            "whatsapp_failed",
-            {
-                reason: "missing-configuration",
-            },
-            analyticsContext,
-            { clientId: requestId }
-        );
-        return;
-    }
-
-    const recipients = [adminPhone, managerPhone]
-        .map((recipient) =>
-            typeof recipient === "string"
-                ? recipient.trim().replace(/^\+/, "")
-                : ""
-        )
-        .filter((recipient) => recipient.length > 0);
-
-    if (recipients.length === 0) {
-        console.warn(
-            `[${requestId}] ⚠️ No WhatsApp recipients configured; skipping notifications`
-        );
-        await trackAutomationEvent(
-            "whatsapp_failed",
-            {
-                reason: "missing-recipient",
-            },
-            analyticsContext,
-            { clientId: requestId }
-        );
-        return;
-    }
-
-    const endpoint = `https://graph.facebook.com/v22.0/${phoneNumberId}/messages`;
-    const templateName = process.env.WHATSAPP_TEMPLATE_NAME?.trim();
-    const templateLanguage =
-        process.env.WHATSAPP_TEMPLATE_LANGUAGE?.trim() || "en";
-    const messageBody = `📩 New form submitted by ${formData.fullName} from ${formData.country}. Please check the Google Sheet for details.`;
-    const envParameterNames = process.env.WHATSAPP_TEMPLATE_PARAMETER_NAMES
-        ?.split(",")
-        .map((parameter) => parameter.trim())
-        .filter((parameter) => parameter.length > 0);
-    const templateParameterNames = envParameterNames ?? [];
-
-    const resolveTemplateParameterValue = (path: string): string => {
-        const normalizedPath = path.startsWith("formData.")
-            ? path.slice("formData.".length)
-            : path;
-
-        const segments = normalizedPath.split(".");
-        let current: unknown = formData as unknown;
-
-        for (const segment of segments) {
-            if (
-                current &&
-                typeof current === "object" &&
-                segment in (current as Record<string, unknown>)
-            ) {
-                current = (current as Record<string, unknown>)[segment];
-            } else {
-                current = undefined;
-                break;
-            }
-        }
-
-        if (current === undefined || current === null) {
-            return "N/A";
-        }
-
-        if (typeof current === "string") {
-            const trimmed = current.trim();
-            return trimmed.length > 0 ? trimmed : "N/A";
-        }
-
-        const stringified = String(current);
-        return stringified.length > 0 ? stringified : "N/A";
-    };
-
-    const messageParameters =
-        templateName && templateParameterNames.length > 0
-            ? templateParameterNames.map((parameterName) => ({
-                  name: parameterName,
-                  value: resolveTemplateParameterValue(parameterName),
-              }))
-            : [];
-
-    await Promise.all(
-        recipients.map(async (recipient) => {
-            try {
-                const payload = templateName
-                    ? {
-                          messaging_product: "whatsapp",
-                          to: recipient,
-                          type: "template",
-                              template: {
-                              name: templateName,
-                              language: {
-                                  code: templateLanguage,
-                              },
-                              components:
-                                  messageParameters.length > 0
-                                      ? [
-                                            {
-                                                type: "body",
-                                                parameters:
-                                                    messageParameters.map(
-                                                        ({ name, value }) => ({
-                                                            type: "text",
-                                                            text: value,
-                                                            parameter_name: name,
-                                                        })
-                                                    ),
-                                            },
-                                        ]
-                                      : undefined,
-                          },
-                      }
-                    : {
-                          messaging_product: "whatsapp",
-                          to: recipient,
-                          type: "text",
-                          text: {
-                              body: messageBody,
-                          },
-                      };
-
-                const response = await fetch(endpoint, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${accessToken}`,
-                    },
-                    body: JSON.stringify(payload),
-                });
-
-                if (!response.ok) {
-                    const errorText = await response
-                        .text()
-                        .catch(() => "Unable to read response");
-                    console.error(
-                        `[${requestId}] ❌ WhatsApp notification failed for ${recipient}`,
-                        {
-                            status: response.status,
-                            body: errorText,
-                        }
-                    );
-                    await trackAutomationEvent(
-                        "whatsapp_failed",
-                        {
-                            recipient,
-                            status: response.status,
-                        },
-                        analyticsContext,
-                        { clientId: requestId }
-                    );
-                    return;
-                }
-
-                console.log(
-                    `[${requestId}] ✅ WhatsApp notification sent to ${recipient} using ${
-                        templateName ? "template" : "text"
-                    } message`
-                );
-                await trackAutomationEvent(
-                    "whatsapp_sent",
-                    {
-                        recipient,
-                        template: templateName ? "template" : "text",
-                    },
-                    analyticsContext,
-                    { clientId: requestId }
-                );
-            } catch (error) {
-                console.error(
-                    `[${requestId}] ❌ Error sending WhatsApp notification to ${recipient}`,
-                    error
-                );
-                await trackAutomationEvent(
-                    "whatsapp_failed",
-                    {
-                        recipient,
-                        reason:
-                            error instanceof Error
-                                ? error.message
-                                : "unknown-error",
-                    },
-                    analyticsContext,
-                    { clientId: requestId }
-                );
-            }
-        })
-    );
-}
 
 async function fetchWithRetry(
     url: string,
@@ -1031,10 +820,11 @@ export async function POST(req: NextRequest) {
 
                 if (!isDuplicate) {
                     try {
-                        await sendWhatsAppNotifications({
+                        await sendLeadWhatsAppNotification({
                             formData,
                             requestId,
                             analyticsContext: automationContext,
+                            programName: packageDisplayName,
                         });
                     } catch (error) {
                         console.error(
