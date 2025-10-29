@@ -17,7 +17,10 @@ const LeadForm = dynamic<LeadFormProps>(
     {
         ssr: false,
         loading: () => (
-            <div className="flex items-center justify-center p-12" aria-busy="true">
+            <div
+                className="flex items-center justify-center p-12"
+                aria-busy="true"
+            >
                 <span className="text-subtle">Loading…</span>
             </div>
         ),
@@ -162,30 +165,32 @@ export const HomeLeadForm: HomeThemeDefinition["LeadForm"] = ({
                                 <span className="w-full bg-primary" />
                             </span>
                             <div className="flex flex-col gap-5">
-                                <span
+                                {/* <span
                                     className={clsx(
                                         "inline-flex w-fit items-center rounded-full bg-subtle/15 px-3 py-1 text-[0.75rem] font-medium text-subtle/70",
                                         !isRtl && "uppercase tracking-[0.12em]"
                                     )}
                                 >
                                     {chipLabel}
-                                </span>
+                                </span> */}
                                 <p className="heading-3 tracking-[0.02em] text-text">
                                     {panelTitle}
                                 </p>
                                 <div className="space-y-[10px] text-base text-subtle/85">
                                     {panelParagraphs.length > 0 ? (
-                                        panelParagraphs.map((paragraph, index) => (
-                                            <p
-                                                key={`${index}-${paragraph.slice(
-                                                    0,
-                                                    8
-                                                )}`}
-                                                className="m-0"
-                                            >
-                                                {paragraph}
-                                            </p>
-                                        ))
+                                        panelParagraphs.map(
+                                            (paragraph, index) => (
+                                                <p
+                                                    key={`${index}-${paragraph.slice(
+                                                        0,
+                                                        8
+                                                    )}`}
+                                                    className="m-0"
+                                                >
+                                                    {paragraph}
+                                                </p>
+                                            )
+                                        )
                                     ) : (
                                         <p className="m-0">{panelCopy}</p>
                                     )}

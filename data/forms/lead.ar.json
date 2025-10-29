@@ -1,7 +1,7 @@
 {
   "guidance": {
-    "title": "خلي الصورة تتوضح",
-    "paragraph": "باش نضبطوا معاك أحسن تجربة، نحتاجوا بعض المعطيات الأساسية. جاوب باللي يعبّر عليك اليوم، ما فماش إجابات مثالية. كل ما تكون واضح أكثر، كل ما نخدمولك معاك برنامج على قياسك."
+    "title": "ايجا نتعرفو بسطحيّة قبل كل شي",
+    "paragraph": ""
   },
   "chipLabelTemplate": "الخطوة {current} من {total}",
   "progressLabelTemplate": "الخطوة {current} من {total}",
@@ -25,81 +25,97 @@
     {
       "id": "surface",
       "title": "ايجا نتعرفو بسطحيّة قبل كل شي",
-      "helper": "هات نبدأو بصورة عامة عليك وعلى واقعك اليوم. هالمعطيات تعطيني إحساس أوّلي على روحك قبل ما نتعمقوا.",
+      "helper": "",
       "fields": [
-        { "id": "fullName", "label": "الاسم و اللقب", "required": true },
+        {
+          "id": "fullName",
+          "label": "الإسم و اللقب",
+          "required": true
+        },
         {
           "id": "gender",
           "label": "الجنس",
           "required": true,
-          "options": ["ذكر", "أنثى", "آخر"],
-          "placeholder": "إختر الجنس"
+          "options": [
+            "ذكر",
+            "أنثى",
+            "آخر"
+          ],
+          "placeholder": ""
         },
         {
           "id": "ageGroup",
-          "label": "المرحلة العمرية",
+          "label": "المرحلة العمريّة",
           "required": true,
-          "placeholder": "إختر المرحلة العمرية",
+          "placeholder": "",
           "options": []
         },
         {
           "id": "country",
           "label": "بلد الإقامة",
           "required": true,
-          "placeholder": "إختر البلاد"
+          "placeholder": ""
         },
         {
           "id": "specialization",
-          "label": "مجال التخصّص",
+          "label": "مجال التّخصّص",
           "required": true
         },
         {
           "id": "socialFamiliarity",
           "label": "قدّاش عندك تعرفني على سوشل ميديا",
           "required": true,
-          "options": ["ما نعرفكش", "نسمع بيك شوية", "نتابعك ديما"],
-          "placeholder": "إختر الإجابة الأنسب ليك"
+          "options": [
+            "ما نعرفكش",
+            "نسمع بيك شوية",
+            "نتابعك ديما"
+          ],
+          "placeholder": ""
         }
       ]
     },
     {
       "id": "precision",
       "title": "المعلومات هاذم جاوب عليهم بدقّة من فضلك بش تعاوني نحضّرلك تدريب يناسبك",
-      "helper": "جاوب بأريحية وبالطريقة اللي تعبّر عليك. كل كلمة توضّحلي وينك في رحلتك مع الوعي وتطوير الذات باش نكون معاك في نفس التردد.",
+      "helper": "",
       "fields": [
         {
           "id": "previousTraining",
-          "label": "عملت تدريبات قبل في تطوير الذات؟",
+          "label": "عملت تدريبات قبل في تطوير الذّات ؟",
           "type": "textarea",
           "required": true,
-          "placeholder": "أذكر التجارب أو الدورات اللي عملتهم قبل"
+          "placeholder": ""
         },
         {
           "id": "awarenessLevel",
-          "label": "فين تشوف روحك في مستوى وعيك بذاتك و بالأنماط الي تتكرر في حياتك؟",
+          "label": "فين تشوف روحك في مستوى وعيك بذاتك و بالأنماط الي تتكرر في حياتك ؟",
           "required": true,
-          "options": ["مبتدئ", "متوسط", "فايقلها مليح لين دخلت بعضي"],
-          "placeholder": "إختر المستوى اللي يعبر عليك"
+          "options": [
+            "مبتدئ",
+            "متوسط",
+            "فايقلها مليح لين دخلت بعضي"
+          ],
+          "placeholder": ""
         }
       ]
     },
     {
       "id": "contact",
       "title": "بش تسهّل على مكتبي التّواصل معاك",
-      "helper": "زيد وضح كيفاش نجموا نوصلولك بسرعة، وشنيا الأوقات اللي تناسبك باش ما نضيعوش وقتك.",
+      "helper": "",
       "fields": [
         {
           "id": "phone",
           "label": "رقم واتساب",
           "type": "tel",
           "required": true,
-          "placeholder": "أدخل الرقم مع رمز الدولة"
+          "placeholder": ""
         },
         {
           "id": "bestContactTime",
           "label": "الأوقات المناسبة الي تفضّل نتصلو بيك فيهم",
           "required": true,
-          "placeholder": "إختر التوقيت اللي يناسبك",
+          "placeholder": "",
           "options": []
         }
       ]
