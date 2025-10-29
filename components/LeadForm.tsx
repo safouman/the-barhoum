@@ -14,11 +14,7 @@ import { Button } from "@/components/Button";
 import { event, updateAnalyticsContext } from "@/lib/analytics";
 import { useLocale } from "@/providers/locale-provider";
 import type { LeadFormCopy, Locale } from "@/lib/content";
-import {
-    AGE_RANGE_OPTIONS,
-    COUNTRY_OPTIONS,
-    type CountryOption,
-} from "@/lib/constants/lead-form";
+import { COUNTRY_OPTIONS } from "@/lib/constants/lead-form";
 
 interface LeadFormLabels {
     title: string;
@@ -54,18 +50,15 @@ export interface LeadFormProps {
 
 interface LeadFormFormState {
     fullName: string;
-    email: string;
+    gender: string;
+    ageGroup: string;
     country: string;
+    specialization: string;
+    socialFamiliarity: string;
+    previousTraining: string;
+    awarenessLevel: string;
     phone: string;
-    age: string;
     bestContactTime: string;
-    psychologistBefore: string;
-    medicationNow: string;
-    whyCoaching: string;
-    followingDuration: string;
-    maritalStatus: string;
-    occupation: string;
-    passphrase: string;
 }
 
 type FieldErrors = Partial<Record<keyof LeadFormFormState, string>>;
@@ -87,24 +80,19 @@ type StepConfig = {
     fields: FieldConfig[];
 };
 
-const DEFAULT_COUNTRY: CountryOption = "Tunisia";
 const COUNTRY_OPTIONS_SET = new Set<string>(COUNTRY_OPTIONS);
-const AGE_RANGE_OPTIONS_SET = new Set<string>(AGE_RANGE_OPTIONS);
 
 const INITIAL_STATE: LeadFormFormState = {
     fullName: "",
-    email: "",
-    country: DEFAULT_COUNTRY,
+    gender: "",
+    ageGroup: "",
+    country: "",
+    specialization: "",
+    socialFamiliarity: "",
+    previousTraining: "",
+    awarenessLevel: "",
     phone: "",
-    age: "",
     bestContactTime: "",
-    psychologistBefore: "",
-    medicationNow: "",
-    whyCoaching: "",
-    followingDuration: "",
-    maritalStatus: "",
-    occupation: "",
-    passphrase: "",
 };
 
 export function LeadForm({
@@ -130,12 +118,6 @@ export function LeadForm({
                     return {
                         ...field,
                         options: [...COUNTRY_OPTIONS],
-                    };
-                }
-                if (field.id === "age") {
-                    return {
-                        ...field,
-                        options: [...AGE_RANGE_OPTIONS],
                     };
                 }
                 return { ...field };
@@ -173,18 +155,15 @@ export function LeadForm({
         Record<keyof LeadFormFormState, HTMLElement | null>
     >({
         fullName: null,
-        email: null,
+        gender: null,
+        ageGroup: null,
         country: null,
-        phone: null,
-        age: null,
+        specialization: null,
+        socialFamiliarity: null,
+        previousTraining: null,
+        awarenessLevel: null,
         bestContactTime: null,
-        psychologistBefore: null,
-        medicationNow: null,
-        whyCoaching: null,
-        followingDuration: null,
-        maritalStatus: null,
-        occupation: null,
-        passphrase: null,
+        phone: null,
     });
     const submitAttemptRef = useRef(0);
     const lastSubmissionFailedRef = useRef(false);
@@ -217,7 +196,7 @@ export function LeadForm({
         ]
     );
     const currentStep = steps[step];
-    const isAvailabilityStep = currentStep.id === "availability";
+    const isPrecisionStep = step === 1;
 
     useEffect(() => {
         onStepChange?.({ index: step, step: currentStep });
@@ -230,26 +209,25 @@ export function LeadForm({
             if (field.required && value.length === 0) {
                 return validation.required;
             }
-            if (
-                field.id === "email" &&
-                value &&
-                !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
-            ) {
-                return validation.email;
+            if (field.options?.length && value) {
+                if (!field.options.includes(value)) {
+                    return validation.select;
+                }
             }
             if (field.id === "country" && value) {
                 if (!COUNTRY_OPTIONS_SET.has(value)) {
-                    return validation.required;
+                    return validation.select;
                 }
             }
-            if (field.id === "age" && value) {
-                if (!AGE_RANGE_OPTIONS_SET.has(value)) {
-                    return validation.age;
+            if (field.id === "phone" && value) {
+                const digits = value.replace(/\D/g, "");
+                if (digits.length < 8) {
+                    return validation.phone;
                 }
             }
             return "";
         },
-        [validation.age, validation.email, validation.required]
+        [validation.phone, validation.required, validation.select]
     );
 
     const runStepValidation = useCallback(
@@ -808,7 +786,7 @@ export function LeadForm({
             <fieldset
                 className={clsx(
                     "mx-auto flex w-full max-w-[640px] flex-col gap-6",
-                    isAvailabilityStep && "gap-7 sm:gap-6"
+                    isPrecisionStep && "gap-7 sm:gap-6"
                 )}
                 aria-describedby={helperDescriptionId}
                 disabled={isSubmitting}
@@ -865,7 +843,7 @@ export function LeadForm({
                                     className={clsx(
                                         "mb-[6px] block text-[0.92rem] font-semibold text-subtle/90",
                                         isRtl ? "text-right" : "text-left",
-                                        isAvailabilityStep && "mb-[8px]"
+                                        isPrecisionStep && "mb-[8px]"
                                     )}
                                 >
                                     {field.label}
@@ -882,7 +860,7 @@ export function LeadForm({
                                         baseFieldClasses,
                                         "appearance-none",
                                         isRtl ? "pl-10 pr-5" : "pr-10",
-                                        isAvailabilityStep &&
+                                        isPrecisionStep &&
                                             "h-[56px] text-[1.02rem] sm:h-[52px] sm:text-base",
                                         error && errorFieldClasses
                                     )}
@@ -910,7 +888,7 @@ export function LeadForm({
                                     className={clsx(
                                         "mb-[6px] block text-[0.92rem] font-semibold text-subtle/90",
                                         isRtl ? "text-right" : "text-left",
-                                        isAvailabilityStep && "mb-[8px]"
+                                        isPrecisionStep && "mb-[8px]"
                                     )}
                                 >
                                     {field.label}
@@ -926,7 +904,7 @@ export function LeadForm({
                                     }}
                                     className={clsx(
                                         baseTextareaClasses,
-                                        isAvailabilityStep &&
+                                        isPrecisionStep &&
                                             "min-h-[170px] text-[1.02rem] sm:min-h-[150px] sm:text-base",
                                         error && errorFieldClasses
                                     )}
@@ -944,7 +922,7 @@ export function LeadForm({
                                 className={clsx(
                                     "mb-[6px] block text-[0.92rem] font-semibold text-subtle/90",
                                     isRtl ? "text-right" : "text-left",
-                                    isAvailabilityStep && "mb-[8px]"
+                                    isPrecisionStep && "mb-[8px]"
                                 )}
                             >
                                 {field.label}
@@ -961,7 +939,7 @@ export function LeadForm({
                                 className={clsx(
                                     baseFieldClasses,
                                     "py-0",
-                                    isAvailabilityStep &&
+                                    isPrecisionStep &&
                                         "h-[56px] text-[1.02rem] sm:h-[52px] sm:text-base",
                                     error && errorFieldClasses
                                 )}
@@ -969,9 +947,7 @@ export function LeadForm({
                                     field.id === "phone" ? "tel" : undefined
                                 }
                                 dir={
-                                    field.id === "email" || field.id === "phone"
-                                        ? "ltr"
-                                        : commonProps.dir
+                                    field.id === "phone" ? "ltr" : commonProps.dir
                                 }
                                 onBlur={fieldBlur}
                             />

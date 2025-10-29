@@ -198,14 +198,3 @@ export const COUNTRY_OPTIONS = [
 ] as const;
 
 export type CountryOption = (typeof COUNTRY_OPTIONS)[number];
-
-export const AGE_RANGE_OPTIONS = [
-  "Under 18",
-  "18-25",
-  "26-35",
-  "36-45",
-  "46-60",
-  "60+"
-] as const;
-
-export type AgeRangeOption = (typeof AGE_RANGE_OPTIONS)[number];

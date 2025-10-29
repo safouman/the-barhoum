@@ -145,8 +145,8 @@ export const leadFormSchema = z.object({
     privacy: z.string(),
     validation: z.object({
         required: z.string(),
-        email: z.string(),
-        age: z.string(),
+        select: z.string(),
+        phone: z.string(),
     }),
     thankYou: z.object({
         title: z.string(),

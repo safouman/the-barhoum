@@ -317,7 +317,6 @@ async function processStripePaymentLink({
 
     try {
         const paymentLink = await createPaymentLink({
-            email: formData.email,
             fullName: formData.fullName,
             country: formData.country,
             phone: formData.phone,
@@ -729,7 +728,6 @@ export async function POST(req: NextRequest) {
         };
 
         console.log(`[${requestId}] 📦 Payload prepared for Google Sheets:`, {
-            email: formData.email,
             category: formData.category,
             package_key: packageIdentifier ?? "",
             package_label: packageDisplayName,

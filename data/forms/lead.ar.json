@@ -1,7 +1,7 @@
 {
   "guidance": {
-    "title": "المعطيات الأساسية",
-    "paragraph": "باش نبداو ببعض المعطيات الأساسية باش نجهزوا جلستك الأولى بوضوح. شارك اللي صحيح بالنسبة ليك، ما ثماش إجابات مثالية. كل ما تكون صريح أكثر، كل ما يكون المسار أسهل عليك."
+    "title": "خلي الصورة تتوضح",
+    "paragraph": "باش نضبطوا معاك أحسن تجربة، نحتاجوا بعض المعطيات الأساسية. جاوب باللي يعبّر عليك اليوم، ما فماش إجابات مثالية. كل ما تكون واضح أكثر، كل ما نخدمولك معاك برنامج على قياسك."
   },
   "chipLabelTemplate": "الخطوة {current} من {total}",
   "progressLabelTemplate": "الخطوة {current} من {total}",
@@ -9,8 +9,8 @@
   "privacy": "معلوماتك سرّية وتُشارك فقط مع مكتب برهوم",
   "validation": {
     "required": "هذا الحقل إجباري",
-    "email": "رجاءً أدخل بريد إلكتروني صالح",
-    "age": "رجاءً إختر فئة عمرية صالحة"
+    "select": "رجاءً إختر خيارًا صالحًا",
+    "phone": "رجاءً أدخل رقم هاتف صالح"
   },
   "thankYou": {
     "title": "شكراً على ثقتك",
@@ -23,52 +23,83 @@
   },
   "steps": [
     {
-      "id": "basic",
-      "title": "المعطيات الأساسية",
-      "helper": "خلينا نتعارف عليك أكثر",
+      "id": "surface",
+      "title": "ايجا نتعرفو بسطحيّة قبل كل شي",
+      "helper": "هات نبدأو بصورة عامة عليك وعلى واقعك اليوم. هالمعطيات تعطيني إحساس أوّلي على روحك قبل ما نتعمقوا.",
       "fields": [
         { "id": "fullName", "label": "الاسم و اللقب", "required": true },
-        { "id": "email", "label": "البريد الإلكتروني", "type": "email", "required": true },
+        {
+          "id": "gender",
+          "label": "الجنس",
+          "required": true,
+          "options": ["ذكر", "أنثى", "آخر"],
+          "placeholder": "إختر الجنس"
+        },
+        {
+          "id": "ageGroup",
+          "label": "المرحلة العمرية",
+          "required": true,
+          "placeholder": "اكتب المرحلة العمرية أو اخترها"
+        },
         {
           "id": "country",
-          "label": "البلاد الي تعيش فيها",
+          "label": "بلد الإقامة",
           "required": true,
           "placeholder": "إختر البلاد"
         },
-        { "id": "phone", "label": "رقم الهاتف (واتساب)", "type": "tel" },
         {
-          "id": "age",
-          "label": "العمر",
+          "id": "specialization",
+          "label": "مجال التخصّص",
+          "required": true
+        },
+        {
+          "id": "socialFamiliarity",
+          "label": "قدّاش عندك تعرفني على سوشل ميديا",
           "required": true,
-          "placeholder": "إختر الفئة العمرية"
+          "options": ["ما نعرفكش", "نسمع بيك شوية", "نتابعك ديما"],
+          "placeholder": "إختر الإجابة الأنسب ليك"
         }
       ]
     },
     {
-      "id": "availability",
-      "title": "الوقت و الخلفية",
-      "helper": "باش نضبطوا أحسن توقيت ونفهموا مسارك",
+      "id": "precision",
+      "title": "المعلومات هاذم جاوب عليهم بدقّة من فضلك بش تعاوني نحضّرلك تدريب يناسبك",
+      "helper": "جاوب بأريحية وبالطريقة اللي تعبّر عليك. كل كلمة توضّحلي وينك في رحلتك مع الوعي وتطوير الذات باش نكون معاك في نفس التردد.",
       "fields": [
-        { "id": "bestContactTime", "label": "أحسن الأوقات إلي ننجمو نكلموك", "required": true },
-        { "id": "psychologistBefore", "label": "مشيت لطبيب نفساني قبل؟ إن كان نعم: التشخيص", "required": true },
-        { "id": "medicationNow", "label": "تاخذ في دواء؟", "required": true }
+        {
+          "id": "previousTraining",
+          "label": "عملت تدريبات قبل في تطوير الذات؟",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "أذكر التجارب أو الدورات اللي عملتهم قبل"
+        },
+        {
+          "id": "awarenessLevel",
+          "label": "فين تشوف روحك في مستوى وعيك بذاتك و بالأنماط الي تتكرر في حياتك؟",
+          "required": true,
+          "options": ["مبتدئ", "متوسط", "فايقلها مليح لين دخلت بعضي"],
+          "placeholder": "إختر المستوى اللي يعبر عليك"
+        }
       ]
     },
     {
-      "id": "motivation",
-      "title": "الدافع و الإطار",
-      "helper": "شاركنا علاش تختار البرهوم اليوم",
+      "id": "contact",
+      "title": "بش تسهّل على مكتبي التّواصل معاك",
+      "helper": "زيد وضح كيفاش نجموا نوصلولك بسرعة، وشنيا الأوقات اللي تناسبك باش ما نضيعوش وقتك.",
       "fields": [
-        { "id": "whyCoaching", "label": "علاش إخترت تعمل كونتشينڨ؟", "type": "textarea", "required": true },
-        { "id": "followingDuration", "label": "قداش عندك إتبع في البرهوم", "required": true },
         {
-          "id": "maritalStatus",
-          "label": "الحالة الإجتماعية",
+          "id": "phone",
+          "label": "رقم واتساب",
+          "type": "tel",
           "required": true,
-          "options": ["أعزب", "متزوج", "مطلق"]
+          "placeholder": "أدخل الرقم مع رمز الدولة"
         },
-        { "id": "occupation", "label": "المهنة", "required": true },
-        { "id": "passphrase", "label": "كلمة السر", "type": "textarea" }
+        {
+          "id": "bestContactTime",
+          "label": "الأوقات المناسبة الي تفضّل نتصلو بيك فيهم",
+          "required": true,
+          "placeholder": "مثال: خلال الأسبوع بعد الثامنة ليلاً"
+        }
       ]
     }
   ]

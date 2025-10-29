@@ -1,7 +1,7 @@
 {
   "guidance": {
-    "title": "Basic info",
-    "paragraph": "We’ll start with a few basics so we can prepare for your first session with clarity. Share what’s true for you—no perfect answers needed. The more accurate you are here, the smoother your journey will be."
+    "title": "Set the stage",
+    "paragraph": "We’ll take a quick snapshot of your context so Barhoum can shape your first touchpoint with intention. Share what feels true today—no perfect answers. The clearer you are, the more precisely we can prepare for you."
   },
   "chipLabelTemplate": "Step {current} of {total}",
   "progressLabelTemplate": "STEP {current} OF {total}",
@@ -9,8 +9,8 @@
   "privacy": "Your information is confidential and shared only with Barhoum’s office.",
   "validation": {
     "required": "This field is required",
-    "email": "Please enter a valid email address",
-    "age": "Please select an age range"
+    "select": "Please choose a valid option",
+    "phone": "Please enter a valid phone number"
   },
   "thankYou": {
     "title": "Thank you for reaching out",
@@ -23,67 +23,83 @@
   },
   "steps": [
     {
-      "id": "basic",
-      "title": "Basic info",
-      "helper": "Tell us who you are.",
+      "id": "surface",
+      "title": "Let’s get acquainted before we dive in",
+      "helper": "Give us a high-level snapshot of who you are and where you’re standing today. This sets the tone before we go deeper.",
       "fields": [
         { "id": "fullName", "label": "Full name", "required": true },
-        { "id": "email", "label": "Email", "type": "email", "required": true },
+        {
+          "id": "gender",
+          "label": "Gender",
+          "required": true,
+          "options": ["Male", "Female", "Other"],
+          "placeholder": "Select what feels true"
+        },
+        {
+          "id": "ageGroup",
+          "label": "Life stage",
+          "required": true,
+          "placeholder": "Write or choose your life stage"
+        },
         {
           "id": "country",
           "label": "Country of residence",
           "required": true,
           "placeholder": "Select your country"
         },
-        { "id": "phone", "label": "WhatsApp number", "type": "tel" },
         {
-          "id": "age",
-          "label": "Age",
+          "id": "specialization",
+          "label": "Area of specialization",
+          "required": true
+        },
+        {
+          "id": "socialFamiliarity",
+          "label": "How familiar are you with me on social media?",
           "required": true,
-          "placeholder": "Select your age range"
+          "options": ["Haven’t met you yet", "I’ve heard of you", "Following you closely"],
+          "placeholder": "Choose the option that fits"
         }
       ]
     },
     {
-      "id": "availability",
-      "title": "Availability & Background",
-      "helper": "Share the window that suits you best and a quick snapshot of your care history.\n\nA little context now lets Barhoum arrive prepared for you.",
+      "id": "precision",
+      "title": "Answer these with precision so we can design the right training for you",
+      "helper": "Share honestly. Your words help us understand your path with self-awareness and personal growth so we meet you on the right wavelength.",
       "fields": [
+        {
+          "id": "previousTraining",
+          "label": "Have you done personal development training before?",
+          "type": "textarea",
+          "required": true,
+          "placeholder": "Name courses, teachers, or programs you’ve worked with"
+        },
+        {
+          "id": "awarenessLevel",
+          "label": "Where do you sense yourself on your self-awareness journey?",
+          "required": true,
+          "options": ["Beginner", "Holding steady", "Deep in it and unravelling patterns"],
+          "placeholder": "Select the statement that fits"
+        }
+      ]
+    },
+    {
+      "id": "contact",
+      "title": "Help our office reach you smoothly",
+      "helper": "Let us know the best channel and timing so the team can follow up without delay.",
+      "fields": [
+        {
+          "id": "phone",
+          "label": "WhatsApp number",
+          "type": "tel",
+          "required": true,
+          "placeholder": "Include your country code"
+        },
         {
           "id": "bestContactTime",
-          "label": "Preferred time to reach you",
+          "label": "Preferred times for us to reach you",
           "required": true,
-          "placeholder": "Weekday evenings, 6-8 PM"
-        },
-        {
-          "id": "psychologistBefore",
-          "label": "Have you worked with a psychologist before?",
-          "required": true,
-          "placeholder": "Yes - CBT sessions in 2022"
-        },
-        {
-          "id": "medicationNow",
-          "label": "Are you taking medication currently?",
-          "required": true,
-          "placeholder": "No medication at the moment"
+          "placeholder": "Example: Weekday evenings after 8 PM"
         }
-      ]
-    },
-    {
-      "id": "motivation",
-      "title": "Motivation & context",
-      "helper": "Share why you're choosing coaching now.",
-      "fields": [
-        { "id": "whyCoaching", "label": "Why did you choose coaching?", "type": "textarea", "required": true },
-        { "id": "followingDuration", "label": "How long following Barhoum?", "required": true },
-        {
-          "id": "maritalStatus",
-          "label": "Marital status",
-          "required": true,
-          "options": ["Single", "Married", "Divorced"]
-        },
-        { "id": "occupation", "label": "Occupation", "required": true },
-        { "id": "passphrase", "label": "Passphrase", "type": "textarea" }
       ]
     }
   ]

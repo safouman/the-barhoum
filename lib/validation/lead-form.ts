@@ -1,103 +1,89 @@
 import { z } from "zod";
-import { AGE_RANGE_OPTIONS, COUNTRY_OPTIONS } from "@/lib/constants/lead-form";
+import { COUNTRY_OPTIONS } from "@/lib/constants/lead-form";
 
 const countryOptionsSet = new Set<string>(COUNTRY_OPTIONS);
-const ageOptionsSet = new Set<string>(AGE_RANGE_OPTIONS);
+const MIN_PHONE_DIGITS = 8;
 
 export const leadFormSchema = z.object({
-  leadId: z
-    .string()
-    .trim()
-    .min(1, "Lead identifier is required")
-    .max(100, "Lead identifier must be less than 100 characters"),
+    leadId: z
+        .string()
+        .trim()
+        .min(1, "Lead identifier is required")
+        .max(100, "Lead identifier must be less than 100 characters"),
 
-  fullName: z
-    .string()
-    .trim()
-    .min(1, "Full name is required")
-    .max(200, "Full name must be less than 200 characters"),
+    fullName: z
+        .string()
+        .trim()
+        .min(1, "Full name is required")
+        .max(200, "Full name must be less than 200 characters"),
 
-  email: z
-    .string()
-    .trim()
-    .min(1, "Email is required")
-    .email("Please enter a valid email address")
-    .max(255, "Email must be less than 255 characters"),
+    gender: z
+        .string()
+        .trim()
+        .min(1, "Gender is required")
+        .max(100, "Gender must be less than 100 characters"),
 
-  country: z
-    .string()
-    .trim()
-    .min(1, "Country is required")
-    .max(100, "Country must be less than 100 characters")
-    .refine((val) => countryOptionsSet.has(val), "Please select a valid country"),
+    ageGroup: z
+        .string()
+        .trim()
+        .min(1, "Age group is required")
+        .max(120, "Age group must be less than 120 characters"),
 
-  phone: z
-    .string()
-    .trim()
-    .max(50, "Phone number must be less than 50 characters")
-    .optional()
-    .transform((val) => val || ""),
+    country: z
+        .string()
+        .trim()
+        .min(1, "Country is required")
+        .max(100, "Country must be less than 100 characters")
+        .refine(
+            (val) => countryOptionsSet.has(val),
+            "Please select a valid country"
+        ),
 
-  age: z
-    .string()
-    .trim()
-    .min(1, "Age is required")
-    .refine((val) => ageOptionsSet.has(val), "Please select a valid age range"),
+    specialization: z
+        .string()
+        .trim()
+        .min(1, "Specialization is required")
+        .max(200, "Specialization must be less than 200 characters"),
 
-  bestContactTime: z
-    .string()
-    .trim()
-    .min(1, "Preferred contact time is required")
-    .max(500, "Contact time must be less than 500 characters"),
+    socialFamiliarity: z
+        .string()
+        .trim()
+        .min(1, "Social familiarity is required")
+        .max(200, "Social familiarity must be less than 200 characters"),
 
-  psychologistBefore: z
-    .string()
-    .trim()
-    .min(1, "This field is required")
-    .max(1000, "Response must be less than 1000 characters"),
+    previousTraining: z
+        .string()
+        .trim()
+        .min(1, "Previous training response is required")
+        .max(2000, "Previous training response must be less than 2000 characters"),
 
-  medicationNow: z
-    .string()
-    .trim()
-    .min(1, "This field is required")
-    .max(1000, "Response must be less than 1000 characters"),
+    awarenessLevel: z
+        .string()
+        .trim()
+        .min(1, "Awareness level is required")
+        .max(200, "Awareness level must be less than 200 characters"),
 
-  whyCoaching: z
-    .string()
-    .trim()
-    .min(1, "This field is required")
-    .max(2000, "Response must be less than 2000 characters"),
+    phone: z
+        .string()
+        .trim()
+        .min(1, "WhatsApp number is required")
+        .max(50, "Phone number must be less than 50 characters")
+        .refine(
+            (val) => val.replace(/\D/g, "").length >= MIN_PHONE_DIGITS,
+            "Please enter a valid phone number"
+        ),
 
-  followingDuration: z
-    .string()
-    .trim()
-    .min(1, "This field is required")
-    .max(200, "Response must be less than 200 characters"),
+    bestContactTime: z
+        .string()
+        .trim()
+        .min(1, "Preferred contact time is required")
+        .max(500, "Contact time must be less than 500 characters"),
 
-  maritalStatus: z
-    .string()
-    .trim()
-    .min(1, "Marital status is required")
-    .max(50, "Marital status must be less than 50 characters"),
+    category: z.string().optional().transform((val) => val || ""),
 
-  occupation: z
-    .string()
-    .trim()
-    .min(1, "Occupation is required")
-    .max(200, "Occupation must be less than 200 characters"),
+    package: z.string().optional().transform((val) => val || ""),
 
-  passphrase: z
-    .string()
-    .trim()
-    .max(1000, "Passphrase must be less than 1000 characters")
-    .optional()
-    .transform((val) => val || ""),
-
-  category: z.string().optional().transform((val) => val || ""),
-
-  package: z.string().optional().transform((val) => val || ""),
-
-  packageId: z.string().optional().transform((val) => val || ""),
+    packageId: z.string().optional().transform((val) => val || ""),
 });
 
 export type LeadFormData = z.infer<typeof leadFormSchema>;
