@@ -1,7 +1,13 @@
 import { z } from "zod";
-import { COUNTRY_OPTIONS } from "@/lib/constants/lead-form";
+import {
+    AGE_RANGE_OPTIONS,
+    CONTACT_WINDOW_OPTIONS,
+    COUNTRY_OPTIONS,
+} from "@/lib/constants/lead-form";
 
 const countryOptionsSet = new Set<string>(COUNTRY_OPTIONS);
+const ageGroupOptionsSet = new Set<string>(AGE_RANGE_OPTIONS);
+const contactWindowOptionsSet = new Set<string>(CONTACT_WINDOW_OPTIONS);
 const MIN_PHONE_DIGITS = 8;
 
 export const leadFormSchema = z.object({
@@ -27,7 +33,11 @@ export const leadFormSchema = z.object({
         .string()
         .trim()
         .min(1, "Age group is required")
-        .max(120, "Age group must be less than 120 characters"),
+        .max(120, "Age group must be less than 120 characters")
+        .refine(
+            (val) => ageGroupOptionsSet.has(val),
+            "Please select a valid age group"
+        ),
 
     country: z
         .string()
@@ -77,7 +87,11 @@ export const leadFormSchema = z.object({
         .string()
         .trim()
         .min(1, "Preferred contact time is required")
-        .max(500, "Contact time must be less than 500 characters"),
+        .max(500, "Contact time must be less than 500 characters")
+        .refine(
+            (val) => contactWindowOptionsSet.has(val),
+            "Please select a valid contact window"
+        ),
 
     category: z.string().optional().transform((val) => val || ""),
 

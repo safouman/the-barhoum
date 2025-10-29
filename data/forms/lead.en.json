@@ -39,7 +39,8 @@
           "id": "ageGroup",
           "label": "Life stage",
           "required": true,
-          "placeholder": "Write or choose your life stage"
+          "placeholder": "Select your life stage",
+          "options": []
         },
         {
           "id": "country",
@@ -98,7 +99,8 @@
           "id": "bestContactTime",
           "label": "Preferred times for us to reach you",
           "required": true,
-          "placeholder": "Example: Weekday evenings after 8 PM"
+          "placeholder": "Select a contact window",
+          "options": []
         }
       ]
     }

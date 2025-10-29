@@ -14,7 +14,11 @@ import { Button } from "@/components/Button";
 import { event, updateAnalyticsContext } from "@/lib/analytics";
 import { useLocale } from "@/providers/locale-provider";
 import type { LeadFormCopy, Locale } from "@/lib/content";
-import { COUNTRY_OPTIONS } from "@/lib/constants/lead-form";
+import {
+    AGE_RANGE_OPTIONS,
+    CONTACT_WINDOW_OPTIONS,
+    COUNTRY_OPTIONS,
+} from "@/lib/constants/lead-form";
 
 interface LeadFormLabels {
     title: string;
@@ -81,6 +85,8 @@ type StepConfig = {
 };
 
 const COUNTRY_OPTIONS_SET = new Set<string>(COUNTRY_OPTIONS);
+const AGE_RANGE_OPTIONS_SET = new Set<string>(AGE_RANGE_OPTIONS);
+const CONTACT_WINDOW_OPTIONS_SET = new Set<string>(CONTACT_WINDOW_OPTIONS);
 
 const INITIAL_STATE: LeadFormFormState = {
     fullName: "",
@@ -118,6 +124,18 @@ export function LeadForm({
                     return {
                         ...field,
                         options: [...COUNTRY_OPTIONS],
+                    };
+                }
+                if (field.id === "ageGroup") {
+                    return {
+                        ...field,
+                        options: [...AGE_RANGE_OPTIONS],
+                    };
+                }
+                if (field.id === "bestContactTime") {
+                    return {
+                        ...field,
+                        options: [...CONTACT_WINDOW_OPTIONS],
                     };
                 }
                 return { ...field };
@@ -223,6 +241,16 @@ export function LeadForm({
                 const digits = value.replace(/\D/g, "");
                 if (digits.length < 8) {
                     return validation.phone;
+                }
+            }
+            if (field.id === "ageGroup" && value) {
+                if (!AGE_RANGE_OPTIONS_SET.has(value)) {
+                    return validation.select;
+                }
+            }
+            if (field.id === "bestContactTime" && value) {
+                if (!CONTACT_WINDOW_OPTIONS_SET.has(value)) {
+                    return validation.select;
                 }
             }
             return "";

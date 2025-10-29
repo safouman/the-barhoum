@@ -198,3 +198,25 @@ export const COUNTRY_OPTIONS = [
 ] as const;
 
 export type CountryOption = (typeof COUNTRY_OPTIONS)[number];
+
+export const AGE_RANGE_OPTIONS = [
+  "Under 18",
+  "18-25",
+  "26-35",
+  "36-45",
+  "46-60",
+  "60+"
+] as const;
+
+export type AgeRangeOption = (typeof AGE_RANGE_OPTIONS)[number];
+
+export const CONTACT_WINDOW_OPTIONS = [
+  "08:00 - 10:00",
+  "10:00 - 12:00",
+  "12:00 - 14:00",
+  "14:00 - 16:00",
+  "16:00 - 18:00",
+  "18:00 - 20:00"
+] as const;
+
+export type ContactWindowOption = (typeof CONTACT_WINDOW_OPTIONS)[number];

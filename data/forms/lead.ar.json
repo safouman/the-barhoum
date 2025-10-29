@@ -39,7 +39,8 @@
           "id": "ageGroup",
           "label": "المرحلة العمرية",
           "required": true,
-          "placeholder": "اكتب المرحلة العمرية أو اخترها"
+          "placeholder": "إختر المرحلة العمرية",
+          "options": []
         },
         {
           "id": "country",
@@ -98,7 +99,8 @@
           "id": "bestContactTime",
           "label": "الأوقات المناسبة الي تفضّل نتصلو بيك فيهم",
           "required": true,
-          "placeholder": "مثال: خلال الأسبوع بعد الثامنة ليلاً"
+          "placeholder": "إختر التوقيت اللي يناسبك",
+          "options": []
         }
       ]
     }
