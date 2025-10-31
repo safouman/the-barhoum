@@ -35,7 +35,12 @@ export function Section({
             {(title || subtitle) && (
                 <header className="mb-8 md:mb-md grid gap-sm text-center">
                     {title && (
-                        <h2 className={clsx("text-section-title", titleClassName)}>
+                        <h2
+                            className={clsx(
+                                "text-section-title",
+                                titleClassName
+                            )}
+                        >
                             {title}
                         </h2>
                     )}
