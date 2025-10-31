@@ -452,14 +452,15 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                                     />
                                 </svg>
                             </span>
-                            <span className="flex-1">
+                            <span className="flex-1 min-w-0">
                                 <span
                                     className={clsx(
-                                        "leading-tight font-semibold transition-colors duration-200",
+                                        "block max-w-full leading-tight font-semibold transition-colors duration-200",
                                         isOpen ? "text-primary" : "text-text",
                                         isRTL
-                                            ? "text-[clamp(1.07rem,3.1vw,1.24rem)]"
-                                            : "text-[clamp(1.02rem,3vw,1.18rem)]"
+                                            ? "text-[clamp(0.95rem,3vw,1.2rem)]"
+                                            : "text-[clamp(0.92rem,3vw,1.16rem)]",
+                                        "whitespace-nowrap md:whitespace-normal"
                                     )}
                                 >
                                     {item.title}

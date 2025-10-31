@@ -107,9 +107,6 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
                                                 )
                                                     ? "text-primary"
                                                     : "text-text",
-                                                isMobile
-                                                    ? "whitespace-nowrap"
-                                                    : "md:whitespace-normal",
                                                 "group-hover:text-primary"
                                             )}
                                         >
