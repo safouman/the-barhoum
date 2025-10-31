@@ -183,7 +183,6 @@ export default async function AIBriefPage() {
         getCategories(),
     ]);
 
-    const tagline = site.brand.tagline[locale] ?? copy.keyFacts.taglineFallback;
     const socialLinks = site.socials ?? [];
 
     return (
@@ -266,9 +265,6 @@ export default async function AIBriefPage() {
                             <dt className="text-sm uppercase tracking-[0.12em] text-subtle/70">
                                 {copy.keyFacts.taglineLabel}
                             </dt>
-                            <dd className="text-base text-text/90">
-                                {tagline}
-                            </dd>
                         </div>
                     </dl>
                 </section>

@@ -230,6 +230,11 @@ export function PacksSection({
     const showMeAndMeHeader = category === "me_and_me" && !comingSoon;
     const sectionTitle = showMeAndMeHeader ? copy.title : undefined;
     const sectionSubtitle = showMeAndMeHeader ? copy.subtitle : undefined;
+    const sectionTitleClassName = showMeAndMeHeader
+        ? direction === "rtl"
+            ? "font-medium"
+            : "font-medium md:tracking-[0.2rem]"
+        : undefined;
 
     return (
         <Section
@@ -237,11 +242,7 @@ export function PacksSection({
             title={sectionTitle}
             subtitle={sectionSubtitle}
             className="bg-background"
-            titleClassName={
-                showMeAndMeHeader && direction !== "rtl"
-                    ? "md:tracking-[0.2rem]"
-                    : undefined
-            }
+            titleClassName={sectionTitleClassName}
         >
             <Container>
                 {renderMode === "comingSoon" && (
@@ -316,13 +317,6 @@ export function PacksSection({
                                                 className={styles.detailsHeader}
                                             >
                                                 <h3>{selectedPack.title}</h3>
-                                                <p
-                                                    className={
-                                                        styles.detailsMeta
-                                                    }
-                                                >
-                                                    {selectedPack.duration}
-                                                </p>
                                             </div>
                                             <div
                                                 className={

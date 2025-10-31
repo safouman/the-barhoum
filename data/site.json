@@ -1,16 +1,12 @@
 {
   "brand": {
     "header": {
-      "ar": "برهوم",
-      "en": "Barhoum"
+      "ar": "إبراهيم بن عبد الله",
+      "en": "Ibrahim Ben Abdallah"
     },
     "footer": {
       "ar": "إبراهيم بن عبد الله",
       "en": "Ibrahim Ben Abdallah"
-    },
-    "tagline": {
-      "ar": "من أجل عالم أفضل",
-      "en": "For a Better World"
     }
   },
   "languageSwitch": {
@@ -29,12 +25,12 @@
   "socials": [
     {
       "id": "instagram",
-      "href": "https://instagram.com/barhoum",
+      "href": "https://www.instagram.com/barhoum_the_believer/",
       "label": "Instagram"
     },
     {
       "id": "youtube",
-      "href": "https://youtube.com/@barhoum",
+      "href": "https://www.youtube.com/@REBIRTHACADEMY",
       "label": "YouTube"
     }
   ]

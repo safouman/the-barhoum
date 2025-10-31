@@ -62,11 +62,11 @@ export function Footer({ site }: FooterProps) {
     > = [
         {
             href: "/privacy",
-            label: locale === "ar" ? "سياسة الخصوصية" : "Privacy Policy",
+            label: "Privacy Policy",
         },
         {
             href: "/terms",
-            label: locale === "ar" ? "شروط الخدمة" : "Terms of Service",
+            label: "Terms of Use",
         },
         {
             href: "/data/coach.jsonld",
@@ -76,7 +76,7 @@ export function Footer({ site }: FooterProps) {
             onClick: () => {
                 triggerConsentPreferences();
             },
-            label: locale === "ar" ? "تفضيلات ملفات الارتباط" : "Cookie Preferences",
+            label: "Cookie Preferences",
         },
     ];
 
@@ -159,39 +159,43 @@ export function Footer({ site }: FooterProps) {
                         <div>© 2025 {brandName}</div>
                         <nav
                             className={`flex flex-wrap items-center justify-center gap-4 mt-4 ${
-                        isRtl ? "flex-row-reverse" : ""
-                    }`}
-                    dir={isRtl ? "rtl" : "ltr"}
-                    aria-label={locale === "ar" ? "روابط قانونية" : "Legal links"}
-                >
-                    {legalLinks.map((link) => {
-                        const key = link.href ?? link.label;
-                        if (link.onClick) {
-                            return (
-                                <button
-                                    key={key}
-                                    type="button"
-                                    className="hover:text-[#2AD6CA] transition-colors duration-200"
-                                    onClick={link.onClick}
-                                >
-                                    {link.label}
-                                </button>
-                            );
-                        }
-                        return (
-                            <a
-                                key={key}
-                                href={link.href}
-                                className="hover:text-[#2AD6CA] transition-colors duration-200"
-                            >
-                                {link.label}
-                            </a>
-                        );
-                    })}
-                </nav>
-            </div>
-        </div>
-    </Container>
-</footer>
+                                isRtl ? "flex-row-reverse" : ""
+                            }`}
+                            dir={isRtl ? "rtl" : "ltr"}
+                            aria-label={
+                                locale === "ar"
+                                    ? "روابط قانونية"
+                                    : "Legal links"
+                            }
+                        >
+                            {legalLinks.map((link) => {
+                                const key = link.href ?? link.label;
+                                if (link.onClick) {
+                                    return (
+                                        <button
+                                            key={key}
+                                            type="button"
+                                            className="hover:text-[#2AD6CA] transition-colors duration-200"
+                                            onClick={link.onClick}
+                                        >
+                                            {link.label}
+                                        </button>
+                                    );
+                                }
+                                return (
+                                    <a
+                                        key={key}
+                                        href={link.href}
+                                        className="hover:text-[#2AD6CA] transition-colors duration-200"
+                                    >
+                                        {link.label}
+                                    </a>
+                                );
+                            })}
+                        </nav>
+                    </div>
+                </div>
+            </Container>
+        </footer>
     );
 }

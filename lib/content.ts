@@ -189,13 +189,13 @@ export const homeSchema = z.object({
     about: z.object({
         headline: localizedSchema,
     }),
-  testimonials: z.object({
-    eyebrow: localizedSchema,
-    cta: localizedSchema,
-  }),
-  method: z.object({
-    title: localizedSchema,
-  }),
+    testimonials: z.object({
+        eyebrow: localizedSchema,
+        cta: localizedSchema,
+    }),
+    method: z.object({
+        title: localizedSchema,
+    }),
 });
 
 export type HomeData = z.infer<typeof homeSchema>;
@@ -204,7 +204,6 @@ export const siteConfigSchema = z.object({
     brand: z.object({
         header: localizedSchema,
         footer: localizedSchema,
-        tagline: localizedSchema,
     }),
     languageSwitch: z.object({
         options: z.array(languageOptionSchema),
@@ -302,7 +301,8 @@ export const getPayments = () => loadJson("payments.json", paymentsSchema);
 export const getSiteConfig = () => loadJson("site.json", siteConfigSchema);
 export const getLeadFormCopy = (locale: Locale) =>
     loadJson(`forms/lead.${locale}.json`, leadFormSchema);
-export const getProgramCopy = () => loadJson("programs.json", programCopySchema);
+export const getProgramCopy = () =>
+    loadJson("programs.json", programCopySchema);
 
 const loadMarkdown = cache(async (filePath: string) => {
     const file = await fs.readFile(filePath, "utf8");
