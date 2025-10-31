@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import clsx from "classnames";
 import Link from "next/link";
 import { Container } from "@/components/Container";
@@ -7,6 +8,7 @@ import { resolveLocale } from "@/lib/i18n.server";
 import { getPageMetadata } from "@/lib/seo";
 import { seoConfig } from "@/config/seo";
 import { AIBriefViewTracker } from "@/components/analytics/AIBriefViewTracker";
+import { isAieoEnabled } from "@/config/features";
 
 const brand = seoConfig.brand;
 
@@ -147,6 +149,15 @@ const AI_BRIEF_COPY: Record<Locale, BriefCopy> = {
 };
 
 export async function generateMetadata(): Promise<Metadata> {
+    if (!isAieoEnabled) {
+        return {
+            robots: {
+                index: false,
+                follow: false,
+            },
+        };
+    }
+
     const locale = resolveLocale();
     const metaContent = `${brand.person.name}, ${brand.person.jobTitle} based in Tunisia, founder of ${brand.organization.name}.`;
     return getPageMetadata("ai-brief", locale, {
@@ -157,6 +168,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AIBriefPage() {
+    if (!isAieoEnabled) {
+        notFound();
+    }
+
     const locale = resolveLocale();
     const copy = AI_BRIEF_COPY[locale] ?? AI_BRIEF_COPY.en;
     const isRtl = locale === "ar";
