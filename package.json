@@ -12,7 +12,8 @@
     "check": "npm run lint -- --max-warnings=0 && npm run typecheck",
     "lint:staged": "lint-staged",
     "prepare": "husky",
-    "analyze-audio": "node scripts/analyze-audio.mjs"
+    "analyze-audio": "node scripts/analyze-audio.mjs",
+    "transcode:video": "node scripts/transcode-video.mjs"
   },
   "keywords": [
     "coaching",
