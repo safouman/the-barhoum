@@ -33,9 +33,9 @@ export type StripeSelection =
 export function isIndividualProgramKey(value: unknown): value is IndividualProgramKey {
   return (
     typeof value === "string" &&
-    (value === "program_basic" ||
-      value === "program_growth" ||
-      value === "program_transform")
+    (value === "program_exploration" ||
+      value === "program_breakthrough" ||
+      value === "program_mastery")
   );
 }
 

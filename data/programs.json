@@ -1,59 +1,69 @@
 {
   "ar": {
-    "program_basic": {
-      "title": "لغة مشتركة سريعة",
-      "subtitle": "جلسة تعريف سريع",
+    "program_exploration": {
+      "title": "Exploration and Initiation",
+      "subtitle": "مدّة التّدريب من أسبوعين إلى ثلاثة أسابيع",
       "bullets": [
-        "تمرين واحد مشترك",
-        "توصية مشتركة",
-        "متابعة خفيفة"
+        "تسجيل صوتي",
+        "تمرين مصمّم خصّيصا لمرحلتك كمقدّمة للبرنامج",
+        "حصتين online مع البرهوم",
+        "مدّة التّدريب من أسبوعين إلى ثلاثة أسابيع"
       ]
     },
-    "program_growth": {
-      "title": "إيقاع حوار متجدد",
-      "subtitle": "تناغم متصاعد",
+    "program_breakthrough": {
+      "title": "Breakthrough Guaranteed",
+      "subtitle": "مدّة التّدريب من ثلاث أسابيع إلى خمس أسابيع",
       "bullets": [
-        "تمارين قصيرة بين الجلسات",
-        "خطوة مشتركة",
-        "متابعة لطيفة"
+        "خمس تسجيلات صوتيّة",
+        "زوز تمارين مصمّمة خصّيصا لمرحلتك",
+        "پرومپت ذكاء إصطناعي للمرافقة بعد انتهاء التّدريب",
+        "أربعة حصص online مع البرهوم",
+        "مدّة التّدريب من ثلاث أسابيع إلى خمس أسابيع"
       ]
     },
-    "program_transform": {
-      "title": "مساحة آمنة مستمرة",
-      "subtitle": "عمق وثقة",
+    "program_mastery": {
+      "title": "Mastery and Independency",
+      "subtitle": "مدّة التّدريب من شهر ونصف إلى شهرين",
       "bullets": [
-        "دعم بين الجلسات (صوت/نص)",
-        "تمرين متابعة خفيف",
-        "تكامل أعمق"
+        "خمس تسجيلات صوتيّة",
+        "أربعة تمارين مصمّمة خصّيصا لمرحلتك",
+        "۲ پرومپت ذكاء إصطناعي نحضّرهملك للمرافقة بعد انتهاء التّدريب",
+        "ستة حصص online مع البرهوم",
+        "مدّة التّدريب من شهر ونصف إلى شهرين"
       ]
     }
   },
   "en": {
-    "program_basic": {
-      "title": "Shared language sprint",
-      "subtitle": "Focused discovery",
+    "program_exploration": {
+      "title": "Exploration and Initiation",
+      "subtitle": "Training duration: 2–3 weeks",
       "bullets": [
-        "One shared practice",
-        "Joint recommendation",
-        "Light follow-up"
+        "1 audio recording",
+        "Custom-designed exercise introducing your current phase",
+        "2 online sessions with Barhoum",
+        "Training duration: 2–3 weeks"
       ]
     },
-    "program_growth": {
-      "title": "Renewed dialogue rhythm",
-      "subtitle": "Grow the conversation",
+    "program_breakthrough": {
+      "title": "Breakthrough Guaranteed",
+      "subtitle": "Training duration: 3–5 weeks",
       "bullets": [
-        "Short rituals between sessions",
-        "Shared next step",
-        "Gentle accountability"
+        "5 audio recordings",
+        "2 custom-designed exercises for your current phase",
+        "1 AI-guided prompt for post-program support",
+        "4 online sessions with Barhoum",
+        "Training duration: 3–5 weeks"
       ]
     },
-    "program_transform": {
-      "title": "Sustained safe space",
-      "subtitle": "Keep the cadence",
+    "program_mastery": {
+      "title": "Mastery and Independency",
+      "subtitle": "Training duration: 1.5–2 months",
       "bullets": [
-        "Between-session voice/text",
-        "Light follow-up practice",
-        "Deeper integration"
+        "5 audio recordings",
+        "4 custom-designed exercises for your current phase",
+        "2 AI-guided prompts prepared for post-program support",
+        "6 online sessions with Barhoum",
+        "Training duration: 1.5–2 months"
       ]
     }
   }

@@ -1,34 +1,68 @@
 [
   {
-    "id": "program_basic",
+    "id": "program_exploration",
     "categoryId": "me_and_me",
-    "title": {"ar": "البرنامج الأساسي", "en": "Program Basic"},
-    "price": {"amount": 100, "currency": "EUR"},
+    "title": {"ar": "Exploration and Initiation", "en": "Exploration and Initiation"},
+    "price": {"amount": 700, "currency": "EUR"},
     "features": {
-      "ar": ["جلسة تمهيدية واحدة", "تقييم شخصي", "خطة أولية للخطوات القادمة"],
-      "en": ["1 kickoff session", "Personal assessment", "Immediate next steps plan"]
+      "ar": [
+        "تسجيل صوتي",
+        "تمرين مصمّم خصّيصا لمرحلتك كمقدّمة للبرنامج",
+        "حصتين online مع البرهوم",
+        "مدّة التّدريب من أسبوعين إلى ثلاثة أسابيع"
+      ],
+      "en": [
+        "1 audio recording",
+        "Custom-designed exercise introducing your current phase",
+        "2 online sessions with Barhoum",
+        "Training duration: 2–3 weeks"
+      ]
     },
     "visible": true
   },
   {
-    "id": "program_growth",
+    "id": "program_breakthrough",
     "categoryId": "me_and_me",
-    "title": {"ar": "برنامج النمو", "en": "Program Growth"},
-    "price": {"amount": 300, "currency": "EUR"},
+    "title": {"ar": "Breakthrough Guaranteed", "en": "Breakthrough Guaranteed"},
+    "price": {"amount": 1000, "currency": "EUR"},
     "features": {
-      "ar": ["3 جلسات تطويرية", "خطة متابعة لمدة شهر", "متابعة أسبوعية"],
-      "en": ["3 development sessions", "1-month follow-up plan", "Weekly accountability check-ins"]
+      "ar": [
+        "خمس تسجيلات صوتيّة",
+        "زوز تمارين مصمّمة خصّيصا لمرحلتك",
+        "پرومپت ذكاء إصطناعي للمرافقة بعد انتهاء التّدريب",
+        "أربعة حصص online مع البرهوم",
+        "مدّة التّدريب من ثلاث أسابيع إلى خمس أسابيع"
+      ],
+      "en": [
+        "5 audio recordings",
+        "2 custom-designed exercises for your current phase",
+        "1 AI-guided prompt for post-program support",
+        "4 online sessions with Barhoum",
+        "Training duration: 3–5 weeks"
+      ]
     },
     "visible": true
   },
   {
-    "id": "program_transform",
+    "id": "program_mastery",
     "categoryId": "me_and_me",
-    "title": {"ar": "برنامج التحول", "en": "Program Transform"},
-    "price": {"amount": 800, "currency": "EUR"},
+    "title": {"ar": "Mastery and Independency", "en": "Mastery and Independency"},
+    "price": {"amount": 1600, "currency": "EUR"},
     "features": {
-      "ar": ["5 جلسات عميقة", "دعم بين الجلسات", "مسار تدريبات مخصص"],
-      "en": ["5 deep-dive sessions", "Between-session support", "Tailored practice track"]
+      "ar": [
+        "خمس تسجيلات صوتيّة",
+        "أربعة تمارين مصمّمة خصّيصا لمرحلتك",
+        "۲ پرومپت ذكاء إصطناعي نحضّرهملك للمرافقة بعد انتهاء التّدريب",
+        "ستة حصص online مع البرهوم",
+        "مدّة التّدريب من شهر ونصف إلى شهرين"
+      ],
+      "en": [
+        "5 audio recordings",
+        "4 custom-designed exercises for your current phase",
+        "2 AI-guided prompts prepared for post-program support",
+        "6 online sessions with Barhoum",
+        "Training duration: 1.5–2 months"
+      ]
     },
     "visible": true
   },

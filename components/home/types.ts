@@ -57,7 +57,7 @@ export interface CategoriesProps {
     categoryValue: string;
     packageLabel: string;
     packageValue: string;
-    sessionsLabel: string;
+    durationLabel: string;
     priceLabel: string;
   };
   activeCategoryId?: Category["id"];
@@ -83,7 +83,7 @@ export interface LeadFormProps {
     categoryValue: string;
     packageLabel: string;
     packageValue: string;
-    sessionsLabel: string;
+    durationLabel: string;
     priceLabel: string;
   };
   ui: UIStrings;

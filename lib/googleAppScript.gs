@@ -216,7 +216,7 @@ function testCreateLead() {
         phone: "+1234567890",
         bestContactTime: "Evenings",
         category: "me_and_me",
-        package: "program_growth",
+        package: "program_breakthrough",
         payment_link: "",
     });
     Logger.log(response.getContent());
@@ -265,7 +265,7 @@ function testDoPostCreateLead() {
         phone: "+33123456789",
         bestContactTime: "Morning",
         category: "me_and_me",
-        package: "program_transform",
+        package: "program_mastery",
         payment_link: "",
     });
 
@@ -292,7 +292,7 @@ function testDoPostAttachPaymentLink() {
             phone: "+491234567890",
             bestContactTime: "Afternoon",
             category: "me_and_me",
-            package: "program_growth",
+            package: "program_breakthrough",
             payment_link: "",
         });
     }

@@ -77,7 +77,7 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy,
       categoryValue: activeCategoryLabel ?? "-",
       packageLabel: strings.form.package,
       packageValue: selectedPack.title,
-      sessionsLabel: selectedPack.sessionsLabel,
+      durationLabel: selectedPack.durationLabel,
       priceLabel: formatCurrency(selectedPack.priceTotal, selectedPack.currency),
     };
   }, [activeCategoryLabel, formatCurrency, selectedPack, strings.form.category, strings.form.package]);
@@ -219,6 +219,7 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy,
             action: "select",
             category: pack.category,
             sessions: pack.sessions,
+            duration: pack.durationLabel,
           });
           setSelectedPack(pack);
           updateAnalyticsContext({ program_name: pack.title });
@@ -228,6 +229,7 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy,
             action: "continue",
             category: pack.category,
             sessions: pack.sessions,
+            duration: pack.durationLabel,
           });
           setSelectedPack(pack);
           updateAnalyticsContext({ program_name: pack.title });
@@ -252,6 +254,7 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy,
                 action: "select",
                 category: pack.category,
                 sessions: pack.sessions,
+                duration: pack.durationLabel,
               });
               setSelectedPack(pack);
               updateAnalyticsContext({ program_name: pack.title });
@@ -261,6 +264,7 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy,
                 action: "continue",
                 category: pack.category,
                 sessions: pack.sessions,
+                duration: pack.durationLabel,
               });
               setSelectedPack(pack);
               updateAnalyticsContext({ program_name: pack.title });

@@ -5,7 +5,6 @@ import { Section } from "@/components/Section";
 import type { Locale } from "@/lib/content";
 import {
     formatPackCurrency,
-    formatSessionsLabel,
     type CategoryKey,
     type IndividualProgramKey,
     type PackageId,
@@ -19,13 +18,12 @@ import styles from "./Packages.module.css";
 
 export type Pack = {
     programKey?: IndividualProgramKey | PackageId;
-    sessions: PackSessions;
+    sessions?: PackSessions;
     title: string;
     subtitle: string;
     bullets: string[];
     priceTotal: number;
     priceAmountMinor: number;
-    pricePerSession: number;
     currency: string;
     duration: string;
 };
@@ -94,15 +92,16 @@ function PackBar({
             }}
             className={clsx(styles.option, selected && styles.optionSelected)}
             dir={direction}
-            aria-label={`${formatSessionsLabel(
-                pack.sessions,
-                locale
-            )} · ${formatPackCurrency(pack.priceTotal, locale, pack.currency)}`}
+            aria-label={`${pack.duration} · ${formatPackCurrency(
+                pack.priceTotal,
+                locale,
+                pack.currency
+            )}`}
         >
             <div className={styles.optionContent}>
                 <div className={styles.optionMeta}>
                     <span className={styles.optionSessions}>
-                        {formatSessionsLabel(pack.sessions, locale)}
+                        {pack.duration}
                     </span>
                     <span className={styles.optionSubtitle}>
                         {pack.subtitle}
@@ -115,14 +114,6 @@ function PackBar({
                             locale,
                             pack.currency
                         )}
-                    </span>
-                    <span>
-                        {formatPackCurrency(
-                            pack.pricePerSession,
-                            locale,
-                            pack.currency
-                        )}{" "}
-                        / {locale === "ar" ? "جلسة" : "session"}
                     </span>
                 </div>
             </div>
@@ -197,7 +188,7 @@ export function PacksSection({
         setSelectedIndex(0);
         cardRefs.current = [];
         const pack = packs[0];
-        const selection = createPackSelection({ category, pack, locale });
+        const selection = createPackSelection({ category, pack });
         onSelectRef.current?.(selection);
     }, [category, packs, locale, comingSoon]);
 
@@ -205,7 +196,7 @@ export function PacksSection({
         setSelectedIndex(index);
         if (!comingSoon && category) {
             const pack = packs[index];
-            const selection = createPackSelection({ category, pack, locale });
+            const selection = createPackSelection({ category, pack });
             onSelectRef.current?.(selection);
         }
     };
@@ -229,14 +220,6 @@ export function PacksSection({
               selectedPack.currency
           )
         : "";
-    const perSessionDisplay = selectedPack
-        ? formatPackCurrency(
-              selectedPack.pricePerSession,
-              locale,
-              selectedPack.currency
-          )
-        : "";
-    const sessionTerm = locale === "ar" ? "جلسة" : "session";
     const totalPriceAriaLabel = selectedPack
         ? locale === "ar"
             ? `إجمالي السعر ${totalPriceDisplay}`
@@ -244,18 +227,13 @@ export function PacksSection({
         : undefined;
     const continueAriaLabel = selectedPack
         ? locale === "ar"
-            ? `${copy.button} مع ${formatSessionsLabel(
-                  selectedPack.sessions,
-                  locale
-              )} - الإجمالي ${totalPriceDisplay}`
-            : `${copy.button} with ${formatSessionsLabel(
-                  selectedPack.sessions,
-                  locale
-              ).toLowerCase()} - total ${totalPriceDisplay}`
+            ? `${copy.button} مع ${selectedPack.duration} - الإجمالي ${totalPriceDisplay}`
+            : `${copy.button} with ${selectedPack.duration} - total ${totalPriceDisplay}`
         : undefined;
 
-    const sectionTitle = copy.title;
-    const sectionSubtitle = copy.subtitle;
+    const showMeAndMeHeader = category === "me_and_me" && !comingSoon;
+    const sectionTitle = showMeAndMeHeader ? copy.title : undefined;
+    const sectionSubtitle = showMeAndMeHeader ? copy.subtitle : undefined;
 
     return (
         <Section
@@ -264,7 +242,9 @@ export function PacksSection({
             subtitle={sectionSubtitle}
             className="bg-background"
             titleClassName={
-                direction === "rtl" ? undefined : "md:tracking-[0.2rem]"
+                showMeAndMeHeader && direction !== "rtl"
+                    ? "md:tracking-[0.2rem]"
+                    : undefined
             }
         >
             <Container>
@@ -294,7 +274,8 @@ export function PacksSection({
                                     {packs.map((pack, index) => (
                                         <PackBar
                                             key={`${category}-${
-                                                pack.programKey ?? pack.sessions
+                                                pack.programKey ??
+                                                pack.duration
                                             }`}
                                             direction={direction}
                                             locale={locale}
@@ -331,7 +312,7 @@ export function PacksSection({
                                                     ? styles.detailsContentRtl
                                                     : ""
                                             )}
-                                            key={`${selectedPack.sessions}-${category}-${locale}`}
+                                            key={`${selectedPack.programKey ?? selectedPack.duration}-${category}-${locale}`}
                                         >
                                             <div
                                                 className={styles.detailsHeader}
@@ -359,14 +340,6 @@ export function PacksSection({
                                                     }
                                                 >
                                                     {totalPriceDisplay}
-                                                </span>
-                                                <span
-                                                    className={
-                                                        styles.detailsPricePer
-                                                    }
-                                                >
-                                                    {perSessionDisplay} /{" "}
-                                                    {sessionTerm}
                                                 </span>
                                             </div>
                                             <ul
@@ -398,11 +371,8 @@ export function PacksSection({
                                                         styles.detailsSummary
                                                     }
                                                 >
-                                                    {formatSessionsLabel(
-                                                        selectedPack.sessions,
-                                                        locale
-                                                    )}{" "}
-                                                    · {totalPriceDisplay}
+                                                    {selectedPack.duration} ·{" "}
+                                                    {totalPriceDisplay}
                                                 </span>
                                                 <button
                                                     type="button"
@@ -416,7 +386,6 @@ export function PacksSection({
                                                                     {
                                                                         category,
                                                                         pack: selectedPack,
-                                                                        locale,
                                                                     }
                                                                 );
                                                             onContinue?.(

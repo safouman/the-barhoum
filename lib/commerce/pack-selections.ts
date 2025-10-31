@@ -1,6 +1,4 @@
-import type { Locale } from "@/lib/content";
 import {
-    formatSessionsLabel,
     getIndividualProgramKeyBySessions,
     getPackageId,
     type CategoryKey,
@@ -11,33 +9,32 @@ import {
 
 export interface PackSelection {
     category: CategoryKey;
-    sessions: PackSessions;
+    sessions?: PackSessions;
     priceTotal: number;
     priceAmountMinor: number;
     currency: string;
     title: string;
-    sessionsLabel: string;
+    durationLabel: string;
     programKey?: IndividualProgramKey | PackageId;
     packageId: PackageId;
 }
 
 type PackSelectionSource = {
-    sessions: PackSelection["sessions"];
+    sessions?: PackSelection["sessions"];
     priceTotal: PackSelection["priceTotal"];
     priceAmountMinor: PackSelection["priceAmountMinor"];
     currency: PackSelection["currency"];
     title: PackSelection["title"];
+    duration: string;
     programKey?: IndividualProgramKey | PackageId;
 };
 
 export function createPackSelection({
     category,
     pack,
-    locale,
 }: {
     category: CategoryKey;
     pack: PackSelectionSource;
-    locale: Locale;
 }): PackSelection {
     const inferredPackageId = (() => {
         if (pack.programKey) {
@@ -45,13 +42,21 @@ export function createPackSelection({
         }
 
         if (category === "me_and_me") {
-            const programKey = getIndividualProgramKeyBySessions(pack.sessions);
+            const programKey = pack.sessions
+                ? getIndividualProgramKeyBySessions(pack.sessions)
+                : null;
             if (programKey) {
                 return programKey;
             }
         }
 
-        return getPackageId(category, pack.sessions);
+        if (pack.sessions != null) {
+            return getPackageId(category, pack.sessions);
+        }
+
+        throw new Error(
+            `[pack-selection] Unable to resolve package id for category "${category}". Provide a programKey or sessions value.`
+        );
     })();
 
     return {
@@ -61,7 +66,7 @@ export function createPackSelection({
         priceAmountMinor: pack.priceAmountMinor,
         currency: pack.currency,
         title: pack.title,
-        sessionsLabel: formatSessionsLabel(pack.sessions, locale),
+        durationLabel: pack.duration,
         programKey: (pack.programKey as IndividualProgramKey | PackageId | undefined) ?? inferredPackageId,
         packageId: inferredPackageId,
     };

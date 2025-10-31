@@ -28,10 +28,9 @@ function buildPacksByCategory(
   };
 
   programs.forEach((program) => {
-    const sessions = program.sessions && program.sessions > 0 ? program.sessions : 1;
+    const sessions = program.sessions && program.sessions > 0 ? program.sessions : undefined;
     const currency = program.currency || "EUR";
     const priceTotal = program.priceAmountMinor / 100;
-    const pricePerSession = priceTotal / Math.max(sessions, 1);
 
     locales.forEach((locale) => {
       const copy = program.copy[locale];
@@ -50,7 +49,6 @@ function buildPacksByCategory(
         bullets,
         priceTotal,
         priceAmountMinor: program.priceAmountMinor,
-        pricePerSession,
         currency,
         duration,
       };
@@ -60,7 +58,14 @@ function buildPacksByCategory(
   });
 
   locales.forEach((locale) => {
-    result.me_and_me[locale].sort((a, b) => a.sessions - b.sessions);
+    result.me_and_me[locale].sort((a, b) => {
+      if (a.sessions != null && b.sessions != null) {
+        return a.sessions - b.sessions;
+      }
+      if (a.sessions != null) return -1;
+      if (b.sessions != null) return 1;
+      return a.priceTotal - b.priceTotal;
+    });
   });
 
   return result;

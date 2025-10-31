@@ -4,9 +4,9 @@ export type CategoryKey = "me_and_me" | "me_and_the_other" | "me_and_work";
 export type PackSessions = number;
 
 export type IndividualProgramKey =
-    | "program_basic"
-    | "program_growth"
-    | "program_transform";
+    | "program_exploration"
+    | "program_breakthrough"
+    | "program_mastery";
 
 export type CouplesPackageId =
     | "cpl-1-session"
@@ -24,9 +24,9 @@ export type PackageId =
     | OrganizationPackageId;
 
 const INDIVIDUAL_PACKAGE_LOOKUP: Record<number, IndividualProgramKey> = {
-    1: "program_basic",
-    3: "program_growth",
-    5: "program_transform",
+    2: "program_exploration",
+    4: "program_breakthrough",
+    6: "program_mastery",
 };
 
 const COUPLES_PACKAGE_LOOKUP: Record<number, CouplesPackageId> = {

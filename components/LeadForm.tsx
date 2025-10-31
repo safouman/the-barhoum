@@ -43,7 +43,7 @@ export interface LeadFormProps {
         categoryValue: string;
         packageLabel: string;
         packageValue: string;
-        sessionsLabel: string;
+        durationLabel: string;
         priceLabel: string;
     };
     variant: LeadFormVariant;
@@ -210,7 +210,7 @@ export function LeadForm({
                 packSummary?.categoryValue ?? selectedCategory ?? "-",
             packageLabel: packSummary?.packageLabel ?? labels.package,
             packageValue: packSummary?.packageValue ?? selectedPackage ?? "-",
-            sessionsLabel: packSummary?.sessionsLabel ?? "",
+            durationLabel: packSummary?.durationLabel ?? "",
             priceLabel: packSummary?.priceLabel ?? "",
         }),
         [
@@ -780,9 +780,9 @@ export function LeadForm({
                                     </div>
                                 ))}
                             </div>
-                            {summary.sessionsLabel && (
+                            {summary.durationLabel && (
                                 <p className="pt-4 text-sm text-subtle/70 border-t border-border/20">
-                                    {summary.sessionsLabel}
+                                    {summary.durationLabel}
                                 </p>
                             )}
                         </div>
@@ -1051,11 +1051,11 @@ export function LeadForm({
                                 </span>
                             </>
                         )}
-                        {summary.sessionsLabel && (
+                        {summary.durationLabel && (
                             <>
                                 <span className="text-subtle/40">·</span>
                                 <span className="text-sm font-medium text-text/85">
-                                    {summary.sessionsLabel}
+                                    {summary.durationLabel}
                                 </span>
                             </>
                         )}

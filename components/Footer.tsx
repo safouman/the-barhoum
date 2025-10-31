@@ -7,6 +7,7 @@ import type { SiteConfig } from "@/lib/content";
 import { event } from "@/lib/analytics";
 import { triggerConsentPreferences } from "@/lib/consent";
 import { useLocale } from "@/providers/locale-provider";
+import { isAieoEnabled } from "@/config/features";
 
 interface FooterProps {
     site: SiteConfig;
@@ -68,10 +69,6 @@ export function Footer({ site }: FooterProps) {
             label: locale === "ar" ? "شروط الخدمة" : "Terms of Service",
         },
         {
-            href: "/ai-brief",
-            label: locale === "ar" ? "ملف الذكاء الاصطناعي" : "AI Brief",
-        },
-        {
             href: "/data/coach.jsonld",
             label: locale === "ar" ? "JSON-LD" : "Coach JSON-LD",
         },
@@ -82,6 +79,13 @@ export function Footer({ site }: FooterProps) {
             label: locale === "ar" ? "تفضيلات ملفات الارتباط" : "Cookie Preferences",
         },
     ];
+
+    if (isAieoEnabled) {
+        legalLinks.splice(2, 0, {
+            href: "/ai-brief",
+            label: locale === "ar" ? "ملف الذكاء الاصطناعي" : "AI Brief",
+        });
+    }
 
     return (
         <footer className="bg-white border-t border-gray-100">
