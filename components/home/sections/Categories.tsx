@@ -58,9 +58,6 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
             data-analytics-engage="true"
         >
             <Container>
-                <p className="mb-10 text-center text-xs uppercase tracking-[0.4em] text-subtle">
-                    {chooseAudienceCopy}
-                </p>
                 <div
                     className="grid gap-[clamp(2rem,3.5vw,3.5rem)] text-sm sm:grid-cols-1 lg:grid-cols-3
  xl:grid-cols-3"
