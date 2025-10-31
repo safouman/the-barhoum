@@ -89,14 +89,11 @@ export function formatPackCurrency(
     locale: Locale,
     currency: string = "EUR"
 ): string {
-    const formatter = new Intl.NumberFormat(
-        locale === "ar" ? "ar-EG" : "en-US",
-        {
-            style: "currency",
-            currency: currency.toUpperCase(),
-            maximumFractionDigits: 0,
-        }
-    );
+    const formatter = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: currency.toUpperCase(),
+        maximumFractionDigits: 0,
+    });
     return formatter.format(amount);
 }
 

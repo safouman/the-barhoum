@@ -28,15 +28,19 @@ function buildPacksByCategory(
   };
 
   programs.forEach((program) => {
-    const sessions = program.sessions && program.sessions > 0 ? program.sessions : undefined;
-    const currency = program.currency || "EUR";
+    const sessions =
+      program.sessions && program.sessions > 0 ? program.sessions : undefined;
     const priceTotal = program.priceAmountMinor / 100;
+    const currency =
+      program.programId.startsWith("program_") ? "TND" : (program.currency || "TND");
 
     locales.forEach((locale) => {
       const copy = program.copy[locale];
       if (!copy) return;
 
-      const title = copy.title || program.programId;
+      const englishCopy = program.copy.en ?? copy;
+      const title =
+        englishCopy.title?.trim() || program.programId;
       const subtitle = copy.subtitle || "—";
       const bullets = copy.bullets.length ? copy.bullets : ["—"];
       const duration = copy.subtitle || program.durationLabel || "—";
@@ -48,7 +52,7 @@ function buildPacksByCategory(
         subtitle,
         bullets,
         priceTotal,
-        priceAmountMinor: program.priceAmountMinor,
+        priceAmountMinor: Math.round(priceTotal * 100),
         currency,
         duration,
       };

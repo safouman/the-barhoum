@@ -95,7 +95,7 @@ export default function PrivacyPage() {
                 </div>
                 <p className="text-sm text-subtle/70">
                     Ibrahim Ben Abdallah operates as the public-facing brand of
-                    Whispered Life OÜ.
+                    Rebirth Academy.
                 </p>
             </Container>
         </div>

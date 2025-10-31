@@ -92,19 +92,15 @@ function PackBar({
             }}
             className={clsx(styles.option, selected && styles.optionSelected)}
             dir={direction}
-            aria-label={`${pack.duration} · ${formatPackCurrency(
-                pack.priceTotal,
-                locale,
-                pack.currency
-            )}`}
+            aria-label={`${pack.title} · ${
+                pack.duration
+            } · ${formatPackCurrency(pack.priceTotal, locale, pack.currency)}`}
         >
             <div className={styles.optionContent}>
                 <div className={styles.optionMeta}>
-                    <span className={styles.optionSessions}>
-                        {pack.duration}
-                    </span>
+                    <span className={styles.optionSessions}>{pack.title}</span>
                     <span className={styles.optionSubtitle}>
-                        {pack.subtitle}
+                        {pack.duration}
                     </span>
                 </div>
                 <div className={styles.optionPrice}>
@@ -274,8 +270,7 @@ export function PacksSection({
                                     {packs.map((pack, index) => (
                                         <PackBar
                                             key={`${category}-${
-                                                pack.programKey ??
-                                                pack.duration
+                                                pack.programKey ?? pack.duration
                                             }`}
                                             direction={direction}
                                             locale={locale}
@@ -312,7 +307,10 @@ export function PacksSection({
                                                     ? styles.detailsContentRtl
                                                     : ""
                                             )}
-                                            key={`${selectedPack.programKey ?? selectedPack.duration}-${category}-${locale}`}
+                                            key={`${
+                                                selectedPack.programKey ??
+                                                selectedPack.duration
+                                            }-${category}-${locale}`}
                                         >
                                             <div
                                                 className={styles.detailsHeader}
@@ -366,14 +364,6 @@ export function PacksSection({
                                             <div
                                                 className={styles.detailsFooter}
                                             >
-                                                <span
-                                                    className={
-                                                        styles.detailsSummary
-                                                    }
-                                                >
-                                                    {selectedPack.duration} ·{" "}
-                                                    {totalPriceDisplay}
-                                                </span>
                                                 <button
                                                     type="button"
                                                     onClick={() => {
