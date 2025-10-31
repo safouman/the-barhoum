@@ -3,6 +3,7 @@ export const revalidate = 0;
 // optional but helpful in some hosts:
 export const runtime = "nodejs";
 import Script from "next/script";
+import type { CSSProperties } from "react";
 import { Inter, Noto_Naskh_Arabic } from "next/font/google";
 import "../styles/globals.css";
 import { LocaleProvider } from "@/providers/locale-provider";
@@ -30,6 +31,7 @@ const inter = Inter({
     variable: "--font-inter",
     display: "swap",
     fallback: [
+        "Noto Naskh Arabic",
         "system-ui",
         "-apple-system",
         "BlinkMacSystemFont",
@@ -46,6 +48,35 @@ const notoNaskhArabic = Noto_Naskh_Arabic({
     display: "swap",
     preload: true,
 });
+
+function parseFontList(value: string | undefined): string[] {
+    if (!value) {
+        return [];
+    }
+    return value
+        .split(",")
+        .map((entry) => entry.trim().replace(/^['"]|['"]$/g, ""))
+        .filter((entry) => entry.length > 0);
+}
+
+const interFontList = parseFontList(inter.style.fontFamily);
+const notoFontList = parseFontList(notoNaskhArabic.style.fontFamily);
+const primaryNotoFont = notoFontList.at(0);
+const interMergedFontFamily = interFontList.length
+    ? [
+          interFontList[0],
+          ...(primaryNotoFont ? [primaryNotoFont] : []),
+          ...interFontList.slice(1),
+          ...notoFontList.slice(1),
+      ].join(", ")
+    : "";
+
+const fontStyleVariables = {
+    ...(interMergedFontFamily
+        ? { "--font-inter-merged": interMergedFontFamily }
+        : {}),
+    ...(primaryNotoFont ? { "--font-noto-primary": primaryNotoFont } : {}),
+};
 
 async function loadUi(): Promise<Record<"ar" | "en", UIStrings>> {
     const [ar, en] = await Promise.all([
@@ -167,7 +198,12 @@ export default async function RootLayout({
     ]);
 
     return (
-        <html lang={locale} dir={direction} className={fontClass}>
+        <html
+            lang={locale}
+            dir={direction}
+            className={fontClass}
+            style={fontStyleVariables as CSSProperties}
+        >
             <head>
                 <link
                     rel="alternate"
