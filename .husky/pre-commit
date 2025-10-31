@@ -2,5 +2,29 @@
 
 set -e
 
+CHANGED_FILES="$(git diff --cached --name-only)"
+
+if [ -z "$CHANGED_FILES" ]; then
+    exit 0
+fi
+
+SKIP_CHECKS=true
+
+for file in $CHANGED_FILES; do
+    case "$file" in
+        public/video/promo-hls/*|public/video/promo.mp4|public/video/promo-poster.jpg)
+            ;;
+        *)
+            SKIP_CHECKS=false
+            break
+            ;;
+    esac
+done
+
+if [ "$SKIP_CHECKS" = "true" ]; then
+    echo "husky (pre-commit): skipping lint/typecheck for HLS asset updates."
+    exit 0
+fi
+
 npm run lint:staged
 npm run check
