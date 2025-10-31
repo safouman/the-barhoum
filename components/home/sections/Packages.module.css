@@ -119,29 +119,30 @@
 .optionSubtitle {
     font-size: 0.9rem;
     font-weight: 400;
-    color: black;
+    color: rgba(71, 85, 105, 0.82);
+    line-height: 1.35;
 }
 
 .optionPrice {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 0.3rem;
-    color: var(--color-text);
+    gap: 0.25rem;
+    color: rgba(71, 85, 105, 0.72);
 }
 
 .optionPrice span:first-of-type {
     font-family: var(--font-heading);
     font-size: clamp(1.1rem, 1.95vw, 1.3rem);
     font-weight: 500;
-    color: rgba(71, 85, 105, 0.76);
+    color: rgba(51, 65, 85, 0.78);
 }
 
 .optionPrice span:last-of-type {
-    font-size: 0.7rem;
+    font-size: 0.68rem;
     letter-spacing: 0.26em;
     text-transform: uppercase;
-    color: rgba(100, 116, 139, 0.6);
+    color: rgba(100, 116, 139, 0.58);
 }
 
 .optionSelected .optionSessions,
@@ -190,10 +191,10 @@
 
 .detailsHeader h3 {
     font-family: var(--font-heading);
-    font-size: clamp(1.65rem, 2.3vw, 1.5rem);
+    font-size: clamp(1.55rem, 2.2vw, 1.85rem);
     font-weight: 500;
-    line-height: 1.18;
-    color: rgba(15, 23, 42, 0.9);
+    line-height: 1.16;
+    color: rgba(15, 23, 42, 0.88);
     margin: 0;
     text-wrap: balance;
     direction: ltr;
@@ -201,8 +202,8 @@
 }
 
 .detailsMeta {
-    font-size: 0.95rem;
-    color: rgba(100, 116, 139, 0.85);
+    font-size: 0.92rem;
+    color: rgba(100, 116, 139, 0.78);
     margin: 0;
 }
 
@@ -217,10 +218,10 @@
 
 .detailsPriceTotal {
     font-family: var(--font-heading);
-    font-size: clamp(1.65rem, 2.6vw, 1.95rem);
+    font-size: clamp(1.55rem, 2.4vw, 1.85rem);
     font-weight: 500;
     letter-spacing: -0.01em;
-    color: rgba(51, 65, 85, 1);
+    color: rgba(71, 85, 105, 0.85);
 }
 
 .detailsPricePer {
@@ -327,86 +328,89 @@
 
 @media (max-width: 767px) {
     .wrap {
-        gap: 1.5rem;
+        gap: 1.9rem;
     }
     .selector {
         order: 1;
+        gap: 1.2rem;
     }
     .details {
         order: 2;
     }
     .list {
-        gap: 0.85rem;
+        gap: 1rem;
     }
     .option {
-        padding-block: clamp(0.95rem, 3.4vw, 1.1rem);
-        padding-inline: clamp(1.2rem, 4vw, 1.6rem);
-        min-height: 4.75rem;
+        padding-block: clamp(1.05rem, 3.8vw, 1.25rem);
+        padding-inline: clamp(1.2rem, 4vw, 1.7rem);
     }
     .optionContent {
         width: 100%;
         display: grid;
         grid-template-columns: 1fr auto;
         align-items: start;
-        gap: 0.75rem;
+        gap: 0.65rem;
     }
     .optionMeta {
-        gap: 0.3rem;
+        gap: 0.28rem;
     }
     .optionSessions {
-        font-size: clamp(1.35rem, 5.4vw, 1.6rem);
-        line-height: 1.1;
+        font-size: clamp(1rem, 4vw, 1.45rem);
+        line-height: 1.08;
     }
     .optionSubtitle {
-        font-size: 0.85rem;
-        line-height: 1.35;
+        font-size: 0.82rem;
+        line-height: 1.4;
     }
     .optionPrice {
         align-items: flex-start;
         text-align: start;
-        gap: 0.2rem;
+        gap: 0.1rem;
     }
     .optionPrice span:first-of-type {
-        font-size: clamp(1.1rem, 4.6vw, 1.25rem);
+        font-size: clamp(0.98rem, 3.8vw, 1.12rem);
         font-weight: 500;
-        line-height: 1.1;
+        line-height: 1.05;
     }
     .optionPrice span:last-of-type {
-        letter-spacing: 0.24em;
+        font-size: 0.62rem;
+        letter-spacing: 0.22em;
     }
     .detailsCard {
-        padding: clamp(1.4rem, 6vw, 2.1rem);
+        padding: clamp(1.5rem, 6.4vw, 2.3rem);
         border-radius: 20px;
+        gap: clamp(1.05rem, 4vw, 1.6rem);
     }
     .detailsContent {
-        gap: clamp(0.9rem, 4vw, 1.4rem);
+        gap: clamp(1rem, 4.4vw, 1.6rem);
     }
     .detailsHeader {
-        gap: 0.4rem;
+        gap: 0.35rem;
     }
     .detailsHeader h3 {
-        line-height: 1.2;
+        font-size: clamp(1.45rem, 5.4vw, 1.7rem);
+        line-height: 1.16;
     }
     .detailsPricing {
-        gap: 0.25rem;
+        gap: 0.2rem;
     }
     .detailsPriceTotal {
-        font-size: clamp(1.7rem, 5.4vw, 2rem);
-    }
-    .detailsPricePer {
-        font-size: 0.8rem;
+        font-size: clamp(1.5rem, 4.8vw, 1.8rem);
     }
     .detailsBullets {
-        margin-block-start: 0.35rem;
-        gap: clamp(0.65rem, 3.8vw, 0.85rem);
+        margin-block-start: 0.45rem;
+        gap: clamp(0.7rem, 4vw, 0.95rem);
         font-size: 0.9rem;
     }
     .detailsFooter {
-        padding-block-start: clamp(1.6rem, 5vw, 2.2rem);
-        gap: 1.1rem;
+        padding-block-start: clamp(1.45rem, 4.6vw, 1.9rem);
+        gap: 1.3rem;
+    }
+    .detailsButton {
+        font-size: 0.85rem;
+        padding: 0.6rem 1.5rem;
     }
     .detailsSummary {
-        font-size: 0.85rem;
-        text-wrap: balance;
+        font-size: 0.82rem;
     }
 }

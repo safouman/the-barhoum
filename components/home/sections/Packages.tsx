@@ -99,9 +99,6 @@ function PackBar({
             <div className={styles.optionContent}>
                 <div className={styles.optionMeta}>
                     <span className={styles.optionSessions}>{pack.title}</span>
-                    <span className={styles.optionSubtitle}>
-                        {pack.duration}
-                    </span>
                 </div>
                 <div className={styles.optionPrice}>
                     <span>
@@ -270,7 +267,9 @@ export function PacksSection({
                                 <div className={styles.list}>
                                     {packs.map((pack, index) => (
                                         <PackBar
-                                            key={`${category}-${pack.programKey ?? pack.duration}-${index}`}
+                                            key={`${category}-${
+                                                pack.programKey ?? pack.duration
+                                            }-${index}`}
                                             direction={direction}
                                             locale={locale}
                                             pack={pack}
@@ -340,7 +339,10 @@ export function PacksSection({
                                                 {selectedPack.bullets.map(
                                                     (bullet, bulletIndex) => (
                                                         <li
-                                                            key={`${selectedPack.programKey ?? selectedPack.title}-${bulletIndex}`}
+                                                            key={`${
+                                                                selectedPack.programKey ??
+                                                                selectedPack.title
+                                                            }-${bulletIndex}`}
                                                         >
                                                             <span
                                                                 aria-hidden
