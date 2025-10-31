@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 import { createHash } from "crypto";
-import { getProgramCopy, type Locale } from "@/lib/content";
+import { getPackages, getProgramCopy, type Locale } from "@/lib/content";
 import {
     getIndividualProgramKeyBySessions,
     type IndividualProgramKey,
@@ -10,6 +10,8 @@ import {
     getStripeProgramCatalog,
     type StripeProgramRecord,
 } from "@/lib/stripe/catalog";
+import { isStripeEnabled } from "@/config/features";
+import type { Package } from "@/lib/content";
 
 export interface NormalizedProgramCopy {
     title: string;
@@ -50,6 +52,55 @@ const SNAPSHOT_PATH = path.join(
 let snapshotCache: CatalogSnapshot | null = null;
 let snapshotLoaded = false;
 let lastKnownPrograms: NormalizedProgram[] | null = null;
+
+async function buildStaticProgramCatalog(): Promise<ProgramCatalogResult> {
+    const [packages, copy] = await Promise.all([getPackages(), getProgramCopy()]);
+
+    const staticPrograms: NormalizedProgram[] = packages
+        .filter(
+            (pkg: Package): pkg is Package & { categoryId: "me_and_me" } =>
+                pkg.categoryId === "me_and_me" && pkg.visible
+        )
+        .map((pkg) => {
+            const programId = pkg.id;
+            const arCopy = copy.ar[programId] ?? {
+                title: pkg.title.ar,
+                subtitle: pkg.features.ar[0] ?? "",
+                bullets: pkg.features.ar,
+            };
+
+            const enCopy = copy.en[programId] ?? {
+                title: pkg.title.en,
+                subtitle: pkg.features.en[0] ?? "",
+                bullets: pkg.features.en,
+            };
+
+            return {
+                programId,
+                stripeProductId: `static-${programId}`,
+                stripePriceId: `static-price-${programId}`,
+                priceAmountMinor: Math.round(pkg.price.amount * 100),
+                currency: pkg.price.currency,
+                sessions: undefined,
+                durationLabel: enCopy.subtitle || undefined,
+                copy: {
+                    ar: arCopy,
+                    en: enCopy,
+                },
+            } satisfies NormalizedProgram;
+        });
+
+    const warnings: string[] = [];
+    if (!staticPrograms.length) {
+        warnings.push("[Programs] ⚠️ No static programs available for me_and_me.");
+    }
+
+    return {
+        status: staticPrograms.length ? "ok" : "empty",
+        programs: staticPrograms,
+        warnings,
+    };
+}
 
 async function loadSnapshot(): Promise<CatalogSnapshot | null> {
     if (snapshotLoaded) {
@@ -111,6 +162,13 @@ async function persistSnapshot(
 }
 
 export async function getPrograms(): Promise<ProgramCatalogResult> {
+    if (!isStripeEnabled) {
+        console.log(
+            "[Programs] ⚙️ Stripe disabled via feature flag; serving static catalog data"
+        );
+        return buildStaticProgramCatalog();
+    }
+
     await loadSnapshot();
 
     try {

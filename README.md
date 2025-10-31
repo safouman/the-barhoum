@@ -37,6 +37,7 @@ Set secrets in `.env.local` (keep `.env` out of version control). Restart the de
   - `STRIPE_SECRET_KEY` – required for creating payment links and refreshing the program catalog.
   - `STRIPE_WEBHOOK_SECRET` – required to validate `app/api/stripe/webhook`; in development run `stripe listen --forward-to http://localhost:3000/api/stripe/webhook` to obtain a test secret.
   - Map package IDs to Stripe prices in `lib/stripe/config.ts` and keep product metadata (`program_id`, `sessions`, `duration_label`, `source=barhoum_catalog`, `brand=Ibrahim Ben Abdallah`) aligned so catalog refreshes succeed.
+  - Optional kill-switch: set `ENABLE_STRIPE=false` (and/or `NEXT_PUBLIC_ENABLE_STRIPE=false`) to bypass Stripe entirely, serving packs from local copy, skipping payment link creation, and no-oping the webhook.
 - **Lead automation**
   - `GOOGLE_SCRIPT_URL`, `GOOGLE_SCRIPT_SECRET` – optional. When configured, lead submissions POST to your Apps Script endpoint before triggering WhatsApp notifications.
 

@@ -7,6 +7,7 @@ import { requiresPayment } from "@/lib/utils/geo";
 import type { SharedAnalyticsContext } from "@/lib/analytics/shared";
 import { trackAutomationEvent } from "@/lib/analytics/server";
 import { sendLeadWhatsAppNotification } from "@/lib/whatsapp/notifications";
+import { isStripeEnabled } from "@/config/features";
 
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 
@@ -234,6 +235,13 @@ async function processStripePaymentLink({
     const jobId = `${requestId}:stripe`;
 
     console.log(`[${jobId}] 🧵 Starting Stripe payment link workflow`);
+
+    if (!isStripeEnabled) {
+        console.log(
+            `[${jobId}] 🔕 Stripe disabled via feature flag; skipping payment link generation`
+        );
+        return { status: "skipped", reason: "stripe-disabled" };
+    }
 
     if (!formData.package?.trim()) {
         console.warn(
@@ -569,7 +577,7 @@ export async function POST(req: NextRequest) {
         let packageIdentifier: string | null = rawPackageIdInput || null;
         let packageDisplayLabel: string = rawPackageLabelInput || rawPackageIdInput || "";
 
-        if (identifierCandidate) {
+        if (isStripeEnabled && identifierCandidate) {
             stripeSelectionForLead = await resolveStripeSelection(identifierCandidate);
             if (!stripeSelectionForLead) {
                 const allowedIdentifiers = await getAllStripeIdentifiers();
@@ -618,7 +626,7 @@ export async function POST(req: NextRequest) {
             }
         } else {
             packageIdentifier = rawPackageIdInput || null;
-            packageDisplayLabel = rawPackageLabelInput;
+            packageDisplayLabel = rawPackageLabelInput || rawPackageIdInput || "";
         }
 
         formData.package = packageDisplayLabel;
@@ -637,13 +645,19 @@ export async function POST(req: NextRequest) {
             formData.category === "me_and_me" &&
             requiresPayment(formData.country, requestId);
         const packagePresent = Boolean(formData.package?.trim().length);
-        const shouldAttemptStripe = needsPayment && packagePresent;
+        const shouldAttemptStripe =
+            isStripeEnabled && needsPayment && packagePresent;
 
         console.log(
             `[${requestId}] Payment required: ${
                 needsPayment ? "✅ YES" : "❌ NO"
             }`
         );
+        if (!isStripeEnabled) {
+            console.log(
+                `[${requestId}] 🔕 Stripe disabled via feature flag; payment links will not be generated`
+            );
+        }
         console.log(
             `[${requestId}] Category match check: "${
                 formData.category

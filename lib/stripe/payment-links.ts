@@ -1,3 +1,4 @@
+import { isStripeEnabled } from "@/config/features";
 import { getStripeClient } from "./client";
 import { resolveStripeSelection } from "./config";
 
@@ -14,6 +15,13 @@ export interface CreatePaymentLinkParams {
 export async function createPaymentLink(
     params: CreatePaymentLinkParams
 ): Promise<string | null> {
+    if (!isStripeEnabled) {
+        console.log(
+            "[Stripe] 🔕 Stripe disabled via feature flag; skipping payment link creation"
+        );
+        return null;
+    }
+
     const {
         email,
         fullName,

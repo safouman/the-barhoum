@@ -27,10 +27,17 @@ const aieoEnabled = parseBooleanFlag(
     true
 );
 
+const stripeEnabled = parseBooleanFlag(
+    process.env.NEXT_PUBLIC_ENABLE_STRIPE ?? process.env.ENABLE_STRIPE,
+    true
+);
+
 export const featureFlags = Object.freeze({
     aieo: aieoEnabled,
+    stripe: stripeEnabled,
 });
 
 export const isAieoEnabled = featureFlags.aieo;
+export const isStripeEnabled = featureFlags.stripe;
 
 export type FeatureFlags = typeof featureFlags;

@@ -3,6 +3,7 @@ import type Stripe from "stripe";
 import { getStripeClient } from "@/lib/stripe/client";
 import { trackAutomationEvent } from "@/lib/analytics/server";
 import { sendPaymentWhatsAppNotification } from "@/lib/whatsapp/notifications";
+import { isStripeEnabled } from "@/config/features";
 
 function buildContextFromMetadata(metadata: Stripe.Metadata | null | undefined) {
   return {
@@ -101,6 +102,11 @@ async function markLeadAsPaidInSheet({
 }
 
 export async function POST(req: NextRequest) {
+  if (!isStripeEnabled) {
+    console.log("[Stripe Webhook] 🔕 Stripe disabled; ignoring incoming webhook");
+    return NextResponse.json({ success: true, disabled: true }, { status: 200 });
+  }
+
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!webhookSecret) {
     console.warn("[Stripe Webhook] Missing STRIPE_WEBHOOK_SECRET");
