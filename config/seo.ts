@@ -70,16 +70,15 @@ export const seoConfig: SeoConfig = {
             name: "Ibrahim Ben Abdallah",
             legalName: "Rebirth Academy",
             slogan: {
-                en: "For a Better World",
-                ar: "من أجل عالم أفضل",
+                en: "",
+                ar: "",
             },
         },
         person: {
             name: "Ibrahim Ben Abdallah",
             alternateName: ["إبراهيم بن عبد الله", "Barhoum"],
             jobTitle: "Self-leadership coach ",
-            description:
-                "Coach and strategic guide helping leaders, couples, and creatives transform confusion into grounded action.",
+            description: "",
             image: "/images/hero.jpeg",
         },
         domains: {

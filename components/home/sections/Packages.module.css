@@ -52,6 +52,7 @@
     gap: 1.5rem;
     padding: clamp(1.25rem, 2.8vw, 1.65rem)
         clamp(1.55rem, 3.1vw, 2.1rem);
+    min-block-size: clamp(4.6rem, 8vw, 5.55rem);
     background: #ffffff;
     border: 1px solid rgba(15, 23, 42, 0.08);
     border-radius: 18px;
@@ -86,7 +87,6 @@
     border-color: var(--color-primary);
     background: rgba(51, 210, 197, 0.08);
     box-shadow: 0 22px 40px -18px rgba(15, 23, 42, 0.32);
-    padding-block: clamp(1.35rem, 3vw, 1.8rem);
 }
 
 .optionSelected::before {
@@ -136,6 +136,8 @@
     gap: 0.3rem;
     color: rgba(43, 43, 43, 0.78);
     direction: ltr;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .optionPrice span:first-of-type {
@@ -163,6 +165,7 @@
     background: #ffffff;
     box-shadow: 0 26px 48px -26px rgba(15, 23, 42, 0.45);
     padding: clamp(1.75rem, 3.2vw, 2.7rem);
+    min-height: clamp(23rem, 34vw, 26.5rem);
     display: flex;
     flex-direction: column;
     gap: clamp(1.1rem, 3vw, 1.7rem);
@@ -360,7 +363,7 @@
         width: 100%;
         display: grid;
         grid-template-columns: 1fr auto;
-        align-items: start;
+        align-items: center;
         gap: 0.75rem;
     }
     .optionMeta {
@@ -391,6 +394,7 @@
     }
     .detailsCard {
         padding: clamp(1.65rem, 6.8vw, 2.4rem);
+        min-height: clamp(24rem, 92vw, 27rem);
         border-radius: 20px;
         gap: clamp(1.05rem, 4vw, 1.6rem);
     }
