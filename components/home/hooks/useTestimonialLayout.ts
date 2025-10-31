@@ -13,17 +13,16 @@ interface LayoutResult {
     style: CSSProperties;
 }
 
+const DEFAULT_SCREEN_WIDTH = 1024;
+
 export function useTestimonialLayout() {
-    const [screenWidth, setScreenWidth] = useState<number>(() => {
-        if (typeof window === "undefined") {
-            return 1024;
-        }
-        return window.innerWidth;
-    });
+    const [screenWidth, setScreenWidth] =
+        useState<number>(DEFAULT_SCREEN_WIDTH);
 
     useEffect(() => {
         if (typeof window === "undefined") return;
         const handleResize = () => setScreenWidth(window.innerWidth);
+        handleResize();
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);

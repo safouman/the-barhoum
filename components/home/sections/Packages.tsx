@@ -4,7 +4,6 @@ import { Container } from "@/components/Container";
 import { Section } from "@/components/Section";
 import type { Locale } from "@/lib/content";
 import {
-    formatPackCurrency,
     type CategoryKey,
     type IndividualProgramKey,
     type PackageId,
@@ -15,6 +14,14 @@ import {
     type PackSelection,
 } from "@/lib/commerce/pack-selections";
 import styles from "./Packages.module.css";
+
+function formatPriceDisplay(amount: number, currency: string): string {
+    const normalizedCurrency = (currency || "TND").toUpperCase();
+    const formattedAmount = new Intl.NumberFormat("en-US", {
+        maximumFractionDigits: 0,
+    }).format(amount);
+    return `${formattedAmount} ${normalizedCurrency}`;
+}
 
 export type Pack = {
     programKey?: IndividualProgramKey | PackageId;
@@ -94,7 +101,7 @@ function PackBar({
             dir={direction}
             aria-label={`${pack.title} · ${
                 pack.duration
-            } · ${formatPackCurrency(pack.priceTotal, locale, pack.currency)}`}
+            } · ${formatPriceDisplay(pack.priceTotal, pack.currency)}`}
         >
             <div className={styles.optionContent}>
                 <div className={styles.optionMeta}>
@@ -102,11 +109,7 @@ function PackBar({
                 </div>
                 <div className={styles.optionPrice}>
                     <span>
-                        {formatPackCurrency(
-                            pack.priceTotal,
-                            locale,
-                            pack.currency
-                        )}
+                        {formatPriceDisplay(pack.priceTotal, pack.currency)}
                     </span>
                 </div>
             </div>
@@ -207,11 +210,7 @@ export function PacksSection({
 
     const selectedPack = packs[selectedIndex];
     const totalPriceDisplay = selectedPack
-        ? formatPackCurrency(
-              selectedPack.priceTotal,
-              locale,
-              selectedPack.currency
-          )
+        ? formatPriceDisplay(selectedPack.priceTotal, selectedPack.currency)
         : "";
     const totalPriceAriaLabel = selectedPack
         ? locale === "ar"
@@ -229,8 +228,8 @@ export function PacksSection({
     const sectionSubtitle = showMeAndMeHeader ? copy.subtitle : undefined;
     const sectionTitleClassName = showMeAndMeHeader
         ? direction === "rtl"
-            ? "font-medium"
-            : "font-medium md:tracking-[0.2rem]"
+            ? "font-normal"
+            : "font-normal md:tracking-[0.18rem]"
         : undefined;
 
     return (
