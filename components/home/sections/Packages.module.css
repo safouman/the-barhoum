@@ -177,7 +177,7 @@
     display: flex;
     flex-direction: column;
     gap: clamp(1.05rem, 3vw, 1.6rem);
-    max-inline-size: min(100%, 720px);
+    max-inline-size: min(100%, 800px);
     margin: 0 auto;
 }
 
@@ -201,7 +201,7 @@
 
 .detailsHeader h3 {
     font-family: var(--font-heading);
-    font-size: clamp(1rem, 2.15vw, 1.8rem);
+    font-size: clamp(1rem, 2vw, 1.65rem);
     font-weight: 460;
     line-height: 1.15;
     color: rgba(43, 43, 43, 0.9);
@@ -210,8 +210,9 @@
     unicode-bidi: isolate;
     text-align: center;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow: visible;
+    text-overflow: unset;
+    max-inline-size: 100%;
 }
 
 .detailsMeta {
@@ -405,8 +406,10 @@
         gap: 0.4rem;
     }
     .detailsHeader h3 {
-        font-size: clamp(1.4rem, 5.2vw, 1.65rem);
+        font-size: clamp(1.35rem, 5vw, 1.6rem);
         line-height: 1.14;
+        white-space: normal;
+        text-wrap: balance;
     }
     .detailsPricing {
         gap: 0.3rem;
