@@ -215,7 +215,7 @@ function testCreateLead() {
         awarenessLevel: "Beginner",
         phone: "+1234567890",
         bestContactTime: "Evenings",
-        category: "individuals",
+        category: "me_and_me",
         package: "program_growth",
         payment_link: "",
     });
@@ -264,7 +264,7 @@ function testDoPostCreateLead() {
         awarenessLevel: "Deep in it and unravelling patterns",
         phone: "+33123456789",
         bestContactTime: "Morning",
-        category: "individuals",
+        category: "me_and_me",
         package: "program_transform",
         payment_link: "",
     });
@@ -291,7 +291,7 @@ function testDoPostAttachPaymentLink() {
             awarenessLevel: "Holding steady",
             phone: "+491234567890",
             bestContactTime: "Afternoon",
-            category: "individuals",
+            category: "me_and_me",
             package: "program_growth",
             payment_link: "",
         });

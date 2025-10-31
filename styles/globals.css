@@ -4,9 +4,15 @@
 
 :root {
     color-scheme: light;
-    --font-base: "Noto Naskh Arabic", "Inter", var(--font-noto-naskh), var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    --font-heading: "Noto Naskh Arabic", "Inter", var(--font-noto-naskh), var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    --font-ui: "Noto Naskh Arabic", "Inter", var(--font-noto-naskh), var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-base: "Noto Naskh Arabic", "Inter", var(--font-noto-naskh),
+        var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+    --font-heading: "Noto Naskh Arabic", "Inter", var(--font-noto-naskh),
+        var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+    --font-ui: "Noto Naskh Arabic", "Inter", var(--font-noto-naskh),
+        var(--font-inter), system-ui, -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
     --font-signature-latin: "Brush Script MT", "Comic Sans MS", cursive;
     --font-signature-arabic: "Arslan Wessam A";
     --font-weight-regular: 400;
@@ -48,14 +54,14 @@
     --font-size-section-title: clamp(2rem, 4vw, 2.75rem);
 }
 
-
 @font-face {
     font-family: "Arslan Wessam A";
     src: url("/fonts/arslan-wessam-a.ttf") format("truetype");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
-    unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+    unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF,
+        U+FE70-FEFF;
 }
 
 /* Custom Noto Naskh Arabic with unicode-range for Arabic characters */
@@ -64,7 +70,8 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200D, U+25CC;
+    unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF,
+        U+FE70-FEFF, U+200C-200D, U+25CC;
     src: local("Noto Naskh Arabic"), local("NotoNaskhArabic-Regular");
 }
 
@@ -73,7 +80,8 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+200C-200D, U+25CC;
+    unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF,
+        U+FE70-FEFF, U+200C-200D, U+25CC;
     src: local("Noto Naskh Arabic Bold"), local("NotoNaskhArabic-Bold");
 }
 
@@ -83,7 +91,8 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    unicode-range: U+0000-00FF, U+0100-017F, U+0180-024F, U+1E00-1EFF, U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+FB00-FB4F;
+    unicode-range: U+0000-00FF, U+0100-017F, U+0180-024F, U+1E00-1EFF,
+        U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+FB00-FB4F;
     src: local("Inter"), local("Inter-Regular");
 }
 
@@ -92,7 +101,8 @@
     font-style: normal;
     font-weight: 500;
     font-display: swap;
-    unicode-range: U+0000-00FF, U+0100-017F, U+0180-024F, U+1E00-1EFF, U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+FB00-FB4F;
+    unicode-range: U+0000-00FF, U+0100-017F, U+0180-024F, U+1E00-1EFF,
+        U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+FB00-FB4F;
     src: local("Inter Medium"), local("Inter-Medium");
 }
 
@@ -101,13 +111,31 @@
     font-style: normal;
     font-weight: 600;
     font-display: swap;
-    unicode-range: U+0000-00FF, U+0100-017F, U+0180-024F, U+1E00-1EFF, U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+FB00-FB4F;
+    unicode-range: U+0000-00FF, U+0100-017F, U+0180-024F, U+1E00-1EFF,
+        U+2000-206F, U+2070-209F, U+20A0-20CF, U+2100-214F, U+FB00-FB4F;
     src: local("Inter SemiBold"), local("Inter-SemiBold");
 }
 
-
 html[dir="rtl"] body,
-html[dir="rtl"] :where(p, h1, h2, h3, h4, h5, h6, a, span, li, blockquote, small, label, button, strong, em) {
+html[dir="rtl"]
+    :where(
+        p,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        a,
+        span,
+        li,
+        blockquote,
+        small,
+        label,
+        button,
+        strong,
+        em
+    ) {
     letter-spacing: 0 !important;
     font-variant-ligatures: common-ligatures contextual;
     font-feature-settings: "liga" 1, "calt" 1, "kern" 1;
@@ -349,6 +377,7 @@ html[dir="rtl"] .text-display {
         line-height: var(--leading-heading);
         color: var(--color-text);
         font-weight: var(--font-weight-bold);
+        letter-spacing: 0.3rem;
     }
 
     .heading-1,
@@ -410,11 +439,12 @@ html[dir="rtl"] .text-display {
         color: var(--color-text);
         border-color: var(--color-primary);
         letter-spacing: 0.07em;
-        transition: background 0.2s ease, color 0.2s ease, outline-color 0.2s ease;
+        transition: background 0.2s ease, color 0.2s ease,
+            outline-color 0.2s ease;
     }
 
     .btn-outline:hover {
-        background: rgba(42, 214, 202, 0.10);
+        background: rgba(42, 214, 202, 0.1);
         color: var(--color-text);
     }
 
@@ -422,7 +452,6 @@ html[dir="rtl"] .text-display {
         outline: 2px solid var(--color-primary);
         outline-offset: 2px;
     }
-
 
     .surface-panel {
         @apply rounded-[8px] border border-border bg-surface bg-opacity-90;
@@ -525,16 +554,20 @@ html[dir="rtl"] .text-display {
         line-height: 1.6;
     }
 
-html[dir="rtl"] .accordion-prose strong {
-    color: #000;
-}
+    html[dir="rtl"] .accordion-prose strong {
+        color: #000;
+    }
 
     html[dir="rtl"] .accordion-prose em {
         color: rgba(55, 65, 81, 0.88);
     }
 
     @keyframes progress {
-        from { width: 0%; }
-        to { width: 100%; }
+        from {
+            width: 0%;
+        }
+        to {
+            width: 100%;
+        }
     }
 }

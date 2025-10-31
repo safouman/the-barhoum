@@ -264,6 +264,8 @@ export const uiSchema = z.object({
             eyebrow: z.string(),
         }),
         packs: z.object({
+            title: z.string(),
+            subtitle: z.string(),
             eyebrow: z.string(),
             selectAriaLabel: z.string(),
             ready: z.string(),
