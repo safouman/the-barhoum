@@ -13,6 +13,9 @@
     "videos": [
       {
         "id": "gtmGtrpXIqQ",
+        "src": "/video/promo-hls/promo.m3u8",
+        "fallback": "/video/promo.mp4",
+        "poster": "/video/promo-poster.jpg",
         "title": {
           "ar": "تعرّف على فلسفة برهوم",
           "en": "Explore the Barhoum philosophy"

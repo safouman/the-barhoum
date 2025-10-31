@@ -626,7 +626,10 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
                             <div className="w-full max-w-2xl">
                                 <VideoEmbed
                                     videoId={video.id}
+                                    src={video.src}
+                                    fallbackSrc={video.fallback}
                                     title={video.title[locale]}
+                                    poster={video.poster}
                                 />
                             </div>
                         </div>

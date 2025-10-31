@@ -47,6 +47,6 @@
     "typescript": "^5.9.2"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx}": "eslint --max-warnings=0 --fix"
+    "*.{ts,tsx,js,jsx}": "node scripts/run-eslint.mjs"
   }
 }

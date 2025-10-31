@@ -171,10 +171,20 @@ export const homeSchema = z.object({
     media: z.object({
         videos: z
             .array(
-                z.object({
-                    id: z.string(),
-                    title: localizedSchema,
-                })
+                z
+                    .object({
+                        id: z.string().optional(),
+                        src: z.string().optional(),
+                        fallback: z.string().optional(),
+                        poster: z.string().optional(),
+                        title: localizedSchema,
+                    })
+                    .refine(
+                        (video) => Boolean(video.id) || Boolean(video.src),
+                        {
+                            message: "Video entry requires an id or src",
+                        }
+                    )
             )
             .default([]),
         pdfs: z
