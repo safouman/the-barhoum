@@ -314,22 +314,6 @@ export function PacksSection({
                                             >
                                                 <h3>{selectedPack.title}</h3>
                                             </div>
-                                            <div
-                                                className={
-                                                    styles.detailsPricing
-                                                }
-                                            >
-                                                <span
-                                                    className={
-                                                        styles.detailsPriceTotal
-                                                    }
-                                                    aria-label={
-                                                        totalPriceAriaLabel
-                                                    }
-                                                >
-                                                    {totalPriceDisplay}
-                                                </span>
-                                            </div>
                                             <ul
                                                 className={
                                                     styles.detailsBullets
@@ -356,6 +340,22 @@ export function PacksSection({
                                                     )
                                                 )}
                                             </ul>
+                                            <div
+                                                className={
+                                                    styles.detailsPricing
+                                                }
+                                            >
+                                                <span
+                                                    className={
+                                                        styles.detailsPriceTotal
+                                                    }
+                                                    aria-label={
+                                                        totalPriceAriaLabel
+                                                    }
+                                                >
+                                                    {totalPriceDisplay}
+                                                </span>
+                                            </div>
                                             <div
                                                 className={styles.detailsFooter}
                                             >
