@@ -3,6 +3,7 @@ import {
   type IndividualProgramKey,
   type PackageId,
 } from "@/lib/commerce/packages";
+import { isStripeEnabled } from "@/config/features";
 import {
   getStripeProgramCatalog,
   type StripeProgramRecord,
@@ -45,6 +46,12 @@ export async function getIndividualProgramByKey(
   if (!isIndividualProgramKey(programKey)) {
     return null;
   }
+  if (!isStripeEnabled) {
+    console.log(
+      `[Stripe Config] 🔕 Stripe disabled; getIndividualProgramByKey("${programKey}") returning null`
+    );
+    return null;
+  }
   const { programs } = await getStripeProgramCatalog();
   return programs.find((program) => program.programId === programKey) ?? null;
 }
@@ -54,6 +61,13 @@ export async function resolveStripeSelection(
 ): Promise<StripeSelection | null> {
   const normalized = identifier?.trim();
   if (!normalized) return null;
+
+  if (!isStripeEnabled) {
+    console.log(
+      `[Stripe Config] 🔕 Stripe disabled; resolveStripeSelection("${normalized}") returning null`
+    );
+    return null;
+  }
 
   if (isIndividualProgramKey(normalized)) {
     const { programs } = await getStripeProgramCatalog();
@@ -82,6 +96,9 @@ export async function resolveStripeSelection(
 }
 
 export async function hasStripePrice(identifier: string): Promise<boolean> {
+  if (!isStripeEnabled) {
+    return false;
+  }
   const resolved = await resolveStripeSelection(identifier);
   if (!resolved) return false;
   if (resolved.type === "individual-program") {
@@ -92,6 +109,9 @@ export async function hasStripePrice(identifier: string): Promise<boolean> {
 
 export async function getAllStripeIdentifiers(): Promise<string[]> {
   const legacyIds = Object.keys(OTHER_CATEGORY_PRICE_MAP) as PackageId[];
+  if (!isStripeEnabled) {
+    return legacyIds;
+  }
   const { programs } = await getStripeProgramCatalog();
   const programIds = programs.map((program) => program.programId);
   return Array.from(new Set<string>([...programIds, ...legacyIds]));

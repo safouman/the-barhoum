@@ -39,7 +39,7 @@ function buildPacksByCategory(
       const title = copy.title || program.programId;
       const subtitle = copy.subtitle || "—";
       const bullets = copy.bullets.length ? copy.bullets : ["—"];
-      const duration = program.durationLabel || "—";
+      const duration = copy.subtitle || program.durationLabel || "—";
 
       const pack: Pack = {
         programKey: program.programId as PackageId,
