@@ -23,7 +23,7 @@ type Copy = {
 const COPY: Record<"en" | "ar", Copy> = {
     en: {
         title: "Cookies for analytics",
-        body: "We use analytics cookies to understand how people use Barhoum Coaching. Accept analytics to help us improve, or reject to continue with essential cookies only.",
+        body: "We use analytics cookies to understand how people use Ibrahim Ben Abdallah. Accept analytics to help us improve, or reject to continue with essential cookies only.",
         accept: "Accept Analytics",
         reject: "Reject",
         manageTitle: "Update cookie preferences",
@@ -154,14 +154,18 @@ export function CookieConsentBanner({
                         <button
                             type="button"
                             className="inline-flex justify-center rounded-full bg-[#2AD6CA] px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-[#22BDB3] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                            onClick={() => handleConsent(CONSENT_EVENTS.accepted)}
+                            onClick={() =>
+                                handleConsent(CONSENT_EVENTS.accepted)
+                            }
                         >
                             {copy.accept}
                         </button>
                         <button
                             type="button"
                             className="inline-flex justify-center rounded-full border border-[#2AD6CA] px-5 py-2 text-sm font-medium text-[#2AD6CA] transition hover:bg-[#2AD6CA]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-                            onClick={() => handleConsent(CONSENT_EVENTS.rejected)}
+                            onClick={() =>
+                                handleConsent(CONSENT_EVENTS.rejected)
+                            }
                         >
                             {copy.reject}
                         </button>

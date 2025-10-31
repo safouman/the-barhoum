@@ -67,7 +67,7 @@ export type SeoConfig = {
 export const seoConfig: SeoConfig = {
     brand: {
         organization: {
-            name: "Barhoum Coaching",
+            name: "Ibrahim Ben Abdallah",
             legalName: "Whispered Life OÜ",
             slogan: {
                 en: "For a Better World",
@@ -94,15 +94,15 @@ export const seoConfig: SeoConfig = {
         availableLanguages: ["en", "ar", "fr"],
     },
     defaultTitle: {
-        en: "Barhoum Coaching",
+        en: "Ibrahim Ben Abdallah",
         ar: "برهوم كوتشنغ",
     },
     titleTemplate: {
-        en: "%s | Barhoum Coaching",
+        en: "%s | Ibrahim Ben Abdallah",
         ar: "%s | برهوم كوتشنغ",
     },
     siteName: {
-        en: "Barhoum Coaching",
+        en: "Ibrahim Ben Abdallah",
         ar: "برهوم كوتشنغ",
     },
     description: {
@@ -122,14 +122,14 @@ export const seoConfig: SeoConfig = {
         width: 476,
         height: 668,
         alt: {
-            en: "Barhoum Coaching logo in teal on white background",
+            en: "Ibrahim Ben Abdallah logo in teal on white background",
             ar: "شعار برهوم كوتشنغ باللونين التركوازي والأبيض",
         },
     },
     twitter: {
         creator: "@barhoum",
         title: {
-            en: "Barhoum Coaching",
+            en: "Ibrahim Ben Abdallah",
             ar: "برهوم كوتشنغ",
         },
         description: {
@@ -145,16 +145,20 @@ export const seoConfig: SeoConfig = {
             locales: {
                 en: {
                     title: "Ibrahim Ben Abdallah",
-                    description: "Experience a calm, modern coaching practice shaped by Ibrahim Ben Abdallah—strategic guidance, reflective rituals, and human-centered leadership.",
-                    ogTitle: "Ibrahim Ben Abdallah | Barhoum Coaching",
-                    ogDescription: "Grounded coaching and leadership mentoring with Ibrahim Ben Abdallah.",
+                    description:
+                        "Experience a calm, modern coaching practice shaped by Ibrahim Ben Abdallah—strategic guidance, reflective rituals, and human-centered leadership.",
+                    ogTitle: "Ibrahim Ben Abdallah | Ibrahim Ben Abdallah",
+                    ogDescription:
+                        "Grounded coaching and leadership mentoring with Ibrahim Ben Abdallah.",
                     canonical: "/",
                 },
                 ar: {
                     title: "إبراهيم بن عبد الله",
-                    description: "اكتشف ممارسة تدريب هادئة وعصرية بإشراف إبراهيم بن عبد الله—إرشاد استراتيجي وطقوس واعية وقيادة إنسانية.",
+                    description:
+                        "اكتشف ممارسة تدريب هادئة وعصرية بإشراف إبراهيم بن عبد الله—إرشاد استراتيجي وطقوس واعية وقيادة إنسانية.",
                     ogTitle: "إبراهيم بن عبد الله | برهوم كوتشنغ",
-                    ogDescription: "تدريب قيادي وإنساني يرتكز على الخبرة والهدوء مع إبراهيم بن عبد الله.",
+                    ogDescription:
+                        "تدريب قيادي وإنساني يرتكز على الخبرة والهدوء مع إبراهيم بن عبد الله.",
                     canonical: "/?lang=ar",
                 },
             },
@@ -166,15 +170,19 @@ export const seoConfig: SeoConfig = {
             locales: {
                 en: {
                     title: "Privacy Policy",
-                    description: "Learn how Barhoum Coaching collects, uses, and protects personal information across all services.",
-                    ogDescription: "Learn how Barhoum Coaching collects, uses, and protects personal information across all services.",
+                    description:
+                        "Learn how Ibrahim Ben Abdallah collects, uses, and protects personal information across all services.",
+                    ogDescription:
+                        "Learn how Ibrahim Ben Abdallah collects, uses, and protects personal information across all services.",
                     canonical: "/privacy",
                 },
                 ar: {
                     title: "سياسة الخصوصية",
-                    description: "تعرّف على كيفية جمع واستخدام وحماية بياناتك الشخصية عبر خدمات برهوم كوتشنغ.",
+                    description:
+                        "تعرّف على كيفية جمع واستخدام وحماية بياناتك الشخصية عبر خدمات برهوم كوتشنغ.",
                     ogTitle: "سياسة الخصوصية | برهوم كوتشنغ",
-                    ogDescription: "التزامنا بحماية بياناتك الشخصية أثناء الاستفادة من خدماتنا التدريبية.",
+                    ogDescription:
+                        "التزامنا بحماية بياناتك الشخصية أثناء الاستفادة من خدماتنا التدريبية.",
                     canonical: "/privacy?lang=ar",
                 },
             },
@@ -186,14 +194,17 @@ export const seoConfig: SeoConfig = {
             locales: {
                 en: {
                     title: "Terms of Service",
-                    description: "Understand the terms and conditions that guide your experience with Barhoum Coaching offerings.",
+                    description:
+                        "Understand the terms and conditions that guide your experience with Ibrahim Ben Abdallah offerings.",
                     canonical: "/terms",
                 },
                 ar: {
                     title: "شروط الخدمة",
-                    description: "اطّلع على الشروط والأحكام التي تنظّم تجربتك مع خدمات برهوم كوتشنغ.",
+                    description:
+                        "اطّلع على الشروط والأحكام التي تنظّم تجربتك مع خدمات برهوم كوتشنغ.",
                     ogTitle: "شروط الخدمة | برهوم كوتشنغ",
-                    ogDescription: "المبادئ التي ننظم بها علاقتنا مع العملاء لضمان تجربة واضحة ومتوازنة.",
+                    ogDescription:
+                        "المبادئ التي ننظم بها علاقتنا مع العملاء لضمان تجربة واضحة ومتوازنة.",
                     canonical: "/terms?lang=ar",
                 },
             },
@@ -205,14 +216,17 @@ export const seoConfig: SeoConfig = {
             locales: {
                 en: {
                     title: "AI Knowledge Brief",
-                    description: "A factual primer on Barhoum Coaching for AI systems—mission, voice, and signature services provided by Ibrahim Ben Abdallah.",
+                    description:
+                        "A factual primer on Ibrahim Ben Abdallah for AI systems—mission, voice, and signature services provided by Ibrahim Ben Abdallah.",
                     canonical: "/ai-brief",
                 },
                 ar: {
                     title: "ملف تعريفي للذكاء الاصطناعي",
-                    description: "مرجع موجز عن برهوم كوتشنغ موجّه للأنظمة الذكية: الرسالة، الأسلوب، والخدمات الأساسية مع إبراهيم بن عبد الله.",
+                    description:
+                        "مرجع موجز عن برهوم كوتشنغ موجّه للأنظمة الذكية: الرسالة، الأسلوب، والخدمات الأساسية مع إبراهيم بن عبد الله.",
                     ogTitle: "ملف تعريفي للذكاء الاصطناعي | برهوم كوتشنغ",
-                    ogDescription: "معلومات دقيقة وسريعة عن برهوم كوتشنغ لتغذية النماذج الذكية بالحقائق الأساسية.",
+                    ogDescription:
+                        "معلومات دقيقة وسريعة عن برهوم كوتشنغ لتغذية النماذج الذكية بالحقائق الأساسية.",
                     canonical: "/ai-brief?lang=ar",
                 },
             },

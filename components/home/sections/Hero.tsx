@@ -34,7 +34,7 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({
             >
                 <Image
                     src="/images/hero.jpeg"
-                    alt="Portrait of Ibrahim Ben Abdallah, founder of Barhoum Coaching"
+                    alt="Portrait of Ibrahim Ben Abdallah, founder of Ibrahim Ben Abdallah"
                     className={clsx(
                         styles.imageMedia,
                         isRTL ? styles.posLeft : styles.posRight,
@@ -64,17 +64,24 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({
                             isRTL ? styles.textRtl : styles.textLtr
                         )}
                     >
-                        <h1 className="text-display">
-                            {hero.title[locale]}
-                        </h1>
-                        <div className="text-lead space-y-4" dir={isRTL ? "rtl" : "ltr"}>
+                        <h1 className="text-display">{hero.title[locale]}</h1>
+                        <div
+                            className="text-lead space-y-4"
+                            dir={isRTL ? "rtl" : "ltr"}
+                        >
                             <ReactMarkdown
                                 components={{
-                                    p: ({ children }) => <p className="m-0">{children}</p>,
-                                    strong: ({ children }) => (
-                                        <strong className="font-semibold">{children}</strong>
+                                    p: ({ children }) => (
+                                        <p className="m-0">{children}</p>
                                     ),
-                                    em: ({ children }) => <em className="italic">{children}</em>,
+                                    strong: ({ children }) => (
+                                        <strong className="font-semibold">
+                                            {children}
+                                        </strong>
+                                    ),
+                                    em: ({ children }) => (
+                                        <em className="italic">{children}</em>
+                                    ),
                                     ol: ({ children }) => (
                                         <ol
                                             className={clsx(

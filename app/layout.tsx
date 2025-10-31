@@ -134,10 +134,10 @@ export default async function RootLayout({
         mainEntity: [
             {
                 "@type": "Question",
-                name: "What is Barhoum Coaching?",
+                name: "What is Ibrahim Ben Abdallah?",
                 acceptedAnswer: {
                     "@type": "Answer",
-                    text: "Barhoum Coaching is the personal practice of Ibrahim Ben Abdallah, offering reflective and strategic coaching for people seeking grounded transformation.",
+                    text: "Ibrahim Ben Abdallah is the personal practice of Ibrahim Ben Abdallah, offering reflective and strategic coaching for people seeking grounded transformation.",
                 },
             },
             {
@@ -150,7 +150,7 @@ export default async function RootLayout({
             },
             {
                 "@type": "Question",
-                name: "How can I start working with Barhoum Coaching?",
+                name: "How can I start working with Ibrahim Ben Abdallah?",
                 acceptedAnswer: {
                     "@type": "Answer",
                     text: "Explore the coaching categories on the homepage, select the package that fits your context, and submit the lead form to begin a tailored onboarding conversation.",

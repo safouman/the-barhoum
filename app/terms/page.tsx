@@ -19,8 +19,8 @@ export default function TermsPage() {
                 <h1>Terms of Service</h1>
                 <p className="text-subtle text-lg leading-relaxed">
                     These Terms of Service outline how you can engage with
-                    Barhoum Coaching offerings and the commitments we make in
-                    return.
+                    Ibrahim Ben Abdallah offerings and the commitments we make
+                    in return.
                 </p>
                 <div className="space-y-4 text-base leading-relaxed">
                     <p>
@@ -37,15 +37,16 @@ export default function TermsPage() {
                         possible so we can support you effectively.
                     </p>
                     <p>
-                        By working with Barhoum Coaching, you acknowledge that
-                        coaching is a collaborative, non-clinical practice.
+                        By working with Ibrahim Ben Abdallah, you acknowledge
+                        that coaching is a collaborative, non-clinical practice.
                         These terms may evolve over time; continuing to use our
                         services signifies your acceptance of the latest
                         updates.
                     </p>
                 </div>
                 <p className="text-sm text-subtle/70">
-                    Barhoum Coaching operates as the public-facing brand of Whispered Life OÜ.
+                    Ibrahim Ben Abdallah operates as the public-facing brand of
+                    Whispered Life OÜ.
                 </p>
             </Container>
         </div>

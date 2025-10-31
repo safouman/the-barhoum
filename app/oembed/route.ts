@@ -103,7 +103,7 @@ export function GET(request: NextRequest) {
 
     if (!allowedHosts.includes(parsedUrl.host)) {
         return NextResponse.json(
-            { error: "URL must belong to Barhoum Coaching domains." },
+            { error: "URL must belong to Ibrahim Ben Abdallah domains." },
             { status: 422 }
         );
     }

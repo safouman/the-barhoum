@@ -19,7 +19,7 @@ export default function PrivacyPage() {
                 <h1>Privacy Policy</h1>
                 <p className="text-subtle text-lg leading-relaxed">
                     This Privacy Policy explains how we handle your data across
-                    all Barhoum Coaching experiences and touchpoints.
+                    all Ibrahim Ben Abdallah experiences and touchpoints.
                 </p>
                 <div className="space-y-4 text-base leading-relaxed">
                     <p>
@@ -73,7 +73,9 @@ export default function PrivacyPage() {
                             </p>
                         </div>
                         <div className="rounded-lg border border-gray-200 bg-white p-4">
-                            <p className="font-medium">Google Analytics (GA4)</p>
+                            <p className="font-medium">
+                                Google Analytics (GA4)
+                            </p>
                             <p className="text-xs text-[#222]/70">
                                 When enabled, GA4 sets cookies such as
                                 <code className="mx-1 rounded bg-gray-100 px-1">
@@ -92,7 +94,8 @@ export default function PrivacyPage() {
                     </div>
                 </div>
                 <p className="text-sm text-subtle/70">
-                    Barhoum Coaching operates as the public-facing brand of Whispered Life OÜ.
+                    Ibrahim Ben Abdallah operates as the public-facing brand of
+                    Whispered Life OÜ.
                 </p>
             </Container>
         </div>
