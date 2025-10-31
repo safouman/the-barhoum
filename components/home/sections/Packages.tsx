@@ -270,9 +270,7 @@ export function PacksSection({
                                 <div className={styles.list}>
                                     {packs.map((pack, index) => (
                                         <PackBar
-                                            key={`${category}-${
-                                                pack.programKey ?? pack.duration
-                                            }`}
+                                            key={`${category}-${pack.programKey ?? pack.duration}-${index}`}
                                             direction={direction}
                                             locale={locale}
                                             pack={pack}
@@ -340,8 +338,10 @@ export function PacksSection({
                                                 }
                                             >
                                                 {selectedPack.bullets.map(
-                                                    (bullet) => (
-                                                        <li key={bullet}>
+                                                    (bullet, bulletIndex) => (
+                                                        <li
+                                                            key={`${selectedPack.programKey ?? selectedPack.title}-${bulletIndex}`}
+                                                        >
                                                             <span
                                                                 aria-hidden
                                                                 className={
