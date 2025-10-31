@@ -20,6 +20,7 @@ function buildPacksByCategory(
   programs: NormalizedProgram[]
 ): PacksByCategory {
   const locales: Locale[] = ["ar", "en"];
+  const duplicateTargets: CategoryKey[] = ["me_and_the_other", "me_and_work"];
 
   const result: PacksByCategory = {
     me_and_me: { ar: [], en: [] },
@@ -69,6 +70,16 @@ function buildPacksByCategory(
       if (a.sessions != null) return -1;
       if (b.sessions != null) return 1;
       return a.priceTotal - b.priceTotal;
+    });
+
+    duplicateTargets.forEach((category) => {
+      if (result[category][locale].length > 0) {
+        return;
+      }
+      result[category][locale] = result.me_and_me[locale].map((pack) => ({
+        ...pack,
+        bullets: [...pack.bullets],
+      }));
     });
   });
 

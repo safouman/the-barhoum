@@ -8,6 +8,11 @@
         grid-template-columns: minmax(0, 0.45fr) minmax(0, 0.55fr);
         align-items: start;
     }
+    .details {
+        justify-content: flex-start;
+        max-width: none;
+        margin-inline: 0;
+    }
 }
 
 .wrapRtl {
@@ -30,11 +35,28 @@
 
 .details {
     order: 2;
+    display: flex;
+    justify-content: center;
 }
 
 @media (max-width: 1023px) {
+    .wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        gap: 1.9rem;
+    }
+    .selector {
+        width: 100%;
+        max-width: min(100%, 600px);
+        margin-inline: auto;
+    }
     .details {
         order: 3;
+        width: 100%;
+        max-width: min(100%, 600px);
+        margin-inline: auto;
     }
 }
 
@@ -166,10 +188,12 @@
     box-shadow: 0 26px 48px -26px rgba(15, 23, 42, 0.45);
     padding: clamp(1.75rem, 3.2vw, 2.7rem);
     min-height: clamp(23rem, 34vw, 26.5rem);
+    width: min(100%, 720px);
     display: flex;
     flex-direction: column;
     gap: clamp(1.1rem, 3vw, 1.7rem);
     text-align: start;
+    margin: 0 auto;
 }
 
 .detailsContent {
@@ -357,15 +381,15 @@
         gap: 1rem;
     }
     .option {
-        padding-block: clamp(1.2rem, 4.8vw, 1.5rem);
-        padding-inline: clamp(1.3rem, 5vw, 1.85rem);
+        padding-block: clamp(1.3rem, 5.2vw, 1.7rem);
+        padding-inline: clamp(1.55rem, 6vw, 2.15rem);
     }
     .optionContent {
         width: 100%;
         display: grid;
         grid-template-columns: 1fr auto;
         align-items: center;
-        gap: 0.75rem;
+        gap: 0.9rem;
     }
     .optionMeta {
         gap: 0.38rem;
@@ -380,12 +404,14 @@
         line-height: 1.4;
     }
     .optionPrice {
-        align-items: flex-start;
-        text-align: start;
+        align-items: flex-end;
+        text-align: end;
         gap: 0.2rem;
+        min-width: 5.9rem;
+        padding-inline: 0 clamp(0.6rem, 2.8vw, 1rem);
     }
     .optionPrice span:first-of-type {
-        font-size: clamp(1.05rem, 4.4vw, 1.25rem);
+        font-size: clamp(1.08rem, 4.6vw, 1.28rem);
         font-weight: 560;
         line-height: 1.12;
     }
@@ -394,10 +420,12 @@
         letter-spacing: 0.22em;
     }
     .detailsCard {
-        padding: clamp(1.65rem, 6.8vw, 2.4rem);
+        padding: clamp(1.7rem, 6.6vw, 2.45rem);
         min-height: clamp(24rem, 92vw, 27rem);
+        width: min(100%, 580px);
         border-radius: 20px;
         gap: clamp(1.05rem, 4vw, 1.6rem);
+        margin-inline: auto;
     }
     .detailsContent {
         gap: clamp(1.05rem, 4.6vw, 1.75rem);
@@ -406,10 +434,9 @@
         gap: 0.4rem;
     }
     .detailsHeader h3 {
-        font-size: clamp(1.35rem, 5vw, 1.6rem);
-        line-height: 1.14;
-        white-space: normal;
-        text-wrap: balance;
+        font-size: clamp(1.3rem, 4.6vw, 1.58rem);
+        line-height: 1.12;
+        white-space: nowrap;
     }
     .detailsPricing {
         gap: 0.3rem;

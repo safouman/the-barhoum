@@ -68,10 +68,10 @@ export function Footer({ site }: FooterProps) {
             href: "/terms",
             label: "Terms of Use",
         },
-        {
-            href: "/data/coach.jsonld",
-            label: locale === "ar" ? "JSON-LD" : "Coach JSON-LD",
-        },
+        // {
+        //     href: "/data/coach.jsonld",
+        //     label: locale === "ar" ? "JSON-LD" : "Coach JSON-LD",
+        // },
         {
             onClick: () => {
                 triggerConsentPreferences();

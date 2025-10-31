@@ -5,7 +5,7 @@
   },
   "chipLabelTemplate": "الخطوة {current} من {total}",
   "progressLabelTemplate": "الخطوة {current} من {total}",
-  "summaryTitle": "ملخص الباقة",
+  "summaryTitle": "ملخص التدريب",
   "privacy": "معلوماتك سرّية وتُشارك فقط مع مكتب برهوم",
   "validation": {
     "required": "هذا الحقل إجباري",
@@ -68,7 +68,7 @@
           "options": [
             "حكاولي عليك",
             "نتابع فيك شوية",
-            "نتابع فيك عندي برشا "
+            "نتابع فيك عندي برشا"
           ],
           "placeholder": ""
         }

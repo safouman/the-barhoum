@@ -240,7 +240,7 @@ export function PacksSection({
             className="bg-background"
             titleClassName={sectionTitleClassName}
         >
-            <Container>
+            <Container className="px-[0rem]">
                 {renderMode === "comingSoon" && (
                     <div className="mb-10" aria-hidden />
                 )}

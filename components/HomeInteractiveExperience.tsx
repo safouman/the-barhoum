@@ -10,7 +10,7 @@ import {
   PacksSection,
 } from "@/components/home/sections";
 import type { LocalizedCategory } from "@/components/home/types";
-import { formatPackCurrency } from "@/lib/commerce/packages";
+import { formatPackCurrency, type CategoryKey } from "@/lib/commerce/packages";
 import type { PackSelection } from "@/lib/commerce/pack-selections";
 import type { PacksByCategory } from "@/components/home/sections/Packages";
 
@@ -29,16 +29,22 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy,
 
   const localizedCategories = useMemo<LocalizedCategory[]>(
     () =>
-      categories.map((category) => ({
-        id: category.id,
-        label: category.label[locale],
-        description: category.description[locale],
-        comingSoon:
+      categories.map((category) => {
+        const categoryKey = category.id as CategoryKey;
+        const categoryPacks = packs[categoryKey]?.[locale] ?? [];
+        const baseComingSoon =
           category.id === "me_and_me"
             ? meAndMeUnavailable
-            : category.comingSoon ?? false,
-      })),
-    [categories, locale, meAndMeUnavailable]
+            : category.comingSoon ?? false;
+
+        return {
+          id: category.id,
+          label: category.label[locale],
+          description: category.description[locale],
+          comingSoon: categoryPacks.length > 0 ? false : baseComingSoon,
+        };
+      }),
+    [categories, locale, meAndMeUnavailable, packs]
   );
 
   const [activeCategory, setActiveCategory] = useState<Category["id"] | undefined>();

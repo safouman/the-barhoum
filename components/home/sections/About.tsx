@@ -383,8 +383,7 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
         <div
             className={clsx(
                 "w-full space-y-3 sm:space-y-4",
-                "md:mx-auto",
-                isRTL ? "lg:w-[110%] lg:max-w-none" : "lg:w-[112%] lg:max-w-none"
+                "mx-auto max-w-4xl"
             )}
             dir={isRTL ? "rtl" : "ltr"}
             role="list"
@@ -616,7 +615,7 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
                 {video && (
                     <div
                         className={clsx(
-                            "text-center space-y-4",
+                            "mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-10 xl:px-12 text-center space-y-4",
                             isRTL ? "mt-6 pb-16" : "mt-10 pb-12"
                         )}
                         dir={isRTL ? "rtl" : "ltr"}
