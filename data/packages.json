@@ -1,7 +1,7 @@
 [
   {
     "id": "program_basic",
-    "categoryId": "individuals",
+    "categoryId": "me_and_me",
     "title": {"ar": "البرنامج الأساسي", "en": "Program Basic"},
     "price": {"amount": 100, "currency": "EUR"},
     "features": {
@@ -12,7 +12,7 @@
   },
   {
     "id": "program_growth",
-    "categoryId": "individuals",
+    "categoryId": "me_and_me",
     "title": {"ar": "برنامج النمو", "en": "Program Growth"},
     "price": {"amount": 300, "currency": "EUR"},
     "features": {
@@ -23,7 +23,7 @@
   },
   {
     "id": "program_transform",
-    "categoryId": "individuals",
+    "categoryId": "me_and_me",
     "title": {"ar": "برنامج التحول", "en": "Program Transform"},
     "price": {"amount": 800, "currency": "EUR"},
     "features": {
@@ -34,7 +34,7 @@
   },
   {
     "id": "cpl-alignment",
-    "categoryId": "couples",
+    "categoryId": "me_and_the_other",
     "title": {"ar": "انسجام الشركاء", "en": "Partners Alignment"},
     "price": {"amount": 320, "currency": "EUR"},
     "features": {
@@ -45,7 +45,7 @@
   },
   {
     "id": "org-lead",
-    "categoryId": "organizations",
+    "categoryId": "me_and_work",
     "title": {"ar": "قيادة متزنة", "en": "Balanced Leadership"},
     "price": {"amount": 2400, "currency": "USD"},
     "features": {
@@ -56,7 +56,7 @@
   },
   {
     "id": "org-retainer",
-    "categoryId": "organizations",
+    "categoryId": "me_and_work",
     "title": {"ar": "شراكة مستمرة", "en": "Ongoing Partnership"},
     "price": {"amount": 4800, "currency": "USD"},
     "features": {

@@ -22,9 +22,9 @@ function buildPacksByCategory(
   const locales: Locale[] = ["ar", "en"];
 
   const result: PacksByCategory = {
-    individuals: { ar: [], en: [] },
-    couples: { ar: [], en: [] },
-    organizations: { ar: [], en: [] },
+    me_and_me: { ar: [], en: [] },
+    me_and_the_other: { ar: [], en: [] },
+    me_and_work: { ar: [], en: [] },
   };
 
   programs.forEach((program) => {
@@ -55,12 +55,12 @@ function buildPacksByCategory(
         duration,
       };
 
-      result.individuals[locale].push(pack);
+      result.me_and_me[locale].push(pack);
     });
   });
 
   locales.forEach((locale) => {
-    result.individuals[locale].sort((a, b) => a.sessions - b.sessions);
+    result.me_and_me[locale].sort((a, b) => a.sessions - b.sessions);
   });
 
   return result;
@@ -110,7 +110,7 @@ export default async function Page() {
   const packs = buildPacksByCategory(programResult.programs);
   const catalogStatus = programResult.status;
 
-  const packsAvailable = packs.individuals.ar.length > 0;
+  const packsAvailable = packs.me_and_me.ar.length > 0;
   if (!packsAvailable) {
     console.warn("[Catalog] No Stripe programs resolved", {
       status: catalogStatus,

@@ -1,6 +1,6 @@
 import type { Locale } from "@/lib/content";
 
-export type CategoryKey = "individuals" | "couples" | "organizations";
+export type CategoryKey = "me_and_me" | "me_and_the_other" | "me_and_work";
 export type PackSessions = number;
 
 export type IndividualProgramKey =
@@ -42,9 +42,9 @@ const ORGANIZATION_PACKAGE_LOOKUP: Record<number, OrganizationPackageId> = {
 };
 
 const PACKAGE_ID_LOOKUP: Record<CategoryKey, Record<number, PackageId>> = {
-    individuals: INDIVIDUAL_PACKAGE_LOOKUP,
-    couples: COUPLES_PACKAGE_LOOKUP,
-    organizations: ORGANIZATION_PACKAGE_LOOKUP,
+    me_and_me: INDIVIDUAL_PACKAGE_LOOKUP,
+    me_and_the_other: COUPLES_PACKAGE_LOOKUP,
+    me_and_work: ORGANIZATION_PACKAGE_LOOKUP,
 };
 
 const PACKAGE_IDS = Object.freeze(

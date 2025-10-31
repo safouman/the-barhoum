@@ -1,27 +1,27 @@
 [
   {
-    "id": "individuals",
-    "label": {"ar": "أفراد", "en": "Individuals"},
+    "id": "me_and_me",
+    "label": { "ar": "أنا و أنا", "en": "Me & Me" },
     "description": {
-      "ar": "جلسات فردية تركز على الوعي الذاتي والتطور المهني والشخصي.",
-      "en": "One-on-one coaching focused on self-awareness and professional growth."
+      "ar": "نحب نقوّي علاقتي مع روحي و نتعلّم من تجربتي بعمق",
+      "en": "I want to strengthen my relationship with myself and learn deeply from my experience."
     }
   },
   {
-    "id": "couples",
-    "label": {"ar": "أزواج", "en": "Couples"},
+    "id": "me_and_the_other",
+    "label": { "ar": "أنا و الجنس الآخر", "en": "Me & The Other Gender" },
     "description": {
-      "ar": "برامج مشتركة لتعزيز التواصل وبناء شراكة أكثر انسجاماً.",
-      "en": "Shared programs to deepen communication and cultivate aligned partnership."
+      "ar": "نحب نفهم الحواجز الي عندي مع الجنس الاخر و نحلهم",
+      "en": "I want to understand the blocks I carry with the other gender and resolve them."
     },
     "comingSoon": true
   },
   {
-    "id": "organizations",
-    "label": {"ar": "منظمات", "en": "Organizations"},
+    "id": "me_and_work",
+    "label": { "ar": "أنا و الخدمة", "en": "Me & Work" },
     "description": {
-      "ar": "حلول قيادية وثقافية تساعد الفرق على الأداء بثقة ومرونة.",
-      "en": "Leadership and culture solutions that empower teams to perform with confidence."
+      "ar": "نحب نتعدى للمستوى الي بعدو في كارياري",
+      "en": "I want to move to the next level in my career."
     },
     "comingSoon": true
   }

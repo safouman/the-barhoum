@@ -5,7 +5,7 @@ import { Container } from "@/components/Container";
 import { Section } from "@/components/Section";
 import { PacksSection, type PacksCopy } from "./Packages";
 import { HomeLeadForm } from "./LeadFormSection";
-import type { HomeThemeDefinition } from "../types";
+import type { HomeThemeDefinition, LocalizedCategory } from "../types";
 import styles from "./Categories.module.css";
 
 export const HomeCategories: HomeThemeDefinition["Categories"] = ({
@@ -39,9 +39,7 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
         return () => window.removeEventListener("resize", checkMobile);
     }, []);
 
-    const handleCategoryClick = (
-        id: "individuals" | "couples" | "organizations"
-    ) => {
+    const handleCategoryClick = (id: LocalizedCategory["id"]) => {
         if (isMobile) {
             onMobileToggle(id);
         } else {
@@ -109,6 +107,9 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
                                                 )
                                                     ? "text-primary"
                                                     : "text-text",
+                                                isMobile
+                                                    ? "whitespace-nowrap"
+                                                    : "md:whitespace-normal",
                                                 "group-hover:text-primary"
                                             )}
                                         >

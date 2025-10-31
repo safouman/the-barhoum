@@ -11,9 +11,9 @@ export const localizedSchema = z.object({
 type Localized = z.infer<typeof localizedSchema>;
 
 const categoryIdSchema = z.union([
-    z.literal("individuals"),
-    z.literal("couples"),
-    z.literal("organizations"),
+    z.literal("me_and_me"),
+    z.literal("me_and_the_other"),
+    z.literal("me_and_work"),
 ]);
 
 export const categorySchema = z.object({

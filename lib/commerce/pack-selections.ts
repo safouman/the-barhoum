@@ -44,7 +44,7 @@ export function createPackSelection({
             return pack.programKey as PackageId;
         }
 
-        if (category === "individuals") {
+        if (category === "me_and_me") {
             const programKey = getIndividualProgramKeyBySessions(pack.sessions);
             if (programKey) {
                 return programKey;

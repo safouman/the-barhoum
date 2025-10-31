@@ -634,7 +634,7 @@ export async function POST(req: NextRequest) {
             `[${requestId}] 💰 Payment eligibility check - category: ${formData.category}, country: ${formData.country}`
         );
         const needsPayment =
-            formData.category === "individuals" &&
+            formData.category === "me_and_me" &&
             requiresPayment(formData.country, requestId);
         const packagePresent = Boolean(formData.package?.trim().length);
         const shouldAttemptStripe = needsPayment && packagePresent;
@@ -647,7 +647,7 @@ export async function POST(req: NextRequest) {
         console.log(
             `[${requestId}] Category match check: "${
                 formData.category
-            }" === "individuals" = ${formData.category === "individuals"}`
+            }" === "me_and_me" = ${formData.category === "me_and_me"}`
         );
 
         if (needsPayment && !packagePresent) {

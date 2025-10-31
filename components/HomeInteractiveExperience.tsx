@@ -25,7 +25,7 @@ interface HomeInteractiveExperienceProps {
 export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy, catalogStatus }: HomeInteractiveExperienceProps) {
   const { locale } = useLocale();
   const strings = ui[locale];
-  const individualsUnavailable = (packs.individuals?.[locale] ?? []).length === 0;
+  const meAndMeUnavailable = (packs.me_and_me?.[locale] ?? []).length === 0;
 
   const localizedCategories = useMemo<LocalizedCategory[]>(
     () =>
@@ -34,11 +34,11 @@ export function HomeInteractiveExperience({ categories, packs, ui, leadFormCopy,
         label: category.label[locale],
         description: category.description[locale],
         comingSoon:
-          category.id === "individuals"
-            ? individualsUnavailable
+          category.id === "me_and_me"
+            ? meAndMeUnavailable
             : category.comingSoon ?? false,
       })),
-    [categories, locale, individualsUnavailable]
+    [categories, locale, meAndMeUnavailable]
   );
 
   const [activeCategory, setActiveCategory] = useState<Category["id"] | undefined>();
