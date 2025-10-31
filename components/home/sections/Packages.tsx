@@ -223,10 +223,10 @@ export function PacksSection({
             : `${copy.button} with ${selectedPack.duration} - total ${totalPriceDisplay}`
         : undefined;
 
-    const showMeAndMeHeader = category === "me_and_me" && !comingSoon;
-    const sectionTitle = showMeAndMeHeader ? copy.title : undefined;
-    const sectionSubtitle = showMeAndMeHeader ? copy.subtitle : undefined;
-    const sectionTitleClassName = showMeAndMeHeader
+    const showHeader = Boolean(category) && !comingSoon;
+    const sectionTitle = showHeader ? copy.title : undefined;
+    const sectionSubtitle = showHeader ? copy.subtitle : undefined;
+    const sectionTitleClassName = showHeader
         ? direction === "rtl"
             ? "font-normal"
             : "font-normal md:tracking-[0.18rem]"
