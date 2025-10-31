@@ -10,7 +10,8 @@
   "validation": {
     "required": "This field is required",
     "select": "Please choose a valid option",
-    "phone": "Please enter a valid phone number"
+    "phone": "Please enter a valid phone number",
+    "email": "Please enter a valid email address"
   },
   "thankYou": {
     "title": "Thank you for reaching out",
@@ -96,11 +97,32 @@
           "placeholder": "Include your country code"
         },
         {
+          "id": "email",
+          "label": "Email address",
+          "type": "email",
+          "required": true,
+          "placeholder": "Enter the best email to reach you"
+        },
+        {
           "id": "bestContactTime",
           "label": "Preferred times for us to reach you",
           "required": true,
           "placeholder": "Select a contact window",
           "options": []
+        }
+      ]
+    },
+    {
+      "id": "passphrase",
+      "title": "Confirm the passphrase you received",
+      "helper": "This keeps your experience private and tells us you’re ready to move. Enter the shared passphrase so we can complete your submission.",
+      "fields": [
+        {
+          "id": "passphrase",
+          "label": "Passphrase",
+          "type": "text",
+          "required": false,
+          "placeholder": "Type the passphrase you received"
         }
       ]
     }

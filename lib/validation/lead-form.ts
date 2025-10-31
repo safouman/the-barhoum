@@ -9,6 +9,9 @@ const countryOptionsSet = new Set<string>(COUNTRY_OPTIONS);
 const ageGroupOptionsSet = new Set<string>(AGE_RANGE_OPTIONS);
 const contactWindowOptionsSet = new Set<string>(CONTACT_WINDOW_OPTIONS);
 const MIN_PHONE_DIGITS = 8;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
+const MAX_EMAIL_LENGTH = 320;
+const MAX_PASSPHRASE_LENGTH = 200;
 
 export const leadFormSchema = z.object({
     leadId: z
@@ -65,7 +68,10 @@ export const leadFormSchema = z.object({
         .string()
         .trim()
         .min(1, "Previous training response is required")
-        .max(2000, "Previous training response must be less than 2000 characters"),
+        .max(
+            2000,
+            "Previous training response must be less than 2000 characters"
+        ),
 
     awarenessLevel: z
         .string()
@@ -83,6 +89,16 @@ export const leadFormSchema = z.object({
             "Please enter a valid phone number"
         ),
 
+    email: z
+        .string()
+        .trim()
+        .min(1, "Email is required")
+        .max(MAX_EMAIL_LENGTH, "Email must be less than 320 characters")
+        .refine(
+            (val) => EMAIL_REGEX.test(val),
+            "Please enter a valid email address"
+        ),
+
     bestContactTime: z
         .string()
         .trim()
@@ -93,11 +109,30 @@ export const leadFormSchema = z.object({
             "Please select a valid contact window"
         ),
 
-    category: z.string().optional().transform((val) => val || ""),
+    passphrase: z
+        .string()
+        .trim()
+        .max(
+            MAX_PASSPHRASE_LENGTH,
+            "Passphrase must be less than 200 characters"
+        )
+        .optional()
+        .transform((val) => (typeof val === "string" ? val : "")),
 
-    package: z.string().optional().transform((val) => val || ""),
+    category: z
+        .string()
+        .optional()
+        .transform((val) => val || ""),
 
-    packageId: z.string().optional().transform((val) => val || ""),
+    package: z
+        .string()
+        .optional()
+        .transform((val) => val || ""),
+
+    packageId: z
+        .string()
+        .optional()
+        .transform((val) => val || ""),
 });
 
 export type LeadFormData = z.infer<typeof leadFormSchema>;

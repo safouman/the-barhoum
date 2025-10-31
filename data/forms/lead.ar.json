@@ -10,7 +10,8 @@
   "validation": {
     "required": "هذا الحقل إجباري",
     "select": "رجاءً إختر خيارًا صالحًا",
-    "phone": "رجاءً أدخل رقم هاتف صالح"
+    "phone": "رجاءً أدخل رقم هاتف صالح",
+    "email": "رجاءً أدخل بريدًا إلكترونيًا صالحًا"
   },
   "thankYou": {
     "title": "شكراً على ثقتك",
@@ -38,8 +39,7 @@
           "required": true,
           "options": [
             "ذكر",
-            "أنثى",
-            "آخر"
+            "أنثى"
           ],
           "placeholder": ""
         },
@@ -66,9 +66,9 @@
           "label": "قدّاش عندك تعرفني على سوشل ميديا",
           "required": true,
           "options": [
-            "ما نعرفكش",
-            "نسمع بيك شوية",
-            "نتابعك ديما"
+            "حكاولي عليك",
+            "نتابع فيك شوية",
+            "نتابع فيك عندي برشا "
           ],
           "placeholder": ""
         }
@@ -112,11 +112,32 @@
           "placeholder": ""
         },
         {
+          "id": "email",
+          "label": "البريد الإلكتروني",
+          "type": "email",
+          "required": true,
+          "placeholder": ""
+        },
+        {
           "id": "bestContactTime",
           "label": "الأوقات المناسبة الي تفضّل نتصلو بيك فيهم",
           "required": true,
           "placeholder": "",
           "options": []
+        }
+      ]
+    },
+    {
+      "id": "passphrase",
+      "title": "أدخل كلمة السر قبل ما تبعث الطلب",
+      "helper": "هادي كلمة السر الي وصلكم بيها المكتب. نحتاجوها بش نكمّلو التسجيل ونأكدو أنك أنت.",
+      "fields": [
+        {
+          "id": "passphrase",
+          "label": "كلمة السر",
+          "type": "text",
+          "required": false,
+          "placeholder": ""
         }
       ]
     }

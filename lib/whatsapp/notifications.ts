@@ -312,6 +312,8 @@ export async function sendLeadWhatsAppNotification({
     const resolvedCountry = formData.country?.trim() ?? "";
     const resolvedProgram =
         programName?.trim() || formData.package?.trim() || "";
+    const resolvedEmail = formData.email?.trim() ?? "";
+    const resolvedPassphrase = formData.passphrase?.trim() ?? "";
 
     const aliasMap = new Map<string, string>([
         ["fullname", resolvedFullName],
@@ -321,6 +323,9 @@ export async function sendLeadWhatsAppNotification({
         ["program", resolvedProgram],
         ["package", resolvedProgram],
         ["program_name", resolvedProgram],
+        ["email", resolvedEmail],
+        ["passphrase", resolvedPassphrase],
+        ["pass_phrase", resolvedPassphrase],
     ]);
 
     const fallbackMessage = [

@@ -62,7 +62,9 @@ interface LeadFormFormState {
     previousTraining: string;
     awarenessLevel: string;
     phone: string;
+    email: string;
     bestContactTime: string;
+    passphrase: string;
 }
 
 type FieldErrors = Partial<Record<keyof LeadFormFormState, string>>;
@@ -87,6 +89,8 @@ type StepConfig = {
 const COUNTRY_OPTIONS_SET = new Set<string>(COUNTRY_OPTIONS);
 const AGE_RANGE_OPTIONS_SET = new Set<string>(AGE_RANGE_OPTIONS);
 const CONTACT_WINDOW_OPTIONS_SET = new Set<string>(CONTACT_WINDOW_OPTIONS);
+const EMAIL_REGEX =
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const INITIAL_STATE: LeadFormFormState = {
     fullName: "",
@@ -99,6 +103,8 @@ const INITIAL_STATE: LeadFormFormState = {
     awarenessLevel: "",
     phone: "",
     bestContactTime: "",
+    email: "",
+    passphrase: "",
 };
 
 export function LeadForm({
@@ -182,6 +188,8 @@ export function LeadForm({
         awarenessLevel: null,
         bestContactTime: null,
         phone: null,
+        email: null,
+        passphrase: null,
     });
     const submitAttemptRef = useRef(0);
     const lastSubmissionFailedRef = useRef(false);
@@ -243,6 +251,11 @@ export function LeadForm({
                     return validation.phone;
                 }
             }
+            if (field.id === "email" && value) {
+                if (!EMAIL_REGEX.test(value)) {
+                    return validation.email ?? validation.required;
+                }
+            }
             if (field.id === "ageGroup" && value) {
                 if (!AGE_RANGE_OPTIONS_SET.has(value)) {
                     return validation.select;
@@ -255,7 +268,7 @@ export function LeadForm({
             }
             return "";
         },
-        [validation.phone, validation.required, validation.select]
+        [validation.email, validation.phone, validation.required, validation.select]
     );
 
     const runStepValidation = useCallback(
@@ -972,10 +985,23 @@ export function LeadForm({
                                     error && errorFieldClasses
                                 )}
                                 inputMode={
-                                    field.id === "phone" ? "tel" : undefined
+                                    field.id === "phone"
+                                        ? "tel"
+                                        : field.id === "email"
+                                          ? "email"
+                                          : undefined
                                 }
                                 dir={
-                                    field.id === "phone" ? "ltr" : commonProps.dir
+                                    field.id === "phone" || field.id === "email"
+                                        ? "ltr"
+                                        : commonProps.dir
+                                }
+                                autoComplete={
+                                    field.id === "email"
+                                        ? "email"
+                                        : field.id === "phone"
+                                            ? "tel"
+                                            : undefined
                                 }
                                 onBlur={fieldBlur}
                             />

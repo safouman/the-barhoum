@@ -5,9 +5,9 @@ const SECRET_KEY =
 // Column layout helpers (1-based index)
 const COL_TIMESTAMP = 1;
 const COL_LEAD_ID = 2;
-const COL_PAYMENT_LINK = 15;
-const COL_PAYMENT_STATUS = 16;
-const COL_PAID_AT = 17;
+const COL_PAYMENT_LINK = 17;
+const COL_PAYMENT_STATUS = 18;
+const COL_PAID_AT = 19;
 const HEADER_ROWS = 1; // adjust if your sheet uses more headers
 
 function jsonResponse(payload) {
@@ -74,7 +74,9 @@ function handleCreateLead(sheet, requestData) {
         requestData.previousTraining || "",
         requestData.awarenessLevel || "",
         requestData.phone || "",
+        requestData.email || "",
         requestData.bestContactTime || "",
+        requestData.passphrase || "",
         requestData.category || "",
         requestData.package || "",
         requestData.payment_link || "",
