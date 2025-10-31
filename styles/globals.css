@@ -525,9 +525,9 @@ html[dir="rtl"] .text-display {
         line-height: 1.6;
     }
 
-    html[dir="rtl"] .accordion-prose strong {
-        color: rgba(32, 171, 161, 0.94);
-    }
+html[dir="rtl"] .accordion-prose strong {
+    color: #000;
+}
 
     html[dir="rtl"] .accordion-prose em {
         color: rgba(55, 65, 81, 0.88);

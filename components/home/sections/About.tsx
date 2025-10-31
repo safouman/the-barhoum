@@ -84,6 +84,58 @@ const removeLeadingWhitespace = (nodes: ReactNode[]): ReactNode[] =>
         return node !== null && node !== undefined && node !== false;
     });
 
+const applyStrongBlack = (node: ReactNode): ReactNode => {
+    if (node === null || node === undefined || typeof node === "boolean") {
+        return node;
+    }
+
+    if (Array.isArray(node)) {
+        return node.map((child) => applyStrongBlack(child));
+    }
+
+    if (!isValidElement(node)) {
+        return node;
+    }
+
+    let updatedProps: Record<string, unknown> | null = null;
+
+    if (node.type === "strong") {
+        const existingClassName = (node.props as { className?: string }).className;
+        const nextClassName = clsx(existingClassName, "text-black");
+        if (nextClassName !== existingClassName) {
+            updatedProps = { ...(updatedProps ?? {}), className: nextClassName };
+        }
+    }
+
+    if ("props" in node && node.props && typeof node.props === "object") {
+        const children =
+            "children" in node.props
+                ? Children.toArray(node.props.children as ReactNode)
+                : [];
+        if (children.length > 0) {
+            const transformed = children.map((child) => applyStrongBlack(child));
+            const hasChanged = transformed.some(
+                (child, index) => child !== children[index]
+            );
+            if (hasChanged) {
+                updatedProps = {
+                    ...(updatedProps ?? {}),
+                    children: transformed,
+                };
+            }
+        }
+    }
+
+    if (!updatedProps) {
+        return node;
+    }
+
+    return cloneElement(node as ReactElement, updatedProps);
+};
+
+const ensureStrongBlack = (nodes: ReactNode[]): ReactNode[] =>
+    nodes.map((node) => applyStrongBlack(node));
+
 const AccordionList = ({ children, isRTL }: AccordionListProps) => {
     const items = useMemo(() => {
         const result: AccordionItem[] = [];
@@ -172,10 +224,12 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                 })
             );
 
+            const descriptionWithStrong = ensureStrongBlack(cleanedDescription);
+
             result.push({
                 key: childElement.key ?? index,
                 title,
-                description: cleanedDescription,
+                description: descriptionWithStrong,
             });
         });
 
@@ -493,19 +547,19 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
                         <div
                             className={clsx(
                                 "mb-8 flex flex-col items-center text-left sm:text-center",
+                                "[&>p:first-of-type]:relative [&>p:first-of-type]:mx-auto [&>p:first-of-type]:max-w-[92%] [&>p:first-of-type]:font-medium [&>p:first-of-type]:pb-5 [&>p:first-of-type]:leading-[1.6]",
                                 isRTL
-                                    ? "space-y-6 text-[#444]"
-                                    : "space-y-5"
+                                    ? "space-y-6 text-[#444] [&>p:first-of-type]:text-[clamp(1.05rem,4vw,1.2rem)]"
+                                    : "space-y-5 [&>p:first-of-type]:text-[clamp(1.05rem,4vw,1.2rem)]"
                             )}
                             dir={isRTL ? "rtl" : "ltr"}
                         >
                             <ReactMarkdown
                                 components={{
-                                    p: ({ children }) => (
+                                    p: ({ children }: { children?: ReactNode }) => (
                                         <p
                                             className={clsx(
                                                 "m-0 text-center",
-                                                "first:relative first:mx-auto first:max-w-[92%] first:text-[clamp(1.05rem,4vw,1.2rem)] first:font-medium first:pb-5 first:after:absolute first:after:left-1/2 first:after:top-full first:after:h-[1px] first:after:w-12 first:after:-translate-x-1/2 first:after:bg-current",
                                                 isRTL
                                                     ? "text-[clamp(0.9rem,3.2vw,1.05rem)] leading-[1.6]"
                                                     : "text-[clamp(1rem,3.6vw,1.12rem)] leading-[1.6]"
