@@ -8,8 +8,7 @@ export type PageKey = SeoPageKey;
 const fallbackSiteUrl = seoConfig.brand.domains.primary.replace(/\/+$/, "");
 
 export const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ??
-    fallbackSiteUrl;
+    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ?? fallbackSiteUrl;
 
 const baseMetadata: Metadata = {
     metadataBase: new URL(siteUrl),
@@ -58,10 +57,7 @@ function ensureLocale(locale?: Locale): Locale {
         : DEFAULT_LOCALE;
 }
 
-function getLocalizedValue<T>(
-    map: Record<Locale, T>,
-    locale: Locale
-): T {
+function getLocalizedValue<T>(map: Record<Locale, T>, locale: Locale): T {
     return map[locale] ?? map[DEFAULT_LOCALE];
 }
 
@@ -80,18 +76,12 @@ function getPageConfig(key: PageKey) {
     return seoConfig.pages[key];
 }
 
-function getPageLocaleConfig(
-    key: PageKey,
-    locale: Locale
-) {
+function getPageLocaleConfig(key: PageKey, locale: Locale) {
     const page = getPageConfig(key);
     return page.locales[locale] ?? page.locales[DEFAULT_LOCALE];
 }
 
-export function getPageCanonicalPath(
-    key: PageKey,
-    locale: Locale
-): string {
+export function getPageCanonicalPath(key: PageKey, locale: Locale): string {
     const page = getPageConfig(key);
     const localeConfig = getPageLocaleConfig(key, locale);
     return localeConfig.canonical ?? page.path;
@@ -141,40 +131,26 @@ export function getDefaultMetadata(locale?: Locale): Metadata {
     );
     const alternateOgLocales = SUPPORTED_LOCALES.filter(
         (value) => value !== resolvedLocale
-    ).map((value) =>
-        getLocalizedValue(seoConfig.openGraphLocale, value)
-    );
+    ).map((value) => getLocalizedValue(seoConfig.openGraphLocale, value));
     const canonicalPath = getPageCanonicalPath("home", resolvedLocale);
     const languageAlternates = buildLanguageAlternates("home");
 
     const metadata: Metadata = {
         title: {
-            default: getLocalizedValue(
-                seoConfig.defaultTitle,
-                resolvedLocale
-            ),
+            default: getLocalizedValue(seoConfig.defaultTitle, resolvedLocale),
             template: getLocalizedValue(
                 seoConfig.titleTemplate,
                 resolvedLocale
             ),
         },
-        description: getLocalizedValue(
-            seoConfig.description,
-            resolvedLocale
-        ),
+        description: getLocalizedValue(seoConfig.description, resolvedLocale),
         openGraph: {
             type: "website",
             url: toAbsoluteUrl(canonicalPath),
-            siteName: getLocalizedValue(
-                seoConfig.siteName,
-                resolvedLocale
-            ),
+            siteName: getLocalizedValue(seoConfig.siteName, resolvedLocale),
             locale: openGraphLocale,
             alternateLocale: alternateOgLocales,
-            title: getLocalizedValue(
-                seoConfig.siteName,
-                resolvedLocale
-            ),
+            title: getLocalizedValue(seoConfig.siteName, resolvedLocale),
             description: getLocalizedValue(
                 seoConfig.openGraphDescription,
                 resolvedLocale
@@ -191,19 +167,19 @@ export function getDefaultMetadata(locale?: Locale): Metadata {
                 },
             ],
         },
-        twitter: {
-            card: "summary_large_image",
-            creator: seoConfig.twitter.creator,
-            title: getLocalizedValue(
-                seoConfig.twitter.title,
-                resolvedLocale
-            ),
-            description: getLocalizedValue(
-                seoConfig.twitter.description,
-                resolvedLocale
-            ),
-            images: [seoConfig.openGraphImage.url],
-        },
+        // twitter: {
+        //     card: "summary_large_image",
+        //     creator: seoConfig.twitter.creator,
+        //     title: getLocalizedValue(
+        //         seoConfig.twitter.title,
+        //         resolvedLocale
+        //     ),
+        //     description: getLocalizedValue(
+        //         seoConfig.twitter.description,
+        //         resolvedLocale
+        //     ),
+        //     images: [seoConfig.openGraphImage.url],
+        // },
         alternates: {
             canonical: toAbsoluteUrl(canonicalPath),
             languages: languageAlternates,
@@ -230,8 +206,7 @@ export function getPageMetadata(
         openGraph: {
             url: canonicalUrl,
             title: pageLocale.ogTitle ?? pageLocale.title,
-            description:
-                pageLocale.ogDescription ?? pageLocale.description,
+            description: pageLocale.ogDescription ?? pageLocale.description,
         },
         alternates: {
             canonical: canonicalUrl,

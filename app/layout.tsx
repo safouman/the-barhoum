@@ -81,7 +81,7 @@ export default async function RootLayout({
         alternateName: brand.person.alternateName,
         url: brand.domains.primary,
         logo: `${siteUrl}/images/logo.png`,
-        slogan: brand.organization.slogan.en,
+        // slogan: brand.organization.slogan.en,
         areaServed: brand.areaServed,
         contactPoint: [
             {

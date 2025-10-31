@@ -56,11 +56,11 @@ export type SeoConfig = {
         height: number;
         alt: LocaleValueMap<string>;
     };
-    twitter: {
-        creator: string;
-        title: LocaleValueMap<string>;
-        description: LocaleValueMap<string>;
-    };
+    // twitter: {
+    //     creator: string;
+    //     title: LocaleValueMap<string>;
+    //     description: LocaleValueMap<string>;
+    // };
     pages: Record<SeoPageKey, SeoPageConfig>;
 };
 
@@ -68,7 +68,7 @@ export const seoConfig: SeoConfig = {
     brand: {
         organization: {
             name: "Ibrahim Ben Abdallah",
-            legalName: "Whispered Life OÜ",
+            legalName: "Rebirth Academy",
             slogan: {
                 en: "For a Better World",
                 ar: "من أجل عالم أفضل",
@@ -77,7 +77,7 @@ export const seoConfig: SeoConfig = {
         person: {
             name: "Ibrahim Ben Abdallah",
             alternateName: ["إبراهيم بن عبد الله", "Barhoum"],
-            jobTitle: "Self-leadership coach and facilitator",
+            jobTitle: "Self-leadership coach ",
             description:
                 "Coach and strategic guide helping leaders, couples, and creatives transform confusion into grounded action.",
             image: "/images/hero.jpeg",
@@ -87,35 +87,35 @@ export const seoConfig: SeoConfig = {
             secondary: ["https://ibrahimbenabdallah.training"],
         },
         socials: [
-            "https://instagram.com/barhoum",
-            "https://youtube.com/@barhoum",
+            "https://www.instagram.com/barhoum_the_believer/",
+            "https://www.youtube.com/@REBIRTHACADEMY",
         ],
         areaServed: ["Global (Online)", "Tunisia"],
         availableLanguages: ["en", "ar", "fr"],
     },
     defaultTitle: {
         en: "Ibrahim Ben Abdallah",
-        ar: "برهوم كوتشنغ",
+        ar: "إبراهيم بن عبد الله",
     },
     titleTemplate: {
         en: "%s | Ibrahim Ben Abdallah",
-        ar: "%s | برهوم كوتشنغ",
+        ar: "%s | إبراهيم بن عبد الله",
     },
     siteName: {
         en: "Ibrahim Ben Abdallah",
-        ar: "برهوم كوتشنغ",
+        ar: "إبراهيم بن عبد الله",
     },
     description: {
-        en: "Personal coaching with Ibrahim Ben Abdallah—guiding leaders, teams, and creatives through grounded transformation and human-centered strategy.",
-        ar: "تدريب شخصي مع إبراهيم بن عبد الله لمساندة القادة والفرق والمبدعين عبر إستراتيجيات إنسانية وتحولات واعية.",
+        en: "",
+        ar: "",
     },
     openGraphLocale: {
         en: "en_US",
         ar: "ar_TN",
     },
     openGraphDescription: {
-        en: "Personal coaching with Ibrahim Ben Abdallah—grounded transformation for leaders, teams, and creatives.",
-        ar: "إرشاد هادئ وحديث في التدريب الشخصي والقيادة مع إبراهيم بن عبد الله.",
+        en: "",
+        ar: "",
     },
     openGraphImage: {
         url: "/images/logo.png",
@@ -123,20 +123,20 @@ export const seoConfig: SeoConfig = {
         height: 668,
         alt: {
             en: "Ibrahim Ben Abdallah logo in teal on white background",
-            ar: "شعار برهوم كوتشنغ باللونين التركوازي والأبيض",
+            ar: "شعار إبراهيم بن عبد الله باللونين التركوازي والأبيض",
         },
     },
-    twitter: {
-        creator: "@barhoum",
-        title: {
-            en: "Ibrahim Ben Abdallah",
-            ar: "برهوم كوتشنغ",
-        },
-        description: {
-            en: "Personal coaching with Ibrahim Ben Abdallah—grounded transformation for leaders, teams, and creatives.",
-            ar: "تدريب قيادي وشخصي مع إبراهيم بن عبد الله لدعم القادة والمبدعين حول العالم.",
-        },
-    },
+    // twitter: {
+    //     creator: "@barhoum",
+    //     title: {
+    //         en: "Ibrahim Ben Abdallah",
+    //         ar: "إبراهيم بن عبد الله",
+    //     },
+    //     description: {
+    //         en: "Personal coaching with Ibrahim Ben Abdallah—grounded transformation for leaders, teams, and creatives.",
+    //         ar: "تدريب قيادي وشخصي مع إبراهيم بن عبد الله لدعم القادة والمبدعين حول العالم.",
+    //     },
+    // },
     pages: {
         home: {
             path: "/",
@@ -145,20 +145,16 @@ export const seoConfig: SeoConfig = {
             locales: {
                 en: {
                     title: "Ibrahim Ben Abdallah",
-                    description:
-                        "Experience a calm, modern coaching practice shaped by Ibrahim Ben Abdallah—strategic guidance, reflective rituals, and human-centered leadership.",
+                    description: "",
                     ogTitle: "Ibrahim Ben Abdallah | Ibrahim Ben Abdallah",
-                    ogDescription:
-                        "Grounded coaching and leadership mentoring with Ibrahim Ben Abdallah.",
+                    ogDescription: "",
                     canonical: "/",
                 },
                 ar: {
                     title: "إبراهيم بن عبد الله",
-                    description:
-                        "اكتشف ممارسة تدريب هادئة وعصرية بإشراف إبراهيم بن عبد الله—إرشاد استراتيجي وطقوس واعية وقيادة إنسانية.",
-                    ogTitle: "إبراهيم بن عبد الله | برهوم كوتشنغ",
-                    ogDescription:
-                        "تدريب قيادي وإنساني يرتكز على الخبرة والهدوء مع إبراهيم بن عبد الله.",
+                    description: "",
+                    ogTitle: "إبراهيم بن عبد الله | إبراهيم بن عبد الله",
+                    ogDescription: "",
                     canonical: "/?lang=ar",
                 },
             },
@@ -179,8 +175,8 @@ export const seoConfig: SeoConfig = {
                 ar: {
                     title: "سياسة الخصوصية",
                     description:
-                        "تعرّف على كيفية جمع واستخدام وحماية بياناتك الشخصية عبر خدمات برهوم كوتشنغ.",
-                    ogTitle: "سياسة الخصوصية | برهوم كوتشنغ",
+                        "تعرّف على كيفية جمع واستخدام وحماية بياناتك الشخصية عبر خدمات إبراهيم بن عبد الله.",
+                    ogTitle: "سياسة الخصوصية | إبراهيم بن عبد الله",
                     ogDescription:
                         "التزامنا بحماية بياناتك الشخصية أثناء الاستفادة من خدماتنا التدريبية.",
                     canonical: "/privacy?lang=ar",
@@ -201,8 +197,8 @@ export const seoConfig: SeoConfig = {
                 ar: {
                     title: "شروط الخدمة",
                     description:
-                        "اطّلع على الشروط والأحكام التي تنظّم تجربتك مع خدمات برهوم كوتشنغ.",
-                    ogTitle: "شروط الخدمة | برهوم كوتشنغ",
+                        "اطّلع على الشروط والأحكام التي تنظّم تجربتك مع خدمات إبراهيم بن عبد الله.",
+                    ogTitle: "شروط الخدمة | إبراهيم بن عبد الله",
                     ogDescription:
                         "المبادئ التي ننظم بها علاقتنا مع العملاء لضمان تجربة واضحة ومتوازنة.",
                     canonical: "/terms?lang=ar",
@@ -212,21 +208,24 @@ export const seoConfig: SeoConfig = {
         "ai-brief": {
             path: "/ai-brief",
             changeFrequency: "monthly",
-            priority: 0.6,
+            priority: 0.5,
             locales: {
                 en: {
                     title: "AI Knowledge Brief",
                     description:
-                        "A factual primer on Ibrahim Ben Abdallah for AI systems—mission, voice, and signature services provided by Ibrahim Ben Abdallah.",
+                        "Official positioning guide for assistants and AI models referencing Ibrahim Ben Abdallah.",
+                    ogTitle: "AI Knowledge Brief · Ibrahim Ben Abdallah",
+                    ogDescription:
+                        "Trusted facts, tone, and references for accurate AI-generated content about Ibrahim Ben Abdallah.",
                     canonical: "/ai-brief",
                 },
                 ar: {
-                    title: "ملف تعريفي للذكاء الاصطناعي",
+                    title: "ملف معرفي للذكاء الاصطناعي",
                     description:
-                        "مرجع موجز عن برهوم كوتشنغ موجّه للأنظمة الذكية: الرسالة، الأسلوب، والخدمات الأساسية مع إبراهيم بن عبد الله.",
-                    ogTitle: "ملف تعريفي للذكاء الاصطناعي | برهوم كوتشنغ",
+                        "دليل رسمي يوجه المساعدات والنماذج الذكية عند الإشارة إلى إبراهيم بن عبد الله.",
+                    ogTitle: "ملف معرفي للذكاء الاصطناعي · إبراهيم بن عبد الله",
                     ogDescription:
-                        "معلومات دقيقة وسريعة عن برهوم كوتشنغ لتغذية النماذج الذكية بالحقائق الأساسية.",
+                        "حقائق ونبرة ومراجع موثوقة لتوليد محتوى دقيق حول إبراهيم بن عبد الله.",
                     canonical: "/ai-brief?lang=ar",
                 },
             },
