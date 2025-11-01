@@ -4,12 +4,23 @@ import { siteUrl } from "@/lib/seo";
 
 const brand = seoConfig.brand;
 const providerName = brand.organization.name;
-const providerUrl = brand.domains.primary.replace(/\/+$/, "");
+const providerUrl = siteUrl;
 
-const allowedHosts = [
-    new URL(providerUrl).host,
-    ...brand.domains.secondary.map((domain) => new URL(domain).host),
-];
+function toHost(value: string): string | null {
+    try {
+        return new URL(value).host;
+    } catch {
+        return null;
+    }
+}
+
+const allowedHosts = Array.from(
+    new Set(
+        [siteUrl, brand.domains.primary, ...brand.domains.secondary]
+            .map(toHost)
+            .filter((host): host is string => Boolean(host))
+    )
+);
 
 function toAbsolute(path: string): string {
     if (path.startsWith("http://") || path.startsWith("https://")) {

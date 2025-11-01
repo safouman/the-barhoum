@@ -110,7 +110,7 @@ export default async function RootLayout({
         name: brand.organization.name,
         legalName: brand.organization.legalName,
         alternateName: brand.person.alternateName,
-        url: brand.domains.primary,
+        url: siteUrl,
         logo: `${siteUrl}/images/logo.png`,
         // slogan: brand.organization.slogan.en,
         areaServed: brand.areaServed,
@@ -132,7 +132,7 @@ export default async function RootLayout({
         alternateName: brand.person.alternateName,
         jobTitle: brand.person.jobTitle,
         description: brand.person.description,
-        url: brand.domains.primary,
+        url: siteUrl,
         image: toAbsoluteAssetUrl(brand.person.image),
         worksFor: {
             "@id": organizationId,
@@ -156,7 +156,7 @@ export default async function RootLayout({
         ],
         availableLanguage,
         areaServed: brand.areaServed,
-        url: brand.domains.primary,
+        url: siteUrl,
     };
 
     const faqJsonLd = {

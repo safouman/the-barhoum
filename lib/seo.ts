@@ -5,10 +5,54 @@ import { DEFAULT_LOCALE, SUPPORTED_LOCALES } from "@/lib/i18n";
 
 export type PageKey = SeoPageKey;
 
-const fallbackSiteUrl = seoConfig.brand.domains.primary.replace(/\/+$/, "");
+function normalizeSiteUrl(value?: string | null): string | undefined {
+    if (!value) {
+        return undefined;
+    }
+    const trimmed = value.trim();
+    if (!trimmed) {
+        return undefined;
+    }
+    const candidate = /^https?:\/\//i.test(trimmed)
+        ? trimmed
+        : `https://${trimmed}`;
+    try {
+        const url = new URL(candidate);
+        return url.origin;
+    } catch {
+        return undefined;
+    }
+}
 
-export const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/+$/, "") ?? fallbackSiteUrl;
+function resolveSiteUrl(): string {
+    const fallback =
+        normalizeSiteUrl(seoConfig.brand.domains.primary) ??
+        "https://ibrahimbenabdallah.com";
+    const envCandidates = [
+        process.env.NEXT_PUBLIC_SITE_URL,
+        process.env.NEXT_PUBLIC_VERCEL_URL,
+        process.env.VERCEL_URL,
+    ];
+
+    for (const candidate of envCandidates) {
+        const normalized = normalizeSiteUrl(candidate);
+        if (normalized) {
+            return normalized;
+        }
+    }
+
+    if (process.env.NODE_ENV !== "production") {
+        const port = process.env.PORT ?? "3000";
+        const localUrl = normalizeSiteUrl(`http://localhost:${port}`);
+        if (localUrl) {
+            return localUrl;
+        }
+    }
+
+    return fallback;
+}
+
+export const siteUrl = resolveSiteUrl();
 
 const baseMetadata: Metadata = {
     metadataBase: new URL(siteUrl),

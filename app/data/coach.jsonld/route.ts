@@ -25,7 +25,7 @@ export function GET() {
         alternateName: brand.person.alternateName,
         description: brand.person.description,
         jobTitle: brand.person.jobTitle,
-        url: brand.domains.primary,
+        url: siteUrl,
         image: toAbsoluteUrl(brand.person.image),
         sameAs: brand.socials,
         knowsLanguage: brand.availableLanguages,
@@ -35,7 +35,7 @@ export function GET() {
             "@id": organizationId,
             name: brand.organization.name,
             legalName: brand.organization.legalName,
-            url: brand.domains.primary,
+            url: siteUrl,
             sameAs: brand.socials,
         },
         providerOf: [
@@ -48,7 +48,7 @@ export function GET() {
                 provider: {
                     "@id": personId,
                 },
-                url: brand.domains.primary,
+                url: siteUrl,
             },
         ],
     };
