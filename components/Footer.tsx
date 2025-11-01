@@ -156,7 +156,7 @@ export function Footer({ site }: FooterProps) {
 
                     {/* Copyright */}
                     <div className="text-xs text-[#222] opacity-60">
-                        <div>© 2025 {brandName}</div>
+                        <div>© 2025 All rights reserved {brandName}</div>
                         <nav
                             className={`flex flex-wrap items-center justify-center gap-4 mt-4 ${
                                 isRtl ? "flex-row-reverse" : ""

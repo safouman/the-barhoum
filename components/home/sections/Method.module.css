@@ -31,7 +31,8 @@
     .methodSection::before {
         background-image: url("/images/logo-2.png"), url("/images/logo-2.png");
         background-size: 30%;
-        background-position: center 30%, center 70%;
+        background-position: center 20%, center 80%;
         background-repeat: no-repeat;
+        filter: grayscale(1);
     }
 }
