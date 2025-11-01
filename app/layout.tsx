@@ -4,7 +4,7 @@ export const revalidate = 0;
 export const runtime = "nodejs";
 import Script from "next/script";
 import type { CSSProperties } from "react";
-import { Inter, Noto_Naskh_Arabic } from "next/font/google";
+import { Harmattan, Inter, Noto_Naskh_Arabic } from "next/font/google";
 import "../styles/globals.css";
 import { LocaleProvider } from "@/providers/locale-provider";
 import { AnalyticsProvider } from "@/providers/analytics-provider";
@@ -49,6 +49,13 @@ const notoNaskhArabic = Noto_Naskh_Arabic({
     preload: true,
 });
 
+const harmattan = Harmattan({
+    subsets: ["arabic"],
+    weight: ["400"],
+    variable: "--font-harmattan",
+    display: "swap",
+    preload: true,
+});
 function parseFontList(value: string | undefined): string[] {
     if (!value) {
         return [];
@@ -96,7 +103,7 @@ export default async function RootLayout({
     const locale = resolveLocale();
     const direction = getDirection(locale);
     const [ui, site] = await Promise.all([loadUi(), getSiteConfig()]);
-    const fontClass = `${inter.variable} ${notoNaskhArabic.variable}`;
+    const fontClass = `${inter.variable} ${notoNaskhArabic.variable} ${harmattan.variable}`;
     const brand = seoConfig.brand;
     const sameAs = brand.socials;
     const organizationId = `${siteUrl}#organization`;

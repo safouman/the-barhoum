@@ -32,7 +32,7 @@ export const HomeIntroVideo = ({
             data-analytics-section="IntroVideo"
             data-analytics-engage="true"
         >
-            <Container className="py-16 sm:py-20 md:py-10">
+            <Container className="py-16 ">
                 <div
                     className={clsx(
                         "mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-10 xl:px-12 text-center",
@@ -54,7 +54,7 @@ export const HomeIntroVideo = ({
                     {signature && (
                         <p
                             className={clsx(
-                                "!text-[1.3rem] text-primary md:!text-[1.7rem] leading-snug",
+                                "whitespace-pre-line !text-[1.3rem] text-gray-900 md:!text-[1.7rem] leading-snug",
                                 locale === "ar"
                                     ? "font-signature-arabic"
                                     : "font-signature-latin"

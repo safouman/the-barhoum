@@ -17,7 +17,8 @@
         "Noto Naskh Arabic", system-ui, -apple-system, BlinkMacSystemFont,
         "Segoe UI", sans-serif;
     --font-signature-latin: "Brush Script MT", "Comic Sans MS", cursive;
-    --font-signature-arabic: "Arslan Wessam A";
+    --font-signature-arabic: var(--font-harmattan, "Harmattan"),
+        "Arslan Wessam A";
     --font-weight-regular: 400;
     --font-weight-bold: 600;
     --color-background: #ffffff;

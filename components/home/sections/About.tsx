@@ -51,8 +51,15 @@ const findFirstStrongNode = (
             return node as ReactElement<{ children?: ReactNode }>;
         }
 
-        if ('props' in node && node.props && typeof node.props === 'object' && 'children' in node.props) {
-            const childNodes = Children.toArray(node.props.children as ReactNode);
+        if (
+            "props" in node &&
+            node.props &&
+            typeof node.props === "object" &&
+            "children" in node.props
+        ) {
+            const childNodes = Children.toArray(
+                node.props.children as ReactNode
+            );
             const result = findFirstStrongNode(childNodes);
             if (result) return result;
         }
@@ -99,10 +106,14 @@ const applyStrongBlack = (node: ReactNode): ReactNode => {
     let updatedProps: Record<string, unknown> | null = null;
 
     if (node.type === "strong") {
-        const existingClassName = (node.props as { className?: string }).className;
+        const existingClassName = (node.props as { className?: string })
+            .className;
         const nextClassName = clsx(existingClassName, "text-black");
         if (nextClassName !== existingClassName) {
-            updatedProps = { ...(updatedProps ?? {}), className: nextClassName };
+            updatedProps = {
+                ...(updatedProps ?? {}),
+                className: nextClassName,
+            };
         }
     }
 
@@ -112,7 +123,9 @@ const applyStrongBlack = (node: ReactNode): ReactNode => {
                 ? Children.toArray(node.props.children as ReactNode)
                 : [];
         if (children.length > 0) {
-            const transformed = children.map((child) => applyStrongBlack(child));
+            const transformed = children.map((child) =>
+                applyStrongBlack(child)
+            );
             const hasChanged = transformed.some(
                 (child, index) => child !== children[index]
             );
@@ -141,9 +154,18 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
 
         Children.toArray(children).forEach((child, index) => {
             if (!isValidElement(child)) return;
-            if (!('props' in child) || !child.props || typeof child.props !== 'object') return;
-            const childElement = child as React.ReactElement<{ children?: ReactNode }>;
-            const childNodes = Children.toArray(childElement.props.children as ReactNode);
+            if (
+                !("props" in child) ||
+                !child.props ||
+                typeof child.props !== "object"
+            )
+                return;
+            const childElement = child as React.ReactElement<{
+                children?: ReactNode;
+            }>;
+            const childNodes = Children.toArray(
+                childElement.props.children as ReactNode
+            );
             if (childNodes.length === 0) return;
 
             const trimmedNodes = childNodes.filter((node) => {
@@ -159,12 +181,24 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
 
             const rawTitleNodes =
                 strongNode && isValidElement(strongNode)
-                    ? Children.toArray((strongNode as ReactElement<{ children?: ReactNode }>).props.children as ReactNode)
+                    ? Children.toArray(
+                          (strongNode as ReactElement<{ children?: ReactNode }>)
+                              .props.children as ReactNode
+                      )
                     : (() => {
-                          const fallbackNode = findFirstContentNode(trimmedNodes);
+                          const fallbackNode =
+                              findFirstContentNode(trimmedNodes);
                           if (!fallbackNode) return [];
-                          if (isValidElement(fallbackNode) && 'props' in fallbackNode && fallbackNode.props && typeof fallbackNode.props === 'object' && 'children' in fallbackNode.props) {
-                              return Children.toArray(fallbackNode.props.children as ReactNode);
+                          if (
+                              isValidElement(fallbackNode) &&
+                              "props" in fallbackNode &&
+                              fallbackNode.props &&
+                              typeof fallbackNode.props === "object" &&
+                              "children" in fallbackNode.props
+                          ) {
+                              return Children.toArray(
+                                  fallbackNode.props.children as ReactNode
+                              );
                           }
                           return [fallbackNode];
                       })();
@@ -173,17 +207,21 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
 
             const firstContentNode = findFirstContentNode(trimmedNodes);
             const firstContentIndex = firstContentNode
-                ? trimmedNodes.findIndex(node => node === firstContentNode)
+                ? trimmedNodes.findIndex((node) => node === firstContentNode)
                 : 0;
 
             let rawDescription: ReactNode[] = [];
             if (strongNode) {
-                const directStrongIndex = trimmedNodes.findIndex(node => node === strongNode);
+                const directStrongIndex = trimmedNodes.findIndex(
+                    (node) => node === strongNode
+                );
                 if (directStrongIndex >= 0) {
                     rawDescription = trimmedNodes.slice(directStrongIndex + 1);
                 } else {
                     const firstNode =
-                        firstContentIndex >= 0 ? trimmedNodes[firstContentIndex] : null;
+                        firstContentIndex >= 0
+                            ? trimmedNodes[firstContentIndex]
+                            : null;
                     const restNodes = trimmedNodes.slice(firstContentIndex + 1);
                     rawDescription = [
                         ...(firstNode ? [firstNode] : []),
@@ -204,19 +242,33 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                         return text.replace(/^\s+/, "");
                     }
 
-                    if (strongNode && isValidElement(node) && node.type === "p" && 'props' in node && node.props && typeof node.props === 'object' && 'children' in node.props) {
-                        const paragraphChildren = Children.toArray(node.props.children as ReactNode);
+                    if (
+                        strongNode &&
+                        isValidElement(node) &&
+                        node.type === "p" &&
+                        "props" in node &&
+                        node.props &&
+                        typeof node.props === "object" &&
+                        "children" in node.props
+                    ) {
+                        const paragraphChildren = Children.toArray(
+                            node.props.children as ReactNode
+                        );
                         const remainingChildren = removeLeadingWhitespace(
                             paragraphChildren.filter(
-                                (paragraphChild) => paragraphChild !== strongNode
+                                (paragraphChild) =>
+                                    paragraphChild !== strongNode
                             )
                         );
                         if (remainingChildren.length === 0) {
                             return null;
                         }
-                        return cloneElement(node as ReactElement<{ children?: ReactNode }>, {
-                            children: remainingChildren,
-                        });
+                        return cloneElement(
+                            node as ReactElement<{ children?: ReactNode }>,
+                            {
+                                children: remainingChildren,
+                            }
+                        );
                     }
 
                     return node;
@@ -242,11 +294,16 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
     const hasInitializedRef = useRef(false);
 
     useEffect(() => {
-        if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+        if (
+            typeof window === "undefined" ||
+            typeof window.matchMedia !== "function"
+        ) {
             return;
         }
         const mediaQuery = window.matchMedia(desktopMediaQuery);
-        const updateMatch = (eventOrMedia: MediaQueryList | MediaQueryListEvent) => {
+        const updateMatch = (
+            eventOrMedia: MediaQueryList | MediaQueryListEvent
+        ) => {
             setIsDesktop(eventOrMedia.matches);
         };
         updateMatch(mediaQuery);
@@ -300,7 +357,10 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
         const bottomComfort = viewportHeight - 56;
         if (rect.top >= topComfort && rect.bottom <= bottomComfort) return;
 
-        const targetOffset = Math.max(rect.top + window.scrollY - topComfort, 0);
+        const targetOffset = Math.max(
+            rect.top + window.scrollY - topComfort,
+            0
+        );
         window.scrollTo({
             top: targetOffset,
             behavior: prefersReducedMotion ? "auto" : "smooth",
@@ -314,22 +374,19 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
         scrollItemIntoView(lastOpened);
     }, [openIndexes, scrollItemIntoView]);
 
-    const toggleItem = useCallback(
-        (index: number) => {
-            setOpenIndexes((prev) => {
-                const isAlreadyOpen = prev.includes(index);
+    const toggleItem = useCallback((index: number) => {
+        setOpenIndexes((prev) => {
+            const isAlreadyOpen = prev.includes(index);
 
-                if (isAlreadyOpen) {
-                    lastOpenedRef.current = null;
-                    return [];
-                }
+            if (isAlreadyOpen) {
+                lastOpenedRef.current = null;
+                return [];
+            }
 
-                lastOpenedRef.current = index;
-                return [index];
-            });
-        },
-        []
-    );
+            lastOpenedRef.current = index;
+            return [index];
+        });
+    }, []);
 
     const handleKeyNavigation = useCallback(
         (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
@@ -414,12 +471,16 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                                 isRTL
                                     ? "flex-row-reverse text-right"
                                     : "flex-row text-left",
-                                isOpen ? "bg-primary/8" : "bg-white/0 hover:bg-primary/3"
+                                isOpen
+                                    ? "bg-primary/8"
+                                    : "bg-white/0 hover:bg-primary/3"
                             )}
                             aria-expanded={isOpen}
                             aria-controls={contentId}
                             id={triggerId}
-                            onKeyDown={(event) => handleKeyNavigation(event, index)}
+                            onKeyDown={(event) =>
+                                handleKeyNavigation(event, index)
+                            }
                             ref={(node) => {
                                 triggerRefs.current[index] = node;
                             }}
@@ -468,9 +529,7 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
                         <div
                             className={clsx(
                                 "grid overflow-hidden transition-[grid-template-rows] duration-300 ease-out",
-                                isOpen
-                                    ? "grid-rows-[1fr]"
-                                    : "grid-rows-[0fr]"
+                                isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
                             )}
                             id={contentId}
                             role="region"
@@ -517,7 +576,7 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
             data-analytics-section="About"
             data-analytics-engage="true"
         >
-            <Container className="pt-20 pb-16 sm:pt-24 sm:pb-20 md:pt-24 md:pb-24">
+            <Container className="pt-10 pb-16 sm:pt-24 sm:pb-20 md:pt-24 md:pb-24">
                 {/* Unified content block with RTL-specific styling */}
                 <div
                     className={clsx(
@@ -552,7 +611,11 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
                         >
                             <ReactMarkdown
                                 components={{
-                                    p: ({ children }: { children?: ReactNode }) => (
+                                    p: ({
+                                        children,
+                                    }: {
+                                        children?: ReactNode;
+                                    }) => (
                                         <p
                                             className={clsx(
                                                 "m-0 text-center",
@@ -565,9 +628,13 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
                                         </p>
                                     ),
                                     strong: ({ children }) => (
-                                        <strong className="font-semibold">{children}</strong>
+                                        <strong className="font-semibold">
+                                            {children}
+                                        </strong>
                                     ),
-                                    em: ({ children }) => <em className="italic">{children}</em>,
+                                    em: ({ children }) => (
+                                        <em className="italic">{children}</em>
+                                    ),
                                     ol: ({ children }) => (
                                         <AccordionList isRTL={isRTL}>
                                             {children}
@@ -593,8 +660,16 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
                                         <a
                                             href={href}
                                             className="text-subtle hover:text-primary transition-colors duration-200 border-b border-transparent hover:border-primary"
-                                            target={href?.startsWith("http") ? "_blank" : undefined}
-                                            rel={href?.startsWith("http") ? "noopener noreferrer" : undefined}
+                                            target={
+                                                href?.startsWith("http")
+                                                    ? "_blank"
+                                                    : undefined
+                                            }
+                                            rel={
+                                                href?.startsWith("http")
+                                                    ? "noopener noreferrer"
+                                                    : undefined
+                                            }
                                         >
                                             {children}
                                         </a>
@@ -606,7 +681,6 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
                         </div>
                     </div>
                 </div>
-
             </Container>
         </Section>
     );
