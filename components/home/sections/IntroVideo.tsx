@@ -9,9 +9,14 @@ import type { HomeData, Locale } from "@/lib/content";
 interface HomeIntroVideoProps {
     locale: Locale;
     media: HomeData["media"];
+    signature?: string;
 }
 
-export const HomeIntroVideo = ({ locale, media }: HomeIntroVideoProps) => {
+export const HomeIntroVideo = ({
+    locale,
+    media,
+    signature,
+}: HomeIntroVideoProps) => {
     const primaryVideo = media.videos[0];
 
     if (!primaryVideo) {
@@ -27,7 +32,7 @@ export const HomeIntroVideo = ({ locale, media }: HomeIntroVideoProps) => {
             data-analytics-section="IntroVideo"
             data-analytics-engage="true"
         >
-            <Container className="py-16 sm:py-20 md:py-14">
+            <Container className="py-16 sm:py-20 md:py-10">
                 <div
                     className={clsx(
                         "mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-10 xl:px-12 text-center",
@@ -46,6 +51,18 @@ export const HomeIntroVideo = ({ locale, media }: HomeIntroVideoProps) => {
                             />
                         </div>
                     </div>
+                    {signature && (
+                        <p
+                            className={clsx(
+                                "!text-[1.3rem] text-primary md:!text-[1.7rem] leading-snug",
+                                locale === "ar"
+                                    ? "font-signature-arabic"
+                                    : "font-signature-latin"
+                            )}
+                        >
+                            {signature}
+                        </p>
+                    )}
                 </div>
             </Container>
         </Section>

@@ -11,7 +11,6 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({
     copy,
 }) => {
     const isRTL = locale === "ar";
-    const signature = hero.signature[locale];
 
     return (
         <section
@@ -110,16 +109,6 @@ export const HomeHero: HomeThemeDefinition["Hero"] = ({
                                 {copy}
                             </ReactMarkdown>
                         </div>
-                        <p
-                            className={clsx(
-                                "mt-4 text-xl text-primary",
-                                locale === "ar"
-                                    ? "font-signature-arabic"
-                                    : "font-signature-latin"
-                            )}
-                        >
-                            {signature}
-                        </p>
                     </div>
                 </div>
             </Container>

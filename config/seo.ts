@@ -56,11 +56,11 @@ export type SeoConfig = {
         height: number;
         alt: LocaleValueMap<string>;
     };
-    // twitter: {
-    //     creator: string;
-    //     title: LocaleValueMap<string>;
-    //     description: LocaleValueMap<string>;
-    // };
+    twitter: {
+        creator: string;
+        title: LocaleValueMap<string>;
+        description: LocaleValueMap<string>;
+    };
     pages: Record<SeoPageKey, SeoPageConfig>;
 };
 
@@ -70,8 +70,8 @@ export const seoConfig: SeoConfig = {
             name: "Ibrahim Ben Abdallah",
             legalName: "Rebirth",
             slogan: {
-                en: "",
-                ar: "",
+                en: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر .",
+                ar: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر .",
             },
         },
         person: {
@@ -113,8 +113,8 @@ export const seoConfig: SeoConfig = {
         ar: "ar_TN",
     },
     openGraphDescription: {
-        en: "",
-        ar: "",
+        en: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر .",
+        ar: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر .",
     },
     openGraphImage: {
         url: "/images/logo.png",
@@ -125,17 +125,17 @@ export const seoConfig: SeoConfig = {
             ar: "شعار إبراهيم بن عبد الله باللونين التركوازي والأبيض",
         },
     },
-    // twitter: {
-    //     creator: "@barhoum",
-    //     title: {
-    //         en: "Ibrahim Ben Abdallah",
-    //         ar: "إبراهيم بن عبد الله",
-    //     },
-    //     description: {
-    //         en: "Personal coaching with Ibrahim Ben Abdallah—grounded transformation for leaders, teams, and creatives.",
-    //         ar: "تدريب قيادي وشخصي مع إبراهيم بن عبد الله لدعم القادة والمبدعين حول العالم.",
-    //     },
-    // },
+    twitter: {
+        creator: "@barhoum",
+        title: {
+            en: "Ibrahim Ben Abdallah",
+            ar: "إبراهيم بن عبد الله",
+        },
+        description: {
+            en: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر .",
+            ar: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر .",
+        },
+    },
     pages: {
         home: {
             path: "/",

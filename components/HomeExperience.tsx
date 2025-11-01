@@ -73,7 +73,7 @@ export function HomeExperience({
     <>
       <HomeHero hero={home.hero} locale={locale} copy={heroCopy[locale]} />
 
-      <HomeIntroVideo locale={locale} media={home.media} />
+      <HomeIntroVideo locale={locale} media={home.media} signature={home.hero.signature[locale]} />
 
       <Suspense fallback={<div className="py-24" aria-busy="true" />}>
         <HomeAbout locale={locale} about={home.about} markdown={aboutCopy[locale]} />
