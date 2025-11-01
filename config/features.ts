@@ -32,12 +32,19 @@ const stripeEnabled = parseBooleanFlag(
     true
 );
 
+const audioExperienceEnabled = parseBooleanFlag(
+    process.env.NEXT_PUBLIC_SHOW_AUDIO_EXPERIENCE,
+    true
+);
+
 export const featureFlags = Object.freeze({
     aieo: aieoEnabled,
     stripe: stripeEnabled,
+    audioExperience: audioExperienceEnabled,
 });
 
 export const isAieoEnabled = featureFlags.aieo;
 export const isStripeEnabled = featureFlags.stripe;
+export const isAudioExperienceEnabled = featureFlags.audioExperience;
 
 export type FeatureFlags = typeof featureFlags;

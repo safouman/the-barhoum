@@ -5,6 +5,7 @@ import { HomeHero } from "@/components/home/sections/Hero";
 import { HomeMethod } from "@/components/home/sections/Method";
 import { HomeInteractiveExperience } from "@/components/HomeInteractiveExperience";
 import type { LocalizedTestimonial } from "@/components/home/types";
+import { isAudioExperienceEnabled } from "@/config/features";
 
 const HomeAbout = dynamic(() =>
   import("@/components/home/sections/About").then((mod) => ({
@@ -81,9 +82,11 @@ export function HomeExperience({
 
       <HomeMethod locale={locale} method={home.method} markdown={methodCopy[locale]} />
 
-      <Suspense fallback={null}>
-        <HomeExperienceSection />
-      </Suspense>
+      {isAudioExperienceEnabled && (
+        <Suspense fallback={null}>
+          <HomeExperienceSection />
+        </Suspense>
+      )}
 
       <HomeInteractiveExperience
         categories={categories}
