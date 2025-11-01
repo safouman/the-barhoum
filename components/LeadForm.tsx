@@ -1032,10 +1032,10 @@ export function LeadForm({
             </fieldset>
 
             <div className="mt-6 border-t border-[#eeeeee] pt-6">
-                <div className="flex flex-col items-center gap-6">
+                <div className="flex flex-col items-start gap-6">
                     <div
                         className={clsx(
-                            "flex w-full flex-wrap items-center gap-y-2 gap-x-3 text-sm sm:pr-6 justify-start",
+                            "flex w-full flex-wrap flex-col items-start gap-y-2 gap-x-3 text-sm sm:pr-6 justify-start",
                             isRtl ? "text-right" : "text-left"
                         )}
                         dir={isRtl ? "rtl" : "ltr"}
@@ -1051,8 +1051,7 @@ export function LeadForm({
                             </span>
                         </span>
                         {summary.packageValue && (
-                            <>
-                                <span className="text-subtle/40">·</span>
+                            <div>
                                 <span
                                     className={clsx(
                                         "items-baseline gap-2",
@@ -1066,23 +1065,21 @@ export function LeadForm({
                                         {summary.packageValue}
                                     </span>
                                 </span>
-                            </>
+                            </div>
                         )}
                         {summary.durationLabel && (
-                            <>
-                                <span className="text-subtle/40">·</span>
+                            <div>
                                 <span className="text-sm font-medium text-text/85">
                                     {summary.durationLabel}
                                 </span>
-                            </>
+                            </div>
                         )}
                         {summary.priceLabel && (
-                            <>
-                                <span className="text-subtle/40">·</span>
+                            <div>
                                 <span className="text-sm font-semibold text-primary">
                                     {summary.priceLabel}
                                 </span>
-                            </>
+                            </div>
                         )}
                     </div>
                     {submissionError && (
