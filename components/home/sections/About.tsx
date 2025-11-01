@@ -17,7 +17,6 @@ import {
 import ReactMarkdown from "react-markdown";
 import { Container } from "@/components/Container";
 import { Section } from "@/components/Section";
-import { VideoEmbed } from "@/components/VideoEmbed";
 import type { HomeThemeDefinition } from "../types";
 
 type AccordionListProps = {
@@ -504,15 +503,12 @@ const AccordionList = ({ children, isRTL }: AccordionListProps) => {
 
 export const HomeAbout: HomeThemeDefinition["About"] = ({
     locale,
-    media,
     about,
     markdown,
 }) => {
     const isRTL = locale === "ar";
 
     const headline = about.headline[locale];
-
-    const video = media.videos[0];
 
     return (
         <Section
@@ -611,29 +607,6 @@ export const HomeAbout: HomeThemeDefinition["About"] = ({
                     </div>
                 </div>
 
-                {/* Video block with RTL-specific spacing */}
-                {video && (
-                    <div
-                        className={clsx(
-                            "mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-10 xl:px-12 text-center space-y-4",
-                            isRTL ? "mt-6 pb-16" : "mt-10 pb-12"
-                        )}
-                        dir={isRTL ? "rtl" : "ltr"}
-                    >
-                        {/* Video embed */}
-                        <div className="flex justify-center">
-                            <div className="w-full max-w-2xl">
-                                <VideoEmbed
-                                    videoId={video.id}
-                                    src={video.src}
-                                    fallbackSrc={video.fallback}
-                                    title={video.title[locale]}
-                                    poster={video.poster}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                )}
             </Container>
         </Section>
     );

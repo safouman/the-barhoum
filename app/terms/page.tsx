@@ -46,7 +46,7 @@ export default function TermsPage() {
                 </div>
                 <p className="text-sm text-subtle/70">
                     Ibrahim Ben Abdallah operates as the public-facing brand of
-                    Rebirth Academy.
+                    Rebirth.
                 </p>
             </Container>
         </div>

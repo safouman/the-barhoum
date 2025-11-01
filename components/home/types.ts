@@ -28,7 +28,6 @@ export interface HeroProps {
 
 export interface AboutProps {
   locale: Locale;
-  media: HomeData["media"];
   about: HomeData["about"];
   markdown: string;
 }

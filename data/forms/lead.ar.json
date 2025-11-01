@@ -58,7 +58,7 @@
         },
         {
           "id": "specialization",
-          "label": "مجال التّخصّص",
+          "label": "مجال التخصص (خدمة او قراية)",
           "required": true
         },
         {

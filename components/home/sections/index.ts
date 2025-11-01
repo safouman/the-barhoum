@@ -1,4 +1,5 @@
 export { HomeAbout } from "./About";
+export { HomeIntroVideo } from "./IntroVideo";
 export { HomeExperienceSection } from "./ExperienceSection";
 export { HomeCategories } from "./Categories";
 export { HomeHero } from "./Hero";

@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import type { Category, HomeData, LeadFormCopy, Locale, Testimonial, UIStrings } from "@/lib/content";
 import { HomeHero } from "@/components/home/sections/Hero";
+import { HomeIntroVideo } from "@/components/home/sections/IntroVideo";
 import { HomeMethod } from "@/components/home/sections/Method";
 import { HomeInteractiveExperience } from "@/components/HomeInteractiveExperience";
 import type { LocalizedTestimonial } from "@/components/home/types";
@@ -72,21 +73,23 @@ export function HomeExperience({
     <>
       <HomeHero hero={home.hero} locale={locale} copy={heroCopy[locale]} />
 
+      <HomeIntroVideo locale={locale} media={home.media} />
+
       <Suspense fallback={<div className="py-24" aria-busy="true" />}>
-        <HomeAbout locale={locale} media={home.media} about={home.about} markdown={aboutCopy[locale]} />
+        <HomeAbout locale={locale} about={home.about} markdown={aboutCopy[locale]} />
       </Suspense>
 
       <Suspense fallback={<div className="py-24" aria-busy="true" />}>
         <HomeTestimonials testimonials={localizedTestimonials} ui={ui[locale]} locale={locale} meta={home.testimonials} />
       </Suspense>
 
-      <HomeMethod locale={locale} method={home.method} markdown={methodCopy[locale]} />
-
       {isAudioExperienceEnabled && (
         <Suspense fallback={null}>
           <HomeExperienceSection />
         </Suspense>
       )}
+
+      <HomeMethod locale={locale} method={home.method} markdown={methodCopy[locale]} />
 
       <HomeInteractiveExperience
         categories={categories}

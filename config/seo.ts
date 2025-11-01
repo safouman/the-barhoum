@@ -68,7 +68,7 @@ export const seoConfig: SeoConfig = {
     brand: {
         organization: {
             name: "Ibrahim Ben Abdallah",
-            legalName: "Rebirth Academy",
+            legalName: "Rebirth",
             slogan: {
                 en: "",
                 ar: "",

@@ -114,7 +114,7 @@ const AI_BRIEF_COPY: Record<Locale, BriefCopy> = {
         keyFacts: {
             founderLabel: "المؤسس",
             founderValue: `${brand.person.alternateName[0]} (المعروف أيضًا باسم «${brand.person.alternateName[1]}»).`,
-            practiceLabel: "مجال العمل",
+            practiceLabel: "مجال التخصص (خدمة او قراية)",
             practiceValue: `${brand.organization.name} — ممارسة تدريبية شخصية وقيادية تخدم عملاء حول العالم.`,
             focusLabel: "محور التركيز",
             focusValue:
