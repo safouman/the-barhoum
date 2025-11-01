@@ -142,11 +142,11 @@ export const HomeLeadForm: HomeThemeDefinition["LeadForm"] = ({
             data-analytics-engage="true"
         >
             <Container className="space-y-12 md:space-y-16">
-                <div className="px-3 text-center text-text sm:px-0">
+                {/* <div className="px-3 text-center text-text sm:px-0">
                     <p data-lead-form-title className="heading-2 text-center">
                         {ui.form.title}
                     </p>
-                </div>
+                </div> */}
 
                 <div className={layoutClasses}>
                     {panelVisible && (

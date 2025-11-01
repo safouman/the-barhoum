@@ -1,7 +1,7 @@
 {
   "ar": {
     "program_exploration": {
-      "title": "Exploration and Initiation",
+      "title": "Exploration - إكتشاف",
       "subtitle": "مدّة التّدريب من أسبوعين إلى ثلاثة أسابيع",
       "bullets": [
         "تسجيل صوتي",
@@ -11,7 +11,7 @@
       ]
     },
     "program_breakthrough": {
-      "title": "Breakthrough Guaranteed",
+      "title": "Breakthrough - إنطلاق",
       "subtitle": "مدّة التّدريب من ثلاث أسابيع إلى خمس أسابيع",
       "bullets": [
         "خمس تسجيلات صوتيّة",
@@ -22,7 +22,7 @@
       ]
     },
     "program_mastery": {
-      "title": "Mastery and Independency",
+      "title": "Independency - تمكين",
       "subtitle": "مدّة التّدريب من شهر ونصف إلى شهرين",
       "bullets": [
         "خمس تسجيلات صوتيّة",
@@ -35,7 +35,7 @@
   },
   "en": {
     "program_exploration": {
-      "title": "Exploration and Initiation",
+      "title": "Exploration - إكتشاف",
       "subtitle": "Training duration: 2–3 weeks",
       "bullets": [
         "1 audio recording",
@@ -45,7 +45,7 @@
       ]
     },
     "program_breakthrough": {
-      "title": "Breakthrough Guaranteed",
+      "title": "Breakthrough - إنطلاق",
       "subtitle": "Training duration: 3–5 weeks",
       "bullets": [
         "5 audio recordings",
@@ -56,7 +56,7 @@
       ]
     },
     "program_mastery": {
-      "title": "Mastery and Independency",
+      "title": "Independency - تمكين",
       "subtitle": "Training duration: 1.5–2 months",
       "bullets": [
         "5 audio recordings",

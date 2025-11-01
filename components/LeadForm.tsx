@@ -89,8 +89,7 @@ type StepConfig = {
 const COUNTRY_OPTIONS_SET = new Set<string>(COUNTRY_OPTIONS);
 const AGE_RANGE_OPTIONS_SET = new Set<string>(AGE_RANGE_OPTIONS);
 const CONTACT_WINDOW_OPTIONS_SET = new Set<string>(CONTACT_WINDOW_OPTIONS);
-const EMAIL_REGEX =
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const INITIAL_STATE: LeadFormFormState = {
     fullName: "",
@@ -268,7 +267,12 @@ export function LeadForm({
             }
             return "";
         },
-        [validation.email, validation.phone, validation.required, validation.select]
+        [
+            validation.email,
+            validation.phone,
+            validation.required,
+            validation.select,
+        ]
     );
 
     const runStepValidation = useCallback(
@@ -330,7 +334,8 @@ export function LeadForm({
                 step_number: nextIndex + 1,
                 direction,
                 category: selectedCategory ?? "none",
-                program_name: packSummary?.packageValue ?? selectedPackage ?? "none",
+                program_name:
+                    packSummary?.packageValue ?? selectedPackage ?? "none",
             };
             if (sanitizedCountry) {
                 payload.form_country = sanitizedCountry;
@@ -445,7 +450,8 @@ export function LeadForm({
                 event("form_completed", {
                     ...baseEventPayload,
                     duplicate: Boolean(result.duplicate),
-                    payment_link_status: result.paymentLinkStatus ?? "not-required",
+                    payment_link_status:
+                        result.paymentLinkStatus ?? "not-required",
                 });
 
                 onSubmitted?.();
@@ -457,7 +463,9 @@ export function LeadForm({
                 setSubmissionError(errorMessage);
                 event("form_error", {
                     ...baseEventPayload,
-                    error_reason: result.error ? String(result.error) : "server_error",
+                    error_reason: result.error
+                        ? String(result.error)
+                        : "server_error",
                 });
             }
         } catch (error) {
@@ -469,7 +477,8 @@ export function LeadForm({
             );
             event("form_error", {
                 ...baseEventPayload,
-                error_reason: error instanceof Error ? error.message : "network_error",
+                error_reason:
+                    error instanceof Error ? error.message : "network_error",
             });
         }
     };
@@ -531,10 +540,18 @@ export function LeadForm({
         if (typeof window === "undefined") return;
         const node = scrollContainerRef.current;
         if (!node) return;
-        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        const behavior: ScrollBehavior = prefersReducedMotion ? "auto" : "smooth";
-        const sectionRoot = node.closest("[data-section=\"true\"]") as HTMLElement | null;
-        const sectionTitle = sectionRoot?.querySelector("[data-lead-form-title]") as HTMLElement | null;
+        const prefersReducedMotion = window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+        ).matches;
+        const behavior: ScrollBehavior = prefersReducedMotion
+            ? "auto"
+            : "smooth";
+        const sectionRoot = node.closest(
+            '[data-section="true"]'
+        ) as HTMLElement | null;
+        const sectionTitle = sectionRoot?.querySelector(
+            "[data-lead-form-title]"
+        ) as HTMLElement | null;
         const scrollTarget = sectionTitle ?? node;
         scrollTarget.scrollIntoView({ behavior, block: "start" });
     }, []);
@@ -615,7 +632,9 @@ export function LeadForm({
         });
         if (fieldId === "country") {
             const trimmed = value.trim();
-            updateAnalyticsContext({ form_country: trimmed ? trimmed : undefined });
+            updateAnalyticsContext({
+                form_country: trimmed ? trimmed : undefined,
+            });
         }
     };
 
@@ -708,10 +727,7 @@ export function LeadForm({
                                 isRtl ? "text-right" : "text-left"
                             )}
                         >
-                            <div className={clsx(
-                                "flex items-baseline gap-3",
-                                isRtl ? "flex-row-reverse" : "flex-row"
-                            )}>
+                            <div className={clsx("flex items-baseline gap-3")}>
                                 <h3 className="text-[clamp(1.6rem,4.2vw,2rem)] font-medium tracking-tight text-text leading-tight">
                                     {thankYouCopy.title}
                                 </h3>
@@ -765,13 +781,17 @@ export function LeadForm({
                                         key={detail.key}
                                         className={clsx(
                                             "flex items-baseline gap-3 py-3.5 first:pt-0 last:pb-0",
-                                            isRtl ? "flex-row-reverse" : "flex-row"
+                                            isRtl ? "flex-row" : "flex-row"
                                         )}
                                     >
-                                        <span className={clsx(
-                                            "text-xs font-medium text-subtle/60 min-w-[80px]",
-                                            isRtl ? "text-right" : "text-left"
-                                        )}>
+                                        <span
+                                            className={clsx(
+                                                "text-xs font-medium text-subtle/60 min-w-[80px]",
+                                                isRtl
+                                                    ? "text-right"
+                                                    : "text-left"
+                                            )}
+                                        >
                                             {detail.label}
                                         </span>
                                         <span className="flex-1 text-[0.95rem] font-medium text-text/90">
@@ -988,8 +1008,8 @@ export function LeadForm({
                                     field.id === "phone"
                                         ? "tel"
                                         : field.id === "email"
-                                          ? "email"
-                                          : undefined
+                                        ? "email"
+                                        : undefined
                                 }
                                 dir={
                                     field.id === "phone" || field.id === "email"
@@ -1000,8 +1020,8 @@ export function LeadForm({
                                     field.id === "email"
                                         ? "email"
                                         : field.id === "phone"
-                                            ? "tel"
-                                            : undefined
+                                        ? "tel"
+                                        : undefined
                                 }
                                 onBlur={fieldBlur}
                             />
@@ -1026,9 +1046,6 @@ export function LeadForm({
                                 isRtl ? "flex" : "inline-flex"
                             )}
                         >
-                            <span className="text-[0.78rem] text-subtle/60">
-                                {summary.categoryLabel}:
-                            </span>
                             <span className="text-sm font-medium text-text/90">
                                 {summary.categoryValue}
                             </span>
@@ -1117,7 +1134,7 @@ export function LeadForm({
                         )}
                     </div>
                 </div>
-                <p className="mt-5 text-start text-xs text-subtle/70">
+                <p className="mt-5 text-center !text-[0.7rem] text-subtle/70">
                     {privacyCopy}
                 </p>
             </div>
