@@ -187,7 +187,7 @@ export function HomeExperienceSection() {
             className="bg-primary/10"
             data-analytics-section="Experience"
         >
-            <Container className="flex min-h-[28rem] flex-col items-center justify-center py-20">
+            <Container className="flex min-h-[28rem] flex-col items-center justify-center py-10">
                 <div
                     dir={direction}
                     lang={locale}
@@ -221,7 +221,10 @@ export function HomeExperienceSection() {
 
                         {(hasInteracted || showWave) && (
                             <div className="flex w-full items-center justify-center">
-                                <ExperienceWave active={showWave} audioElement={audioRef.current} />
+                                <ExperienceWave
+                                    active={showWave}
+                                    audioElement={audioRef.current}
+                                />
                             </div>
                         )}
                     </div>
