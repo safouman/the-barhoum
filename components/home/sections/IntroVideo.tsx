@@ -27,7 +27,7 @@ export const HomeIntroVideo = ({ locale, media }: HomeIntroVideoProps) => {
             data-analytics-section="IntroVideo"
             data-analytics-engage="true"
         >
-            <Container className="py-16 sm:py-20 md:py-24">
+            <Container className="py-16 sm:py-20 md:py-14">
                 <div
                     className={clsx(
                         "mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-10 xl:px-12 text-center",
