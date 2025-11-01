@@ -1,4 +1,8 @@
+import { readFile } from "fs/promises";
+import path from "path";
 import { ImageResponse } from "next/og";
+
+export const runtime = "nodejs";
 
 export const size = {
     width: 1200,
@@ -8,25 +12,9 @@ export const size = {
 export const contentType = "image/png";
 
 async function loadLogoAsDataUri(): Promise<string> {
-    const logoUrl = new URL("../public/images/logo.png", import.meta.url);
-    const response = await fetch(logoUrl);
-    if (!response.ok) {
-        throw new Error(`Failed to load logo asset: ${response.statusText}`);
-    }
-    const arrayBuffer = await response.arrayBuffer();
-    const base64 = arrayBufferToBase64(arrayBuffer);
-    return `data:image/png;base64,${base64}`;
-}
-
-function arrayBufferToBase64(buffer: ArrayBuffer): string {
-    let binary = "";
-    const bytes = new Uint8Array(buffer);
-    const chunkSize = 0x8000;
-    for (let i = 0; i < bytes.length; i += chunkSize) {
-        const chunk = bytes.subarray(i, i + chunkSize);
-        binary += String.fromCharCode(...chunk);
-    }
-    return btoa(binary);
+    const filePath = path.join(process.cwd(), "public", "images", "logo.png");
+    const file = await readFile(filePath);
+    return `data:image/png;base64,${file.toString("base64")}`;
 }
 
 export default async function OpengraphImage() {
