@@ -17,8 +17,7 @@
         "Noto Naskh Arabic", system-ui, -apple-system, BlinkMacSystemFont,
         "Segoe UI", sans-serif;
     --font-signature-latin: "Brush Script MT", "Comic Sans MS", cursive;
-    --font-signature-arabic: var(--font-harmattan, "Harmattan"),
-        "Arslan Wessam A";
+    --font-signature-arabic: "Playpen Sans Arabic", "Arslan Wessam A";
     --font-weight-regular: 400;
     --font-weight-bold: 600;
     --color-background: #ffffff;
@@ -56,6 +55,15 @@
     --font-size-eyebrow: clamp(0.8rem, 1.1vw, 0.95rem);
     --font-size-quote: clamp(1.6rem, 3.4vw, 2.2rem);
     --font-size-section-title: clamp(2rem, 4vw, 2.75rem);
+}
+
+@font-face {
+    font-family: "Playpen Sans Arabic";
+    src: url("https://fonts.gstatic.com/s/playpensansarabic/v8/KtkGAKiSeo38bkPvhIqjU6aCgha2der-Z4VIEhR8sOKet-ZBoLPc.ttf")
+        format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
 }
 
 @font-face {

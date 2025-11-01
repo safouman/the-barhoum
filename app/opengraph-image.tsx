@@ -29,25 +29,34 @@ export default async function OpengraphImage() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    backgroundColor: "#031112",
+                    backgroundColor: "#021516",
                     backgroundImage:
-                        "radial-gradient(circle at 50% 15%, rgba(32, 196, 188, 0.24), transparent 55%), radial-gradient(circle at 50% 85%, rgba(32, 196, 188, 0.14), transparent 70%)",
+                        "radial-gradient(circle at 50% 20%, rgba(32, 196, 188, 0.18), transparent 60%)",
                 }}
             >
                 <div
                     style={{
-                        width: 430,
-                        height: 600,
+                        width: 420,
+                        height: 560,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        backgroundImage: `url(${logoSrc})`,
-                        backgroundRepeat: "no-repeat",
-                        backgroundSize: "contain",
-                        backgroundPosition: "center",
-                        filter: "drop-shadow(0 30px 90px rgba(0, 0, 0, 0.35))",
+                        borderRadius: 48,
+                        padding: "48px 56px",
                     }}
-                />
+                >
+                    <img
+                        src={logoSrc}
+                        alt="Ibrahim Ben Abdallah logo"
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "contain",
+                        }}
+                        width={320}
+                        height={464}
+                    />
+                </div>
             </div>
         ),
         {

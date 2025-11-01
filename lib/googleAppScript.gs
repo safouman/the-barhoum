@@ -5,9 +5,6 @@ const SECRET_KEY =
 // Column layout helpers (1-based index)
 const COL_TIMESTAMP = 1;
 const COL_LEAD_ID = 2;
-const COL_PAYMENT_LINK = 17;
-const COL_PAYMENT_STATUS = 18;
-const COL_PAID_AT = 19;
 const HEADER_ROWS = 1; // adjust if your sheet uses more headers
 
 function jsonResponse(payload) {
@@ -79,9 +76,6 @@ function handleCreateLead(sheet, requestData) {
         requestData.passphrase || "",
         requestData.category || "",
         requestData.package || "",
-        requestData.payment_link || "",
-        requestData.payment_status || "",
-        requestData.paid_at || "",
     ];
 
     sheet.appendRow(newRow);
@@ -96,7 +90,7 @@ function handleCreateLead(sheet, requestData) {
     });
 }
 
-function handleAttachPaymentLink(sheet, requestData) {
+function handleAttachPaymentLink(_sheet, requestData) {
     const leadId = (requestData.leadId || "").trim();
     if (!leadId) {
         return jsonResponse({
@@ -105,27 +99,15 @@ function handleAttachPaymentLink(sheet, requestData) {
         });
     }
 
-    const paymentLink = requestData.payment_link || "";
-    const row = findLeadRow(sheet, leadId);
-
-    if (row === -1) {
-        return jsonResponse({
-            success: false,
-            error: "Lead not found for payment link update",
-        });
-    }
-
-    sheet.getRange(row, COL_PAYMENT_LINK).setValue(paymentLink);
-    sheet.getRange(row, COL_TIMESTAMP).setValue(new Date());
-
     return jsonResponse({
         success: true,
-        message: "Payment link updated successfully",
-        row,
+        message: "Payment link updates are disabled; no changes applied.",
+        row: null,
+        skipped: true,
     });
 }
 
-function handleMarkPaid(sheet, requestData) {
+function handleMarkPaid(_sheet, requestData) {
     const leadId = (requestData.leadId || "").trim();
     if (!leadId) {
         return jsonResponse({
@@ -134,35 +116,11 @@ function handleMarkPaid(sheet, requestData) {
         });
     }
 
-    const row = findLeadRow(sheet, leadId);
-
-    if (row === -1) {
-        return jsonResponse({
-            success: false,
-            error: "Lead not found for markPaid operation",
-        });
-    }
-
-    const statusRaw = (requestData.payment_status || "Paid").toString().trim();
-    const status = statusRaw || "Paid";
-    const paidAtRaw = requestData.paid_at;
-    let paidAtValue = new Date();
-    if (paidAtRaw) {
-        const parsedDate = new Date(paidAtRaw);
-        if (!isNaN(parsedDate.getTime())) {
-            paidAtValue = parsedDate;
-        }
-    }
-
-    sheet.getRange(row, COL_PAYMENT_STATUS).setValue(status);
-    sheet.getRange(row, COL_PAID_AT).setValue(paidAtValue);
-    sheet.getRange(row, COL_TIMESTAMP).setValue(new Date());
-
     return jsonResponse({
         success: true,
-        message: "Lead marked as paid successfully",
-        row,
-        status,
+        message: "Mark paid operation skipped; payment tracking disabled.",
+        row: null,
+        skipped: true,
     });
 }
 
@@ -217,26 +175,21 @@ function testCreateLead() {
         bestContactTime: "Evenings",
         category: "me_and_me",
         package: "program_breakthrough",
-        payment_link: "",
+        passphrase: "open-sesame",
     });
     Logger.log(response.getContent());
 }
 
 function testAttachPaymentLink() {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    const response = handleAttachPaymentLink(sheet, {
+    const response = handleAttachPaymentLink(null, {
         leadId: "test-lead-123",
-        payment_link: "https://buy.stripe.com/test_123456789",
     });
     Logger.log(response.getContent());
 }
 
 function testMarkPaid() {
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
-    const response = handleMarkPaid(sheet, {
+    const response = handleMarkPaid(null, {
         leadId: "test-lead-123",
-        payment_status: "Paid",
-        paid_at: new Date().toISOString(),
     });
     Logger.log(response.getContent());
 }
