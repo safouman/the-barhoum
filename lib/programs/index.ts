@@ -4,6 +4,7 @@ import { createHash } from "crypto";
 import { getPackages, getProgramCopy, type Locale } from "@/lib/content";
 import {
     getIndividualProgramKeyBySessions,
+    type CategoryKey,
     type IndividualProgramKey,
 } from "@/lib/commerce/packages";
 import {
@@ -28,6 +29,7 @@ export interface NormalizedProgram {
     sessions?: number;
     durationLabel?: string;
     copy: Record<Locale, NormalizedProgramCopy>;
+    categoryId?: CategoryKey;
 }
 
 export interface ProgramCatalogResult {
@@ -57,10 +59,7 @@ async function buildStaticProgramCatalog(): Promise<ProgramCatalogResult> {
     const [packages, copy] = await Promise.all([getPackages(), getProgramCopy()]);
 
     const staticPrograms: NormalizedProgram[] = packages
-        .filter(
-            (pkg: Package): pkg is Package & { categoryId: "me_and_me" } =>
-                pkg.categoryId === "me_and_me" && pkg.visible
-        )
+        .filter((pkg: Package) => pkg.visible)
         .map((pkg) => {
             const programId = pkg.id;
             const arCopy = copy.ar[programId] ?? {
@@ -77,8 +76,8 @@ async function buildStaticProgramCatalog(): Promise<ProgramCatalogResult> {
 
             return {
                 programId,
-                stripeProductId: `static-${programId}`,
-                stripePriceId: `static-price-${programId}`,
+                stripeProductId: `static-${pkg.categoryId}-${programId}`,
+                stripePriceId: `static-price-${pkg.categoryId}-${programId}`,
                 priceAmountMinor: Math.round(pkg.price.amount * 100),
                 currency: pkg.price.currency,
                 sessions: undefined,
@@ -87,12 +86,13 @@ async function buildStaticProgramCatalog(): Promise<ProgramCatalogResult> {
                     ar: arCopy,
                     en: enCopy,
                 },
+                categoryId: pkg.categoryId,
             } satisfies NormalizedProgram;
         });
 
     const warnings: string[] = [];
     if (!staticPrograms.length) {
-        warnings.push("[Programs] ⚠️ No static programs available for me_and_me.");
+        warnings.push("[Programs] ⚠️ No static programs available for any category.");
     }
 
     return {
@@ -193,6 +193,22 @@ export async function getPrograms(): Promise<ProgramCatalogResult> {
                 continue;
             }
 
+            const rawCategory = (program.metadata?.category_id ??
+                program.metadata?.category ??
+                program.metadata?.category_key) as string | undefined;
+            const normalizedCategory = (() => {
+                if (!rawCategory) return undefined;
+                const candidate = rawCategory.trim() as CategoryKey;
+                if (
+                    candidate === "me_and_me" ||
+                    candidate === "me_and_the_other" ||
+                    candidate === "me_and_work"
+                ) {
+                    return candidate;
+                }
+                return undefined;
+            })();
+
             const arCopy = copy.ar[resolvedProgramId] ?? {
                 title: program.metadata?.title_ar ?? resolvedProgramId,
                 subtitle: program.metadata?.subtitle_ar ?? "",
@@ -228,6 +244,7 @@ export async function getPrograms(): Promise<ProgramCatalogResult> {
                     ar: arCopy,
                     en: enCopy,
                 },
+                categoryId: normalizedCategory,
             });
         }
 

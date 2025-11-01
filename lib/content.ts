@@ -27,7 +27,11 @@ export type Category = z.infer<typeof categorySchema>;
 
 const priceSchema = z.object({
     amount: z.number().nonnegative(),
-    currency: z.union([z.literal("EUR"), z.literal("USD")]),
+    currency: z.union([
+        z.literal("EUR"),
+        z.literal("USD"),
+        z.literal("TND"),
+    ]),
 });
 
 export const packageSchema = z.object({

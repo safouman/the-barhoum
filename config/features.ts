@@ -24,17 +24,17 @@ function parseBooleanFlag(
 
 const aieoEnabled = parseBooleanFlag(
     process.env.NEXT_PUBLIC_ENABLE_AIEO,
-    true
+    false
 );
 
 const stripeEnabled = parseBooleanFlag(
     process.env.NEXT_PUBLIC_ENABLE_STRIPE ?? process.env.ENABLE_STRIPE,
-    true
+    false
 );
 
 const audioExperienceEnabled = parseBooleanFlag(
     process.env.NEXT_PUBLIC_SHOW_AUDIO_EXPERIENCE,
-    true
+    false
 );
 
 export const featureFlags = Object.freeze({

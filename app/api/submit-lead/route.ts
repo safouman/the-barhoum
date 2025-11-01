@@ -8,8 +8,7 @@ import type { SharedAnalyticsContext } from "@/lib/analytics/shared";
 import { trackAutomationEvent } from "@/lib/analytics/server";
 import { sendLeadWhatsAppNotification } from "@/lib/whatsapp/notifications";
 import { isStripeEnabled } from "@/config/features";
-
-const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+import { hitRateLimit } from "@/lib/rate-limit";
 
 function resolveProgramLabel(program: IndividualProgramConfig): string {
     return (
@@ -27,6 +26,14 @@ const RATE_LIMIT_WINDOW = 60 * 60 * 1000;
 const MAX_REQUESTS_PER_WINDOW = 15;
 const MAX_ATTEMPTS = 3;
 const INITIAL_RETRY_DELAY = 1000;
+
+const DEBUG_LOGS_ENABLED = process.env.ENABLE_DEBUG_LOGS === "true";
+
+const debugLog = (...args: Parameters<typeof console.log>) => {
+    if (DEBUG_LOGS_ENABLED) {
+        console.log(...args);
+    }
+};
 
 function parseDeviceType(userAgent: string | null): string {
     if (!userAgent) return "unknown";
@@ -110,36 +117,6 @@ function getRateLimitKey(req: NextRequest): string {
     return ip;
 }
 
-function cleanupRateLimitEntries(currentTime: number): void {
-    rateLimitMap.forEach((record, ip) => {
-        if (currentTime > record.resetTime) {
-            rateLimitMap.delete(ip);
-        }
-    });
-}
-
-function checkRateLimit(key: string): { allowed: boolean; remaining: number } {
-    const now = Date.now();
-    cleanupRateLimitEntries(now);
-
-    const record = rateLimitMap.get(key);
-
-    if (!record) {
-        rateLimitMap.set(key, {
-            count: 1,
-            resetTime: now + RATE_LIMIT_WINDOW,
-        });
-        return { allowed: true, remaining: MAX_REQUESTS_PER_WINDOW - 1 };
-    }
-
-    if (record.count >= MAX_REQUESTS_PER_WINDOW) {
-        return { allowed: false, remaining: 0 };
-    }
-
-    record.count += 1;
-    return { allowed: true, remaining: MAX_REQUESTS_PER_WINDOW - record.count };
-}
-
 async function delay(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -155,7 +132,7 @@ async function fetchWithRetry(
 
     for (let attempt = 0; attempt < maxAttempts; attempt++) {
         try {
-            console.log(
+            debugLog(
                 `[${requestId}] 📡 Attempt ${
                     attempt + 1
                 }/${maxAttempts} - Sending request to Google Sheets`
@@ -164,7 +141,7 @@ async function fetchWithRetry(
 
             // If we get ANY response (even errors), it means the request reached the server
             // We should NOT retry in this case to avoid duplicate entries
-            console.log(
+            debugLog(
                 `[${requestId}] ✅ Received response with status: ${response.status}`
             );
 
@@ -183,12 +160,12 @@ async function fetchWithRetry(
 
             if (isNetworkError && !isLastAttempt) {
                 const delayMs = INITIAL_RETRY_DELAY * Math.pow(2, attempt);
-                console.log(
+                debugLog(
                     `[${requestId}] ⚠️ Network error on attempt ${
                         attempt + 1
                     }: ${error.message}`
                 );
-                console.log(
+                debugLog(
                     `[${requestId}] 🔄 Retrying in ${delayMs}ms (attempt ${
                         attempt + 2
                     }/${maxAttempts})`
@@ -199,7 +176,7 @@ async function fetchWithRetry(
 
             const errorMessage =
                 error instanceof Error ? error.message : String(error);
-            console.log(
+            debugLog(
                 `[${requestId}] ❌ Non-retryable error: ${errorMessage}`
             );
 
@@ -234,10 +211,10 @@ async function processStripePaymentLink({
 }): Promise<StripeJobResult> {
     const jobId = `${requestId}:stripe`;
 
-    console.log(`[${jobId}] 🧵 Starting Stripe payment link workflow`);
+    debugLog(`[${jobId}] 🧵 Starting Stripe payment link workflow`);
 
     if (!isStripeEnabled) {
-        console.log(
+        debugLog(
             `[${jobId}] 🔕 Stripe disabled via feature flag; skipping payment link generation`
         );
         return { status: "skipped", reason: "stripe-disabled" };
@@ -260,9 +237,7 @@ async function processStripePaymentLink({
     const packageIdForStripe =
         resolvedSelection && resolvedSelection.type === "individual-program"
             ? resolvedSelection.program.programId
-            : resolvedSelection && resolvedSelection.type === "legacy-price"
-              ? resolvedSelection.packageId
-              : packageIdentifier ?? formData.package;
+            : packageIdentifier ?? formData.package;
 
     const packageLabelForStripe =
         resolvedSelection && resolvedSelection.type === "individual-program"
@@ -270,16 +245,11 @@ async function processStripePaymentLink({
             : formData.package;
 
     if (resolvedSelection && resolvedSelection.type === "individual-program") {
-        console.log(`[${jobId}] 🎯 Stripe program context`, {
+        debugLog(`[${jobId}] 🎯 Stripe program context`, {
             programKey: resolvedSelection.program.programId,
             programLabel: resolveProgramLabel(resolvedSelection.program),
             productId: resolvedSelection.program.productId,
             priceId: resolvedSelection.program.priceId,
-        });
-    } else if (resolvedSelection && resolvedSelection.type === "legacy-price") {
-        console.log(`[${jobId}] 🎯 Stripe legacy package context`, {
-            packageId: resolvedSelection.packageId,
-            priceId: resolvedSelection.priceId,
         });
     } else if (!resolvedSelection) {
         console.warn(
@@ -289,38 +259,32 @@ async function processStripePaymentLink({
 
     const stripeUpdateDetails: Record<string, string> = {};
 
-    if (resolvedSelection) {
-        if (resolvedSelection.type === "individual-program") {
-            stripeUpdateDetails.stripe_product_id =
-                resolvedSelection.program.productId;
-            stripeUpdateDetails.stripe_price_id =
-                resolvedSelection.program.priceId;
-            stripeUpdateDetails.stripe_program_key =
-                resolvedSelection.program.programId;
-            stripeUpdateDetails.stripe_program_label =
-                packageLabelForStripe;
-            stripeUpdateDetails.stripe_program_description =
-                resolveProgramDescription(resolvedSelection.program);
-            stripeUpdateDetails.stripe_program_sessions = String(
-                resolvedSelection.program.sessions ??
-                    resolvedSelection.program.metadata?.sessions ??
-                    ""
-            );
-            stripeUpdateDetails.stripe_program_duration =
-                resolvedSelection.program.durationLabel ??
-                resolvedSelection.program.metadata?.duration_label ??
-                resolvedSelection.program.metadata?.duration ??
-                "";
-            stripeUpdateDetails.stripe_program_currency =
-                resolvedSelection.program.currency;
-            stripeUpdateDetails.stripe_program_amount_minor = String(
-                resolvedSelection.program.priceAmount
-            );
-        } else {
-            stripeUpdateDetails.stripe_price_id = resolvedSelection.priceId;
-            stripeUpdateDetails.stripe_package_id =
-                resolvedSelection.packageId;
-        }
+    if (resolvedSelection && resolvedSelection.type === "individual-program") {
+        stripeUpdateDetails.stripe_product_id =
+            resolvedSelection.program.productId;
+        stripeUpdateDetails.stripe_price_id =
+            resolvedSelection.program.priceId;
+        stripeUpdateDetails.stripe_program_key =
+            resolvedSelection.program.programId;
+        stripeUpdateDetails.stripe_program_label =
+            packageLabelForStripe;
+        stripeUpdateDetails.stripe_program_description =
+            resolveProgramDescription(resolvedSelection.program);
+        stripeUpdateDetails.stripe_program_sessions = String(
+            resolvedSelection.program.sessions ??
+                resolvedSelection.program.metadata?.sessions ??
+                ""
+        );
+        stripeUpdateDetails.stripe_program_duration =
+            resolvedSelection.program.durationLabel ??
+            resolvedSelection.program.metadata?.duration_label ??
+            resolvedSelection.program.metadata?.duration ??
+            "";
+        stripeUpdateDetails.stripe_program_currency =
+            resolvedSelection.program.currency;
+        stripeUpdateDetails.stripe_program_amount_minor = String(
+            resolvedSelection.program.priceAmount
+        );
     }
 
     try {
@@ -396,7 +360,7 @@ async function processStripePaymentLink({
         const responseText = await response
             .text()
             .catch(() => "Unable to read response");
-        console.log(
+        debugLog(
             `[${jobId}] ✅ Payment link applied in Google Sheet`,
             responseText.substring(0, 500)
         );
@@ -418,10 +382,6 @@ async function processStripePaymentLink({
             analyticsPayload.program_amount_minor = String(
                 resolvedSelection.program.priceAmount
             );
-        } else if (resolvedSelection?.type === "legacy-price") {
-            analyticsPayload.stripe_price_id = resolvedSelection.priceId;
-            analyticsPayload.stripe_package_id =
-                resolvedSelection.packageId;
         }
 
         await trackAutomationEvent(
@@ -470,16 +430,20 @@ export async function POST(req: NextRequest) {
         .substr(2, 9)}`;
     const startTime = Date.now();
 
-    console.log(
+    debugLog(
         `[${requestId}] 🚀 Form submission started at ${new Date().toISOString()}`
     );
 
     try {
         const rateLimitKey = getRateLimitKey(req);
-        const rateLimit = checkRateLimit(rateLimitKey);
+        const rateLimit = await hitRateLimit(
+            rateLimitKey,
+            RATE_LIMIT_WINDOW,
+            MAX_REQUESTS_PER_WINDOW
+        );
 
-        console.log(
-            `[${requestId}] Rate limit check: allowed=${rateLimit.allowed}, remaining=${rateLimit.remaining}`
+        debugLog(
+            `[${requestId}] Rate limit check: allowed=${rateLimit.allowed}, remaining=${rateLimit.remaining}, backend=${rateLimit.backend}`
         );
 
         if (!rateLimit.allowed) {
@@ -491,7 +455,17 @@ export async function POST(req: NextRequest) {
                     success: false,
                     error: "Too many submissions. Please try again later.",
                 },
-                { status: 429 }
+                {
+                    status: 429,
+                    headers: {
+                        "Retry-After": String(
+                            Math.max(1, Math.ceil(rateLimit.resetMs / 1000))
+                        ),
+                        "X-RateLimit-Limit": String(rateLimit.limit),
+                        "X-RateLimit-Remaining": String(rateLimit.remaining),
+                        "X-RateLimit-Backend": rateLimit.backend,
+                    },
+                }
             );
         }
 
@@ -503,7 +477,7 @@ export async function POST(req: NextRequest) {
                 body && typeof body === "object"
                     ? Object.keys(body as Record<string, unknown>)
                     : [];
-            console.log(
+            debugLog(
                 `[${requestId}] 📝 Received form data payload with keys: ${
                     bodyKeys.length ? bodyKeys.join(", ") : "(none)"
                 }`
@@ -543,7 +517,7 @@ export async function POST(req: NextRequest) {
         }
 
         const validationResult = leadFormSchema.safeParse(body);
-        console.log(
+        debugLog(
             `[${requestId}] Validation result: ${
                 validationResult.success ? "✅ passed" : "❌ failed"
             }`
@@ -595,23 +569,17 @@ export async function POST(req: NextRequest) {
                 );
             }
 
-            console.log(
-                `[${requestId}] 🎯 Resolved package selection`,
-                stripeSelectionForLead.type === "individual-program"
-                    ? {
-                          requested: identifierCandidate,
-                          programKey: stripeSelectionForLead.program.programId,
-                          programLabel: resolveProgramLabel(stripeSelectionForLead.program),
-                          productId: stripeSelectionForLead.program.productId,
-                          priceId: stripeSelectionForLead.program.priceId,
-                      }
-                    : {
-                          packageId: identifierCandidate,
-                          priceId: stripeSelectionForLead.priceId,
-                      }
-            );
+            if (stripeSelectionForLead) {
+                debugLog(`[${requestId}] 🎯 Resolved package selection`, {
+                    requested: identifierCandidate,
+                    programKey: stripeSelectionForLead.program.programId,
+                    programLabel: resolveProgramLabel(
+                        stripeSelectionForLead.program
+                    ),
+                    productId: stripeSelectionForLead.program.productId,
+                    priceId: stripeSelectionForLead.program.priceId,
+                });
 
-            if (stripeSelectionForLead.type === "individual-program") {
                 packageIdentifier = stripeSelectionForLead.program.programId;
                 if (!packageDisplayLabel) {
                     packageDisplayLabel = resolveProgramLabel(
@@ -619,7 +587,7 @@ export async function POST(req: NextRequest) {
                     );
                 }
             } else {
-                packageIdentifier = stripeSelectionForLead.packageId;
+                packageIdentifier = identifierCandidate;
                 if (!packageDisplayLabel) {
                     packageDisplayLabel = identifierCandidate;
                 }
@@ -638,7 +606,7 @@ export async function POST(req: NextRequest) {
             stripeSelectionForLead
         );
 
-        console.log(
+        debugLog(
             `[${requestId}] 💰 Payment eligibility check - category: ${formData.category}, country: ${formData.country}`
         );
         const needsPayment =
@@ -648,17 +616,17 @@ export async function POST(req: NextRequest) {
         const shouldAttemptStripe =
             isStripeEnabled && needsPayment && packagePresent;
 
-        console.log(
+        debugLog(
             `[${requestId}] Payment required: ${
                 needsPayment ? "✅ YES" : "❌ NO"
             }`
         );
         if (!isStripeEnabled) {
-            console.log(
+            debugLog(
                 `[${requestId}] 🔕 Stripe disabled via feature flag; payment links will not be generated`
             );
         }
-        console.log(
+        debugLog(
             `[${requestId}] Category match check: "${
                 formData.category
             }" === "me_and_me" = ${formData.category === "me_and_me"}`
@@ -669,13 +637,13 @@ export async function POST(req: NextRequest) {
                 `[${requestId}] ⚠️ Payment required but no package selected. Stripe link will not be generated.`
             );
         } else if (!needsPayment) {
-            console.log(`[${requestId}] ⏭️ Skipping payment link generation`);
+            debugLog(`[${requestId}] ⏭️ Skipping payment link generation`);
         }
 
         const googleScriptUrl = process.env.GOOGLE_SCRIPT_URL;
         const googleScriptSecret = process.env.GOOGLE_SCRIPT_SECRET;
 
-        console.log(
+        debugLog(
             `[${requestId}] Google Script config: URL=${
                 googleScriptUrl ? "✅ present" : "❌ missing"
             }, Secret=${googleScriptSecret ? "✅ present" : "❌ missing"}`
@@ -698,38 +666,34 @@ export async function POST(req: NextRequest) {
 
         const stripeLeadDetails: Record<string, string> = {};
 
-        if (stripeSelectionForLead) {
-            if (stripeSelectionForLead.type === "individual-program") {
-                stripeLeadDetails.stripe_product_id =
-                    stripeSelectionForLead.program.productId;
-                stripeLeadDetails.stripe_price_id =
-                    stripeSelectionForLead.program.priceId;
-                stripeLeadDetails.stripe_program_key =
-                    stripeSelectionForLead.program.programId;
-                stripeLeadDetails.stripe_program_label =
-                    packageDisplayName;
-                stripeLeadDetails.stripe_program_description =
-                    resolveProgramDescription(stripeSelectionForLead.program);
-                stripeLeadDetails.stripe_program_sessions = String(
-                    stripeSelectionForLead.program.sessions ??
-                        stripeSelectionForLead.program.metadata?.sessions ??
-                        ""
-                );
-                stripeLeadDetails.stripe_program_duration =
-                    stripeSelectionForLead.program.durationLabel ??
-                    stripeSelectionForLead.program.metadata?.duration_label ??
-                    stripeSelectionForLead.program.metadata?.duration ??
-                    "";
-                stripeLeadDetails.stripe_program_currency =
-                    stripeSelectionForLead.program.currency;
-                stripeLeadDetails.stripe_program_amount_minor = String(
-                    stripeSelectionForLead.program.priceAmount
-                );
-            } else {
-                stripeLeadDetails.stripe_price_id = stripeSelectionForLead.priceId;
-                stripeLeadDetails.stripe_package_id =
-                    stripeSelectionForLead.packageId;
-            }
+        if (
+            stripeSelectionForLead &&
+            stripeSelectionForLead.type === "individual-program"
+        ) {
+            stripeLeadDetails.stripe_product_id =
+                stripeSelectionForLead.program.productId;
+            stripeLeadDetails.stripe_price_id =
+                stripeSelectionForLead.program.priceId;
+            stripeLeadDetails.stripe_program_key =
+                stripeSelectionForLead.program.programId;
+            stripeLeadDetails.stripe_program_label = packageDisplayName;
+            stripeLeadDetails.stripe_program_description =
+                resolveProgramDescription(stripeSelectionForLead.program);
+            stripeLeadDetails.stripe_program_sessions = String(
+                stripeSelectionForLead.program.sessions ??
+                    stripeSelectionForLead.program.metadata?.sessions ??
+                    ""
+            );
+            stripeLeadDetails.stripe_program_duration =
+                stripeSelectionForLead.program.durationLabel ??
+                stripeSelectionForLead.program.metadata?.duration_label ??
+                stripeSelectionForLead.program.metadata?.duration ??
+                "";
+            stripeLeadDetails.stripe_program_currency =
+                stripeSelectionForLead.program.currency;
+            stripeLeadDetails.stripe_program_amount_minor = String(
+                stripeSelectionForLead.program.priceAmount
+            );
         }
 
         const payload = {
@@ -742,7 +706,7 @@ export async function POST(req: NextRequest) {
             payment_link: "",
         };
 
-        console.log(`[${requestId}] 📦 Payload prepared for Google Sheets:`, {
+        debugLog(`[${requestId}] 📦 Payload prepared for Google Sheets:`, {
             category: formData.category,
             package_key: packageIdentifier ?? "",
             package_label: packageDisplayName,
@@ -752,7 +716,7 @@ export async function POST(req: NextRequest) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 30000);
 
-        console.log(`[${requestId}] 📤 Sending to Google Sheets...`);
+        debugLog(`[${requestId}] 📤 Sending to Google Sheets...`);
 
         try {
             const response = await fetchWithRetry(
@@ -774,7 +738,7 @@ export async function POST(req: NextRequest) {
 
             clearTimeout(timeoutId);
 
-            console.log(
+            debugLog(
                 `[${requestId}] 📥 Google Sheets response received - status: ${response.status}`
             );
 
@@ -796,7 +760,7 @@ export async function POST(req: NextRequest) {
             }
 
             const responseText = await response.text();
-            console.log(
+            debugLog(
                 `[${requestId}] Google Sheets raw response:`,
                 responseText.substring(0, 500)
             );
@@ -804,7 +768,7 @@ export async function POST(req: NextRequest) {
             let result;
             try {
                 result = JSON.parse(responseText);
-                console.log(`[${requestId}] Parsed response:`, result);
+                debugLog(`[${requestId}] Parsed response:`, result);
             } catch (parseError) {
                 console.error(
                     `[${requestId}] ❌ Failed to parse Google Script response:`,
@@ -827,10 +791,10 @@ export async function POST(req: NextRequest) {
                     Boolean((result as { duplicate?: unknown }).duplicate);
 
                 const duration = Date.now() - startTime;
-                console.log(
+                debugLog(
                     `[${requestId}] ✅ Form submitted successfully to Google Sheets in ${duration}ms`
                 );
-                console.log(`[${requestId}] 🏁 Request completed successfully`);
+                debugLog(`[${requestId}] 🏁 Request completed successfully`);
 
                 if (!isDuplicate) {
                     try {
@@ -847,7 +811,7 @@ export async function POST(req: NextRequest) {
                         );
                     }
                 } else {
-                    console.log(
+                    debugLog(
                         `[${requestId}] 🔁 Duplicate lead detected; skipping WhatsApp notification`
                     );
                 }
@@ -858,7 +822,7 @@ export async function POST(req: NextRequest) {
                 let paymentLinkError: string | undefined;
 
                 if (!isDuplicate && shouldAttemptStripe) {
-                    console.log(
+                    debugLog(
                         `[${requestId}] 🧾 Processing Stripe payment link for leadId=${formData.leadId}`
                     );
                     const stripeResult = await processStripePaymentLink({
@@ -876,7 +840,7 @@ export async function POST(req: NextRequest) {
                         paymentLinkError = stripeResult.reason;
                     }
                 } else if (isDuplicate) {
-                    console.log(
+                    debugLog(
                         `[${requestId}] 🔁 Duplicate lead detected for leadId=${formData.leadId}; skipping Stripe workflow`
                     );
                     paymentLinkStatus = "skipped";

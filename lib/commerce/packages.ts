@@ -8,20 +8,7 @@ export type IndividualProgramKey =
     | "program_breakthrough"
     | "program_mastery";
 
-export type CouplesPackageId =
-    | "cpl-1-session"
-    | "cpl-3-sessions"
-    | "cpl-5-sessions";
-
-export type OrganizationPackageId =
-    | "org-1-session"
-    | "org-3-sessions"
-    | "org-5-sessions";
-
-export type PackageId =
-    | IndividualProgramKey
-    | CouplesPackageId
-    | OrganizationPackageId;
+export type PackageId = IndividualProgramKey;
 
 const INDIVIDUAL_PACKAGE_LOOKUP: Record<number, IndividualProgramKey> = {
     2: "program_exploration",
@@ -29,28 +16,8 @@ const INDIVIDUAL_PACKAGE_LOOKUP: Record<number, IndividualProgramKey> = {
     6: "program_mastery",
 };
 
-const COUPLES_PACKAGE_LOOKUP: Record<number, CouplesPackageId> = {
-    2: "cpl-1-session",
-    3: "cpl-3-sessions",
-    5: "cpl-5-sessions",
-};
-
-const ORGANIZATION_PACKAGE_LOOKUP: Record<number, OrganizationPackageId> = {
-    2: "org-1-session",
-    3: "org-3-sessions",
-    5: "org-5-sessions",
-};
-
-const PACKAGE_ID_LOOKUP: Record<CategoryKey, Record<number, PackageId>> = {
-    me_and_me: INDIVIDUAL_PACKAGE_LOOKUP,
-    me_and_the_other: COUPLES_PACKAGE_LOOKUP,
-    me_and_work: ORGANIZATION_PACKAGE_LOOKUP,
-};
-
 const PACKAGE_IDS = Object.freeze(
-    Object.values(PACKAGE_ID_LOOKUP).flatMap((categoryMap) =>
-        Object.values(categoryMap)
-    ) as PackageId[]
+    Object.values(INDIVIDUAL_PACKAGE_LOOKUP) as PackageId[]
 );
 
 export const ALL_PACKAGE_IDS = PACKAGE_IDS;
@@ -62,22 +29,6 @@ export function getIndividualProgramKeyBySessions(
     return key ?? null;
 }
 
-export function getPackageId(
-    category: CategoryKey,
-    sessions: PackSessions
-): PackageId {
-    const lookup = PACKAGE_ID_LOOKUP[category];
-    const key = lookup[Math.round(sessions)];
-
-    if (!key) {
-        throw new Error(
-            `[commerce] Unknown session count "${sessions}" for category "${category}". Provide a programId in the source data.`
-        );
-    }
-
-    return key;
-}
-
 export function isPackageId(value: unknown): value is PackageId {
     return (
         typeof value === "string" && PACKAGE_IDS.includes(value as PackageId)
@@ -87,12 +38,14 @@ export function isPackageId(value: unknown): value is PackageId {
 export function formatPackCurrency(
     amount: number,
     locale: Locale,
-    currency: string = "EUR"
+    currency: string = "TND"
 ): string {
-    const formatter = new Intl.NumberFormat("en-US", {
+    const resolvedLocale = locale === "ar" ? "ar-TN-u-nu-latn" : "en-US";
+    const formatter = new Intl.NumberFormat(resolvedLocale, {
         style: "currency",
         currency: currency.toUpperCase(),
         maximumFractionDigits: 0,
+        numberingSystem: "latn",
     });
     return formatter.format(amount);
 }

@@ -1,7 +1,5 @@
 import {
-  isPackageId,
   type IndividualProgramKey,
-  type PackageId,
 } from "@/lib/commerce/packages";
 import { isStripeEnabled } from "@/config/features";
 import {
@@ -11,24 +9,10 @@ import {
 
 export type IndividualProgramConfig = StripeProgramRecord;
 
-const OTHER_CATEGORY_PRICE_MAP: Partial<Record<PackageId, string>> = {
-  "cpl-1-session": "price_REPLACE_ME_CPL_1",
-  "cpl-3-sessions": "price_REPLACE_ME_CPL_3",
-  "cpl-5-sessions": "price_REPLACE_ME_CPL_5",
-  "org-1-session": "price_REPLACE_ME_ORG_1",
-  "org-3-sessions": "price_REPLACE_ME_ORG_3",
-  "org-5-sessions": "price_REPLACE_ME_ORG_5",
-};
-
 export type StripeSelection =
   | {
       type: "individual-program";
       program: IndividualProgramConfig;
-    }
-  | {
-      type: "legacy-price";
-      priceId: string;
-      packageId: PackageId;
     };
 
 export function isIndividualProgramKey(value: unknown): value is IndividualProgramKey {
@@ -81,17 +65,6 @@ export async function resolveStripeSelection(
     return { type: "individual-program", program };
   }
 
-  if (isPackageId(normalized)) {
-    const priceId = OTHER_CATEGORY_PRICE_MAP[normalized];
-    if (priceId) {
-      return {
-        type: "legacy-price",
-        priceId,
-        packageId: normalized,
-      };
-    }
-  }
-
   return null;
 }
 
@@ -101,18 +74,13 @@ export async function hasStripePrice(identifier: string): Promise<boolean> {
   }
   const resolved = await resolveStripeSelection(identifier);
   if (!resolved) return false;
-  if (resolved.type === "individual-program") {
-    return Boolean(resolved.program.priceId);
-  }
-  return resolved.priceId !== "";
+  return Boolean(resolved.program.priceId);
 }
 
 export async function getAllStripeIdentifiers(): Promise<string[]> {
-  const legacyIds = Object.keys(OTHER_CATEGORY_PRICE_MAP) as PackageId[];
   if (!isStripeEnabled) {
-    return legacyIds;
+    return [];
   }
   const { programs } = await getStripeProgramCatalog();
-  const programIds = programs.map((program) => program.programId);
-  return Array.from(new Set<string>([...programIds, ...legacyIds]));
+  return Array.from(new Set<string>(programs.map((program) => program.programId)));
 }

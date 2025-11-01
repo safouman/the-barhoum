@@ -2,6 +2,14 @@ import { isStripeEnabled } from "@/config/features";
 import { getStripeClient } from "./client";
 import { resolveStripeSelection } from "./config";
 
+const DEBUG_STRIPE_LOGS_ENABLED = process.env.ENABLE_DEBUG_LOGS === "true";
+
+const stripeDebugLog = (...args: Parameters<typeof console.log>) => {
+    if (DEBUG_STRIPE_LOGS_ENABLED) {
+        console.log(...args);
+    }
+};
+
 export interface CreatePaymentLinkParams {
     fullName: string;
     country: string;
@@ -16,7 +24,7 @@ export async function createPaymentLink(
     params: CreatePaymentLinkParams
 ): Promise<string | null> {
     if (!isStripeEnabled) {
-        console.log(
+        stripeDebugLog(
             "[Stripe] 🔕 Stripe disabled via feature flag; skipping payment link creation"
         );
         return null;
@@ -34,7 +42,7 @@ export async function createPaymentLink(
     const sanitizedEmail = typeof email === "string" ? email.trim() : "";
     const hasEmail = sanitizedEmail.length > 0;
 
-    console.log(
+    stripeDebugLog(
         `[Stripe] 🔍 Resolving Stripe selection for package: ${packageId}`
     );
     const selection = await resolveStripeSelection(packageId);
@@ -46,9 +54,15 @@ export async function createPaymentLink(
         return null;
     }
 
-    const isProgram = selection.type === "individual-program";
-    const priceId = isProgram ? selection.program.priceId : selection.priceId;
-    const productId = isProgram ? selection.program.productId : null;
+    if (selection.type !== "individual-program") {
+        console.warn(
+            `[Stripe] ⚠️ Unsupported Stripe selection type for identifier: ${packageId}`
+        );
+        return null;
+    }
+
+    const priceId = selection.program.priceId;
+    const productId = selection.program.productId ?? null;
 
     if (!priceId) {
         console.warn(
@@ -57,22 +71,15 @@ export async function createPaymentLink(
         return null;
     }
 
-    if (isProgram) {
-        console.log(`[Stripe] ✅ Resolved individual program`, {
-            identifier: packageId,
-            programId: selection.program.programId,
-            productId: selection.program.productId,
-            priceId: selection.program.priceId,
-            currency: selection.program.currency,
-        });
-    } else {
-        console.log(`[Stripe] ✅ Resolved legacy package`, {
-            identifier: packageId,
-            priceId,
-        });
-    }
+    stripeDebugLog(`[Stripe] ✅ Resolved individual program`, {
+        identifier: packageId,
+        programId: selection.program.programId,
+        productId: selection.program.productId,
+        priceId: selection.program.priceId,
+        currency: selection.program.currency,
+    });
 
-    console.log(`[Stripe] 🔧 Initializing Stripe client...`);
+    stripeDebugLog(`[Stripe] 🔧 Initializing Stripe client...`);
     const stripe = getStripeClient();
     if (!stripe) {
         console.error(
@@ -83,11 +90,11 @@ export async function createPaymentLink(
         );
         return null;
     }
-    console.log(`[Stripe] ✅ Stripe client initialized successfully`);
+    stripeDebugLog(`[Stripe] ✅ Stripe client initialized successfully`);
 
     try {
-        console.log(`[Stripe] 📡 Creating payment link with Stripe API...`);
-        console.log(`[Stripe] Parameters:`, {
+        stripeDebugLog(`[Stripe] 📡 Creating payment link with Stripe API...`);
+        stripeDebugLog(`[Stripe] Parameters:`, {
             priceId,
             productId: productId ?? undefined,
             customerEmail: hasEmail ? sanitizedEmail : undefined,
@@ -97,35 +104,27 @@ export async function createPaymentLink(
             category,
         });
 
-        const programMetadata: Record<string, string> = isProgram
-            ? {
-                  program_id: selection.program.programId,
-                  stripe_product_id: selection.program.productId,
-                  stripe_price_id: selection.program.priceId,
-                  program_currency: selection.program.currency,
-                  program_amount_minor: String(
-                      selection.program.priceAmount
-                  ),
-                  program_label:
-                      selection.program.metadata?.program_label ??
-                      selection.program.metadata?.title_en ??
-                      selection.program.programId,
-                  program_sessions:
-                      selection.program.sessions !== undefined
-                          ? String(selection.program.sessions)
-                          : selection.program.metadata?.sessions ?? "",
-                  program_duration:
-                      selection.program.durationLabel ??
-                      selection.program.metadata?.duration_label ??
-                      selection.program.metadata?.duration ??
-                      "",
-                  program_source:
-                      selection.program.metadata?.source ?? "",
-              }
-            : {
-                  stripe_price_id: priceId,
-                  program_label: packageId,
-              };
+        const programMetadata: Record<string, string> = {
+            program_id: selection.program.programId,
+            stripe_product_id: selection.program.productId,
+            stripe_price_id: selection.program.priceId,
+            program_currency: selection.program.currency,
+            program_amount_minor: String(selection.program.priceAmount),
+            program_label:
+                selection.program.metadata?.program_label ??
+                selection.program.metadata?.title_en ??
+                selection.program.programId,
+            program_sessions:
+                selection.program.sessions !== undefined
+                    ? String(selection.program.sessions)
+                    : selection.program.metadata?.sessions ?? "",
+            program_duration:
+                selection.program.durationLabel ??
+                selection.program.metadata?.duration_label ??
+                selection.program.metadata?.duration ??
+                "",
+            program_source: selection.program.metadata?.source ?? "",
+        };
         const sharedMetadata: Record<string, string> = {
             ...programMetadata,
             ...(leadId ? { lead_id: leadId } : {}),
@@ -168,10 +167,10 @@ export async function createPaymentLink(
             },
         });
 
-        console.log(`[Stripe] ✅ Payment link created successfully!`);
-        console.log(`[Stripe] Payment Link URL: ${paymentLink.url}`);
-        console.log(`[Stripe] Payment Link ID: ${paymentLink.id}`);
-        console.log(`[Stripe] Payment Link Details:`, {
+        stripeDebugLog(`[Stripe] ✅ Payment link created successfully!`);
+        stripeDebugLog(`[Stripe] Payment Link URL: ${paymentLink.url}`);
+        stripeDebugLog(`[Stripe] Payment Link ID: ${paymentLink.id}`);
+        stripeDebugLog(`[Stripe] Payment Link Details:`, {
             id: paymentLink.id,
             url: paymentLink.url,
             active: paymentLink.active,

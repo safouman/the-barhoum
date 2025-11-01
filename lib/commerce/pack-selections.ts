@@ -1,6 +1,5 @@
 import {
     getIndividualProgramKeyBySessions,
-    getPackageId,
     type CategoryKey,
     type IndividualProgramKey,
     type PackageId,
@@ -41,21 +40,17 @@ export function createPackSelection({
             return pack.programKey as PackageId;
         }
 
-        if (category === "me_and_me") {
-            const programKey = pack.sessions
-                ? getIndividualProgramKeyBySessions(pack.sessions)
-                : null;
+        if (category === "me_and_me" && pack.sessions != null) {
+            const programKey = getIndividualProgramKeyBySessions(
+                pack.sessions
+            );
             if (programKey) {
                 return programKey;
             }
         }
 
-        if (pack.sessions != null) {
-            return getPackageId(category, pack.sessions);
-        }
-
         throw new Error(
-            `[pack-selection] Unable to resolve package id for category "${category}". Provide a programKey or sessions value.`
+            `[pack-selection] Unable to resolve package id for category "${category}". Provide a programKey for this pack.`
         );
     })();
 

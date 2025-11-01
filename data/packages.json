@@ -2,8 +2,14 @@
   {
     "id": "program_exploration",
     "categoryId": "me_and_me",
-    "title": {"ar": "Exploration and Initiation", "en": "Exploration and Initiation"},
-    "price": {"amount": 700, "currency": "EUR"},
+    "title": {
+      "ar": "Exploration and Initiation",
+      "en": "Exploration and Initiation"
+    },
+    "price": {
+      "amount": 700,
+      "currency": "TND"
+    },
     "features": {
       "ar": [
         "تسجيل صوتي",
@@ -23,8 +29,14 @@
   {
     "id": "program_breakthrough",
     "categoryId": "me_and_me",
-    "title": {"ar": "Breakthrough Guaranteed", "en": "Breakthrough Guaranteed"},
-    "price": {"amount": 1000, "currency": "EUR"},
+    "title": {
+      "ar": "Breakthrough Guaranteed",
+      "en": "Breakthrough Guaranteed"
+    },
+    "price": {
+      "amount": 1000,
+      "currency": "TND"
+    },
     "features": {
       "ar": [
         "خمس تسجيلات صوتيّة",
@@ -46,8 +58,14 @@
   {
     "id": "program_mastery",
     "categoryId": "me_and_me",
-    "title": {"ar": "Mastery and Independency", "en": "Mastery and Independency"},
-    "price": {"amount": 1600, "currency": "EUR"},
+    "title": {
+      "ar": "Mastery and Independency",
+      "en": "Mastery and Independency"
+    },
+    "price": {
+      "amount": 1600,
+      "currency": "TND"
+    },
     "features": {
       "ar": [
         "خمس تسجيلات صوتيّة",
@@ -67,36 +85,173 @@
     "visible": true
   },
   {
-    "id": "cpl-alignment",
+    "id": "program_exploration",
     "categoryId": "me_and_the_other",
-    "title": {"ar": "انسجام الشركاء", "en": "Partners Alignment"},
-    "price": {"amount": 320, "currency": "EUR"},
+    "title": {
+      "ar": "Exploration and Initiation",
+      "en": "Exploration and Initiation"
+    },
+    "price": {
+      "amount": 700,
+      "currency": "TND"
+    },
     "features": {
-      "ar": ["جلسات مشتركة + فردية", "تمارين تواصل", "أدوات لإدارة الخلاف"],
-      "en": ["Joint + solo sessions", "Communication rituals", "Conflict navigation toolkit"]
+      "ar": [
+        "تسجيل صوتي",
+        "تمرين مصمّم خصّيصا لمرحلتك كمقدّمة للبرنامج",
+        "حصتين online مع البرهوم",
+        "مدّة التّدريب من أسبوعين إلى ثلاثة أسابيع"
+      ],
+      "en": [
+        "1 audio recording",
+        "Custom-designed exercise introducing your current phase",
+        "2 online sessions with Barhoum",
+        "Training duration: 2–3 weeks"
+      ]
     },
     "visible": true
   },
   {
-    "id": "org-lead",
-    "categoryId": "me_and_work",
-    "title": {"ar": "قيادة متزنة", "en": "Balanced Leadership"},
-    "price": {"amount": 2400, "currency": "USD"},
+    "id": "program_breakthrough",
+    "categoryId": "me_and_the_other",
+    "title": {
+      "ar": "Breakthrough Guaranteed",
+      "en": "Breakthrough Guaranteed"
+    },
+    "price": {
+      "amount": 1000,
+      "currency": "TND"
+    },
     "features": {
-      "ar": ["ورشة حضورية", "جلسات متابعة تنفيذية", "تقرير ثقافة الفريق"],
-      "en": ["On-site intensive", "Executive follow-ups", "Team culture brief"]
+      "ar": [
+        "خمس تسجيلات صوتيّة",
+        "زوز تمارين مصمّمة خصّيصا لمرحلتك",
+        "پرومپت ذكاء إصطناعي للمرافقة بعد انتهاء التّدريب",
+        "أربعة حصص online مع البرهوم",
+        "مدّة التّدريب من ثلاث أسابيع إلى خمس أسابيع"
+      ],
+      "en": [
+        "5 audio recordings",
+        "2 custom-designed exercises for your current phase",
+        "1 AI-guided prompt for post-program support",
+        "4 online sessions with Barhoum",
+        "Training duration: 3–5 weeks"
+      ]
     },
     "visible": true
   },
   {
-    "id": "org-retainer",
-    "categoryId": "me_and_work",
-    "title": {"ar": "شراكة مستمرة", "en": "Ongoing Partnership"},
-    "price": {"amount": 4800, "currency": "USD"},
-    "features": {
-      "ar": ["دعم شهري", "جلسات تدريب للفرق", "لوحة قياس مخصصة"],
-      "en": ["Monthly advisory", "Team training sessions", "Custom measurement dashboard"]
+    "id": "program_mastery",
+    "categoryId": "me_and_the_other",
+    "title": {
+      "ar": "Mastery and Independency",
+      "en": "Mastery and Independency"
     },
-    "visible": false
+    "price": {
+      "amount": 1600,
+      "currency": "TND"
+    },
+    "features": {
+      "ar": [
+        "خمس تسجيلات صوتيّة",
+        "أربعة تمارين مصمّمة خصّيصا لمرحلتك",
+        "۲ پرومپت ذكاء إصطناعي نحضّرهملك للمرافقة بعد انتهاء التّدريب",
+        "ستة حصص online مع البرهوم",
+        "مدّة التّدريب من شهر ونصف إلى شهرين"
+      ],
+      "en": [
+        "5 audio recordings",
+        "4 custom-designed exercises for your current phase",
+        "2 AI-guided prompts prepared for post-program support",
+        "6 online sessions with Barhoum",
+        "Training duration: 1.5–2 months"
+      ]
+    },
+    "visible": true
+  },
+  {
+    "id": "program_exploration",
+    "categoryId": "me_and_work",
+    "title": {
+      "ar": "Exploration and Initiation",
+      "en": "Exploration and Initiation"
+    },
+    "price": {
+      "amount": 700,
+      "currency": "TND"
+    },
+    "features": {
+      "ar": [
+        "تسجيل صوتي",
+        "تمرين مصمّم خصّيصا لمرحلتك كمقدّمة للبرنامج",
+        "حصتين online مع البرهوم",
+        "مدّة التّدريب من أسبوعين إلى ثلاثة أسابيع"
+      ],
+      "en": [
+        "1 audio recording",
+        "Custom-designed exercise introducing your current phase",
+        "2 online sessions with Barhoum",
+        "Training duration: 2–3 weeks"
+      ]
+    },
+    "visible": true
+  },
+  {
+    "id": "program_breakthrough",
+    "categoryId": "me_and_work",
+    "title": {
+      "ar": "Breakthrough Guaranteed",
+      "en": "Breakthrough Guaranteed"
+    },
+    "price": {
+      "amount": 1000,
+      "currency": "TND"
+    },
+    "features": {
+      "ar": [
+        "خمس تسجيلات صوتيّة",
+        "زوز تمارين مصمّمة خصّيصا لمرحلتك",
+        "پرومپت ذكاء إصطناعي للمرافقة بعد انتهاء التّدريب",
+        "أربعة حصص online مع البرهوم",
+        "مدّة التّدريب من ثلاث أسابيع إلى خمس أسابيع"
+      ],
+      "en": [
+        "5 audio recordings",
+        "2 custom-designed exercises for your current phase",
+        "1 AI-guided prompt for post-program support",
+        "4 online sessions with Barhoum",
+        "Training duration: 3–5 weeks"
+      ]
+    },
+    "visible": true
+  },
+  {
+    "id": "program_mastery",
+    "categoryId": "me_and_work",
+    "title": {
+      "ar": "Mastery and Independency",
+      "en": "Mastery and Independency"
+    },
+    "price": {
+      "amount": 1600,
+      "currency": "TND"
+    },
+    "features": {
+      "ar": [
+        "خمس تسجيلات صوتيّة",
+        "أربعة تمارين مصمّمة خصّيصا لمرحلتك",
+        "۲ پرومپت ذكاء إصطناعي نحضّرهملك للمرافقة بعد انتهاء التّدريب",
+        "ستة حصص online مع البرهوم",
+        "مدّة التّدريب من شهر ونصف إلى شهرين"
+      ],
+      "en": [
+        "5 audio recordings",
+        "4 custom-designed exercises for your current phase",
+        "2 AI-guided prompts prepared for post-program support",
+        "6 online sessions with Barhoum",
+        "Training duration: 1.5–2 months"
+      ]
+    },
+    "visible": true
   }
 ]

@@ -16,70 +16,69 @@ import { getPageMetadata } from "@/lib/seo";
 import { resolveLocale } from "@/lib/i18n.server";
 import type { Pack, PacksByCategory } from "@/components/home/sections/Packages";
 
+const CATEGORY_ORDER: CategoryKey[] = [
+  "me_and_me",
+  "me_and_the_other",
+  "me_and_work",
+];
+
 function buildPacksByCategory(
   programs: NormalizedProgram[]
 ): PacksByCategory {
   const locales: Locale[] = ["ar", "en"];
-  const duplicateTargets: CategoryKey[] = ["me_and_the_other", "me_and_work"];
 
-  const result: PacksByCategory = {
-    me_and_me: { ar: [], en: [] },
-    me_and_the_other: { ar: [], en: [] },
-    me_and_work: { ar: [], en: [] },
-  };
+  const result = CATEGORY_ORDER.reduce((acc, category) => {
+    acc[category] = { ar: [], en: [] };
+    return acc;
+  }, {} as PacksByCategory);
 
   programs.forEach((program) => {
+    const category =
+      program.categoryId && CATEGORY_ORDER.includes(program.categoryId)
+        ? program.categoryId
+        : "me_and_me";
+    const categoryBuckets = result[category];
     const sessions =
       program.sessions && program.sessions > 0 ? program.sessions : undefined;
-    const priceTotal = program.priceAmountMinor / 100;
-    const currency =
-      program.programId.startsWith("program_") ? "TND" : (program.currency || "TND");
+    const priceAmountMinor = program.priceAmountMinor;
+    const priceTotal = priceAmountMinor / 100;
+    const currency = "TND";
 
     locales.forEach((locale) => {
-      const copy = program.copy[locale];
-      if (!copy) return;
+      const localeCopy = program.copy[locale];
+      if (!localeCopy) return;
+      const fallbackCopy = program.copy.en ?? localeCopy;
 
-      const englishCopy = program.copy.en ?? copy;
       const title =
-        englishCopy.title?.trim() || program.programId;
-      const subtitle = copy.subtitle || "—";
-      const bullets = copy.bullets.length ? copy.bullets : ["—"];
-      const duration = copy.subtitle || program.durationLabel || "—";
+        fallbackCopy.title?.trim() || program.programId;
+      const subtitle = localeCopy.subtitle || "—";
+      const bullets = localeCopy.bullets.length ? localeCopy.bullets : ["—"];
+      const duration = localeCopy.subtitle || program.durationLabel || "—";
 
-      const pack: Pack = {
+      categoryBuckets[locale].push({
         programKey: program.programId as PackageId,
         sessions,
         title,
         subtitle,
         bullets,
         priceTotal,
-        priceAmountMinor: Math.round(priceTotal * 100),
+        priceAmountMinor,
         currency,
         duration,
-      };
-
-      result.me_and_me[locale].push(pack);
+      });
     });
   });
 
-  locales.forEach((locale) => {
-    result.me_and_me[locale].sort((a, b) => {
-      if (a.sessions != null && b.sessions != null) {
-        return a.sessions - b.sessions;
-      }
-      if (a.sessions != null) return -1;
-      if (b.sessions != null) return 1;
-      return a.priceTotal - b.priceTotal;
-    });
-
-    duplicateTargets.forEach((category) => {
-      if (result[category][locale].length > 0) {
-        return;
-      }
-      result[category][locale] = result.me_and_me[locale].map((pack) => ({
-        ...pack,
-        bullets: [...pack.bullets],
-      }));
+  CATEGORY_ORDER.forEach((category) => {
+    locales.forEach((locale) => {
+      result[category][locale].sort((a, b) => {
+        if (a.sessions != null && b.sessions != null) {
+          return a.sessions - b.sessions;
+        }
+        if (a.sessions != null) return -1;
+        if (b.sessions != null) return 1;
+        return a.priceTotal - b.priceTotal;
+      });
     });
   });
 

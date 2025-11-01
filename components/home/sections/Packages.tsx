@@ -15,12 +15,18 @@ import {
 } from "@/lib/commerce/pack-selections";
 import styles from "./Packages.module.css";
 
-function formatPriceDisplay(amount: number, currency: string): string {
+function formatPriceDisplay(
+    amount: number,
+    currency: string,
+    locale: Locale
+): string {
     const normalizedCurrency = (currency || "TND").toUpperCase();
-    const formattedAmount = new Intl.NumberFormat("en-US", {
+    const resolvedLocale = locale === "ar" ? "ar-TN-u-nu-latn" : "en-US";
+    const formatter = new Intl.NumberFormat(resolvedLocale, {
         maximumFractionDigits: 0,
-    }).format(amount);
-    return `${formattedAmount} ${normalizedCurrency}`;
+        numberingSystem: "latn",
+    });
+    return `${formatter.format(amount)} ${normalizedCurrency}`;
 }
 
 export type Pack = {
@@ -55,6 +61,7 @@ interface PackBarProps {
     selected: boolean;
     onSelect: () => void;
     onKeyStep: (direction: "prev" | "next") => void;
+    onJump: (target: "first" | "last") => void;
     buttonRef: (el: HTMLButtonElement | null) => void;
 }
 
@@ -65,6 +72,7 @@ function PackBar({
     selected,
     onSelect,
     onKeyStep,
+    onJump,
     buttonRef,
 }: PackBarProps) {
     return (
@@ -90,18 +98,18 @@ function PackBar({
                 }
                 if (event.key === "Home") {
                     event.preventDefault();
-                    onKeyStep("prev");
+                    onJump("first");
                 }
                 if (event.key === "End") {
                     event.preventDefault();
-                    onKeyStep("next");
+                    onJump("last");
                 }
             }}
             className={clsx(styles.option, selected && styles.optionSelected)}
             dir={direction}
             aria-label={`${pack.title} · ${
                 pack.duration
-            } · ${formatPriceDisplay(pack.priceTotal, pack.currency)}`}
+            } · ${formatPriceDisplay(pack.priceTotal, pack.currency, locale)}`}
         >
             <div className={styles.optionContent}>
                 <div className={styles.optionMeta}>
@@ -109,7 +117,11 @@ function PackBar({
                 </div>
                 <div className={styles.optionPrice}>
                     <span>
-                        {formatPriceDisplay(pack.priceTotal, pack.currency)}
+                        {formatPriceDisplay(
+                            pack.priceTotal,
+                            pack.currency,
+                            locale
+                        )}
                     </span>
                 </div>
             </div>
@@ -188,6 +200,13 @@ export function PacksSection({
         onSelectRef.current?.(selection);
     }, [category, packs, locale, comingSoon]);
 
+    useEffect(() => {
+        cardRefs.current.forEach((button, index) => {
+            if (!button) return;
+            button.tabIndex = selectedIndex === index ? 0 : -1;
+        });
+    }, [selectedIndex]);
+
     const handleSelect = (index: number) => {
         setSelectedIndex(index);
         if (!comingSoon && category) {
@@ -205,12 +224,23 @@ export function PacksSection({
         cardRefs.current[next]?.focus({ preventScroll: true });
     };
 
+    const jumpSelection = (target: "first" | "last") => {
+        if (comingSoon || !packs.length) return;
+        const index = target === "first" ? 0 : packs.length - 1;
+        handleSelect(index);
+        cardRefs.current[index]?.focus({ preventScroll: true });
+    };
+
     if (!category) return null;
     if (!comingSoon && packs.length === 0) return null;
 
     const selectedPack = packs[selectedIndex];
     const totalPriceDisplay = selectedPack
-        ? formatPriceDisplay(selectedPack.priceTotal, selectedPack.currency)
+        ? formatPriceDisplay(
+              selectedPack.priceTotal,
+              selectedPack.currency,
+              locale
+          )
         : "";
     const totalPriceAriaLabel = selectedPack
         ? locale === "ar"
@@ -277,13 +307,14 @@ export function PacksSection({
                                             onKeyStep={(step) =>
                                                 moveSelection(index, step)
                                             }
+                                            onJump={jumpSelection}
                                             buttonRef={(el) => {
                                                 cardRefs.current[index] = el;
-                                                if (
-                                                    selectedIndex === index &&
-                                                    el
-                                                ) {
-                                                    el.tabIndex = 0;
+                                                if (el) {
+                                                    el.tabIndex =
+                                                        selectedIndex === index
+                                                            ? 0
+                                                            : -1;
                                                 }
                                             }}
                                         />
