@@ -117,12 +117,12 @@ export const seoConfig: SeoConfig = {
         ar: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر .",
     },
     openGraphImage: {
-        url: "/images/hero.jpeg",
-        width: 960,
-        height: 640,
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
         alt: {
-            en: "Ibrahim Ben Abdallah coaching portrait in teal tones",
-            ar: "صورة إبراهيم بن عبد الله أثناء جلسة تدريب بدرجات التركواز",
+            en: "Ibrahim Ben Abdallah logo centered on a white card",
+            ar: "شعار إبراهيم بن عبد الله في بطاقة بيضاء",
         },
     },
     twitter: {
