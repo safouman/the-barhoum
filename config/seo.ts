@@ -78,7 +78,7 @@ export const seoConfig: SeoConfig = {
             name: "Ibrahim Ben Abdallah",
             alternateName: ["إبراهيم بن عبد الله", "Barhoum"],
             jobTitle: "Self-leadership coach ",
-            description: "",
+            description: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر .",
             image: "/images/hero.jpeg",
         },
         domains: {
@@ -105,8 +105,8 @@ export const seoConfig: SeoConfig = {
         ar: "إبراهيم بن عبد الله",
     },
     description: {
-        en: "",
-        ar: "",
+        en: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر .",
+        ar: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر .",
     },
     openGraphLocale: {
         en: "en_US",
@@ -152,8 +152,9 @@ export const seoConfig: SeoConfig = {
                 ar: {
                     title: "إبراهيم بن عبد الله",
                     description: "",
-                    ogTitle: "إبراهيم بن عبد الله | إبراهيم بن عبد الله",
-                    ogDescription: "",
+                    ogTitle: " إبراهيم بن عبد الله",
+                    ogDescription:
+                        "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر .",
                     canonical: "/?lang=ar",
                 },
             },
