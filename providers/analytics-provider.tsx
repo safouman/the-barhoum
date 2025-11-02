@@ -143,7 +143,7 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   const disableConsent = process.env.NEXT_PUBLIC_DISABLE_CONSENT === "true";
   const measurementId = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
   const [shouldLoadAnalytics, setShouldLoadAnalytics] = useState<boolean>(() =>
-    disableConsent ? Boolean(measurementId) : hasAnalyticsConsent()
+    disableConsent ? Boolean(measurementId) : false
   );
   const gaReadyRef = useRef(false);
   const pendingConsentEventRef = useRef<"accepted" | null>(null);
