@@ -156,7 +156,15 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
         if (!isMobile) {
             startAutoScroll();
         }
-    }, [handleNext, handlePrevious, isDragging, isRTL, isMobile, resetDragOffset, startAutoScroll]);
+    }, [
+        handleNext,
+        handlePrevious,
+        isDragging,
+        isRTL,
+        isMobile,
+        resetDragOffset,
+        startAutoScroll,
+    ]);
 
     // Keyboard navigation
     const handleKeyDown = useCallback(
@@ -336,13 +344,13 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                 </div>
 
                 <div
-                    className="relative grid h-full w-full place-items-center px-4 py-6 text-center sm:px-6 sm:py-8 md:px-8 md:py-10 lg:px-10 lg:py-12"
+                    className="relative grid  w-full px-4 py-6 text-center sm:px-6 sm:py-8 md:px-8 md:py-10 lg:px-10 lg:py-12"
                     style={{
-                        gridTemplateRows: "auto 1fr auto",
+                        gridTemplateRows: "auto minmax(0, 1fr) auto",
                         rowGap: "clamp(1.25rem, 3vw, 2.25rem)",
                     }}
                 >
-                    <div className="flex flex-col items-center justify-center">
+                    <div className="flex flex-col items-center justify-center self-start">
                         {testimonial.image ? (
                             <div className="relative h-20 w-20 overflow-hidden rounded-full ring-2 ring-[#2AD6CA]/20 shadow-[0_12px_28px_rgba(3,35,32,0.14)] sm:h-24 sm:w-24">
                                 <Image
@@ -381,7 +389,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         </p>
                     </blockquote>
 
-                    <footer className="flex w-full flex-col items-center justify-end gap-2">
+                    <footer className="flex w-full flex-col items-center justify-end gap-2 self-end">
                         <span className="block h-px w-12 bg-[#2AD6CA]" />
                         <cite className="not-italic">
                             <div className="text-lg font-semibold text-[#0E2D2A] sm:text-xl">
@@ -433,12 +441,9 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
 
     const showArrows = testimonialCount > 1;
     const showDots = testimonialCount > 1;
-    const verticalBuffer = isMobile ? 96 : 120;
-    const fallbackHeight = isMobile ? 520 : 680;
+    const fallbackHeight = isMobile ? 520 : 620;
     const containerHeight =
-        maxVisibleHeight != null
-            ? maxVisibleHeight + verticalBuffer
-            : fallbackHeight;
+        maxVisibleHeight != null ? maxVisibleHeight : fallbackHeight;
 
     return (
         <Section
