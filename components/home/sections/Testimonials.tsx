@@ -254,7 +254,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
             return null;
         }
 
-        const quoteLineHeight = isRTL ? 1.75 : 1.6;
+        const quoteLineHeight = isRTL ? 1.65 : 1.55;
         const initials = getInitials(testimonial.name);
         const isActive = index === currentIndex;
 
@@ -311,12 +311,19 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         </svg>
                     </div>
 
-                    <div className="relative grid h-full w-full grid-rows-[auto_minmax(0,1fr)_auto] gap-6 px-6 py-10 md:gap-8 md:px-10 md:py-14 lg:px-12 lg:py-16">
-                        {/* Avatar with initials */}
-                        <div className="flex items-start justify-center">
-                            {testimonial.image ? (
-                                <div className="relative h-16 w-16 overflow-hidden rounded-full border-2 border-[#2AD6CA]/20 shadow-sm md:h-20 md:w-20">
-                                    <Image
+                <div className="relative grid h-full w-full grid-rows-[auto_minmax(0,1fr)_auto] gap-4 px-5 py-8 md:gap-6 md:px-9 md:py-12 lg:px-11 lg:py-14">
+                    {/* Avatar with initials */}
+                    <div
+                        className="flex items-start justify-center pb-1 md:pb-2"
+                        style={{
+                            transition: "transform 220ms ease-out, opacity 220ms ease-out",
+                            transform: isActive ? "scale(1) translate3d(0,0,0)" : "scale(0.98)",
+                            opacity: isActive ? 1 : 0.85,
+                        }}
+                    >
+                        {testimonial.image ? (
+                            <div className="relative h-16 w-16 overflow-hidden rounded-full border-2 border-[#2AD6CA]/20 shadow-sm md:h-20 md:w-20">
+                                <Image
                                         src={testimonial.image}
                                         alt={`Portrait of ${testimonial.name}`}
                                         fill
@@ -338,7 +345,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         </div>
 
                         {/* Quote */}
-                        <div className="flex items-center justify-center">
+                        <div className="flex items-center justify-center py-2 md:py-4">
                             <blockquote
                                 className="w-full max-w-full px-2 text-center"
                                 dir={isRTL ? "rtl" : "ltr"}
@@ -353,8 +360,8 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         </div>
 
                         {/* Attribution */}
-                        <footer className="flex flex-col items-center text-center">
-                            <div className="mx-auto mb-6 h-px w-12 bg-[#2AD6CA] md:mb-5" />
+                        <footer className="flex flex-col items-center pt-2 text-center md:pt-3">
+                            <div className="mx-auto mb-4 h-px w-10 bg-[#2AD6CA] md:mb-4 lg:mb-5 lg:w-12" />
                             <cite className="not-italic">
                                 <div className="heading-3 mb-1 text-[#0E2D2A] md:mb-2 md:text-[1.35rem] lg:text-[1.45rem]">
                                     {testimonial.name}
