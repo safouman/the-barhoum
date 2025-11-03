@@ -10,7 +10,7 @@ interface TestimonialProps {
 export function Testimonial({ quote, name, role, image }: TestimonialProps) {
   return (
     <figure className="grid gap-sm rounded-md border border-border bg-surface p-sm">
-      <blockquote className="text-quote italic">{quote}</blockquote>
+      <blockquote className="text-quote italic whitespace-pre-line">{quote}</blockquote>
       <figcaption className="flex flex-wrap items-center gap-3 text-sm text-subtle">
         {image ? (
           <span className="relative block h-12 w-12 overflow-hidden rounded-full border border-border/60">

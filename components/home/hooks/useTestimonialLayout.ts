@@ -47,14 +47,16 @@ export function useTestimonialLayout() {
             let cardHeight: number;
 
             if (width >= 1200) {
-                cardWidth = 400;
-                cardHeight = 560;
+                cardWidth = 480;
+                cardHeight = 672;
             } else if (width >= 768) {
-                cardWidth = 350;
-                cardHeight = 520;
+                cardWidth = 420;
+                cardHeight = 624;
             } else {
-                cardWidth = Math.min(320, width - 32);
-                cardHeight = 480;
+                const baseWidth = Math.min(320, width - 32);
+                const expandedWidth = baseWidth * 1.2;
+                cardWidth = Math.min(expandedWidth, width - 16);
+                cardHeight = 576;
             }
 
             const baseClass =

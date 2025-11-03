@@ -220,7 +220,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                                 dir={isRTL ? "rtl" : "ltr"}
                             >
                                 <p
-                                    className="text-quote mb-0 text-center text-[#0E2D2A] md:text-[1.4rem] lg:text-[1.5rem] xl:text-[1.6rem]"
+                                    className="text-quote mb-0 text-center text-[#0E2D2A] md:text-[1.4rem] lg:text-[1.5rem] xl:text-[1.6rem] whitespace-pre-line"
                                     style={{ lineHeight: quoteLineHeight }}
                                 >
                                     {testimonial.quote}
@@ -287,7 +287,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         {/* Carousel Track */}
                         <div
                             ref={trackRef}
-                            className="relative h-[520px] md:h-[540px] lg:h-[560px] overflow-visible flex justify-center items-center pt-10 pb-8 md:pt-6 md:pb-6"
+                            className="relative h-[624px] md:h-[648px] lg:h-[672px] overflow-visible flex justify-center items-center pt-10 pb-8 md:pt-6 md:pb-6"
                             onMouseDown={(e) => handleStart(e.clientX)}
                             onMouseMove={(e) => handleMove(e.clientX)}
                             onMouseUp={handleEnd}
