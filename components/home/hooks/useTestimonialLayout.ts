@@ -15,7 +15,11 @@ interface LayoutResult {
 
 const DEFAULT_SCREEN_WIDTH = 1024;
 
-export function useTestimonialLayout() {
+interface UseTestimonialLayoutOptions {
+    isRTL?: boolean;
+}
+
+export function useTestimonialLayout({ isRTL = false }: UseTestimonialLayoutOptions = {}) {
     const [screenWidth, setScreenWidth] =
         useState<number>(DEFAULT_SCREEN_WIDTH);
 
@@ -54,16 +58,18 @@ export function useTestimonialLayout() {
             } else if (width >= 768) {
                 cardWidth = 460;
             } else {
-                const baseWidth = Math.min(340, width - 32);
-                const expandedWidth = Math.min(baseWidth * 1.25, width - 24);
-                cardWidth = expandedWidth;
+                const horizontalPadding = width < 360 ? 16 : 20;
+                const availableWidth = width - horizontalPadding * 2;
+                cardWidth = Math.min(Math.max(availableWidth, 260), 400);
             }
 
             const baseClass =
-                "absolute top-0 transition-all duration-500 ease-out";
+                "absolute top-0 transition-all duration-500 ease-out will-change-transform will-change-opacity";
             let className = baseClass;
             const style: CSSProperties = {
                 width: `${cardWidth}px`,
+                opacity: 0,
+                transform: "translate3d(0, 12px, 0)",
             };
 
             if (width >= 768) {
@@ -71,19 +77,31 @@ export function useTestimonialLayout() {
                 const sideOffset = cardWidth * 0.7;
 
                 if (isActive) {
-                    className += " z-30 scale-100 opacity-100";
+                    className += " z-30 scale-100";
                     style.left = `calc(50% - ${centerOffset}px)`;
+                    style.opacity = 1;
+                    style.transform = "translate3d(0, 0, 0)";
                 } else if (isPrev) {
-                    className += " z-10 scale-95 opacity-60";
+                    className += " z-10 scale-[0.97]";
                     style.left = `calc(50% - ${centerOffset + sideOffset}px)`;
+                    style.opacity = 0.55;
+                    style.transform = `translate3d(${
+                        isRTL ? 18 : -18
+                    }px, 18px, 0)`;
                 } else if (isNext) {
-                    className += " z-10 scale-95 opacity-60";
+                    className += " z-10 scale-[0.97]";
                     style.left = `calc(50% - ${centerOffset - sideOffset}px)`;
+                    style.opacity = 0.55;
+                    style.transform = `translate3d(${
+                        isRTL ? -18 : 18
+                    }px, 18px, 0)`;
                 }
             } else {
                 style.left = `calc(50% - ${cardWidth / 2}px)`;
                 if (isActive) {
-                    className += " z-30 scale-100 opacity-100";
+                    className += " z-30 scale-100";
+                    style.opacity = 1;
+                    style.transform = "translate3d(0, 0, 0)";
                 } else {
                     return {
                         visible: false,
@@ -99,7 +117,7 @@ export function useTestimonialLayout() {
                 style,
             };
         },
-        [screenWidth]
+        [screenWidth, isRTL]
     );
 
     return {

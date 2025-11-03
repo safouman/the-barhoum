@@ -1,5 +1,11 @@
 "use client";
 
+const TRACK_TRANSITION_IDLE = "height 240ms ease-out, transform 240ms ease-out";
+const TRACK_TRANSITION_DRAG = "height 240ms ease-out, transform 0s";
+const TRACK_TRANSITION_RELEASE =
+    "height 240ms ease-out, transform 260ms ease-out";
+const TRACK_TRANSITION_TIMEOUT = 300;
+
 import Image from "next/image";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Container } from "@/components/Container";
@@ -15,23 +21,22 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
 }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
-    const [activeCardHeight, setActiveCardHeight] = useState<number | null>(
+    const [maxVisibleHeight, setMaxVisibleHeight] = useState<number | null>(
         null
     );
     const trackRef = useRef<HTMLDivElement>(null);
-    const activeCardObserverRef = useRef<ResizeObserver | null>(null);
+    const cardObserversRef = useRef<Map<number, ResizeObserver>>(new Map());
+    const cardHeightsRef = useRef<Map<number, number>>(new Map());
+    const transitionTimeoutRef = useRef<number | null>(null);
     const startXRef = useRef(0);
     const currentXRef = useRef(0);
-    const autoPlayRef = useRef<NodeJS.Timeout | undefined>(undefined);
-    const { getLayout, isMobile } = useTestimonialLayout();
-
     const isRTL = locale === "ar";
+    const { getLayout, isMobile } = useTestimonialLayout({ isRTL });
     const testimonialCount = testimonials.length;
 
     // Localized content
     const eyebrow = meta.eyebrow[locale];
     const sectionTitle = ui.testimonials;
-    const ctaText = meta.cta[locale];
 
     // Navigation handlers
     const handlePrevious = useCallback(() => {
@@ -48,38 +53,45 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
         setCurrentIndex(index);
     }, []);
 
-    // Auto-play functionality
-    const startAutoPlay = useCallback(() => {
-        if (testimonialCount <= 1) return;
-        autoPlayRef.current = setInterval(() => {
-            setCurrentIndex((prev) => (prev + 1) % testimonialCount);
-        }, 6000);
-    }, [testimonialCount]);
-
-    const stopAutoPlay = useCallback(() => {
-        if (autoPlayRef.current) {
-            clearInterval(autoPlayRef.current);
-            autoPlayRef.current = undefined;
-        }
+    // Touch/drag handlers
+    const applyDragOffset = useCallback((offset: number) => {
+        if (!trackRef.current) return;
+        trackRef.current.style.transform = `translate3d(${offset}px, 0, 0)`;
     }, []);
 
-    // Touch/drag handlers
-    const handleStart = useCallback(
-        (clientX: number) => {
-            setIsDragging(true);
-            startXRef.current = clientX;
-            currentXRef.current = clientX;
-            stopAutoPlay();
-        },
-        [stopAutoPlay]
-    );
+    const resetDragOffset = useCallback(() => {
+        if (!trackRef.current) return;
+        trackRef.current.style.transition = TRACK_TRANSITION_RELEASE;
+        trackRef.current.style.transform = "translate3d(0, 0, 0)";
+        if (transitionTimeoutRef.current) {
+            window.clearTimeout(transitionTimeoutRef.current);
+        }
+        transitionTimeoutRef.current = window.setTimeout(() => {
+            if (trackRef.current) {
+                trackRef.current.style.transition = TRACK_TRANSITION_IDLE;
+            }
+            transitionTimeoutRef.current = null;
+        }, TRACK_TRANSITION_TIMEOUT);
+    }, []);
+
+    const handleStart = useCallback((clientX: number) => {
+        setIsDragging(true);
+        startXRef.current = clientX;
+        currentXRef.current = clientX;
+        if (trackRef.current) {
+            trackRef.current.style.transition = TRACK_TRANSITION_DRAG;
+        }
+    }, []);
 
     const handleMove = useCallback(
         (clientX: number) => {
             if (!isDragging) return;
             currentXRef.current = clientX;
+            const deltaX = clientX - startXRef.current;
+            const offset = (isRTL ? -deltaX : deltaX) * 0.35;
+            applyDragOffset(offset);
         },
-        [isDragging]
+        [applyDragOffset, isDragging, isRTL]
     );
 
     const handleEnd = useCallback(() => {
@@ -99,8 +111,8 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
             }
         }
 
-        startAutoPlay();
-    }, [isDragging, handlePrevious, handleNext, isRTL, startAutoPlay]);
+        resetDragOffset();
+    }, [handleNext, handlePrevious, isDragging, isRTL, resetDragOffset]);
 
     // Keyboard navigation
     const handleKeyDown = useCallback(
@@ -116,17 +128,21 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
         [handlePrevious, handleNext, isRTL]
     );
 
-    // Auto-play lifecycle
     useEffect(() => {
-        startAutoPlay();
-        return () => stopAutoPlay();
-    }, [startAutoPlay, stopAutoPlay]);
-
-    useEffect(() => {
+        const observersSnapshot = cardObserversRef.current;
+        const trackSnapshot = trackRef.current;
+        const heightsSnapshot = cardHeightsRef.current;
         return () => {
-            if (activeCardObserverRef.current) {
-                activeCardObserverRef.current.disconnect();
-                activeCardObserverRef.current = null;
+            observersSnapshot.forEach((observer) => observer.disconnect());
+            observersSnapshot.clear();
+            heightsSnapshot.clear();
+            if (transitionTimeoutRef.current) {
+                window.clearTimeout(transitionTimeoutRef.current);
+                transitionTimeoutRef.current = null;
+            }
+            if (trackSnapshot) {
+                trackSnapshot.style.transition = TRACK_TRANSITION_IDLE;
+                trackSnapshot.style.transform = "";
             }
         };
     }, []);
@@ -141,36 +157,87 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
             .slice(0, 2);
     };
 
-    const handleActiveCardRef = useCallback((node: HTMLElement | null) => {
-        if (activeCardObserverRef.current) {
-            activeCardObserverRef.current.disconnect();
-            activeCardObserverRef.current = null;
-        }
-
-        if (!node) {
-            return;
-        }
-
-        const measure = () => {
-            const rect = node.getBoundingClientRect();
-            if (rect.height) {
-                setActiveCardHeight(Math.ceil(rect.height));
+    const updateVisibleHeight = useCallback(
+        (heights: Map<number, number>) => {
+            if (!testimonialCount) {
+                setMaxVisibleHeight(null);
+                return;
             }
-        };
 
-        if (typeof window !== "undefined" && "ResizeObserver" in window) {
-            const observer = new ResizeObserver((entries) => {
-                const entry = entries[0];
-                if (entry) {
-                    setActiveCardHeight(Math.ceil(entry.contentRect.height));
+            const visibleIndices = new Set<number>();
+            visibleIndices.add(currentIndex);
+            if (testimonialCount > 1) {
+                visibleIndices.add(
+                    (currentIndex - 1 + testimonialCount) % testimonialCount
+                );
+                visibleIndices.add((currentIndex + 1) % testimonialCount);
+            }
+
+            let tallest = 0;
+            heights.forEach((height) => {
+                if (height && height > tallest) {
+                    tallest = height;
                 }
             });
-            observer.observe(node);
-            activeCardObserverRef.current = observer;
-        }
 
-        measure();
-    }, []);
+            if (!tallest) {
+                visibleIndices.forEach((idx) => {
+                    const height = heights.get(idx);
+                    if (height && height > tallest) {
+                        tallest = height;
+                    }
+                });
+            }
+
+            setMaxVisibleHeight(tallest > 0 ? tallest : null);
+        },
+        [currentIndex, testimonialCount]
+    );
+
+    useEffect(() => {
+        updateVisibleHeight(cardHeightsRef.current);
+    }, [currentIndex, testimonialCount, updateVisibleHeight]);
+
+    const handleCardRef = useCallback(
+        (index: number, node: HTMLElement | null) => {
+            const existingObserver = cardObserversRef.current.get(index);
+            if (existingObserver) {
+                existingObserver.disconnect();
+                cardObserversRef.current.delete(index);
+            }
+            if (!node) {
+                cardHeightsRef.current.delete(index);
+                updateVisibleHeight(cardHeightsRef.current);
+                return;
+            }
+
+            const measure = () => {
+                const rect = node.getBoundingClientRect();
+                if (rect.height) {
+                    cardHeightsRef.current.set(index, Math.ceil(rect.height));
+                    updateVisibleHeight(cardHeightsRef.current);
+                }
+            };
+
+            if (typeof window !== "undefined" && "ResizeObserver" in window) {
+                const observer = new ResizeObserver((entries) => {
+                    const entry = entries[0];
+                    if (entry) {
+                        cardHeightsRef.current.set(
+                            index,
+                            Math.ceil(entry.contentRect.height)
+                        );
+                        updateVisibleHeight(cardHeightsRef.current);
+                    }
+                });
+                observer.observe(node);
+                cardObserversRef.current.set(index, observer);
+            }
+
+            measure();
+        },
+        [updateVisibleHeight]
+    );
 
     // Render testimonial card
     const renderTestimonialCard = (
@@ -199,14 +266,24 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                 role="group"
                 aria-roledescription="testimonial"
                 aria-label={`Testimonial from ${testimonial.name}`}
-                ref={isActive ? handleActiveCardRef : undefined}
+                ref={(node) => {
+                    if (layout.visible) {
+                        handleCardRef(index, node);
+                    }
+                }}
             >
                 <div
-                    className="relative flex h-full w-full flex-col items-center rounded-xl md:rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:-translate-y-2 bg-white"
+                    className="relative grid h-full w-full rounded-xl md:rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:-translate-y-2 bg-white"
                     style={{
                         border: "1px solid rgba(42, 214, 202, 0.12)",
                         boxShadow:
                             "0 16px 32px rgba(3, 35, 32, 0.1), 0 4px 12px rgba(3, 35, 32, 0.06)",
+                        minHeight:
+                            maxVisibleHeight != null
+                                ? `${maxVisibleHeight}px`
+                                : undefined,
+
+                        alignItems: "stretch",
                     }}
                 >
                     {/* Decorative quote marks in corners */}
@@ -234,11 +311,11 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         </svg>
                     </div>
 
-                    <div className="relative flex h-full w-full flex-col items-center px-6 py-10 md:px-10 md:py-14 lg:px-12 lg:py-16 gap-6 md:gap-8">
+                    <div className="relative grid h-full w-full grid-rows-[auto_minmax(0,1fr)_auto] gap-6 px-6 py-10 md:gap-8 md:px-10 md:py-14 lg:px-12 lg:py-16">
                         {/* Avatar with initials */}
-                        <div className="flex justify-center">
+                        <div className="flex items-start justify-center">
                             {testimonial.image ? (
-                                <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-2 border-[#2AD6CA]/20 shadow-sm">
+                                <div className="relative h-16 w-16 overflow-hidden rounded-full border-2 border-[#2AD6CA]/20 shadow-sm md:h-20 md:w-20">
                                     <Image
                                         src={testimonial.image}
                                         alt={`Portrait of ${testimonial.name}`}
@@ -250,18 +327,20 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                                 </div>
                             ) : (
                                 <div
-                                    className="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center text-[#2AD6CA] font-semibold text-base md:text-lg"
+                                    className="flex h-14 w-14 items-center justify-center rounded-full text-[#2AD6CA] md:h-16 md:w-16"
                                     style={{ background: "#E9F9F7" }}
                                 >
-                                    {initials}
+                                    <span className="text-base font-semibold md:text-lg">
+                                        {initials}
+                                    </span>
                                 </div>
                             )}
                         </div>
 
                         {/* Quote */}
-                        <div className="flex w-full flex-1 items-center justify-center">
+                        <div className="flex items-center justify-center">
                             <blockquote
-                                className="text-center max-w-full px-2 w-full"
+                                className="w-full max-w-full px-2 text-center"
                                 dir={isRTL ? "rtl" : "ltr"}
                             >
                                 <p
@@ -274,14 +353,14 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         </div>
 
                         {/* Attribution */}
-                        <footer className="w-full text-center">
-                            <div className="w-12 h-px bg-[#2AD6CA] mx-auto mb-6 md:mb-5" />
+                        <footer className="flex flex-col items-center text-center">
+                            <div className="mx-auto mb-6 h-px w-12 bg-[#2AD6CA] md:mb-5" />
                             <cite className="not-italic">
-                                <div className="heading-3 text-[#0E2D2A] mb-1 md:mb-2 md:text-[1.35rem] lg:text-[1.45rem]">
+                                <div className="heading-3 mb-1 text-[#0E2D2A] md:mb-2 md:text-[1.35rem] lg:text-[1.45rem]">
                                     {testimonial.name}
                                 </div>
                                 {testimonial.role && (
-                                    <div className="text-[#4E716D] text-sm font-normal md:font-light md:text-[0.85rem] lg:text-[0.95rem]">
+                                    <div className="text-sm font-normal text-[#4E716D] md:text-[0.85rem] md:font-light lg:text-[0.95rem]">
                                         {testimonial.role}
                                     </div>
                                 )}
@@ -299,11 +378,11 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
 
     const showArrows = testimonialCount > 1;
     const showDots = testimonialCount > 1;
-    const verticalBuffer = isMobile ? 96 : 112;
-    const fallbackHeight = isMobile ? 560 : 720;
+    const verticalBuffer = isMobile ? 96 : 120;
+    const fallbackHeight = isMobile ? 540 : 700;
     const containerHeight =
-        activeCardHeight != null
-            ? activeCardHeight + verticalBuffer
+        maxVisibleHeight != null
+            ? maxVisibleHeight + verticalBuffer
             : fallbackHeight;
 
     return (
@@ -319,8 +398,6 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                     aria-label="Customer testimonials"
                     onKeyDown={handleKeyDown}
                     tabIndex={0}
-                    onMouseEnter={stopAutoPlay}
-                    onMouseLeave={startAutoPlay}
                 >
                     {/* Section header */}
                     <div className="space-y-3 md:space-y-4">
@@ -337,16 +414,25 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                             ref={trackRef}
                             className="relative flex justify-center items-center overflow-visible pt-10 pb-8 md:pt-8 md:pb-8"
                             onMouseDown={(e) => handleStart(e.clientX)}
-                            onMouseMove={(e) => handleMove(e.clientX)}
+                            onMouseMove={(e) => {
+                                if (isDragging) {
+                                    e.preventDefault();
+                                    handleMove(e.clientX);
+                                }
+                            }}
                             onMouseUp={handleEnd}
                             onMouseLeave={handleEnd}
-                            onTouchStart={(e) =>
-                                handleStart(e.touches[0].clientX)
-                            }
-                            onTouchMove={(e) =>
-                                handleMove(e.touches[0].clientX)
-                            }
+                            onTouchStart={(e) => {
+                                handleStart(e.touches[0].clientX);
+                            }}
+                            onTouchMove={(e) => {
+                                if (isDragging) {
+                                    e.preventDefault();
+                                    handleMove(e.touches[0].clientX);
+                                }
+                            }}
                             onTouchEnd={handleEnd}
+                            onTouchCancel={handleEnd}
                             style={{
                                 cursor: isDragging ? "grabbing" : "grab",
                                 height: `${containerHeight}px`,
@@ -415,64 +501,6 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                                     </svg>
                                 </button>
                             </>
-                        )}
-
-                        {/* Mobile Navigation */}
-                        {showArrows && (
-                            <div className="mt-6 flex items-center justify-center gap-4 md:hidden">
-                                <button
-                                    onClick={
-                                        isRTL ? handleNext : handlePrevious
-                                    }
-                                    disabled={testimonialCount <= 1}
-                                    className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200/70 bg-white/90 text-[#4E716D] shadow-sm transition-colors duration-200 hover:border-[#2AD6CA]/40 hover:text-[#2AD6CA] focus:outline-none focus:ring-2 focus:ring-[#2AD6CA]/40 disabled:cursor-not-allowed disabled:opacity-40"
-                                    aria-label={
-                                        isRTL
-                                            ? "الشهادة التالية"
-                                            : "Previous testimonial"
-                                    }
-                                >
-                                    <svg
-                                        className="h-4 w-4"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth={2.5}
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M15 19l-7-7 7-7"
-                                        />
-                                    </svg>
-                                </button>
-                                <button
-                                    onClick={
-                                        isRTL ? handlePrevious : handleNext
-                                    }
-                                    disabled={testimonialCount <= 1}
-                                    className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200/70 bg-white/90 text-[#4E716D] shadow-sm transition-colors duration-200 hover:border-[#2AD6CA]/40 hover:text-[#2AD6CA] focus:outline-none focus:ring-2 focus:ring-[#2AD6CA]/40 disabled:cursor-not-allowed disabled:opacity-40"
-                                    aria-label={
-                                        isRTL
-                                            ? "الشهادة السابقة"
-                                            : "Next testimonial"
-                                    }
-                                >
-                                    <svg
-                                        className="h-4 w-4"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                        strokeWidth={2.5}
-                                    >
-                                        <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            d="M9 5l7 7-7 7"
-                                        />
-                                    </svg>
-                                </button>
-                            </div>
                         )}
 
                         {/* Navigation Dots */}
