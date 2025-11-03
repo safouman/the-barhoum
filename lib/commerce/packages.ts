@@ -45,6 +45,7 @@ export function formatPackCurrency(
         style: "currency",
         currency: currency.toUpperCase(),
         maximumFractionDigits: 0,
+        currencyDisplay: "code",
         numberingSystem: "latn",
     });
     return formatter.format(amount);

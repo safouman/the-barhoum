@@ -50,12 +50,12 @@ export type SeoConfig = {
     description: LocaleValueMap<string>;
     openGraphLocale: LocaleValueMap<string>;
     openGraphDescription: LocaleValueMap<string>;
-    openGraphImage: {
+    openGraphImages: {
         url: string;
         width: number;
         height: number;
         alt: LocaleValueMap<string>;
-    };
+    }[];
     twitter: {
         creator: string;
         title: LocaleValueMap<string>;
@@ -116,15 +116,26 @@ export const seoConfig: SeoConfig = {
         en: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر.",
         ar: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر.",
     },
-    openGraphImage: {
-        url: "/opengraph-image",
-        width: 1200,
-        height: 630,
-        alt: {
-            en: "Ibrahim Ben Abdallah logo centered on a white card",
-            ar: "شعار إبراهيم بن عبد الله في بطاقة بيضاء",
+    openGraphImages: [
+        {
+            url: "/opengraph-image",
+            width: 1200,
+            height: 630,
+            alt: {
+                en: "Ibrahim Ben Abdallah logo centered on a white card",
+                ar: "شعار إبراهيم بن عبد الله في بطاقة بيضاء",
+            },
         },
-    },
+        {
+            url: "/opengraph-image-small",
+            width: 600,
+            height: 315,
+            alt: {
+                en: "Ibrahim Ben Abdallah logo centered on a white card",
+                ar: "شعار إبراهيم بن عبد الله في بطاقة بيضاء",
+            },
+        },
+    ],
     twitter: {
         creator: "@barhoum",
         title: {

@@ -178,6 +178,12 @@ export function getDefaultMetadata(locale?: Locale): Metadata {
     ).map((value) => getLocalizedValue(seoConfig.openGraphLocale, value));
     const canonicalPath = getPageCanonicalPath("home", resolvedLocale);
     const languageAlternates = buildLanguageAlternates("home");
+    const openGraphImages = seoConfig.openGraphImages.map((image) => ({
+        url: image.url,
+        width: image.width,
+        height: image.height,
+        alt: getLocalizedValue(image.alt, resolvedLocale),
+    }));
 
     const metadata: Metadata = {
         title: {
@@ -199,31 +205,18 @@ export function getDefaultMetadata(locale?: Locale): Metadata {
                 seoConfig.openGraphDescription,
                 resolvedLocale
             ),
-            images: [
-                {
-                    url: seoConfig.openGraphImage.url,
-                    width: seoConfig.openGraphImage.width,
-                    height: seoConfig.openGraphImage.height,
-                    alt: getLocalizedValue(
-                        seoConfig.openGraphImage.alt,
-                        resolvedLocale
-                    ),
-                },
-            ],
+            images: openGraphImages,
         },
-        // twitter: {
-        //     card: "summary_large_image",
-        //     creator: seoConfig.twitter.creator,
-        //     title: getLocalizedValue(
-        //         seoConfig.twitter.title,
-        //         resolvedLocale
-        //     ),
-        //     description: getLocalizedValue(
-        //         seoConfig.twitter.description,
-        //         resolvedLocale
-        //     ),
-        //     images: [seoConfig.openGraphImage.url],
-        // },
+        twitter: {
+            card: "summary_large_image",
+            creator: seoConfig.twitter.creator,
+            title: getLocalizedValue(seoConfig.twitter.title, resolvedLocale),
+            description: getLocalizedValue(
+                seoConfig.twitter.description,
+                resolvedLocale
+            ),
+            images: seoConfig.openGraphImages.map((image) => image.url),
+        },
         alternates: {
             canonical: toAbsoluteUrl(canonicalPath),
             languages: languageAlternates,
@@ -240,17 +233,29 @@ export function getPageMetadata(
 ): Metadata {
     const resolvedLocale = ensureLocale(locale);
     const pageLocale = getPageLocaleConfig(key, resolvedLocale);
+    const defaultDescription = getLocalizedValue(
+        seoConfig.description,
+        resolvedLocale
+    );
+    const pageDescription =
+        pageLocale.description && pageLocale.description.trim().length > 0
+            ? pageLocale.description
+            : defaultDescription;
+    const pageOgDescription =
+        pageLocale.ogDescription && pageLocale.ogDescription.trim().length > 0
+            ? pageLocale.ogDescription
+            : pageDescription;
     const canonicalPath = getPageCanonicalPath(key, resolvedLocale);
     const canonicalUrl = toAbsoluteUrl(canonicalPath);
     const languageAlternates = buildLanguageAlternates(key);
 
     const pageMetadata: Metadata = {
         title: pageLocale.title,
-        description: pageLocale.description,
+        description: pageDescription,
         openGraph: {
             url: canonicalUrl,
             title: pageLocale.ogTitle ?? pageLocale.title,
-            description: pageLocale.ogDescription ?? pageLocale.description,
+            description: pageOgDescription,
         },
         alternates: {
             canonical: canonicalUrl,

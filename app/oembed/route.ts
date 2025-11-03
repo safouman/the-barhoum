@@ -71,7 +71,14 @@ function buildXmlResponse(data: ReturnType<typeof buildJsonPayload>): string {
 }
 
 function buildJsonPayload(targetUrl: string) {
-    const thumbnailUrl = toAbsolute(seoConfig.openGraphImage.url);
+    const [primaryImage] = seoConfig.openGraphImages;
+    const thumbnailSource =
+        primaryImage ?? ({
+            url: "/opengraph-image",
+            width: 1200,
+            height: 630,
+        } as const);
+    const thumbnailUrl = toAbsolute(thumbnailSource.url);
     return {
         version: "1.0",
         type: "rich" as const,
@@ -84,8 +91,8 @@ function buildJsonPayload(targetUrl: string) {
         width: 600,
         height: 200,
         thumbnail_url: thumbnailUrl,
-        thumbnail_width: seoConfig.openGraphImage.width,
-        thumbnail_height: seoConfig.openGraphImage.height,
+        thumbnail_width: thumbnailSource.width,
+        thumbnail_height: thumbnailSource.height,
         cache_age: 3600,
     };
 }
