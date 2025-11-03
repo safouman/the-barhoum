@@ -15,11 +15,15 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
 }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isDragging, setIsDragging] = useState(false);
+    const [activeCardHeight, setActiveCardHeight] = useState<number | null>(
+        null
+    );
     const trackRef = useRef<HTMLDivElement>(null);
+    const activeCardObserverRef = useRef<ResizeObserver | null>(null);
     const startXRef = useRef(0);
     const currentXRef = useRef(0);
     const autoPlayRef = useRef<NodeJS.Timeout | undefined>(undefined);
-    const { getLayout } = useTestimonialLayout();
+    const { getLayout, isMobile } = useTestimonialLayout();
 
     const isRTL = locale === "ar";
     const testimonialCount = testimonials.length;
@@ -118,6 +122,15 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
         return () => stopAutoPlay();
     }, [startAutoPlay, stopAutoPlay]);
 
+    useEffect(() => {
+        return () => {
+            if (activeCardObserverRef.current) {
+                activeCardObserverRef.current.disconnect();
+                activeCardObserverRef.current = null;
+            }
+        };
+    }, []);
+
     // Generate initials from name
     const getInitials = (name: string) => {
         return name
@@ -127,6 +140,37 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
             .toUpperCase()
             .slice(0, 2);
     };
+
+    const handleActiveCardRef = useCallback((node: HTMLElement | null) => {
+        if (activeCardObserverRef.current) {
+            activeCardObserverRef.current.disconnect();
+            activeCardObserverRef.current = null;
+        }
+
+        if (!node) {
+            return;
+        }
+
+        const measure = () => {
+            const rect = node.getBoundingClientRect();
+            if (rect.height) {
+                setActiveCardHeight(Math.ceil(rect.height));
+            }
+        };
+
+        if (typeof window !== "undefined" && "ResizeObserver" in window) {
+            const observer = new ResizeObserver((entries) => {
+                const entry = entries[0];
+                if (entry) {
+                    setActiveCardHeight(Math.ceil(entry.contentRect.height));
+                }
+            });
+            observer.observe(node);
+            activeCardObserverRef.current = observer;
+        }
+
+        measure();
+    }, []);
 
     // Render testimonial card
     const renderTestimonialCard = (
@@ -145,6 +189,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
 
         const quoteLineHeight = isRTL ? 1.75 : 1.6;
         const initials = getInitials(testimonial.name);
+        const isActive = index === currentIndex;
 
         return (
             <article
@@ -154,11 +199,11 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                 role="group"
                 aria-roledescription="testimonial"
                 aria-label={`Testimonial from ${testimonial.name}`}
+                ref={isActive ? handleActiveCardRef : undefined}
             >
                 <div
-                    className="relative h-full rounded-xl md:rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:-translate-y-2 flex flex-col justify-center"
+                    className="relative flex h-full w-full flex-col items-center rounded-xl md:rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:-translate-y-2 bg-white"
                     style={{
-                        background: "white",
                         border: "1px solid rgba(42, 214, 202, 0.12)",
                         boxShadow:
                             "0 16px 32px rgba(3, 35, 32, 0.1), 0 4px 12px rgba(3, 35, 32, 0.06)",
@@ -189,9 +234,9 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         </svg>
                     </div>
 
-                    <div className="relative h-full flex flex-col justify-center px-6 py-10 md:px-10 md:py-14 lg:px-12 lg:py-16">
+                    <div className="relative flex h-full w-full flex-col items-center px-6 py-10 md:px-10 md:py-14 lg:px-12 lg:py-16 gap-6 md:gap-8">
                         {/* Avatar with initials */}
-                        <div className="flex justify-center mb-6 md:mb-8">
+                        <div className="flex justify-center">
                             {testimonial.image ? (
                                 <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-2 border-[#2AD6CA]/20 shadow-sm">
                                     <Image
@@ -214,13 +259,13 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         </div>
 
                         {/* Quote */}
-                        <div className="flex-1 flex items-center justify-center mb-6 md:mb-6">
+                        <div className="flex w-full flex-1 items-center justify-center">
                             <blockquote
-                                className="text-center max-w-full px-2"
+                                className="text-center max-w-full px-2 w-full"
                                 dir={isRTL ? "rtl" : "ltr"}
                             >
                                 <p
-                                    className="text-quote mb-0 text-center text-[#0E2D2A] md:text-[1.4rem] lg:text-[1.5rem] xl:text-[1.6rem] whitespace-pre-line"
+                                    className="text-quote mb-0 text-center text-[#0E2D2A] text-[1.03rem] md:text-[1.35rem] lg:text-[1.45rem] xl:text-[1.55rem] whitespace-pre-line"
                                     style={{ lineHeight: quoteLineHeight }}
                                 >
                                     {testimonial.quote}
@@ -229,7 +274,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         </div>
 
                         {/* Attribution */}
-                        <footer className="text-center">
+                        <footer className="w-full text-center">
                             <div className="w-12 h-px bg-[#2AD6CA] mx-auto mb-6 md:mb-5" />
                             <cite className="not-italic">
                                 <div className="heading-3 text-[#0E2D2A] mb-1 md:mb-2 md:text-[1.35rem] lg:text-[1.45rem]">
@@ -254,6 +299,12 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
 
     const showArrows = testimonialCount > 1;
     const showDots = testimonialCount > 1;
+    const verticalBuffer = isMobile ? 96 : 112;
+    const fallbackHeight = isMobile ? 560 : 720;
+    const containerHeight =
+        activeCardHeight != null
+            ? activeCardHeight + verticalBuffer
+            : fallbackHeight;
 
     return (
         <Section
@@ -277,9 +328,6 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                             {sectionTitle}
                         </h2>
                         <div className="w-12 h-0.5 bg-[#2AD6CA] mx-auto" />
-                        <p className="text-eyebrow text-[#4E716D]">
-                            {eyebrow}
-                        </p>
                     </div>
 
                     {/* Carousel Container */}
@@ -287,7 +335,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         {/* Carousel Track */}
                         <div
                             ref={trackRef}
-                            className="relative h-[660px] md:h-[720px] lg:h-[760px] xl:h-[780px] overflow-visible flex justify-center items-center pt-10 pb-8 md:pt-6 md:pb-6"
+                            className="relative flex justify-center items-center overflow-visible pt-10 pb-8 md:pt-8 md:pb-8"
                             onMouseDown={(e) => handleStart(e.clientX)}
                             onMouseMove={(e) => handleMove(e.clientX)}
                             onMouseUp={handleEnd}
@@ -299,7 +347,11 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                                 handleMove(e.touches[0].clientX)
                             }
                             onTouchEnd={handleEnd}
-                            style={{ cursor: isDragging ? "grabbing" : "grab" }}
+                            style={{
+                                cursor: isDragging ? "grabbing" : "grab",
+                                height: `${containerHeight}px`,
+                                transition: "height 240ms ease-out",
+                            }}
                         >
                             {testimonials.map((testimonial, index) =>
                                 renderTestimonialCard(testimonial, index)
@@ -314,7 +366,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                                         isRTL ? handleNext : handlePrevious
                                     }
                                     disabled={testimonialCount <= 1}
-                                    className="absolute left-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm border border-gray-200/60 hover:border-[#2AD6CA]/30 hover:shadow-lg hover:bg-white transition-all duration-200 flex items-center justify-center text-[#4E716D] hover:text-[#2AD6CA] focus:outline-none focus:ring-2 focus:ring-[#2AD6CA]/30 z-40 disabled:opacity-30 disabled:cursor-not-allowed"
+                                    className="absolute left-8 top-1/2 hidden -translate-y-1/2 items-center justify-center rounded-full border border-gray-200/60 bg-white/90 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1/2 hover:border-[#2AD6CA]/30 hover:bg-white hover:text-[#2AD6CA] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#2AD6CA]/30 disabled:cursor-not-allowed disabled:opacity-30 md:flex w-12 h-12 text-[#4E716D]"
                                     aria-label={
                                         isRTL
                                             ? "الشهادة التالية"
@@ -341,7 +393,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                                         isRTL ? handlePrevious : handleNext
                                     }
                                     disabled={testimonialCount <= 1}
-                                    className="absolute right-8 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm border border-gray-200/60 hover:border-[#2AD6CA]/30 hover:shadow-lg hover:bg-white transition-all duration-200 flex items-center justify-center text-[#4E716D] hover:text-[#2AD6CA] focus:outline-none focus:ring-2 focus:ring-[#2AD6CA]/30 z-40 disabled:opacity-30 disabled:cursor-not-allowed"
+                                    className="absolute right-8 top-1/2 hidden -translate-y-1/2 items-center justify-center rounded-full border border-gray-200/60 bg-white/90 backdrop-blur-sm transition-all duration-200 hover:-translate-y-1/2 hover:border-[#2AD6CA]/30 hover:bg-white hover:text-[#2AD6CA] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-[#2AD6CA]/30 disabled:cursor-not-allowed disabled:opacity-30 md:flex w-12 h-12 text-[#4E716D]"
                                     aria-label={
                                         isRTL
                                             ? "الشهادة السابقة"
@@ -365,10 +417,68 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                             </>
                         )}
 
+                        {/* Mobile Navigation */}
+                        {showArrows && (
+                            <div className="mt-6 flex items-center justify-center gap-4 md:hidden">
+                                <button
+                                    onClick={
+                                        isRTL ? handleNext : handlePrevious
+                                    }
+                                    disabled={testimonialCount <= 1}
+                                    className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200/70 bg-white/90 text-[#4E716D] shadow-sm transition-colors duration-200 hover:border-[#2AD6CA]/40 hover:text-[#2AD6CA] focus:outline-none focus:ring-2 focus:ring-[#2AD6CA]/40 disabled:cursor-not-allowed disabled:opacity-40"
+                                    aria-label={
+                                        isRTL
+                                            ? "الشهادة التالية"
+                                            : "Previous testimonial"
+                                    }
+                                >
+                                    <svg
+                                        className="h-4 w-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={2.5}
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M15 19l-7-7 7-7"
+                                        />
+                                    </svg>
+                                </button>
+                                <button
+                                    onClick={
+                                        isRTL ? handlePrevious : handleNext
+                                    }
+                                    disabled={testimonialCount <= 1}
+                                    className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200/70 bg-white/90 text-[#4E716D] shadow-sm transition-colors duration-200 hover:border-[#2AD6CA]/40 hover:text-[#2AD6CA] focus:outline-none focus:ring-2 focus:ring-[#2AD6CA]/40 disabled:cursor-not-allowed disabled:opacity-40"
+                                    aria-label={
+                                        isRTL
+                                            ? "الشهادة السابقة"
+                                            : "Next testimonial"
+                                    }
+                                >
+                                    <svg
+                                        className="h-4 w-4"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={2.5}
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M9 5l7 7-7 7"
+                                        />
+                                    </svg>
+                                </button>
+                            </div>
+                        )}
+
                         {/* Navigation Dots */}
                         {showDots && (
                             <div
-                                className="flex justify-center items-center gap-2 pt-24 md:pt-20"
+                                className="flex justify-center items-center gap-2 pt-16 md:pt-14"
                                 role="tablist"
                                 aria-label="Testimonial navigation"
                             >
