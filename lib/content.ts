@@ -54,6 +54,7 @@ export const testimonialSchema = z.object({
     name: z.string(),
     role: z.string(),
     quote: z.string(),
+    image: z.string().optional(),
 });
 
 export type Testimonial = z.infer<typeof testimonialSchema>;

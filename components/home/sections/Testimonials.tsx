@@ -1,9 +1,10 @@
 "use client";
 
+import Image from "next/image";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Container } from "@/components/Container";
 import { Section } from "@/components/Section";
-import type { HomeThemeDefinition } from "../types";
+import type { HomeThemeDefinition, LocalizedTestimonial } from "../types";
 import { useTestimonialLayout } from "../hooks/useTestimonialLayout";
 
 export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
@@ -128,7 +129,10 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
     };
 
     // Render testimonial card
-    const renderTestimonialCard = (testimonial: any, index: number) => {
+    const renderTestimonialCard = (
+        testimonial: LocalizedTestimonial,
+        index: number
+    ) => {
         const layout = getLayout({
             index,
             currentIndex,
@@ -138,6 +142,9 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
         if (!layout.visible) {
             return null;
         }
+
+        const quoteLineHeight = isRTL ? 1.7 : 1.55;
+        const initials = getInitials(testimonial.name);
 
         return (
             <article
@@ -185,12 +192,25 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                     <div className="relative h-full flex flex-col justify-center px-6 py-10 md:px-10 md:py-14 lg:px-12 lg:py-16">
                         {/* Avatar with initials */}
                         <div className="flex justify-center mb-6 md:mb-8">
-                            <div
-                                className="w-14 h-14 rounded-full flex items-center justify-center text-[#2AD6CA] font-semibold text-base"
-                                style={{ background: "#E9F9F7" }}
-                            >
-                                {getInitials(testimonial.name)}
-                            </div>
+                            {testimonial.image ? (
+                                <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-2 border-[#2AD6CA]/20 shadow-sm">
+                                    <Image
+                                        src={testimonial.image}
+                                        alt={`Portrait of ${testimonial.name}`}
+                                        fill
+                                        sizes="80px"
+                                        className="object-cover"
+                                        priority={index === currentIndex}
+                                    />
+                                </div>
+                            ) : (
+                                <div
+                                    className="w-14 h-14 md:w-16 md:h-16 rounded-full flex items-center justify-center text-[#2AD6CA] font-semibold text-base md:text-lg"
+                                    style={{ background: "#E9F9F7" }}
+                                >
+                                    {initials}
+                                </div>
+                            )}
                         </div>
 
                         {/* Quote */}
@@ -199,7 +219,10 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                                 className="text-center max-w-full px-2"
                                 dir={isRTL ? "rtl" : "ltr"}
                             >
-                                <p className="text-quote mb-0 text-center text-[#0E2D2A] md:text-[1.4rem] lg:text-[1.55rem] xl:text-[1.65rem] md:leading-relaxed">
+                                <p
+                                    className="text-quote mb-0 text-center text-[#0E2D2A] md:text-[1.4rem] lg:text-[1.5rem] xl:text-[1.6rem]"
+                                    style={{ lineHeight: quoteLineHeight }}
+                                >
                                     {testimonial.quote}
                                 </p>
                             </blockquote>

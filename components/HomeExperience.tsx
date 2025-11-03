@@ -67,6 +67,7 @@ export function HomeExperience({
     quote: testimonial.quote,
     name: testimonial.name,
     role: testimonial.role,
+    image: testimonial.image,
   }));
 
   return (

@@ -1,0 +1,13 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Profile placeholder for Saif Eddine Jaziri</title>
+  <desc id="desc">Circular gradient background with stylized initials</desc>
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2AD6CA" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#0E2D2A" stop-opacity="0.9"/>
+    </linearGradient>
+  </defs>
+  <circle cx="60" cy="60" r="58" fill="url(#gradient)" />
+  <text x="50%" y="54%" text-anchor="middle" font-family="Inter, 'Segoe UI', sans-serif" font-size="38" fill="#FFFFFF" letter-spacing="1.2px">SJ</text>
+  <text x="50%" y="74%" text-anchor="middle" font-family="Inter, 'Segoe UI', sans-serif" font-size="12" fill="rgba(255,255,255,0.8)" letter-spacing="3px">BARHOUM</text>
+</svg>
