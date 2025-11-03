@@ -7,7 +7,13 @@ const TRACK_TRANSITION_RELEASE =
 const TRACK_TRANSITION_TIMEOUT = 300;
 
 import Image from "next/image";
-import { useState, useEffect, useRef, useCallback } from "react";
+import {
+    useState,
+    useEffect,
+    useRef,
+    useCallback,
+    type CSSProperties,
+} from "react";
 import { Container } from "@/components/Container";
 import { Section } from "@/components/Section";
 import type { HomeThemeDefinition, LocalizedTestimonial } from "../types";
@@ -28,6 +34,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
     const cardObserversRef = useRef<Map<number, ResizeObserver>>(new Map());
     const cardHeightsRef = useRef<Map<number, number>>(new Map());
     const transitionTimeoutRef = useRef<number | null>(null);
+    const autoScrollRef = useRef<NodeJS.Timeout | null>(null);
     const startXRef = useRef(0);
     const currentXRef = useRef(0);
     const isRTL = locale === "ar";
@@ -37,6 +44,27 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
     // Localized content
     const eyebrow = meta.eyebrow[locale];
     const sectionTitle = ui.testimonials;
+
+    const stopAutoScroll = useCallback(() => {
+        if (autoScrollRef.current) {
+            clearInterval(autoScrollRef.current);
+            autoScrollRef.current = null;
+        }
+    }, []);
+
+    const startAutoScroll = useCallback(() => {
+        stopAutoScroll();
+        if (testimonialCount <= 1 || isMobile) return;
+        const delay = 6000;
+        autoScrollRef.current = setInterval(() => {
+            setCurrentIndex((prev) => (prev + 1) % testimonialCount);
+        }, delay);
+    }, [isMobile, stopAutoScroll, testimonialCount]);
+
+    useEffect(() => {
+        startAutoScroll();
+        return () => stopAutoScroll();
+    }, [startAutoScroll, stopAutoScroll]);
 
     // Navigation handlers
     const handlePrevious = useCallback(() => {
@@ -49,9 +77,16 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
         setCurrentIndex((prev) => (prev + 1) % testimonialCount);
     }, [testimonialCount]);
 
-    const handleDotClick = useCallback((index: number) => {
-        setCurrentIndex(index);
-    }, []);
+    const handleDotClick = useCallback(
+        (index: number) => {
+            setCurrentIndex(index);
+            if (!isMobile) {
+                stopAutoScroll();
+                startAutoScroll();
+            }
+        },
+        [isMobile, startAutoScroll, stopAutoScroll]
+    );
 
     // Touch/drag handlers
     const applyDragOffset = useCallback((offset: number) => {
@@ -74,21 +109,27 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
         }, TRACK_TRANSITION_TIMEOUT);
     }, []);
 
-    const handleStart = useCallback((clientX: number) => {
-        setIsDragging(true);
-        startXRef.current = clientX;
-        currentXRef.current = clientX;
-        if (trackRef.current) {
-            trackRef.current.style.transition = TRACK_TRANSITION_DRAG;
-        }
-    }, []);
+    const handleStart = useCallback(
+        (clientX: number) => {
+            setIsDragging(true);
+            startXRef.current = clientX;
+            currentXRef.current = clientX;
+            if (!isMobile) {
+                stopAutoScroll();
+            }
+            if (trackRef.current) {
+                trackRef.current.style.transition = TRACK_TRANSITION_DRAG;
+            }
+        },
+        [isMobile, stopAutoScroll]
+    );
 
     const handleMove = useCallback(
         (clientX: number) => {
             if (!isDragging) return;
             currentXRef.current = clientX;
             const deltaX = clientX - startXRef.current;
-            const offset = (isRTL ? -deltaX : deltaX) * 0.35;
+            const offset = (isRTL ? -deltaX : deltaX) * 0.25;
             applyDragOffset(offset);
         },
         [applyDragOffset, isDragging, isRTL]
@@ -99,7 +140,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
         setIsDragging(false);
 
         const deltaX = currentXRef.current - startXRef.current;
-        const threshold = 50;
+        const threshold = 55;
 
         if (Math.abs(deltaX) > threshold) {
             if (isRTL) {
@@ -112,7 +153,10 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
         }
 
         resetDragOffset();
-    }, [handleNext, handlePrevious, isDragging, isRTL, resetDragOffset]);
+        if (!isMobile) {
+            startAutoScroll();
+        }
+    }, [handleNext, handlePrevious, isDragging, isRTL, isMobile, resetDragOffset, startAutoScroll]);
 
     // Keyboard navigation
     const handleKeyDown = useCallback(
@@ -244,6 +288,116 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
         testimonial: LocalizedTestimonial,
         index: number
     ) => {
+        const initials = getInitials(testimonial.name);
+        const shouldPriorityLoad = index === currentIndex;
+        const rtlLineHeight = isRTL ? 1.75 : undefined;
+
+        const quoteStyles: CSSProperties = { textWrap: "balance" };
+        if (rtlLineHeight) {
+            quoteStyles.lineHeight = rtlLineHeight;
+        }
+
+        const cardContent = (
+            <div
+                className="relative flex h-full w-full items-stretch overflow-hidden rounded-xl bg-white transition-all duration-300 hover:-translate-y-2 hover:scale-[1.02] md:rounded-2xl"
+                style={{
+                    border: "1px solid rgba(42, 214, 202, 0.12)",
+                    boxShadow:
+                        "0 16px 32px rgba(3, 35, 32, 0.1), 0 4px 12px rgba(3, 35, 32, 0.06)",
+                    minHeight:
+                        maxVisibleHeight != null
+                            ? `${maxVisibleHeight}px`
+                            : undefined,
+                }}
+            >
+                {/* Decorative quote marks in corners */}
+                <div className="pointer-events-none absolute left-8 top-8 opacity-[0.06]">
+                    <svg
+                        width="40"
+                        height="30"
+                        viewBox="0 0 48 36"
+                        fill="currentColor"
+                        className="text-[#2AD6CA]"
+                    >
+                        <path d="M0 36V20.4C0 9.12 5.04 3.36 15.12 2.16L16.8 6.24C11.28 7.2 8.4 10.32 8.16 15.36H16.8V36H0Z" />
+                    </svg>
+                </div>
+
+                <div className="pointer-events-none absolute bottom-8 right-8 rotate-180 opacity-[0.06]">
+                    <svg
+                        width="40"
+                        height="30"
+                        viewBox="0 0 48 36"
+                        fill="currentColor"
+                        className="text-[#2AD6CA]"
+                    >
+                        <path d="M0 36V20.4C0 9.12 5.04 3.36 15.12 2.16L16.8 6.24C11.28 7.2 8.4 10.32 8.16 15.36H16.8V36H0Z" />
+                    </svg>
+                </div>
+
+                <div
+                    className="relative grid h-full w-full place-items-center px-4 py-6 text-center sm:px-6 sm:py-8 md:px-8 md:py-10 lg:px-10 lg:py-12"
+                    style={{
+                        gridTemplateRows: "auto 1fr auto",
+                        rowGap: "clamp(1.25rem, 3vw, 2.25rem)",
+                    }}
+                >
+                    <div className="flex flex-col items-center justify-center">
+                        {testimonial.image ? (
+                            <div className="relative h-20 w-20 overflow-hidden rounded-full ring-2 ring-[#2AD6CA]/20 shadow-[0_12px_28px_rgba(3,35,32,0.14)] sm:h-24 sm:w-24">
+                                <Image
+                                    src={testimonial.image}
+                                    alt={`Portrait of ${testimonial.name}`}
+                                    fill
+                                    sizes="120px"
+                                    className="object-cover"
+                                    priority={shouldPriorityLoad}
+                                />
+                            </div>
+                        ) : (
+                            <div
+                                className="flex h-20 w-20 items-center justify-center rounded-full text-[#2AD6CA] ring-2 ring-[#2AD6CA]/15 shadow-[0_12px_24px_rgba(3,35,32,0.1)] sm:h-24 sm:w-24"
+                                style={{ background: "#E9F9F7" }}
+                            >
+                                <span className="text-base font-semibold sm:text-lg">
+                                    {initials}
+                                </span>
+                            </div>
+                        )}
+                    </div>
+
+                    <blockquote
+                        className="mx-auto flex h-full w-full items-center justify-center"
+                        dir={isRTL ? "rtl" : "ltr"}
+                        style={{
+                            maxWidth: "min(36ch, 92%)",
+                        }}
+                    >
+                        <p
+                            className="text-quote whitespace-pre-line text-[1rem] font-medium leading-snug text-[#0E2D2A] sm:text-[1.15rem] md:text-[1.25rem] lg:text-[1.35rem]"
+                            style={quoteStyles}
+                        >
+                            {testimonial.quote}
+                        </p>
+                    </blockquote>
+
+                    <footer className="flex w-full flex-col items-center justify-end gap-2">
+                        <span className="block h-px w-12 bg-[#2AD6CA]" />
+                        <cite className="not-italic">
+                            <div className="text-lg font-semibold text-[#0E2D2A] sm:text-xl">
+                                {testimonial.name}
+                            </div>
+                            {testimonial.role && (
+                                <div className="text-sm font-normal text-[#4E716D] sm:text-base">
+                                    {testimonial.role}
+                                </div>
+                            )}
+                        </cite>
+                    </footer>
+                </div>
+            </div>
+        );
+
         const layout = getLayout({
             index,
             currentIndex,
@@ -253,10 +407,6 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
         if (!layout.visible) {
             return null;
         }
-
-        const quoteLineHeight = isRTL ? 1.65 : 1.55;
-        const initials = getInitials(testimonial.name);
-        const isActive = index === currentIndex;
 
         return (
             <article
@@ -272,109 +422,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                     }
                 }}
             >
-                <div
-                    className="relative grid h-full w-full rounded-xl md:rounded-2xl overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:-translate-y-2 bg-white"
-                    style={{
-                        border: "1px solid rgba(42, 214, 202, 0.12)",
-                        boxShadow:
-                            "0 16px 32px rgba(3, 35, 32, 0.1), 0 4px 12px rgba(3, 35, 32, 0.06)",
-                        minHeight:
-                            maxVisibleHeight != null
-                                ? `${maxVisibleHeight}px`
-                                : undefined,
-
-                        alignItems: "stretch",
-                    }}
-                >
-                    {/* Decorative quote marks in corners */}
-                    <div className="absolute top-8 left-8 opacity-[0.06] pointer-events-none">
-                        <svg
-                            width="40"
-                            height="30"
-                            viewBox="0 0 48 36"
-                            fill="currentColor"
-                            className="text-[#2AD6CA]"
-                        >
-                            <path d="M0 36V20.4C0 9.12 5.04 3.36 15.12 2.16L16.8 6.24C11.28 7.2 8.4 10.32 8.16 15.36H16.8V36H0Z" />
-                        </svg>
-                    </div>
-
-                    <div className="absolute bottom-8 right-8 opacity-[0.06] pointer-events-none rotate-180">
-                        <svg
-                            width="40"
-                            height="30"
-                            viewBox="0 0 48 36"
-                            fill="currentColor"
-                            className="text-[#2AD6CA]"
-                        >
-                            <path d="M0 36V20.4C0 9.12 5.04 3.36 15.12 2.16L16.8 6.24C11.28 7.2 8.4 10.32 8.16 15.36H16.8V36H0Z" />
-                        </svg>
-                    </div>
-
-                <div className="relative grid h-full w-full grid-rows-[auto_minmax(0,1fr)_auto] gap-4 px-5 py-8 md:gap-6 md:px-9 md:py-12 lg:px-11 lg:py-14">
-                    {/* Avatar with initials */}
-                    <div
-                        className="flex items-start justify-center pb-1 md:pb-2"
-                        style={{
-                            transition: "transform 220ms ease-out, opacity 220ms ease-out",
-                            transform: isActive ? "scale(1) translate3d(0,0,0)" : "scale(0.98)",
-                            opacity: isActive ? 1 : 0.85,
-                        }}
-                    >
-                        {testimonial.image ? (
-                            <div className="relative h-16 w-16 overflow-hidden rounded-full border-2 border-[#2AD6CA]/20 shadow-sm md:h-20 md:w-20">
-                                <Image
-                                        src={testimonial.image}
-                                        alt={`Portrait of ${testimonial.name}`}
-                                        fill
-                                        sizes="80px"
-                                        className="object-cover"
-                                        priority={index === currentIndex}
-                                    />
-                                </div>
-                            ) : (
-                                <div
-                                    className="flex h-14 w-14 items-center justify-center rounded-full text-[#2AD6CA] md:h-16 md:w-16"
-                                    style={{ background: "#E9F9F7" }}
-                                >
-                                    <span className="text-base font-semibold md:text-lg">
-                                        {initials}
-                                    </span>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Quote */}
-                        <div className="flex items-center justify-center py-2 md:py-4">
-                            <blockquote
-                                className="w-full max-w-full px-2 text-center"
-                                dir={isRTL ? "rtl" : "ltr"}
-                            >
-                                <p
-                                    className="text-quote mb-0 text-center text-[#0E2D2A] text-[1.03rem] md:text-[1.35rem] lg:text-[1.45rem] xl:text-[1.55rem] whitespace-pre-line"
-                                    style={{ lineHeight: quoteLineHeight }}
-                                >
-                                    {testimonial.quote}
-                                </p>
-                            </blockquote>
-                        </div>
-
-                        {/* Attribution */}
-                        <footer className="flex flex-col items-center pt-2 text-center md:pt-3">
-                            <div className="mx-auto mb-4 h-px w-10 bg-[#2AD6CA] md:mb-4 lg:mb-5 lg:w-12" />
-                            <cite className="not-italic">
-                                <div className="heading-3 mb-1 text-[#0E2D2A] md:mb-2 md:text-[1.35rem] lg:text-[1.45rem]">
-                                    {testimonial.name}
-                                </div>
-                                {testimonial.role && (
-                                    <div className="text-sm font-normal text-[#4E716D] md:text-[0.85rem] md:font-light lg:text-[0.95rem]">
-                                        {testimonial.role}
-                                    </div>
-                                )}
-                            </cite>
-                        </footer>
-                    </div>
-                </div>
+                {cardContent}
             </article>
         );
     };
@@ -386,7 +434,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
     const showArrows = testimonialCount > 1;
     const showDots = testimonialCount > 1;
     const verticalBuffer = isMobile ? 96 : 120;
-    const fallbackHeight = isMobile ? 540 : 700;
+    const fallbackHeight = isMobile ? 520 : 680;
     const containerHeight =
         maxVisibleHeight != null
             ? maxVisibleHeight + verticalBuffer
@@ -416,7 +464,6 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
 
                     {/* Carousel Container */}
                     <div className="relative w-full max-w-[1400px] mx-auto">
-                        {/* Carousel Track */}
                         <div
                             ref={trackRef}
                             className="relative flex justify-center items-center overflow-visible pt-10 pb-8 md:pt-8 md:pb-8"
@@ -467,7 +514,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                                     }
                                 >
                                     <svg
-                                        className={`w-4 h-4 `}
+                                        className="w-4 h-4"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -494,7 +541,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                                     }
                                 >
                                     <svg
-                                        className={`w-4 h-4 `}
+                                        className="w-4 h-4"
                                         fill="none"
                                         stroke="currentColor"
                                         viewBox="0 0 24 24"
@@ -513,7 +560,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         {/* Navigation Dots */}
                         {showDots && (
                             <div
-                                className="flex justify-center items-center gap-2 pt-16 md:pt-14"
+                                className="flex justify-center items-center gap-2 pt-10 md:pt-12"
                                 role="tablist"
                                 aria-label="Testimonial navigation"
                             >

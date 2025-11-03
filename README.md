@@ -54,6 +54,23 @@ Documents (e.g. CV/PDF decks) belong in `public/docs/`.
 
 Design tokens are defined in `design/tokens.ts`; update these to adjust color, typography, spacing, or radii for each theme. Tailwind pulls these values through CSS variables declared in `styles/globals.css` and configured in `tailwind.config.ts`.
 
+## Updating the promo video
+
+1. Drop your new high-quality MP4/MOV (with audio) into `public/video/`, e.g., `public/video/promo-source.mp4` or `public/video/promo-source.mov`. Keep the filename unique if you want multiple variants.
+2. Run the HLS transcoder, which outputs multi-bitrate segments and a poster frame next to the source:
+
+    ```bash
+    npm run transcode:video -- --input ./public/video/promo-source.mp4 --name promo
+    ```
+
+    - `--name` controls the folder/manifest names (`promo-hls/promo.m3u8`, poster `promo-poster.png`). Use a new name if you need parallel videos.
+    - MOV sources are supported; pass the `.mov` file via `--input` when applicable and the script will transcode a fallback MP4.
+    - Each run also ensures `/video/<name>.mp4` exists (MP4 inputs are copied, MOV inputs are transcoded) so you can reference a consistent fallback path.
+    - Add `--overwrite` to regenerate everything from scratch, or `--keep-existing` when you only want to add missing bitrates/poster files.
+
+3. Update `data/home.json` → `media.videos[0]` to point `src` at `/video/<name>-hls/<name>.m3u8`, `fallback` at `/video/<name>.mp4`, and `poster` at `/video/<name>-poster.jpg`.
+4. Commit the new assets under `public/video/` so deployments ship the refreshed stream.
+
 ## Runtime controls
 
 -   Language switch (Arabic/English) persists to cookies and query string `?lang=ar|en`.

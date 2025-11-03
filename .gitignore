@@ -36,4 +36,4 @@ next-env.d.ts
 .env
 
 # local video masters (keep outside git history)
-public/video/*-source.mp4
+public/video/*-source.MOV

@@ -1,23 +1,25 @@
 #!/usr/bin/env node
 /**
- * Transcode a source MP4 into multi-bitrate HLS plus poster frame.
+ * Transcode a source MP4/MOV into multi-bitrate HLS plus poster frame.
  *
  * Usage:
  *   npm run transcode:video -- --input ./public/video/promo-source.mp4 --name promo
  *
  * Requirements:
  *   - ffmpeg must be available in PATH.
- *   - Input file should be an MP4 with audio track.
+ *   - Input file should be an MP4 or MOV with audio track.
  */
 
 import { spawn } from "node:child_process";
-import { access, constants, mkdir, rm } from "node:fs/promises";
-import { dirname, extname, join, resolve } from "node:path";
+import { access, constants, mkdir, rm, copyFile } from "node:fs/promises";
+import { extname, join, resolve } from "node:path";
 
 const DEFAULT_NAME = "promo";
 const DEFAULT_INPUT_CANDIDATES = [
     "./public/video/promo-source.mp4",
     "./public/video/promo.mp4",
+    "./public/video/promo-source.mov",
+    "./public/video/promo.mov",
 ];
 const OUTPUT_DIR = "./public/video";
 
@@ -78,14 +80,15 @@ const parseArgs = async () => {
         const fallbackInput = await resolveDefaultInput();
         if (!fallbackInput) {
             throw new Error(
-                "Unable to locate a default input. Provide --input pointing to your source MP4."
+                "Unable to locate a default input. Provide --input pointing to your source MP4/MOV."
             );
         }
         options.input = fallbackInput;
     }
 
-    if (extname(options.input).toLowerCase() !== ".mp4") {
-        throw new Error("Input file must be an .mp4");
+    const allowedExtensions = new Set([".mp4", ".mov"]);
+    if (!allowedExtensions.has(extname(options.input).toLowerCase())) {
+        throw new Error("Input file must be an .mp4 or .mov");
     }
 
     return options;
@@ -96,6 +99,15 @@ const ensureFileExists = async (filePath) => {
         await access(filePath, constants.F_OK);
     } catch {
         throw new Error(`File not found: ${filePath}`);
+    }
+};
+
+const fileExists = async (filePath) => {
+    try {
+        await access(filePath, constants.F_OK);
+        return true;
+    } catch {
+        return false;
     }
 };
 
@@ -121,6 +133,7 @@ const main = async () => {
     const outputBaseDir = resolve(OUTPUT_DIR);
     const hlsDir = join(outputBaseDir, `${name}-hls`);
     const posterPath = join(outputBaseDir, `${name}-poster.jpg`);
+    const fallbackPath = join(outputBaseDir, `${name}.mp4`);
     const masterManifest = join(hlsDir, `${name}.m3u8`);
 
     if (!keepExisting) {
@@ -130,6 +143,12 @@ const main = async () => {
     }
 
     await mkdir(hlsDir, { recursive: true });
+    await ensureFallbackVideo({
+        absoluteInput,
+        fallbackPath,
+        keepExisting,
+        overwrite,
+    });
 
     const ffmpegBaseArgs = [
         "-y",
@@ -257,8 +276,51 @@ const main = async () => {
     }
 
     console.log(`HLS output: ${masterManifest}`);
+    console.log(`Fallback MP4: ${fallbackPath}`);
     console.log(`Poster: ${posterPath}`);
 };
+
+async function ensureFallbackVideo({
+    absoluteInput,
+    fallbackPath,
+    keepExisting,
+    overwrite,
+}) {
+    const inputExt = extname(absoluteInput).toLowerCase();
+    if (absoluteInput === fallbackPath) {
+        return;
+    }
+
+    if (keepExisting && !overwrite && (await fileExists(fallbackPath))) {
+        return;
+    }
+
+    if (inputExt === ".mp4") {
+        console.log(`Copying fallback MP4 to ${fallbackPath}`);
+        await copyFile(absoluteInput, fallbackPath);
+        return;
+    }
+
+    console.log(`Transcoding fallback MP4 to ${fallbackPath}`);
+    await runCommand("ffmpeg", [
+        "-y",
+        "-i",
+        absoluteInput,
+        "-c:v",
+        "libx264",
+        "-preset",
+        "slow",
+        "-crf",
+        "20",
+        "-c:a",
+        "aac",
+        "-b:a",
+        "160k",
+        "-movflags",
+        "+faststart",
+        fallbackPath,
+    ]);
+}
 
 main().catch((error) => {
     if (error instanceof Error) {

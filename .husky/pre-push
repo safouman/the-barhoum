@@ -16,7 +16,7 @@ fi
 
 for file in $CHANGED_FILES; do
     case "$file" in
-        public/video/promo-hls/*|public/video/promo.mp4|public/video/promo-poster.jpg)
+        public/video/promo-hls/*|public/video/promo.mp4|public/video/promo-poster.png)
             ;;
         *)
             SKIP_CHECKS=false
