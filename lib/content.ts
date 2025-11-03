@@ -46,7 +46,7 @@ export type Package = z.infer<typeof packageSchema>;
 
 export const testimonialSchema = z.object({
     id: z.string(),
-
+    categoryId: categoryIdSchema,
     name: z.string(),
     role: z.string(),
     quote: z.string(),
