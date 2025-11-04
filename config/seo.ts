@@ -118,7 +118,7 @@ export const seoConfig: SeoConfig = {
     },
     openGraphImages: [
         {
-            url: "/opengraph-image",
+            url: "/opengraph-image.png",
             width: 1200,
             height: 630,
             alt: {
@@ -127,7 +127,7 @@ export const seoConfig: SeoConfig = {
             },
         },
         {
-            url: "/opengraph-image-small",
+            url: "/opengraph-image-small.png",
             width: 600,
             height: 315,
             alt: {
