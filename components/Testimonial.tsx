@@ -22,6 +22,7 @@ export function Testimonial({ quote, name, role, image }: TestimonialProps) {
               fill
               sizes="48px"
               className="object-cover"
+              unoptimized
             />
           </span>
         ) : null}

@@ -298,6 +298,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
     ) => {
         const initials = getInitials(testimonial.name);
         const shouldPriorityLoad = index === currentIndex;
+        const loadingMode = shouldPriorityLoad ? "eager" : "lazy";
         const rtlLineHeight = isRTL ? 1.75 : undefined;
 
         const quoteStyles: CSSProperties = { textWrap: "balance" };
@@ -360,6 +361,8 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                                     sizes="120px"
                                     className="object-cover object-top"
                                     priority={shouldPriorityLoad}
+                                    loading={loadingMode}
+                                    unoptimized
                                 />
                             </div>
                         ) : (
