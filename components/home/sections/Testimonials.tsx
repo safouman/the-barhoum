@@ -299,12 +299,11 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
         const initials = getInitials(testimonial.name);
         const shouldPriorityLoad = index === currentIndex;
         const loadingMode = shouldPriorityLoad ? "eager" : "lazy";
-        const rtlLineHeight = isRTL ? 1.75 : undefined;
-
-        const quoteStyles: CSSProperties = { textWrap: "balance" };
-        if (rtlLineHeight) {
-            quoteStyles.lineHeight = rtlLineHeight;
-        }
+        const quoteLineHeight = 1.4;
+        const quoteStyles: CSSProperties = {
+            textWrap: "balance",
+            lineHeight: quoteLineHeight,
+        };
 
         const cardContent = (
             <div
@@ -385,7 +384,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         }}
                     >
                         <p
-                            className="text-quote whitespace-pre-line text-[1rem] font-medium leading-[1.4] text-[#0E2D2A] sm:text-[1.15rem] md:text-[1.25rem] lg:text-[1.35rem]"
+                            className="text-quote whitespace-pre-line text-[1rem] font-medium text-[#0E2D2A] sm:text-[1.15rem] md:text-[1.25rem] lg:text-[1.35rem]"
                             style={quoteStyles}
                         >
                             {testimonial.quote}
