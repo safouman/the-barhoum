@@ -41,13 +41,39 @@ export function formatPackCurrency(
     currency: string = "TND"
 ): string {
     const resolvedLocale = locale === "ar" ? "ar-TN-u-nu-latn" : "en-US";
+    const currencyCode = currency.toUpperCase();
     const formatter = new Intl.NumberFormat(resolvedLocale, {
         style: "currency",
-        currency: currency.toUpperCase(),
+        currency: currencyCode,
         maximumFractionDigits: 0,
         currencyDisplay: "code",
         numberingSystem: "latn",
     });
+
+    if (currencyCode === "TND") {
+        const parts = formatter.formatToParts(amount);
+        const currencyParts = parts.filter((part) => part.type === "currency");
+        const valueParts = parts.filter((part) => part.type !== "currency");
+
+        const numericValue = valueParts
+            .map((part) => {
+                if (part.type === "literal" && /\s/u.test(part.value)) {
+                    return "";
+                }
+                return part.value;
+            })
+            .join("")
+            .trim();
+
+        const currencyValue = currencyParts.map((part) => part.value).join("");
+
+        if (numericValue) {
+            return `${numericValue}\u00A0${currencyValue}`;
+        }
+
+        return currencyValue;
+    }
+
     return formatter.format(amount);
 }
 
