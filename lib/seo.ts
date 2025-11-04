@@ -179,7 +179,7 @@ export function getDefaultMetadata(locale?: Locale): Metadata {
     const canonicalPath = getPageCanonicalPath("home", resolvedLocale);
     const languageAlternates = buildLanguageAlternates("home");
     const openGraphImages = seoConfig.openGraphImages.map((image) => ({
-        url: image.url,
+        url: toAbsoluteUrl(image.url),
         width: image.width,
         height: image.height,
         alt: getLocalizedValue(image.alt, resolvedLocale),
@@ -215,7 +215,9 @@ export function getDefaultMetadata(locale?: Locale): Metadata {
                 seoConfig.twitter.description,
                 resolvedLocale
             ),
-            images: seoConfig.openGraphImages.map((image) => image.url),
+            images: seoConfig.openGraphImages.map((image) =>
+                toAbsoluteUrl(image.url)
+            ),
         },
         alternates: {
             canonical: toAbsoluteUrl(canonicalPath),
