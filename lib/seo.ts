@@ -36,9 +36,16 @@ function resolveSiteUrl(): string {
 
     for (const candidate of envCandidates) {
         const normalized = normalizeSiteUrl(candidate);
-        if (normalized) {
-            return normalized;
+        if (!normalized) continue;
+        try {
+            const { hostname } = new URL(normalized);
+            if (hostname.endsWith(".vercel.app")) {
+                continue;
+            }
+        } catch {
+            continue;
         }
+        return normalized;
     }
 
     if (process.env.NODE_ENV !== "production") {

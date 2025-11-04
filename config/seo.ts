@@ -118,21 +118,12 @@ export const seoConfig: SeoConfig = {
     },
     openGraphImages: [
         {
-            url: "/opengraph-image.png",
+            url: "/images/opengraph-image.png",
             width: 1200,
             height: 630,
             alt: {
-                en: "Ibrahim Ben Abdallah logo centered on a white card",
-                ar: "شعار إبراهيم بن عبد الله في بطاقة بيضاء",
-            },
-        },
-        {
-            url: "/opengraph-image-small.png",
-            width: 600,
-            height: 315,
-            alt: {
-                en: "Ibrahim Ben Abdallah logo centered on a white card",
-                ar: "شعار إبراهيم بن عبد الله في بطاقة بيضاء",
+                en: "Ibrahim Ben Abdallah brand card on a deep teal background",
+                ar: "بطاقة علامة إبراهيم بن عبد الله على خلفية خضراء داكنة",
             },
         },
     ],

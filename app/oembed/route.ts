@@ -74,7 +74,7 @@ function buildJsonPayload(targetUrl: string) {
     const [primaryImage] = seoConfig.openGraphImages;
     const thumbnailSource =
         primaryImage ?? ({
-            url: "/opengraph-image.png",
+            url: "/images/opengraph-image.png",
             width: 1200,
             height: 630,
         } as const);
