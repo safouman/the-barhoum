@@ -11,7 +11,7 @@
  */
 
 import { spawn } from "node:child_process";
-import { access, constants, mkdir, rm, copyFile } from "node:fs/promises";
+import { access, constants, mkdir, rm } from "node:fs/promises";
 import { extname, join, resolve } from "node:path";
 
 const DEFAULT_NAME = "promo";
@@ -286,36 +286,31 @@ async function ensureFallbackVideo({
     keepExisting,
     overwrite,
 }) {
-    const inputExt = extname(absoluteInput).toLowerCase();
     if (absoluteInput === fallbackPath) {
         return;
     }
 
-    if (keepExisting && !overwrite && (await fileExists(fallbackPath))) {
+    if ((keepExisting || !overwrite) && (await fileExists(fallbackPath))) {
         return;
     }
 
-    if (inputExt === ".mp4") {
-        console.log(`Copying fallback MP4 to ${fallbackPath}`);
-        await copyFile(absoluteInput, fallbackPath);
-        return;
-    }
-
-    console.log(`Transcoding fallback MP4 to ${fallbackPath}`);
+    console.log(`Transcoding lightweight fallback MP4 to ${fallbackPath}`);
     await runCommand("ffmpeg", [
         "-y",
         "-i",
         absoluteInput,
+        "-vf",
+        "scale='min(1280,iw)':-2",
         "-c:v",
         "libx264",
         "-preset",
         "slow",
         "-crf",
-        "20",
+        "23",
         "-c:a",
         "aac",
         "-b:a",
-        "160k",
+        "128k",
         "-movflags",
         "+faststart",
         fallbackPath,

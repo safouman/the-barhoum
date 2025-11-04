@@ -65,7 +65,7 @@ Design tokens are defined in `design/tokens.ts`; update these to adjust color, t
 
     - `--name` controls the folder/manifest names (`promo-hls/promo.m3u8`, poster `promo-poster.png`). Use a new name if you need parallel videos.
     - MOV sources are supported; pass the `.mov` file via `--input` when applicable and the script will transcode a fallback MP4.
-    - Each run also ensures `/video/<name>.mp4` exists (MP4 inputs are copied, MOV inputs are transcoded) so you can reference a consistent fallback path.
+    - Each run also ensures a lightweight `/video/<name>.mp4` exists (inputs are normalized to ~1280px wide, H.264/AAC, fast-start) so you can reference a consistent fallback path.
     - Add `--overwrite` to regenerate everything from scratch, or `--keep-existing` when you only want to add missing bitrates/poster files.
 
 3. Update `data/home.json` → `media.videos[0]` to point `src` at `/video/<name>-hls/<name>.m3u8`, `fallback` at `/video/<name>.mp4`, and `poster` at `/video/<name>-poster.jpg`.
