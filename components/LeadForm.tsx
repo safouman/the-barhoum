@@ -1076,7 +1076,13 @@ export function LeadForm({
                         )}
                         {summary.priceLabel && (
                             <div>
-                                <span className="text-sm font-semibold text-primary">
+                                <span
+                                    className={clsx(
+                                        "text-sm font-semibold text-primary",
+                                        isRtl && "text-right"
+                                    )}
+                                    dir="ltr"
+                                >
                                     {summary.priceLabel}
                                 </span>
                             </div>
