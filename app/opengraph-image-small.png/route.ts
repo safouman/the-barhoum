@@ -40,10 +40,6 @@ export async function GET() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    borderRadius: 32,
-                    padding: "32px 40px",
-                    backgroundColor: "rgba(3, 27, 29, 0.65)",
-                    border: "1px solid rgba(255, 255, 255, 0.08)",
                 },
             },
             React.createElement("img", {

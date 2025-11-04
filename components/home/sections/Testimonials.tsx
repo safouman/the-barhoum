@@ -345,15 +345,15 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                 </div>
 
                 <div
-                    className="relative grid  w-full px-4 py-14 text-center sm:px-6 sm:py-8 md:px-8 md:py-10 lg:px-10 lg:py-12"
+                    className="relative grid  w-full px-4 py-10 text-center sm:px-6 sm:py-8 md:px-8 md:py-9 lg:px-10 lg:py-11"
                     style={{
                         gridTemplateRows: "auto minmax(0, 1fr) auto",
-                        rowGap: "clamp(1.25rem, 3vw, 2.25rem)",
+                        rowGap: "clamp(1rem, 2.4vw, 1.75rem)",
                     }}
                 >
                     <div className="flex flex-col items-center justify-center self-start">
                         {testimonial.image ? (
-                            <div className="relative h-40 w-40 overflow-hidden rounded-full ring-2 ring-[#2AD6CA]/20 shadow-[0_12px_28px_rgba(3,35,32,0.14)] sm:h-24 sm:w-24">
+                            <div className="relative h-32 w-32 overflow-hidden rounded-full ring-2 ring-[#2AD6CA]/20 shadow-[0_12px_28px_rgba(3,35,32,0.14)] sm:h-24 sm:w-24 lg:h-32 lg:w-32 xl:h-36 xl:w-36">
                                 <Image
                                     src={testimonial.image}
                                     alt={`Portrait of ${testimonial.name}`}
@@ -367,7 +367,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                             </div>
                         ) : (
                             <div
-                                className="flex h-20 w-20 items-center justify-center rounded-full text-[#2AD6CA] ring-2 ring-[#2AD6CA]/15 shadow-[0_12px_24px_rgba(3,35,32,0.1)] sm:h-24 sm:w-24"
+                                className="flex h-32 w-32 items-center justify-center rounded-full text-[#2AD6CA] ring-2 ring-[#2AD6CA]/15 shadow-[0_12px_24px_rgba(3,35,32,0.1)] sm:h-24 sm:w-24 lg:h-32 lg:w-32 xl:h-36 xl:w-36"
                                 style={{ background: "#E9F9F7" }}
                             >
                                 <span className="text-base font-semibold sm:text-lg">
@@ -385,7 +385,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                         }}
                     >
                         <p
-                            className="text-quote whitespace-pre-line text-[1rem] font-medium leading-snug text-[#0E2D2A] sm:text-[1.15rem] md:text-[1.25rem] lg:text-[1.35rem]"
+                            className="text-quote whitespace-pre-line text-[1rem] font-medium leading-[1.4] text-[#0E2D2A] sm:text-[1.15rem] md:text-[1.25rem] lg:text-[1.35rem]"
                             style={quoteStyles}
                         >
                             {testimonial.quote}
@@ -474,7 +474,7 @@ export const HomeTestimonials: HomeThemeDefinition["Testimonials"] = ({
                     <div className="relative w-full max-w-[1400px] mx-auto">
                         <div
                             ref={trackRef}
-                            className="relative flex justify-center items-center overflow-visible pt-10 pb-8 md:pt-8 md:pb-8"
+                            className="relative flex justify-center items-center overflow-visible pt-8 pb-6 md:pt-8 md:pb-8"
                             onMouseDown={(e) => handleStart(e.clientX)}
                             onMouseMove={(e) => {
                                 if (isDragging) {
