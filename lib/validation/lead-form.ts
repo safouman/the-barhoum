@@ -3,12 +3,13 @@ import {
     AGE_RANGE_OPTIONS,
     CONTACT_WINDOW_OPTIONS,
     COUNTRY_OPTIONS,
+    MIN_PHONE_DIGITS,
+    PHONE_ALLOWED_CHARACTERS_REGEX,
 } from "@/lib/constants/lead-form";
 
 const countryOptionsSet = new Set<string>(COUNTRY_OPTIONS);
 const ageGroupOptionsSet = new Set<string>(AGE_RANGE_OPTIONS);
 const contactWindowOptionsSet = new Set<string>(CONTACT_WINDOW_OPTIONS);
-const MIN_PHONE_DIGITS = 8;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
 const MAX_EMAIL_LENGTH = 320;
 const MAX_PASSPHRASE_LENGTH = 200;
@@ -85,7 +86,9 @@ export const leadFormSchema = z.object({
         .min(1, "WhatsApp number is required")
         .max(50, "Phone number must be less than 50 characters")
         .refine(
-            (val) => val.replace(/\D/g, "").length >= MIN_PHONE_DIGITS,
+            (val) =>
+                PHONE_ALLOWED_CHARACTERS_REGEX.test(val) &&
+                val.replace(/\D/g, "").length >= MIN_PHONE_DIGITS,
             "Please enter a valid phone number"
         ),
 

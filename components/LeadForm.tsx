@@ -18,6 +18,8 @@ import {
     AGE_RANGE_OPTIONS,
     CONTACT_WINDOW_OPTIONS,
     COUNTRY_OPTIONS,
+    MIN_PHONE_DIGITS,
+    PHONE_ALLOWED_CHARACTERS_REGEX,
 } from "@/lib/constants/lead-form";
 
 interface LeadFormLabels {
@@ -245,8 +247,11 @@ export function LeadForm({
                 }
             }
             if (field.id === "phone" && value) {
+                if (!PHONE_ALLOWED_CHARACTERS_REGEX.test(value)) {
+                    return validation.phone;
+                }
                 const digits = value.replace(/\D/g, "");
-                if (digits.length < 8) {
+                if (digits.length < MIN_PHONE_DIGITS) {
                     return validation.phone;
                 }
             }
