@@ -199,6 +199,9 @@ export const COUNTRY_OPTIONS = [
 
 export type CountryOption = (typeof COUNTRY_OPTIONS)[number];
 
+export const MIN_PHONE_DIGITS = 8;
+export const PHONE_ALLOWED_CHARACTERS_REGEX = /^\+?[0-9\s()-]*$/;
+
 export const AGE_RANGE_OPTIONS = [
   "Under 18",
   "18-25",
