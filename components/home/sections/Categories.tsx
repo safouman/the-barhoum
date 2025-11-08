@@ -28,6 +28,7 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
     selectedPackageId,
 }) => {
     const chooseAudienceCopy = ui.home.categories.eyebrow;
+    const isRTL = locale === "ar";
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
@@ -63,6 +64,9 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
                     {categories.map((category) => {
                         const isExpandedOnMobile =
                             isMobile && expandedMobileCategory === category.id;
+                        const isCardActive = isMobile
+                            ? isExpandedOnMobile
+                            : activeCategory === category.id;
                         const isComingSoon = category.comingSoon ?? false;
                         return (
                             <div key={category.id} className="contents">
@@ -84,9 +88,7 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
                                     className={clsx(
                                         "group relative flex h-full flex-col gap-6 rounded-xl md:rounded-[24px] border border-white/80 bg-white px-6 py-12 md:px-12 md:py-14 text-start shadow-[0_16px_32px_-24px_rgba(15,35,42,0.4)] md:shadow-[0_24px_40px_-30px_rgba(15,35,42,0.45)] transition duration-200 ease-out",
                                         "hover:-translate-y-1.5 hover:border-primary/35 hover:shadow-[0_28px_55px_-26px_rgba(15,35,42,0.55)]",
-                                        (isMobile
-                                            ? isExpandedOnMobile
-                                            : activeCategory === category.id) &&
+                                        isCardActive &&
                                             "border-primary shadow-[0_32px_60px_-26px_rgba(15,35,42,0.6)]",
                                         isMobile &&
                                             isExpandedOnMobile &&
@@ -95,37 +97,65 @@ export const HomeCategories: HomeThemeDefinition["Categories"] = ({
                                     )}
                                     aria-label={category.label}
                                 >
-                                    <div className="space-y-4">
-                                        <h3
+                                    <div
+                                        className={clsx(
+                                            "flex w-full items-start gap-4",
+                                            isRTL
+                                                ? "flex-row-reverse text-right"
+                                                : "flex-row text-left"
+                                        )}
+                                    >
+                                        <span
                                             className={clsx(
-                                                "heading-3 tracking-tight transition-colors",
-                                                (
-                                                    isMobile
-                                                        ? isExpandedOnMobile
-                                                        : activeCategory ===
-                                                          category.id
-                                                )
-                                                    ? "text-primary"
-                                                    : "text-text",
-                                                "group-hover:text-primary"
+                                                "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border transition-[transform,color,border-color,background-color] duration-300 self-start",
+                                                isCardActive
+                                                    ? "border-primary/60 text-primary bg-primary/5 rotate-180"
+                                                    : "border-border/50 text-text/80 bg-white rotate-0"
                                             )}
+                                            aria-hidden
                                         >
-                                            {category.label}
-                                        </h3>
-                                        <span className="block h-px w-16 bg-primary/15 transition-all group-hover:bg-primary/35" />
+                                            <svg
+                                                className="h-3.5 w-3.5"
+                                                viewBox="0 0 20 20"
+                                                fill="none"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                            >
+                                                <path
+                                                    d="M4.5 8.25L10 13.25L15.5 8.25"
+                                                    stroke="currentColor"
+                                                    strokeWidth="1.6"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                />
+                                            </svg>
+                                        </span>
+                                        <div className="flex-1 space-y-4">
+                                            <h3
+                                                className={clsx(
+                                                    "heading-3 tracking-tight transition-colors",
+                                                    isCardActive
+                                                        ? "text-primary"
+                                                        : "text-text",
+                                                    "group-hover:text-primary"
+                                                )}
+                                            >
+                                                {category.label}
+                                            </h3>
+                                            <span className="block h-px w-16 bg-primary/15 transition-all group-hover:bg-primary/35" />
+                                        </div>
                                     </div>
-                                    <p className="text-subtle/80 group-hover:text-text/85 line-clamp-2">
+                                    <p
+                                        className={clsx(
+                                            "text-subtle/80 group-hover:text-text/85 line-clamp-2",
+                                            isRTL ? "text-right" : "text-left"
+                                        )}
+                                    >
                                         {category.description}
                                     </p>
                                     <span
                                         className={clsx(
                                             "pointer-events-none absolute inset-x-0 bottom-0 h-[2px] rounded-b-[24px] bg-primary/0 transition-opacity",
-                                            (
-                                                isMobile
-                                                    ? isExpandedOnMobile
-                                                    : activeCategory ===
-                                                      category.id
-                                            )
+                                            isCardActive
                                                 ? "bg-primary/60"
                                                 : "group-hover:bg-primary/20"
                                         )}
