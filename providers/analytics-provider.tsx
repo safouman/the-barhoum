@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
-import type { AnalyticsEventName } from "@/lib/analytics/shared";
+import type { AnalyticsEventName, AnalyticsEventPayload } from "@/lib/analytics/shared";
 import {
   event,
   getAnalyticsContext,
@@ -145,6 +145,7 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   const [shouldLoadAnalytics, setShouldLoadAnalytics] = useState<boolean>(() =>
     disableConsent ? Boolean(measurementId) : false
   );
+  const [gaReady, setGaReady] = useState(false);
   const gaReadyRef = useRef(false);
   const pendingConsentEventRef = useRef<"accepted" | null>(null);
   const sectionsRef = useRef<SectionTracker[]>([]);
@@ -153,6 +154,10 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   const previousPathRef = useRef<string | null>(null);
   const mutationObserverRef = useRef<MutationObserver | null>(null);
   const lastPageViewRef = useRef<string | null>(null);
+  const pendingPageViewRef = useRef<{
+    key: string;
+    payload: AnalyticsEventPayload;
+  } | null>(null);
   const pageScrollStateRef = useRef<{
     thresholds: Array<{ threshold: number; event: AnalyticsEventName }>;
     nextIndex: number;
@@ -186,6 +191,7 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
 
   const handleGaScriptLoaded = useCallback(() => {
     gaReadyRef.current = true;
+    setGaReady(true);
     if (typeof window !== "undefined" && measurementId) {
       (window as typeof window & Record<string, unknown>)[
         `ga-disable-${measurementId}`
@@ -318,19 +324,29 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     });
 
     const pageKey = `${currentPath}|${currentLocation}`;
-    if (lastPageViewRef.current !== pageKey) {
+    const pageViewPayload: AnalyticsEventPayload = {
+      page_path: currentPath,
+      page_location: currentLocation,
+      page_title: currentTitle,
+      referrer: previousReferrer,
+    };
+
+    const canSendPageView =
+      shouldLoadAnalytics && Boolean(measurementId) && gaReady && hasAnalyticsConsent();
+
+    if (!canSendPageView) {
+      pendingPageViewRef.current = {
+        key: pageKey,
+        payload: pageViewPayload,
+      };
+    } else if (lastPageViewRef.current !== pageKey) {
       lastPageViewRef.current = pageKey;
-      event("page_view", {
-        page_path: currentPath,
-        page_location: currentLocation,
-        page_title: currentTitle,
-        referrer: previousReferrer,
-      });
+      pendingPageViewRef.current = null;
+      event("page_view", pageViewPayload);
     }
 
     previousPathRef.current = currentPath;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname, search]);
+  }, [pathname, search, shouldLoadAnalytics, measurementId, gaReady]);
 
   useEffect(() => {
     pageScrollStateRef.current = {
