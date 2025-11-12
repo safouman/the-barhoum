@@ -213,18 +213,36 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "hidden" && hasAnalyticsConsent()) {
-        const payload = lastPagePayloadRef.current;
-        if (payload) {
-          capturePosthogPageLeave(payload);
-        }
+    const sendPageLeave = () => {
+      if (!hasAnalyticsConsent()) {
+        return;
+      }
+      const payload = lastPagePayloadRef.current;
+      if (payload) {
+        capturePosthogPageLeave(payload);
       }
     };
 
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") {
+        sendPageLeave();
+      }
+    };
+
+    const handlePageHide = () => {
+      sendPageLeave();
+    };
+
     document.addEventListener("visibilitychange", handleVisibilityChange);
+    if (typeof window !== "undefined") {
+      window.addEventListener("pagehide", handlePageHide);
+    }
+
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
+      if (typeof window !== "undefined") {
+        window.removeEventListener("pagehide", handlePageHide);
+      }
     };
   }, [posthogConfigured]);
 

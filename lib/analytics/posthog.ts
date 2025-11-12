@@ -131,7 +131,9 @@ export function capturePosthogPageLeave(payload: AnalyticsEventPayload): void {
   if (!client || typeof client.capture !== "function" || hasOptedOut(client)) {
     return;
   }
-  client.capture("$pageleave", buildPageEventProps(payload));
+  client.capture("$pageleave", buildPageEventProps(payload), {
+    transport: "sendBeacon",
+  });
 }
 
 export function capturePosthogWebVital(metric: NextWebVitalsMetric): void {
