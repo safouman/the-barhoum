@@ -15,6 +15,7 @@ import {
 import { CookieConsentBanner } from "@/components/cookies/CookieConsentBanner";
 import { hasAnalyticsConsent } from "@/lib/consent";
 import { useLocale } from "@/providers/locale-provider";
+import { isPosthogConfigured, setPosthogTrackingEnabled } from "@/lib/analytics/posthog";
 
 type SectionTracker = {
   element: HTMLElement;
@@ -142,8 +143,10 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   const { locale } = useLocale();
   const disableConsent = process.env.NEXT_PUBLIC_DISABLE_CONSENT === "true";
   const measurementId = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
+  const posthogConfigured = isPosthogConfigured();
+  const hasClientAnalytics = Boolean(measurementId) || posthogConfigured;
   const [shouldLoadAnalytics, setShouldLoadAnalytics] = useState<boolean>(() =>
-    disableConsent ? Boolean(measurementId) : false
+    disableConsent ? hasClientAnalytics : false
   );
   const [gaReady, setGaReady] = useState(false);
   const gaReadyRef = useRef(false);
@@ -172,13 +175,24 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (disableConsent) {
-      setShouldLoadAnalytics(Boolean(measurementId));
+      setShouldLoadAnalytics(hasClientAnalytics);
       return;
     }
-    if (hasAnalyticsConsent()) {
+    if (hasAnalyticsConsent() && hasClientAnalytics) {
       setShouldLoadAnalytics(true);
     }
-  }, [disableConsent, measurementId]);
+  }, [disableConsent, hasClientAnalytics]);
+
+  useEffect(() => {
+    if (!posthogConfigured) {
+      return;
+    }
+    if (disableConsent) {
+      setPosthogTrackingEnabled(true);
+      return;
+    }
+    setPosthogTrackingEnabled(hasAnalyticsConsent());
+  }, [disableConsent, posthogConfigured]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !measurementId) {
@@ -209,18 +223,24 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
 
   const handleConsentGranted = useCallback(() => {
     setShouldLoadAnalytics(true);
+    if (posthogConfigured) {
+      setPosthogTrackingEnabled(true);
+    }
     if (gaReadyRef.current) {
       event("cookie_consent_given", { source: "banner" });
     } else {
       pendingConsentEventRef.current = "accepted";
     }
-  }, []);
+  }, [posthogConfigured]);
 
   const handleConsentRejected = useCallback(() => {
     pendingConsentEventRef.current = null;
     setShouldLoadAnalytics((previous) => (previous ? previous : false));
     if (gaReadyRef.current) {
       event("cookie_consent_rejected", { source: "banner" });
+    }
+    if (posthogConfigured) {
+      setPosthogTrackingEnabled(false);
     }
     if (typeof window !== "undefined" && measurementId) {
       (window as typeof window & Record<string, unknown>)[
@@ -231,7 +251,7 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
         gtag("consent", "update", { analytics_storage: "denied" });
       }
     }
-  }, [measurementId]);
+  }, [measurementId, posthogConfigured]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -332,7 +352,9 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     };
 
     const canSendPageView =
-      shouldLoadAnalytics && Boolean(measurementId) && gaReady && hasAnalyticsConsent();
+      shouldLoadAnalytics &&
+      hasAnalyticsConsent() &&
+      (posthogConfigured || (Boolean(measurementId) && gaReady));
 
     if (!canSendPageView) {
       pendingPageViewRef.current = {
@@ -346,7 +368,7 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     }
 
     previousPathRef.current = currentPath;
-  }, [pathname, search, shouldLoadAnalytics, measurementId, gaReady]);
+  }, [pathname, search, shouldLoadAnalytics, measurementId, gaReady, posthogConfigured]);
 
   useEffect(() => {
     pageScrollStateRef.current = {

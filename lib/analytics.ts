@@ -7,6 +7,7 @@ import type {
 } from "@/lib/analytics/shared";
 import { ANALYTICS_DEFAULTS, sanitizeAnalyticsParams } from "@/lib/analytics/shared";
 import { hasAnalyticsConsent } from "@/lib/consent";
+import { capturePosthogEvent } from "@/lib/analytics/posthog";
 
 export type GtagFunction = {
   (command: "event", eventName: string, params?: Record<string, unknown>): void;
@@ -99,17 +100,15 @@ export function event(name: AnalyticsEventName, props: AnalyticsEventPayload = {
     return;
   }
 
-  const measurementId = getMeasurementId();
-
-  if (!measurementId) {
-    if (process.env.NODE_ENV !== "production") {
-      console.info("[analytics]", name, payload);
-    }
-    return;
-  }
+  capturePosthogEvent(name, payload);
 
   if (process.env.NODE_ENV !== "production") {
     console.info("[analytics]", name, payload);
+  }
+
+  const measurementId = getMeasurementId();
+  if (!measurementId) {
+    return;
   }
 
   sendWithGtag(name, payload);

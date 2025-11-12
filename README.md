@@ -22,10 +22,12 @@ Set secrets in `.env.local` (keep `.env` out of version control). Restart the de
 -   **Core URLs & localization**
     -   `NEXT_PUBLIC_SITE_URL` – canonical base URL used for metadata and oEmbed responses.
     -   `NEXT_PUBLIC_LOCALIZATION_AVAILABLE_LOCALES`, `NEXT_PUBLIC_LOCALIZATION_DEFAULT_LOCALE`, `NEXT_PUBLIC_LOCALIZATION_ENABLED_LOCALES` – optional overrides for supported languages when you diverge from the defaults in `config/localization.ts`.
--   **Analytics (GA4)**
+-   **Analytics (GA4 & PostHog)**
     -   `NEXT_PUBLIC_GA4_MEASUREMENT_ID` – exposed to the client; required for browser analytics and JSON-LD metrics.
     -   `GA4_MEASUREMENT_ID` (optional) – server-side override; falls back to the public value.
     -   `GA4_API_SECRET` – required when the lead/checkout automations send Measurement Protocol hits.
+    -   `NEXT_PUBLIC_POSTHOG_KEY` – public API key for `posthog-js`; enables sending the exact same client events to PostHog alongside GA4.
+    -   `NEXT_PUBLIC_POSTHOG_HOST` (optional) – override the default `https://app.posthog.com` host when using a regional/PostHog Cloud EU project.
 -   **WhatsApp automations**
     -   `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID` – credentials for the Meta WhatsApp Cloud API (v22.0).
     -   `WHATSAPP_ADMIN_PHONE`, `WHATSAPP_MANAGER_PHONE` – recipient numbers (E.164, with or without the `+`).
