@@ -20,9 +20,11 @@ export function VideoEmbed({
     poster,
 }: VideoEmbedProps) {
     const [isPlaying, setIsPlaying] = useState(false);
-    const [hasLogged, setHasLogged] = useState(false);
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const hasPreloadedRef = useRef(false);
+    const hasTrackedStartRef = useRef(false);
+    const hasTrackedPlayRef = useRef(false);
+    const hasTrackedCompletionRef = useRef(false);
 
     const thumbnail = useMemo(
         () =>
@@ -40,6 +42,22 @@ export function VideoEmbed({
         () => Boolean(src || fallbackSrc),
         [fallbackSrc, src]
     );
+    const analyticsSource = useMemo(() => {
+        if (hasDirectSource) {
+            return isHlsSource ? "hls" : "file";
+        }
+        return videoId ? "youtube" : "unknown";
+    }, [hasDirectSource, isHlsSource, videoId]);
+
+    const resetTrackingRefs = useCallback(() => {
+        hasTrackedStartRef.current = false;
+        hasTrackedPlayRef.current = false;
+        hasTrackedCompletionRef.current = false;
+    }, []);
+
+    useEffect(() => {
+        resetTrackingRefs();
+    }, [analyticsId, fallbackSrc, resetTrackingRefs, src]);
 
     const preloadVideo = useCallback(async () => {
         const videoEl = videoRef.current;
@@ -103,6 +121,37 @@ export function VideoEmbed({
         hasPreloadedRef.current = false;
     }, [fallbackSrc, src]);
 
+    const trackVideoStarted = useCallback(() => {
+        if (hasTrackedStartRef.current) return;
+        event("video_started", { id: analyticsId, source: analyticsSource });
+        hasTrackedStartRef.current = true;
+    }, [analyticsId, analyticsSource]);
+
+    const trackVideoPlayed = useCallback(() => {
+        if (hasTrackedPlayRef.current) return;
+        const playbackPosition = videoRef.current?.currentTime;
+        const hasPosition =
+            typeof playbackPosition === "number" && Number.isFinite(playbackPosition);
+        event("video_played", {
+            id: analyticsId,
+            source: analyticsSource,
+            position_seconds: hasPosition ? Math.round(playbackPosition) : undefined,
+        });
+        hasTrackedPlayRef.current = true;
+    }, [analyticsId, analyticsSource]);
+
+    const trackVideoCompleted = useCallback(() => {
+        if (hasTrackedCompletionRef.current) return;
+        const duration = videoRef.current?.duration;
+        const hasDuration = typeof duration === "number" && Number.isFinite(duration);
+        event("video_completed", {
+            id: analyticsId,
+            source: analyticsSource,
+            duration_seconds: hasDuration ? Math.round(duration) : undefined,
+        });
+        hasTrackedCompletionRef.current = true;
+    }, [analyticsId, analyticsSource]);
+
     useEffect(() => {
         let cleanup: (() => void) | undefined;
         void preloadVideo().then((result) => {
@@ -116,10 +165,10 @@ export function VideoEmbed({
     }, [preloadVideo]);
 
     const handlePlay = () => {
+        trackVideoStarted();
         setIsPlaying(true);
-        if (!hasLogged) {
-            event("video_play", { id: analyticsId });
-            setHasLogged(true);
+        if (!hasDirectSource) {
+            trackVideoPlayed();
         }
         const element = videoRef.current;
         if (element && element.paused) {
@@ -127,6 +176,14 @@ export function VideoEmbed({
                 setIsPlaying(false);
             });
         }
+    };
+
+    const handleVideoPlay = () => {
+        trackVideoPlayed();
+    };
+
+    const handleVideoEnded = () => {
+        trackVideoCompleted();
     };
 
     const renderPlayOverlay = () => (
@@ -174,6 +231,8 @@ export function VideoEmbed({
                             preload="auto"
                             poster={posterSource}
                             aria-label={title}
+                            onPlay={handleVideoPlay}
+                            onEnded={handleVideoEnded}
                         />
                         {!isPlaying && renderPlayOverlay()}
                     </>
