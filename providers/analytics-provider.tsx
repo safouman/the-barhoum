@@ -15,7 +15,11 @@ import {
 import { CookieConsentBanner } from "@/components/cookies/CookieConsentBanner";
 import { hasAnalyticsConsent } from "@/lib/consent";
 import { useLocale } from "@/providers/locale-provider";
-import { isPosthogConfigured, setPosthogTrackingEnabled } from "@/lib/analytics/posthog";
+import {
+  capturePosthogPageLeave,
+  isPosthogConfigured,
+  setPosthogTrackingEnabled,
+} from "@/lib/analytics/posthog";
 
 type SectionTracker = {
   element: HTMLElement;
@@ -157,6 +161,7 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   const previousPathRef = useRef<string | null>(null);
   const mutationObserverRef = useRef<MutationObserver | null>(null);
   const lastPageViewRef = useRef<string | null>(null);
+  const lastPagePayloadRef = useRef<AnalyticsEventPayload | null>(null);
   const pendingPageViewRef = useRef<{
     key: string;
     payload: AnalyticsEventPayload;
@@ -202,6 +207,26 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
       `ga-disable-${measurementId}`
     ] = !shouldLoadAnalytics;
   }, [measurementId, shouldLoadAnalytics]);
+
+  useEffect(() => {
+    if (!posthogConfigured || typeof document === "undefined") {
+      return;
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden" && hasAnalyticsConsent()) {
+        const payload = lastPagePayloadRef.current;
+        if (payload) {
+          capturePosthogPageLeave(payload);
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [posthogConfigured]);
 
   const handleGaScriptLoaded = useCallback(() => {
     gaReadyRef.current = true;
@@ -351,6 +376,16 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
       referrer: previousReferrer,
     };
 
+    if (
+      posthogConfigured &&
+      hasAnalyticsConsent() &&
+      lastPageViewRef.current &&
+      lastPageViewRef.current !== pageKey &&
+      lastPagePayloadRef.current
+    ) {
+      capturePosthogPageLeave(lastPagePayloadRef.current);
+    }
+
     const canSendPageView =
       shouldLoadAnalytics &&
       hasAnalyticsConsent() &&
@@ -365,6 +400,7 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
       lastPageViewRef.current = pageKey;
       pendingPageViewRef.current = null;
       event("page_view", pageViewPayload);
+      lastPagePayloadRef.current = pageViewPayload;
     }
 
     previousPathRef.current = currentPath;
