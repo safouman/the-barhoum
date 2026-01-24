@@ -3,6 +3,7 @@ import type Stripe from "stripe";
 import { getStripeClient } from "@/lib/stripe/client";
 import { trackAutomationEvent } from "@/lib/analytics/server";
 import { sendPaymentWhatsAppNotification } from "@/lib/whatsapp/notifications";
+import { sendPaymentTelegramNotification } from "@/lib/telegram/notifications";
 import { isStripeEnabled } from "@/config/features";
 
 function buildContextFromMetadata(metadata: Stripe.Metadata | null | undefined) {
@@ -184,18 +185,29 @@ export async function POST(req: NextRequest) {
         readMetadataValue("lead_id") ?? readMetadataValue("leadId");
 
       try {
-        await sendPaymentWhatsAppNotification({
-          requestId: session.id,
-          analyticsContext: context,
-          customerName,
-          customerCountry,
-          programName,
-          amountMinor: session.amount_total ?? null,
-          currency: session.currency ?? null,
-        });
+        await Promise.all([
+          sendPaymentWhatsAppNotification({
+            requestId: session.id,
+            analyticsContext: context,
+            customerName,
+            customerCountry,
+            programName,
+            amountMinor: session.amount_total ?? null,
+            currency: session.currency ?? null,
+          }),
+          sendPaymentTelegramNotification({
+            requestId: session.id,
+            analyticsContext: context,
+            customerName,
+            customerCountry,
+            programName,
+            amountMinor: session.amount_total ?? null,
+            currency: session.currency ?? null,
+          }),
+        ]);
       } catch (notificationError) {
         console.error(
-          `[Stripe Webhook] ❌ Failed to send WhatsApp payment notification for checkout session ${session.id}`,
+          `[Stripe Webhook] ❌ Failed to send payment notifications for checkout session ${session.id}`,
           notificationError
         );
       }

@@ -35,6 +35,9 @@ Set secrets in `.env.local` (keep `.env` out of version control). Restart the de
         -   Lead notifications: `WHATSAPP_TEMPLATE_NAME`, `WHATSAPP_TEMPLATE_LANGUAGE`, `WHATSAPP_TEMPLATE_PARAMETER_NAMES`.
         -   Payment notifications: `WHATSAPP_PAYMENT_TEMPLATE_NAME`, `WHATSAPP_PAYMENT_TEMPLATE_LANGUAGE`, `WHATSAPP_PAYMENT_TEMPLATE_PARAMETER_NAMES`.
         -   If templates are omitted, the API falls back to plain-text alerts but still requires valid credentials.
+-   **Telegram automations**
+    -   `TELEGRAM_BOT_TOKEN` – bot token from BotFather.
+    -   `TELEGRAM_CHAT_ID` – comma-separated list of chat IDs that should receive notifications.
 -   **Stripe billing**
     -   `STRIPE_SECRET_KEY` – required for creating payment links and refreshing the program catalog.
     -   `STRIPE_WEBHOOK_SECRET` – required to validate `app/api/stripe/webhook`; in development run `stripe listen --forward-to http://localhost:3000/api/stripe/webhook` to obtain a test secret.

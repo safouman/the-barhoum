@@ -7,6 +7,7 @@ import { requiresPayment } from "@/lib/utils/geo";
 import type { SharedAnalyticsContext } from "@/lib/analytics/shared";
 import { trackAutomationEvent } from "@/lib/analytics/server";
 import { sendLeadWhatsAppNotification } from "@/lib/whatsapp/notifications";
+import { sendLeadTelegramNotification } from "@/lib/telegram/notifications";
 import { isStripeEnabled } from "@/config/features";
 import { hitRateLimit } from "@/lib/rate-limit";
 
@@ -798,15 +799,23 @@ export async function POST(req: NextRequest) {
 
                 if (!isDuplicate) {
                     try {
-                        await sendLeadWhatsAppNotification({
-                            formData,
-                            requestId,
-                            analyticsContext: automationContext,
-                            programName: packageDisplayName,
-                        });
+                        await Promise.all([
+                            sendLeadWhatsAppNotification({
+                                formData,
+                                requestId,
+                                analyticsContext: automationContext,
+                                programName: packageDisplayName,
+                            }),
+                            sendLeadTelegramNotification({
+                                formData,
+                                requestId,
+                                analyticsContext: automationContext,
+                                programName: packageDisplayName,
+                            }),
+                        ]);
                     } catch (error) {
                         console.error(
-                            `[${requestId}] ❌ Unexpected error while handling WhatsApp notifications`,
+                            `[${requestId}] ❌ Unexpected error while handling lead notifications`,
                             error
                         );
                     }

@@ -22,6 +22,8 @@ export type AnalyticsEventName =
     | "form_submitted_with_payment"
     | "whatsapp_sent"
     | "whatsapp_failed"
+    | "telegram_sent"
+    | "telegram_failed"
     | "form_completed"
     | "scroll_75"
     | "social_link_clicked"
