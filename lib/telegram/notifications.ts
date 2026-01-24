@@ -7,6 +7,10 @@ interface SendTelegramMessageOptions {
     analyticsContext: Partial<SharedAnalyticsContext>;
     contextLabel: "lead" | "payment";
     message: string;
+    button?: {
+        label: string;
+        url: string;
+    };
 }
 
 function resolveChatIds(raw: string | undefined): string[] {
@@ -22,6 +26,7 @@ async function sendTelegramMessage({
     analyticsContext,
     contextLabel,
     message,
+    button,
 }: SendTelegramMessageOptions): Promise<void> {
     const botToken = process.env.TELEGRAM_BOT_TOKEN;
     const chatIds = resolveChatIds(process.env.TELEGRAM_CHAT_ID);
@@ -54,6 +59,19 @@ async function sendTelegramMessage({
 
     const endpoint = `https://api.telegram.org/bot${botToken}/sendMessage`;
 
+    const replyMarkup = button
+        ? {
+              inline_keyboard: [
+                  [
+                      {
+                          text: button.label,
+                          url: button.url,
+                      },
+                  ],
+              ],
+          }
+        : undefined;
+
     await Promise.all(
         chatIds.map(async (chatId) => {
             try {
@@ -65,6 +83,7 @@ async function sendTelegramMessage({
                     body: JSON.stringify({
                         chat_id: chatId,
                         text: message,
+                        reply_markup: replyMarkup,
                     }),
                 });
 
@@ -136,22 +155,26 @@ export async function sendLeadTelegramNotification({
     const resolvedCountry = formData.country?.trim() ?? "";
     const resolvedProgram =
         programName?.trim() || formData.package?.trim() || "";
+    const sheetUrl = process.env.TELEGRAM_LEADS_SHEET_URL?.trim() ?? "";
 
     const message = [
         "📩 New form submitted",
-        resolvedFullName ? `by ${resolvedFullName}` : "",
-        resolvedCountry ? `from ${resolvedCountry}` : "",
-        resolvedProgram ? `about ${resolvedProgram}` : "",
-        "Please check the Google Sheet for details.",
-    ]
-        .filter(Boolean)
-        .join(" ");
+        `Name: ${resolvedFullName || "N/A"}`,
+        `Country: ${resolvedCountry || "N/A"}`,
+        `Program: ${resolvedProgram || "N/A"}`,
+    ].join("\n");
 
     await sendTelegramMessage({
         requestId,
         analyticsContext,
         contextLabel: "lead",
         message,
+        button: sheetUrl
+            ? {
+                  label: "Open Google Sheet",
+                  url: sheetUrl,
+              }
+            : undefined,
     });
 }
 
