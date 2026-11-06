@@ -47,6 +47,17 @@ Set secrets in `.env.local` (keep `.env` out of version control). Restart the de
 -   **Lead automation**
     -   `GOOGLE_SCRIPT_URL`, `GOOGLE_SCRIPT_SECRET` – optional. When configured, lead submissions POST to your Apps Script endpoint before triggering WhatsApp notifications.
 
+## Payload admin
+
+Use the Node.js version in `.nvmrc`. In the Vercel project's **Development** environment, copy
+`DATABASE_URL`, `DATABASE_URL_UNPOOLED`, and `PAYLOAD_SECRET` into your Git-ignored
+`.env.local`. Run `npm run start:dev` and open `http://localhost:3000/admin`.
+The local app and the protected course-platform preview use the same Neon development database.
+
+For a new database, run `npm run payload:migrate` to apply the checked-in migrations over the
+unpooled connection. Confirm the target database before running migrations. Payload does not
+push schema changes on app startup.
+
 ## Content & configuration
 
 All editable content lives under `data/`:

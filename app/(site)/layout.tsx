@@ -5,7 +5,7 @@ export const runtime = "nodejs";
 import Script from "next/script";
 import type { CSSProperties } from "react";
 import { Inter, Noto_Naskh_Arabic } from "next/font/google";
-import "../styles/globals.css";
+import "../../styles/globals.css";
 import { LocaleProvider } from "@/providers/locale-provider";
 import { AnalyticsProvider } from "@/providers/analytics-provider";
 import { SiteHeader } from "@/components/SiteHeader";

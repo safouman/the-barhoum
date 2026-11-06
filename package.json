@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start:dev": "next dev",
-    "build": "next build",
+    "build": "node --version && next build",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
@@ -13,7 +13,9 @@
     "lint:staged": "lint-staged",
     "prepare": "husky",
     "analyze-audio": "node scripts/analyze-audio.mjs",
-    "transcode:video": "node scripts/transcode-video.mjs"
+    "transcode:video": "node scripts/transcode-video.mjs",
+    "payload": "node --env-file-if-exists=.env.local ./node_modules/payload/bin.js --disable-transpile",
+    "payload:migrate": "PAYLOAD_MIGRATING=1 npm run payload -- migrate"
   },
   "keywords": [
     "coaching",
@@ -23,10 +25,14 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@payloadcms/db-postgres": "3.93.0",
+    "@payloadcms/next": "3.93.0",
     "@vercel/analytics": "^1.5.0",
     "classnames": "^2.5.1",
+    "graphql": "16.15.0",
     "hls.js": "^1.6.13",
     "next": "16.4.5",
+    "payload": "3.93.0",
     "posthog-js": "^1.290.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",

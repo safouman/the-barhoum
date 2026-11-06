@@ -37,6 +37,9 @@
       ],
       "@/providers/*": [
         "./providers/*"
+      ],
+      "@payload-config": [
+        "./payload.config.ts"
       ]
     },
     "plugins": [
