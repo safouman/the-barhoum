@@ -35,7 +35,7 @@ if [ "${STUDENT_TEST_MIGRATION_ROLLBACK:-0}" = 1 ]; then
 fi
 npm run build
 
-NODE_OPTIONS="--import=$PWD/tests/student-auth/provider-fixture.mjs" node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port "${STUDENT_TEST_PORT:-4398}" >"$test_dir/server.log" 2>&1 &
+NODE_OPTIONS="--import=\"$PWD/tests/student-auth/provider-fixture.mjs\"" node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port "${STUDENT_TEST_PORT:-4398}" >"$test_dir/server.log" 2>&1 &
 server_pid=$!
 for attempt in {1..25}; do
     if curl -fsS --max-time 1 "$STUDENT_AUTH_ORIGIN/robots.txt" >/dev/null 2>&1; then break; fi
