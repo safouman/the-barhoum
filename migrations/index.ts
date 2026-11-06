@@ -3,6 +3,7 @@ import * as migration_20261106_123150_course_content from './20261106_123150_cou
 import * as migration_20261106_125512_public_cover_url from './20261106_125512_public_cover_url';
 import * as migration_20261106_133856_vimeo_and_cover_storage from './20261106_133856_vimeo_and_cover_storage';
 import * as migration_20261106_145739_module_drafts from './20261106_145739_module_drafts';
+import * as migration_20261106_213612_student_auth from './20261106_213612_student_auth';
 
 export const migrations = [
   {
@@ -28,6 +29,11 @@ export const migrations = [
   {
     up: migration_20261106_145739_module_drafts.up,
     down: migration_20261106_145739_module_drafts.down,
-    name: '20261106_145739_module_drafts'
+    name: '20261106_145739_module_drafts',
+  },
+  {
+    up: migration_20261106_213612_student_auth.up,
+    down: migration_20261106_213612_student_auth.down,
+    name: '20261106_213612_student_auth'
   },
 ];
