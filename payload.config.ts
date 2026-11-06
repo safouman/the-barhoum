@@ -1,5 +1,6 @@
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { buildConfig, type CollectionConfig } from "payload";
+import { CourseCovers, Courses, Instructors, LessonFiles, Lessons, Modules } from "./payload/collections.ts";
 
 const Admins: CollectionConfig = {
     slug: "admins",
@@ -28,7 +29,7 @@ export default buildConfig({
         user: Admins.slug,
         importMap: { importMapFile: "./app/(payload)/admin/importMap.ts" },
     },
-    collections: [Admins],
+    collections: [Admins, Courses, Modules, Lessons, Instructors, CourseCovers, LessonFiles],
     db: postgresAdapter({
         pool: { connectionString },
         push: false,
