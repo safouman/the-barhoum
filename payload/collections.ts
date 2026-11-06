@@ -1,5 +1,5 @@
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
-import { ValidationError, type Access, type Block, type CollectionBeforeOperationHook, type CollectionConfig, type Field, type TextFieldSingleValidation } from "payload";
+import { APIError, ValidationError, type Access, type Block, type CollectionBeforeOperationHook, type CollectionConfig, type Field, type TextFieldSingleValidation } from "payload";
 import { text as validateText } from "payload/shared";
 import { curriculumFields, keepCourseOwnership, protectPlacedRecord, validateCurriculum } from "./curriculum.ts";
 
@@ -193,7 +193,7 @@ export const Courses: CollectionConfig = {
                     where: { course: { equals: id } },
                 });
                 if (totalDocs) {
-                    throw new ValidationError({ errors: [{ path: "title", message: "Unpublish this course to retain its modules and lessons." }] });
+                    throw new APIError("This course still owns modules or lessons, including drafts. Unpublish it to hide it and keep its content.", 409);
                 }
             }
         }],
