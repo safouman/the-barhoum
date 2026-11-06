@@ -169,6 +169,7 @@ export async function getPublishedCourse(slug: string): Promise<CourseDetail | n
 function projectBlocks(
     blocks: NonNullable<Lesson["content"]>,
     editorConfig: Awaited<ReturnType<typeof editorConfigFactory.default>>,
+    downloadBase: string,
 ): LessonBlock[] {
     return blocks.map((block, index) => {
         const id = block.id ?? String(index);
@@ -188,7 +189,11 @@ function projectBlocks(
                 return {
                     id,
                     type: "resources",
-                    items: block.items.flatMap((item) => {
+                    items: block.items.flatMap<{ kind: "link" | "download"; label: string; url: string }>((item) => {
+                        if (item.blockType === "download") {
+                            const fileID = relationID(item.file);
+                            return fileID === undefined ? [] : [{ kind: "download", label: item.label, url: `${downloadBase}/${fileID}` }];
+                        }
                         if (item.blockType !== "link" || !/^https?:\/\//i.test(item.url)) return [];
                         return [{ kind: "link", label: item.label, url: item.url }];
                     }),
@@ -227,5 +232,9 @@ export async function getPublishedLesson(slug: string, lessonID: string): Promis
     });
     if (!published) return null;
     const editorConfig = await editorConfigFactory.default({ config: payload.config });
-    return { ...detail, blocks: projectBlocks(published.content ?? [], editorConfig) };
+    return { ...detail, blocks: projectBlocks(published.content ?? [], editorConfig, lessonDownloadBase(slug, lessonID)) };
+}
+
+export function lessonDownloadBase(slug: string, lessonID: string) {
+    return `/api/lesson-downloads/${encodeURIComponent(slug)}/${encodeURIComponent(lessonID)}`;
 }

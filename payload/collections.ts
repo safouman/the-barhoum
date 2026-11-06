@@ -6,6 +6,11 @@ import { curriculumFields, keepCourseOwnership, protectPlacedRecord, validateCur
 import { copyLessonEndpoint } from "./copy-lesson.ts";
 import { courseCoverDirectory, handleMissingLocalMedia, lessonFileDirectory, protectReferencedMedia } from "./media-protection.ts";
 
+import {
+    deletePrivateLessonFile, servePrivateAdminFile, storePrivateLessonFile,
+    usePrivateLessonStorage, validatePrivateLessonUpload,
+} from "../lib/learning/lesson-file-storage.ts";
+
 const isAdmin: Access = ({ req }) => req.user?.collection === "admins";
 const adminAccess = { create: isAdmin, read: isAdmin, update: isAdmin, delete: isAdmin };
 const ownedCourse: Field = {
@@ -94,7 +99,7 @@ const ResourcesBlock: Block = {
                 slug: "download",
                 fields: [
                     { name: "label", type: "text", required: true },
-                    { name: "file", type: "upload", relationTo: "lesson-files", required: true },
+                    { name: "file", type: "upload", relationTo: "lesson-files", required: true, admin: { allowCreate: true } },
                 ],
             },
         ],
@@ -143,16 +148,22 @@ export const LessonFiles: CollectionConfig = {
     slug: "lesson-files",
     access: {
         ...adminAccess,
-        create: isHosted ? () => false : isAdmin,
+        create: isHosted && !usePrivateLessonStorage ? () => false : isAdmin,
         update: isHosted ? () => false : isAdmin,
     },
     upload: {
         staticDir: lessonFileDirectory,
+        mimeTypes: ["application/pdf"],
         disableLocalStorage: isHosted,
         pasteURL: false,
-        handlers: [handleMissingLocalMedia],
+        handlers: usePrivateLessonStorage ? [servePrivateAdminFile] : [handleMissingLocalMedia],
     },
-    hooks: { beforeOperation: [blockHostedFileUpload], beforeDelete: [protectReferencedMedia] },
+    hooks: {
+        beforeOperation: usePrivateLessonStorage ? [validatePrivateLessonUpload] : [blockHostedFileUpload],
+        afterChange: [storePrivateLessonFile],
+        beforeDelete: [protectReferencedMedia],
+        afterDelete: [deletePrivateLessonFile],
+    },
     fields: [],
 };
 
