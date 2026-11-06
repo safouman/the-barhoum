@@ -86,12 +86,12 @@ function buildPacksByCategory(
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  const locale = resolveLocale();
+  const locale = await resolveLocale();
   return getPageMetadata("home", locale);
 }
 
 export default async function Page() {
-  const locale = resolveLocale();
+  const locale = await resolveLocale();
   const [
     home,
     categories,

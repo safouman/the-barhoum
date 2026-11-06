@@ -93,7 +93,7 @@ export default async function RootLayout({
 }: {
     children: React.ReactNode;
 }) {
-    const locale = resolveLocale();
+    const locale = await resolveLocale();
     const direction = getDirection(locale);
     const [ui, site] = await Promise.all([loadUi(), getSiteConfig()]);
     const fontClass = `${inter.variable} ${notoNaskhArabic.variable}`;

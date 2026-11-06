@@ -10,6 +10,7 @@ import type {
 } from "@/lib/content";
 import { HomeHero } from "@/components/home/sections/Hero";
 import { HomeIntroVideo } from "@/components/home/sections/IntroVideo";
+import { LazyExperienceSection } from "@/components/home/sections/LazyExperienceSection";
 import { HomeMethod } from "@/components/home/sections/Method";
 import { HomeInteractiveExperience } from "@/components/HomeInteractiveExperience";
 import type { LocalizedTestimonial } from "@/components/home/types";
@@ -29,14 +30,6 @@ const HomeTestimonials = dynamic(
             default: mod.HomeTestimonials,
         })),
     { ssr: true, loading: () => <div className="py-20" aria-busy="true" /> }
-);
-
-const HomeExperienceSection = dynamic(
-    () =>
-        import("@/components/home/sections/ExperienceSection").then((mod) => ({
-            default: mod.HomeExperienceSection,
-        })),
-    { ssr: false, loading: () => null }
 );
 
 import type { PacksByCategory } from "@/components/home/sections/Packages";
@@ -112,7 +105,7 @@ export function HomeExperience({
 
             {isAudioExperienceEnabled && (
                 <Suspense fallback={null}>
-                    <HomeExperienceSection />
+                    <LazyExperienceSection />
                 </Suspense>
             )}
 

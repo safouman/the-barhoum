@@ -8,17 +8,29 @@ import { DEFAULT_LOCALE, isLocale } from './i18n';
 const COOKIE_KEY = 'barhoum_locale';
 
 // guards so static prepass/preview doesn't crash
-const safeCookie = (name: string) => { try { return cookies().get(name)?.value } catch { return undefined } };
-const safeHeader = (k: string) => { try { return headers().get(k) } catch { return null } };
+async function safeCookie(name: string) {
+  try {
+    return (await cookies()).get(name)?.value;
+  } catch {
+    return undefined;
+  }
+}
+async function safeHeader(name: string) {
+  try {
+    return (await headers()).get(name);
+  } catch {
+    return null;
+  }
+}
 
-export function resolveLocale(searchParams?: ReadonlyURLSearchParams | null): Locale {
+export async function resolveLocale(searchParams?: ReadonlyURLSearchParams | null): Promise<Locale> {
   const fromSearch = searchParams?.get('lang');
   if (isLocale(fromSearch)) return fromSearch;
 
-  const cookieLocale = safeCookie(COOKIE_KEY);
+  const cookieLocale = await safeCookie(COOKIE_KEY);
   if (isLocale(cookieLocale)) return cookieLocale;
 
-  const acceptLang = safeHeader('accept-language');
+  const acceptLang = await safeHeader('accept-language');
   const preferred = acceptLang?.split(',')[0]?.split('-')[0];
   if (isLocale(preferred)) return preferred;
 
@@ -26,8 +38,8 @@ export function resolveLocale(searchParams?: ReadonlyURLSearchParams | null): Lo
 }
 
 // If you must keep this here, wrap it. Better: move to a server action (below).
-export function serializeLocale(locale: Locale) {
+export async function serializeLocale(locale: Locale) {
   try {
-    cookies().set(COOKIE_KEY, locale, { path: '/', maxAge: 60 * 60 * 24 * 365 });
+    (await cookies()).set(COOKIE_KEY, locale, { path: '/', maxAge: 60 * 60 * 24 * 365 });
   } catch {/* ignore during static/preview */}
 }

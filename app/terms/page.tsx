@@ -4,7 +4,7 @@ import { getPageMetadata } from "@/lib/seo";
 import { resolveLocale } from "@/lib/i18n.server";
 
 export async function generateMetadata(): Promise<Metadata> {
-    const locale = resolveLocale();
+    const locale = await resolveLocale();
     return getPageMetadata("terms", locale);
 }
 

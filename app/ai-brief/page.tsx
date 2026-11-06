@@ -160,7 +160,7 @@ export async function generateMetadata(): Promise<Metadata> {
         };
     }
 
-    const locale = resolveLocale();
+    const locale = await resolveLocale();
     const metaContent = `${brand.person.name}, ${brand.person.jobTitle} based in Tunisia, founder of ${brand.organization.name}.`;
     return getPageMetadata("ai-brief", locale, {
         other: {
@@ -174,7 +174,7 @@ export default async function AIBriefPage() {
         notFound();
     }
 
-    const locale = resolveLocale();
+    const locale = await resolveLocale();
     const copy = AI_BRIEF_COPY[locale] ?? AI_BRIEF_COPY.en;
     const isRtl = locale === "ar";
 
