@@ -1,4 +1,5 @@
 import { postgresAdapter } from "@payloadcms/db-postgres";
+import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
 import { buildConfig, type CollectionConfig } from "payload";
 import { CourseCovers, Courses, Instructors, LessonFiles, Lessons, Modules } from "./payload/collections.ts";
 
@@ -34,6 +35,12 @@ export default buildConfig({
         pool: { connectionString },
         push: false,
     }),
+    plugins: [vercelBlobStorage({
+        token: process.env.BLOB_READ_WRITE_TOKEN,
+        access: "public",
+        alwaysInsertFields: true,
+        collections: { "course-covers": { disablePayloadAccessControl: true } },
+    })],
     graphQL: { disable: true },
     secret: process.env.PAYLOAD_SECRET ?? "",
 });

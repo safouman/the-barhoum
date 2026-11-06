@@ -10,6 +10,7 @@ const ownedCourse: Field = {
     admin: { description: "The owning course is fixed after creation." },
 };
 const isHosted = process.env.VERCEL === "1";
+const canUploadCover = !isHosted || Boolean(process.env.BLOB_READ_WRITE_TOKEN);
 const imageTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"];
 
 const validateHttpURL: TextFieldSingleValidation = async (value, options) => {
@@ -60,12 +61,12 @@ const VideoBlock: Block = {
         required: true,
         fields: [
             { name: "title", type: "text", required: true },
-            { name: "provider", type: "select", options: ["mux"], defaultValue: "mux", required: true },
+            { name: "provider", type: "select", options: ["vimeo", "mux"], defaultValue: "vimeo", required: true },
             {
                 name: "reference",
                 type: "text",
                 required: true,
-                admin: { description: "Enter the provider's video reference. The application resolves access and playback separately." },
+                admin: { description: "Paste the Vimeo video link or ID. Keep the privacy hash when using an unlisted link." },
             },
         ],
     }],
@@ -109,13 +110,13 @@ export const CourseCovers: CollectionConfig = {
         filesRequiredOnCreate: false,
     },
     hooks: {
-        beforeOperation: [blockHostedFileUpload],
+        beforeOperation: canUploadCover ? [] : [blockHostedFileUpload],
         beforeChange: [({ data, originalDoc, req }) => {
             const publicURL = data.publicURL === undefined ? originalDoc?.publicURL : data.publicURL;
-            const uploadedFile = !isHosted && (req.file || originalDoc?.filename);
+            const uploadedFile = canUploadCover && (req.file || originalDoc?.filename || data.filename);
             if (!publicURL && !uploadedFile) {
                 throw new ValidationError({
-                    errors: [{ path: "publicURL", message: "Enter a public cover URL or upload a cover image locally." }],
+                    errors: [{ path: "publicURL", message: "Upload a cover image or enter a public cover URL." }],
                 });
             }
             return data;
@@ -128,7 +129,7 @@ export const CourseCovers: CollectionConfig = {
         },
         {
             name: "publicURL", type: "text", validate: validateCoverURL,
-            admin: { description: "Use a public HTTPS image URL or an app image under /images/. Hosted covers require this URL until durable storage is configured." },
+            admin: { description: "Optional when uploading a cover. Use a public HTTPS image URL or an app image under /images/." },
         },
     ],
 };
