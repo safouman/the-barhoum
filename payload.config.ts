@@ -1,5 +1,6 @@
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
+import { Students } from "./payload/students.ts";
 import { buildConfig, type CollectionConfig } from "payload";
 import { adminAccess, CourseCovers, Courses, Instructors, LessonFiles, Lessons, Modules } from "./payload/collections.ts";
 
@@ -25,7 +26,7 @@ export default buildConfig({
         user: Admins.slug,
         importMap: { importMapFile: "./app/(payload)/admin/importMap.ts" },
     },
-    collections: [Admins, Courses, Modules, Lessons, Instructors, CourseCovers, LessonFiles],
+    collections: [Admins, Students, Courses, Modules, Lessons, Instructors, CourseCovers, LessonFiles],
     db: postgresAdapter({
         pool: { connectionString },
         push: false,

@@ -1,7 +1,8 @@
 /* THIS FILE WAS GENERATED AUTOMATICALLY BY PAYLOAD. */
-/* DO NOT MODIFY IT BECAUSE IT COULD BE REWRITTEN AT ANY TIME. */
+/* Keep the adminREST guard if regenerating the Payload route. */
 import config from '@payload-config'
 import '@payloadcms/next/css'
+import { adminREST } from '../../../../lib/student-auth/admin-rest'
 import {
   REST_DELETE,
   REST_GET,
@@ -11,9 +12,9 @@ import {
   REST_PUT,
 } from '@payloadcms/next/routes'
 
-export const GET = REST_GET(config)
-export const POST = REST_POST(config)
-export const DELETE = REST_DELETE(config)
-export const PATCH = REST_PATCH(config)
-export const PUT = REST_PUT(config)
-export const OPTIONS = REST_OPTIONS(config)
+export const GET = adminREST(REST_GET(config))
+export const POST = adminREST(REST_POST(config))
+export const DELETE = adminREST(REST_DELETE(config))
+export const PATCH = adminREST(REST_PATCH(config))
+export const PUT = adminREST(REST_PUT(config))
+export const OPTIONS = adminREST(REST_OPTIONS(config))
