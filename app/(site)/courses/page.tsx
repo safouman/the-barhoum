@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import { Container } from "@/components/Container";
 import { CourseCard } from "@/components/learning/CourseCard";
 import { getDemoCourses } from "@/components/learning/fixtures";
+
+import { listPublishedCourses } from "@/lib/learning/payload-reader";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Courses",
   robots: { index: false, follow: false },
 };
 
-export default function CoursesPage() {
-  const courses = getDemoCourses();
-  if (!courses) notFound();
+export default async function CoursesPage() {
+  const courses = getDemoCourses() ?? await listPublishedCourses();
 
   return (
     <div dir="ltr" lang="en">

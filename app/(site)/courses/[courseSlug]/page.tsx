@@ -7,7 +7,11 @@ import { Container } from "@/components/Container";
 import { CurriculumList } from "@/components/learning/CurriculumList";
 import { LearningIcon } from "@/components/learning/LearningIcon";
 import { lessonHref, orderedLessons } from "@/components/learning/curriculum";
-import { getDemoCourse } from "@/components/learning/fixtures";
+import { getDemoCourse, getDemoCourses } from "@/components/learning/fixtures";
+
+import { getPublishedCourse } from "@/lib/learning/payload-reader";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Course preview",
@@ -16,7 +20,7 @@ export const metadata: Metadata = {
 
 export default async function CoursePage({ params }: { params: Promise<{ courseSlug: string }> }) {
   const { courseSlug } = await params;
-  const course = getDemoCourse(courseSlug);
+  const course = getDemoCourses() ? getDemoCourse(courseSlug) : await getPublishedCourse(courseSlug);
   if (!course) notFound();
 
   const lessons = orderedLessons(course.curriculum);

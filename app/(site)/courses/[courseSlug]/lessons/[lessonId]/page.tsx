@@ -7,7 +7,11 @@ import { CurriculumList, LessonAccessBadge } from "@/components/learning/Curricu
 import { LearningIcon } from "@/components/learning/LearningIcon";
 import { LessonBlocks } from "@/components/learning/LessonBlocks";
 import { lessonHref, orderedLessons } from "@/components/learning/curriculum";
-import { getDemoLesson } from "@/components/learning/fixtures";
+import { getDemoLesson, getDemoCourses } from "@/components/learning/fixtures";
+
+import { getPublishedLesson } from "@/lib/learning/payload-reader";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Lesson preview",
@@ -20,7 +24,7 @@ export default async function LessonPage({
   params: Promise<{ courseSlug: string; lessonId: string }>;
 }) {
   const { courseSlug, lessonId } = await params;
-  const detail = getDemoLesson(courseSlug, lessonId);
+  const detail = getDemoCourses() ? getDemoLesson(courseSlug, lessonId) : await getPublishedLesson(courseSlug, lessonId);
   if (!detail) notFound();
 
   const { course, curriculum, lesson } = detail;
