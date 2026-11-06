@@ -179,7 +179,7 @@ function projectBlocks(
                     type: "video",
                     videos: block.videos.map(({ title, provider, reference }) => ({
                         title,
-                        vimeoEmbedUrl: String(provider) === "vimeo" ? vimeoEmbedURL(reference) : undefined,
+                        vimeoEmbedUrl: provider === "vimeo" ? vimeoEmbedURL(reference) : undefined,
                     })),
                 };
             case "resources":

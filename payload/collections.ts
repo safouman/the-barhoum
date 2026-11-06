@@ -113,7 +113,7 @@ export const CourseCovers: CollectionConfig = {
         beforeOperation: canUploadCover ? [] : [blockHostedFileUpload],
         beforeChange: [({ data, originalDoc, req }) => {
             const publicURL = data.publicURL === undefined ? originalDoc?.publicURL : data.publicURL;
-            const uploadedFile = canUploadCover && (req.file || originalDoc?.filename || data.filename);
+            const uploadedFile = canUploadCover && (req.file || originalDoc?.filename);
             if (!publicURL && !uploadedFile) {
                 throw new ValidationError({
                     errors: [{ path: "publicURL", message: "Upload a cover image or enter a public cover URL." }],
