@@ -1,4 +1,5 @@
 import { del, get, put } from "@vercel/blob";
+import { getVercelOidcToken } from "@vercel/oidc";
 import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
@@ -6,8 +7,17 @@ import { ValidationError, type CollectionAfterChangeHook, type CollectionAfterDe
 import { lessonFileDirectory } from "../../payload/media-protection.ts";
 
 const token = process.env.LESSON_BLOB_READ_WRITE_TOKEN;
+const storeId = process.env.LESSON_BLOB_STORE_ID;
 const hosted = process.env.VERCEL === "1";
-export const usePrivateLessonStorage = hosted && Boolean(token);
+export const usePrivateLessonStorage = hosted && Boolean(token || storeId);
+
+async function privateCredentials() {
+    if (token) return { token };
+    if (!storeId) {
+        throw new Error("Private lesson storage is missing its Vercel OIDC credentials.");
+    }
+    return { storeId, oidcToken: await getVercelOidcToken() };
+}
 
 const key = (filename: string) => `lesson-files/${filename}`;
 
@@ -22,7 +32,7 @@ export const validatePrivateLessonUpload: CollectionBeforeOperationHook = ({ ope
 export const storePrivateLessonFile: CollectionAfterChangeHook = async ({ doc, operation, req }) => {
     if (usePrivateLessonStorage && operation === "create" && req.file && doc.filename) {
         await put(key(doc.filename), req.file.data, {
-            access: "private", token, contentType: "application/pdf", addRandomSuffix: false,
+            access: "private", ...await privateCredentials(), contentType: "application/pdf", addRandomSuffix: false,
         });
     }
     return doc;
@@ -30,7 +40,7 @@ export const storePrivateLessonFile: CollectionAfterChangeHook = async ({ doc, o
 
 export const deletePrivateLessonFile: CollectionAfterDeleteHook = async ({ doc }) => {
     if (usePrivateLessonStorage && doc.filename) {
-        await del(key(doc.filename), { token });
+        await del(key(doc.filename), await privateCredentials());
     }
     return doc;
 };
@@ -39,7 +49,7 @@ export async function readLessonPDF(filename: string): Promise<BodyInit | null> 
     if (!filename || filename !== path.basename(filename) || filename.includes("\\") || !/\.pdf$/i.test(filename)) return null;
     if (hosted) {
         if (!usePrivateLessonStorage) return null;
-        const result = await get(key(filename), { access: "private", token });
+        const result = await get(key(filename), { access: "private", ...await privateCredentials() });
         return result?.statusCode === 200 ? result.stream : null;
     }
     try {
