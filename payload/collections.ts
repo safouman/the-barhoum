@@ -3,6 +3,9 @@ import { ValidationError, type Access, type Block, type CollectionBeforeOperatio
 import { text as validateText } from "payload/shared";
 import { curriculumFields, keepCourseOwnership, protectPlacedRecord, validateCurriculum } from "./curriculum.ts";
 
+import { copyLessonEndpoint } from "./copy-lesson.ts";
+import { courseCoverDirectory, handleMissingLocalMedia, lessonFileDirectory, protectReferencedMedia } from "./media-protection.ts";
+
 const isAdmin: Access = ({ req }) => req.user?.collection === "admins";
 const adminAccess = { create: isAdmin, read: isAdmin, update: isAdmin, delete: isAdmin };
 const ownedCourse: Field = {
@@ -104,13 +107,15 @@ export const CourseCovers: CollectionConfig = {
     disableDuplicate: true,
     upload: {
         mimeTypes: imageTypes,
-        staticDir: "uploads/course-covers",
+        staticDir: courseCoverDirectory,
+        handlers: process.env.BLOB_READ_WRITE_TOKEN ? [] : [handleMissingLocalMedia],
         disableLocalStorage: isHosted,
         pasteURL: false,
         filesRequiredOnCreate: false,
     },
     hooks: {
         beforeOperation: canUploadCover ? [] : [blockHostedFileUpload],
+        beforeDelete: [protectReferencedMedia],
         beforeChange: [({ data, originalDoc, req }) => {
             const publicURL = data.publicURL === undefined ? originalDoc?.publicURL : data.publicURL;
             const uploadedFile = canUploadCover && (req.file || originalDoc?.filename);
@@ -141,8 +146,13 @@ export const LessonFiles: CollectionConfig = {
         create: isHosted ? () => false : isAdmin,
         update: isHosted ? () => false : isAdmin,
     },
-    upload: { staticDir: "uploads/lesson-files", disableLocalStorage: isHosted, pasteURL: false },
-    hooks: { beforeOperation: [blockHostedFileUpload] },
+    upload: {
+        staticDir: lessonFileDirectory,
+        disableLocalStorage: isHosted,
+        pasteURL: false,
+        handlers: [handleMissingLocalMedia],
+    },
+    hooks: { beforeOperation: [blockHostedFileUpload], beforeDelete: [protectReferencedMedia] },
     fields: [],
 };
 
@@ -168,7 +178,7 @@ export const Courses: CollectionConfig = {
         beforeDelete: [async ({ id, req }) => {
             for (const collection of ["modules", "lessons"] as const) {
                 const { totalDocs } = await req.payload.find({
-                    collection, depth: 0, draft: collection === "lessons", limit: 1, req,
+                    collection, depth: 0, draft: true, limit: 1, req,
                     where: { course: { equals: id } },
                 });
                 if (totalDocs) {
@@ -197,7 +207,8 @@ export const Courses: CollectionConfig = {
 export const Modules: CollectionConfig = {
     slug: "modules",
     access: adminAccess,
-    admin: { useAsTitle: "title", defaultColumns: ["title", "course", "classification"] },
+    admin: { useAsTitle: "title", defaultColumns: ["title", "course", "classification", "_status"] },
+    versions: { drafts: true },
     hooks: { beforeChange: [keepCourseOwnership], beforeDelete: [protectPlacedRecord("modules")] },
     fields: [
         { name: "title", type: "text", required: true },
@@ -209,7 +220,12 @@ export const Modules: CollectionConfig = {
 export const Lessons: CollectionConfig = {
     slug: "lessons",
     access: adminAccess,
-    admin: { useAsTitle: "title", defaultColumns: ["title", "course", "_status", "freePreview"] },
+    admin: {
+        useAsTitle: "title",
+        defaultColumns: ["title", "course", "_status", "freePreview"],
+        components: { edit: { beforeDocumentControls: ["/payload/CopyLessonAction#CopyLessonAction"] } },
+    },
+    endpoints: [copyLessonEndpoint],
     versions: { drafts: true },
     hooks: { beforeChange: [keepCourseOwnership], beforeDelete: [protectPlacedRecord("lessons")] },
     fields: [

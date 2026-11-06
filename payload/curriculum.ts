@@ -57,7 +57,7 @@ export const validateCurriculum: CollectionBeforeChangeHook = async ({ data, ori
         const { totalDocs } = await req.payload.find({
             collection,
             depth: 0,
-            draft: collection === "lessons",
+            draft: true,
             limit: 1,
             overrideAccess: true,
             req,
@@ -147,7 +147,7 @@ export const curriculumFields: Field[] = [
 export function protectPlacedRecord(collection: "modules" | "lessons"): CollectionBeforeDeleteHook {
     return async ({ id, req }) => {
         const record = await req.payload.findByID({
-            collection, id, depth: 0, draft: collection === "lessons", req,
+            collection, id, depth: 0, draft: true, req,
         });
         const courseID = relationshipID(record.course);
         if (courseID == null) return;

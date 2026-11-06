@@ -120,7 +120,9 @@ async function readCourse(slug: string): Promise<{ course: Course; curriculum: C
     function projectModules(rows: ModuleRow[]): ModulePlacement[] {
         return rows.flatMap((row) => {
             const placedModule = row.module;
-            if (!placedModule || typeof placedModule !== "object" || relationID(placedModule.course) !== course.id) return [];
+            if (!placedModule || typeof placedModule !== "object" || placedModule._status !== "published"
+                || !placedModule.title || !placedModule.classification
+                || relationID(placedModule.course) !== course.id) return [];
             return [{
                 id: String(placedModule.id),
                 title: placedModule.title,
