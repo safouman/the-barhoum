@@ -1,5 +1,5 @@
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
-import { ValidationError, type Access, type Block, type CollectionConfig, type Field, type TextFieldSingleValidation } from "payload";
+import { ValidationError, type Access, type Block, type CollectionBeforeOperationHook, type CollectionConfig, type Field, type TextFieldSingleValidation } from "payload";
 import { text as validateText } from "payload/shared";
 import { curriculumFields, keepCourseOwnership, protectPlacedRecord, validateCurriculum } from "./curriculum.ts";
 
@@ -9,6 +9,7 @@ const ownedCourse: Field = {
     name: "course", type: "relationship", relationTo: "courses", required: true,
     admin: { description: "The owning course is fixed after creation." },
 };
+const isHosted = process.env.VERCEL === "1";
 const imageTypes = ["image/jpeg", "image/png", "image/webp", "image/avif"];
 
 const validateHttpURL: TextFieldSingleValidation = async (value, options) => {
@@ -21,6 +22,22 @@ const validateHttpURL: TextFieldSingleValidation = async (value, options) => {
         // Invalid URLs use the same message as unsupported protocols.
     }
     return "Enter a valid HTTP or HTTPS URL.";
+};
+
+const validateCoverURL: TextFieldSingleValidation = async (value, options) => {
+    const result = await validateText(value, options);
+    if (result !== true || !value) return result;
+    if (/^\/images\/(?:[a-z0-9_-]+\/)*[a-z0-9_-]+\.(?:avif|jpe?g|png|webp)$/i.test(value)) return true;
+    if (value.startsWith("https://") && await validateHttpURL(value, options) === true) return true;
+    return "Enter a public HTTPS URL or an image path under /images/.";
+};
+
+const blockHostedFileUpload: CollectionBeforeOperationHook = ({ operation, req }) => {
+    if (isHosted && req.file && (operation === "create" || operation === "update")) {
+        throw new ValidationError({
+            errors: [{ path: "filename", message: "File uploads are unavailable on Vercel until durable storage is configured." }],
+        });
+    }
 };
 
 const validateSlug: TextFieldSingleValidation = async (value, options) => {
@@ -83,17 +100,48 @@ const ResourcesBlock: Block = {
 export const CourseCovers: CollectionConfig = {
     slug: "course-covers",
     access: adminAccess,
-    upload: { mimeTypes: imageTypes, staticDir: "uploads/course-covers" },
-    fields: [{
-        name: "alt", type: "text", required: true,
-        admin: { description: "Use only images approved for public course covers." },
-    }],
+    disableDuplicate: true,
+    upload: {
+        mimeTypes: imageTypes,
+        staticDir: "uploads/course-covers",
+        disableLocalStorage: isHosted,
+        pasteURL: false,
+        filesRequiredOnCreate: false,
+    },
+    hooks: {
+        beforeOperation: [blockHostedFileUpload],
+        beforeChange: [({ data, originalDoc, req }) => {
+            const publicURL = data.publicURL === undefined ? originalDoc?.publicURL : data.publicURL;
+            const uploadedFile = !isHosted && (req.file || originalDoc?.filename);
+            if (!publicURL && !uploadedFile) {
+                throw new ValidationError({
+                    errors: [{ path: "publicURL", message: "Enter a public cover URL or upload a cover image locally." }],
+                });
+            }
+            return data;
+        }],
+    },
+    fields: [
+        {
+            name: "alt", type: "text", required: true,
+            admin: { description: "Use only images approved for public course covers." },
+        },
+        {
+            name: "publicURL", type: "text", validate: validateCoverURL,
+            admin: { description: "Use a public HTTPS image URL or an app image under /images/. Hosted covers require this URL until durable storage is configured." },
+        },
+    ],
 };
 
 export const LessonFiles: CollectionConfig = {
     slug: "lesson-files",
-    access: adminAccess,
-    upload: { staticDir: "uploads/lesson-files" },
+    access: {
+        ...adminAccess,
+        create: isHosted ? () => false : isAdmin,
+        update: isHosted ? () => false : isAdmin,
+    },
+    upload: { staticDir: "uploads/lesson-files", disableLocalStorage: isHosted, pasteURL: false },
+    hooks: { beforeOperation: [blockHostedFileUpload] },
     fields: [],
 };
 

@@ -156,10 +156,20 @@ export function protectPlacedRecord(collection: "modules" | "lessons"): Collecti
     };
 }
 
-export const keepCourseOwnership: CollectionBeforeChangeHook = ({ data, originalDoc, operation }) => {
-    if (operation === "update" && data.course !== undefined &&
-        String(relationshipID(data.course)) !== String(relationshipID(originalDoc?.course))) {
+export const keepCourseOwnership: CollectionBeforeChangeHook = async ({ data, originalDoc, req }) => {
+    const previous = relationshipID(originalDoc?.course);
+    const next = data.course === undefined ? previous : relationshipID(data.course);
+    if (previous !== undefined && String(next) !== String(previous)) {
         throw new ValidationError({ errors: [{ path: "course", message: "The owning course cannot be changed." }] });
+    }
+    if (previous === undefined) {
+        const id = relationship.safeParse(next);
+        const course = id.success && id.data != null && await req.payload.findByID({
+            collection: "courses", id: id.data, depth: 0, draft: true, disableErrors: true, req,
+        });
+        if (!course) {
+            throw new ValidationError({ errors: [{ path: "course", message: "Select an existing owning course." }] });
+        }
     }
     return data;
 };
