@@ -43,7 +43,7 @@ export type LessonBlock =
     | {
         id: string;
         type: "video";
-        videos: { title: string; playbackUrl?: string; posterUrl?: string }[];
+        videos: { title: string; vimeoEmbedUrl?: string; playbackUrl?: string; posterUrl?: string }[];
     }
     | {
         id: string;

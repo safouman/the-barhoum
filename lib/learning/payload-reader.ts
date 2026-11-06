@@ -13,19 +13,32 @@ import type {
     LessonSummary,
     ModulePlacement,
 } from "./contracts";
+import { vimeoEmbedURL } from "./vimeo";
 
 function relationID(relation: number | { id: number } | null | undefined): number | undefined {
     return typeof relation === "number" ? relation : relation?.id;
 }
 
+function publicBlobCoverURL(value: string | null | undefined): string | undefined {
+    const url = value ? URL.parse(value) : null;
+    if (
+        url?.protocol === "https:" &&
+        url.hostname.endsWith(".public.blob.vercel-storage.com") &&
+        !url.username && !url.password && !url.port
+    ) {
+        return url.href;
+    }
+}
+
 function courseSummary(course: Pick<Course, "slug" | "title" | "description" | "cover">): CourseSummary {
     const cover = typeof course.cover === "object" ? course.cover : undefined;
+    const coverURL = cover?.publicURL || publicBlobCoverURL(cover?.url);
     return {
         slug: course.slug,
         title: course.title,
         description: course.description,
-        cover: cover?.publicURL
-            ? { url: cover.publicURL, alt: cover.alt }
+        cover: cover && coverURL
+            ? { url: coverURL, alt: cover.alt }
             : { url: "/images/hero.jpeg", alt: "Barhoum course cover" },
     };
 }
@@ -161,7 +174,14 @@ function projectBlocks(
             case "text":
                 return { id, type: "text", markdown: convertLexicalToMarkdown({ data: block.content, editorConfig }) };
             case "video":
-                return { id, type: "video", videos: block.videos.map(({ title }) => ({ title })) };
+                return {
+                    id,
+                    type: "video",
+                    videos: block.videos.map(({ title, provider, reference }) => ({
+                        title,
+                        vimeoEmbedUrl: String(provider) === "vimeo" ? vimeoEmbedURL(reference) : undefined,
+                    })),
+                };
             case "resources":
                 return {
                     id,
@@ -187,7 +207,7 @@ export async function getPublishedLesson(slug: string, lessonID: string): Promis
     if (!lesson) return null;
 
     const detail = { course: { slug: course.slug, title: course.title }, curriculum, lesson };
-    if (lesson.access === "locked") return detail;
+    if (lesson.access !== "free") return detail;
 
     const payload = await getPayload({ config });
     const { docs: [published] } = await payload.find({

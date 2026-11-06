@@ -18,7 +18,17 @@ export function LessonBlocks({ blocks }: { blocks: LessonBlock[] }) {
               <div key={block.id} className="space-y-5">
                 {block.videos.map((video, index) => (
                   <figure key={index} className="space-y-2">
-                    {video.playbackUrl ? (
+                    {video.vimeoEmbedUrl ? (
+                      <iframe
+                        className="block aspect-video w-full rounded-sm bg-[#14312e]"
+                        src={video.vimeoEmbedUrl}
+                        title={video.title}
+                        allow="fullscreen; picture-in-picture"
+                        allowFullScreen
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        loading="lazy"
+                      />
+                    ) : video.playbackUrl ? (
                       <video
                         className="aspect-video w-full rounded-sm bg-[#14312e] object-contain"
                         src={video.playbackUrl}
