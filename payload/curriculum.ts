@@ -1,4 +1,4 @@
-import { ValidationError, type ArrayField, type CollectionBeforeChangeHook, type CollectionBeforeDeleteHook, type Field, type FilterOptions } from "payload";
+import { APIError, ValidationError, type ArrayField, type CollectionBeforeChangeHook, type CollectionBeforeDeleteHook, type Field, type FilterOptions } from "payload";
 import { z } from "zod";
 
 const relationship = z.union([z.number().int().positive().max(2147483647), z.string().regex(/^[1-9]\d{0,9}$/).refine((value) => Number(value) <= 2147483647)]).nullish();
@@ -157,7 +157,8 @@ export function protectPlacedRecord(collection: "modules" | "lessons"): Collecti
             });
             const result = curriculum.safeParse(course);
             if (result.success && references(result.data)[collection].includes(String(id))) {
-                curriculumError("Remove this record from both the published curriculum and its draft before deleting it.");
+                const label = collection === "lessons" ? "lesson" : "module";
+                throw new APIError(`This ${label} is still in the course curriculum. Remove it from the published curriculum and any draft before deleting it.`, 409);
             }
         }
     };
