@@ -82,6 +82,11 @@ export const validateCurriculum: CollectionBeforeChangeHook = async ({ data, ori
 const ownedByEditedCourse: FilterOptions = ({ id }) =>
     id == null ? false : { course: { equals: id } };
 
+const placementAdmin = {
+    allowCreate: false,
+    components: { Field: "/payload/CurriculumRelationshipField#CurriculumRelationshipField" },
+};
+
 function lessonRows(name: string): ArrayField {
     return {
         name,
@@ -92,6 +97,7 @@ function lessonRows(name: string): ArrayField {
             relationTo: "lessons",
             required: true,
             filterOptions: ownedByEditedCourse,
+            admin: placementAdmin,
         }],
     };
 }
@@ -107,6 +113,7 @@ function moduleRows(name: string): ArrayField {
                 relationTo: "modules",
                 required: true,
                 filterOptions: ownedByEditedCourse,
+                admin: placementAdmin,
             },
             lessonRows("lessons"),
         ],
