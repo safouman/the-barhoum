@@ -1,24 +1,41 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { Button } from "@/components/Button";
 import { Container } from "@/components/Container";
-import { demoCourseSlug, getDemoCourse } from "@/components/learning/fixtures";
+import { CourseCard } from "@/components/learning/CourseCard";
+import { getDemoCourses } from "@/components/learning/fixtures";
 
 export const metadata: Metadata = {
-  title: "Learning preview",
+  title: "Courses",
   robots: { index: false, follow: false },
 };
 
 export default function CoursesPage() {
-  const course = getDemoCourse(demoCourseSlug);
-  if (!course) notFound();
+  const courses = getDemoCourses();
+  if (!courses) notFound();
 
   return (
     <div dir="ltr" lang="en">
-      <Container className="space-y-5 py-10">
-        <h1 className="text-display">Courses</h1>
-        <p className="text-lead">Explore a representative course in this learning preview.</p>
-        <Button className="!text-[#14312e]" href={`/courses/${encodeURIComponent(course.slug)}`}>{course.title}</Button>
+      <section className="border-b border-border bg-[#f2f8f6] py-9 sm:py-12">
+        <Container className="space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#12685f]">Barhoum learning</p>
+          <h1 className="text-display">Courses</h1>
+          <p className="text-lead max-w-[56ch]">
+            Make time for a practice that matters to you. Explore the curriculum and start with a free lesson.
+          </p>
+        </Container>
+      </section>
+      <Container className="py-8 sm:py-10">
+        {courses.length ? (
+          <ul role="list" aria-label="Course catalog" className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {courses.map((course) => (
+              <li key={course.slug} className="min-w-0">
+                <CourseCard course={course} />
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-subtle">No courses are available yet. Check back soon.</p>
+        )}
       </Container>
     </div>
   );

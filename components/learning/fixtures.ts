@@ -34,7 +34,7 @@ const routine: LessonSummary = {
   access: "locked",
 };
 
-const course: CourseDetail = {
+const structuredCourse: CourseDetail = {
   slug: "self-leadership-foundations",
   title: "Self-leadership foundations",
   description:
@@ -87,6 +87,65 @@ const course: CourseDetail = {
   },
 };
 
+const simpleStart: LessonSummary = {
+  id: "name-your-next-step",
+  title: "Name your next step",
+  description: "Choose one thing you can do today to move forward.",
+  access: "free",
+};
+
+const simpleCourse: CourseDetail = {
+  slug: "one-deliberate-step",
+  title: "One deliberate step",
+  description: "Turn an idea you have been sitting with into one small action you can take today.",
+  cover: {
+    url: "/images/opengraph-image.png",
+    alt: "Barhoum's turquoise mark on a dark background",
+  },
+  curriculum: {
+    type: "simple",
+    lessons: [simpleStart, { id: "make-time", title: "Make time for it", access: "locked" }],
+  },
+};
+
+const modularStart: LessonSummary = {
+  id: "observe-your-day",
+  title: "Observe your day",
+  description: "Take stock of your daily rhythms before you try to change them.",
+  access: "free",
+};
+
+const modularCourse: CourseDetail = {
+  slug: "make-room-for-focus",
+  title: "Make room for focus",
+  description: "Notice the moments that pull you off track and design a routine that makes room for your best work.",
+  cover: {
+    url: "/video/promo-poster.jpg",
+    alt: "Ibrahim Ben Abdallah in the Barhoum recording studio",
+  },
+  estimatedDuration: "30 minutes",
+  category: "Personal practice",
+  curriculum: {
+    type: "modular",
+    modules: [
+      {
+        id: "notice",
+        title: "Notice your rhythms",
+        classification: "regular",
+        lessons: [modularStart],
+      },
+      {
+        id: "make-space",
+        title: "Make space",
+        classification: "regular",
+        lessons: [{ id: "choose-your-routine", title: "Choose your routine", access: "locked" }],
+      },
+    ],
+  },
+};
+
+const courses = [structuredCourse, simpleCourse, modularCourse];
+
 const introductionBlocks: LessonBlock[] = [
   {
     id: "sample-video",
@@ -123,13 +182,36 @@ const attentionBlocks: LessonBlock[] = [
   },
 ];
 
-export function getDemoCourse(courseSlug: string): CourseDetail | undefined {
+const lessonBlocks: Record<string, LessonBlock[]> = {
+  [introduction.id]: introductionBlocks,
+  [attention.id]: attentionBlocks,
+  [simpleStart.id]: [
+    {
+      id: "next-step-notes",
+      type: "text",
+      markdown: "## Choose one small action\n\nWrite down what you will do, when you will do it, and how you will know it is complete.",
+    },
+  ],
+  [modularStart.id]: [
+    {
+      id: "observe-your-day-notes",
+      type: "text",
+      markdown: "## Notice where focus comes easily\n\nLook back over yesterday and name one moment when it was easy to give your full attention to what you were doing.",
+    },
+  ],
+};
+
+export function getDemoCourses(): CourseDetail[] | undefined {
   // The demo is opt-in and only works under next dev.
   if (process.env.NODE_ENV !== "development" || process.env.LEARNING_DEMO !== "1") {
     return undefined;
   }
 
-  return course.slug === courseSlug ? course : undefined;
+  return courses;
+}
+
+export function getDemoCourse(courseSlug: string): CourseDetail | undefined {
+  return getDemoCourses()?.find(({ slug }) => slug === courseSlug);
 }
 
 export function getDemoLesson(courseSlug: string, lessonId: string): LessonDetail | undefined {
@@ -149,8 +231,6 @@ export function getDemoLesson(courseSlug: string, lessonId: string): LessonDetai
 
   return {
     ...detail,
-    blocks: lesson.id === introduction.id ? introductionBlocks : attentionBlocks,
+    blocks: lessonBlocks[lesson.id] ?? [],
   };
 }
-
-export const demoCourseSlug = course.slug;

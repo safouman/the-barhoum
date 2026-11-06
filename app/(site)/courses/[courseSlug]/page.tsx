@@ -51,6 +51,7 @@ export default async function CoursePage({ params }: { params: Promise<{ courseS
             <Image
               src={course.cover.url}
               alt={course.cover.alt}
+              unoptimized={course.cover.url.startsWith("https://")}
               fill
               preload
               sizes="(min-width: 1024px) 44vw, 100vw"
