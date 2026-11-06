@@ -12,7 +12,7 @@ import {
 } from "../lib/learning/lesson-file-storage.ts";
 
 const isAdmin: Access = ({ req }) => req.user?.collection === "admins";
-const adminAccess = { create: isAdmin, read: isAdmin, update: isAdmin, delete: isAdmin };
+export const adminAccess = { create: isAdmin, read: isAdmin, update: isAdmin, delete: isAdmin };
 const ownedCourse: Field = {
     name: "course", type: "relationship", relationTo: "courses", required: true,
     admin: { description: "The owning course is fixed after creation." },
@@ -180,7 +180,7 @@ export const Instructors: CollectionConfig = {
 
 export const Courses: CollectionConfig = {
     slug: "courses",
-    access: adminAccess,
+    access: { ...adminAccess, readVersions: isAdmin },
     admin: { useAsTitle: "title", defaultColumns: ["title", "structure", "_status", "updatedAt"] },
     disableDuplicate: true,
     versions: { drafts: true },
@@ -217,7 +217,7 @@ export const Courses: CollectionConfig = {
 
 export const Modules: CollectionConfig = {
     slug: "modules",
-    access: adminAccess,
+    access: { ...adminAccess, readVersions: isAdmin },
     admin: { useAsTitle: "title", defaultColumns: ["title", "course", "classification", "_status"] },
     versions: { drafts: true },
     hooks: { beforeChange: [keepCourseOwnership], beforeDelete: [protectPlacedRecord("modules")] },
@@ -230,7 +230,7 @@ export const Modules: CollectionConfig = {
 
 export const Lessons: CollectionConfig = {
     slug: "lessons",
-    access: adminAccess,
+    access: { ...adminAccess, readVersions: isAdmin },
     admin: {
         useAsTitle: "title",
         defaultColumns: ["title", "course", "_status", "freePreview"],

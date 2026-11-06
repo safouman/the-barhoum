@@ -1,18 +1,13 @@
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
 import { buildConfig, type CollectionConfig } from "payload";
-import { CourseCovers, Courses, Instructors, LessonFiles, Lessons, Modules } from "./payload/collections.ts";
+import { adminAccess, CourseCovers, Courses, Instructors, LessonFiles, Lessons, Modules } from "./payload/collections.ts";
 
 const Admins: CollectionConfig = {
     slug: "admins",
     auth: true,
     admin: { useAsTitle: "email" },
-    access: {
-        create: ({ req }) => Boolean(req.user),
-        read: ({ req }) => Boolean(req.user),
-        update: ({ req }) => Boolean(req.user),
-        delete: ({ req }) => Boolean(req.user),
-    },
+    access: adminAccess,
     fields: [],
 };
 
