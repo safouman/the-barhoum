@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Run from an isolated checkout against a fresh localhost PostgreSQL database
 # named barhoum_phase5_*. Before integration, set COURSE_COMMERCE_TEST_SCHEMA
-# to the coordinator's disposable schema SQL.
+# to the coordinator's disposable schema SQL. COURSE_COMMERCE_TEST_OPS_SCHEMA
+# can supply the operations SQL before the coordinator migration is integrated.
 set -euo pipefail
 export PAYLOAD_SECRET=phase5-local-test-not-for-production
 export NEXT_TELEMETRY_DISABLED=1
@@ -27,8 +28,11 @@ export GOOGLE_SCRIPT_URL=https://training-sheet.fixture.invalid GOOGLE_SCRIPT_SE
 export COURSE_COMMERCE_ORIGIN="http://127.0.0.1:${COURSE_COMMERCE_TEST_PORT:-4389}"
 export STUDENT_AUTH_ORIGIN="$COURSE_COMMERCE_ORIGIN"
 export COURSE_COMMERCE_TEST_STATE="$temp/stripe.json"
+export CRON_SECRET=commerce-schedule-fixture-only
+export COURSE_COMMERCE_ALERT_TO=ops@example.invalid STUDENT_AUTH_FROM_EMAIL=fixture@example.invalid
+export RESEND_API_KEY=resend-commerce-fixture
 cat > "$COURSE_COMMERCE_TEST_STATE" <<'JSON'
-{"prices":{"price_FixtureBase":4900,"price_FixturePremium":1900,"price_FixtureNew":5900},"requests":{},"sessions":{},"intents":{},"charges":{},"refunds":{},"disputes":{},"legacyLeads":[],"legacyAnalytics":[],"failCreates":0}
+{"prices":{"price_FixtureBase":4900,"price_FixturePremium":1900,"price_FixtureNew":5900},"requests":{},"sessions":{},"intents":{},"charges":{},"refunds":{},"disputes":{},"legacyLeads":[],"legacyAnalytics":[],"failCreates":0,"stripeCalls":0,"alerts":{}}
 JSON
 
 PAYLOAD_MIGRATING=1 node node_modules/payload/bin.js --disable-transpile migrate
@@ -43,17 +47,48 @@ try {
         if (!process.env.COURSE_COMMERCE_TEST_SCHEMA) throw new Error("Set COURSE_COMMERCE_TEST_SCHEMA to the disposable SQL schema.");
         await client.query(await readFile(process.env.COURSE_COMMERCE_TEST_SCHEMA, "utf8"));
     }
+    const ops = await client.query("SELECT 1 FROM information_schema.columns WHERE table_name='course_orders' AND column_name='ops_next_check_at'");
+    if (!ops.rows.length) {
+        if (!process.env.COURSE_COMMERCE_TEST_OPS_SCHEMA) throw new Error("Apply the coordinator's operations migration or supply disposable operations SQL.");
+        await client.query(await readFile(process.env.COURSE_COMMERCE_TEST_OPS_SCHEMA, "utf8"));
+    }
 } finally {
     await client.end();
 }
 NODE
 
 npm run build
-NODE_OPTIONS="--import=\"$PWD/tests/course-commerce/stripe-fixture.mjs\"" node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port "${COURSE_COMMERCE_TEST_PORT:-4389}" >"$temp/server.log" 2>&1 &
-server_pid=$!
-for attempt in {1..25}; do
-    if curl -fsS --max-time 1 "$COURSE_COMMERCE_ORIGIN/robots.txt" >/dev/null 2>&1; then break; fi
-    if ! kill -0 "$server_pid" 2>/dev/null; then echo "The isolated test server failed to start." >&2; exit 1; fi
-    sleep 0.25
+start_server() {
+    env "$@" NODE_OPTIONS="--import=\"$PWD/tests/course-commerce/stripe-fixture.mjs\"" node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port "${COURSE_COMMERCE_TEST_PORT:-4389}" >"$temp/server.log" 2>&1 &
+    server_pid=$!
+    for attempt in {1..40}; do
+        if curl -fsS --max-time 1 "$COURSE_COMMERCE_ORIGIN/robots.txt" >/dev/null 2>&1; then return; fi
+        if ! kill -0 "$server_pid" 2>/dev/null; then break; fi
+        sleep 0.25
+    done
+    cat "$temp/server.log" >&2
+    return 1
+}
+
+stop_server() {
+    kill "$server_pid"
+    wait "$server_pid" 2>/dev/null || true
+    server_pid=""
+}
+
+start_server
+node tests/course-commerce/integration.mjs || { cat "$temp/server.log" >&2; exit 1; }
+stop_server
+
+for scenario in production preview-override disabled; do
+    vercel_env=production
+    checkout=true
+    recipient="$COURSE_COMMERCE_ALERT_TO"
+    if [ "$scenario" = preview-override ]; then vercel_env=preview; fi
+    if [ "$scenario" = disabled ]; then checkout=false; recipient=""; fi
+    start_server VERCEL=1 VERCEL_ENV="$vercel_env" COURSE_COMMERCE_GEO_RESTRICTION=false \
+        COURSE_COMMERCE_ORIGIN=https://course-geo.fixture.invalid STUDENT_AUTH_ORIGIN=https://course-geo.fixture.invalid \
+        COURSE_COMMERCE_ENABLED="$checkout" COURSE_COMMERCE_ALERT_TO="$recipient"
+    node tests/course-commerce/geo.mjs "$scenario" || { cat "$temp/server.log" >&2; exit 1; }
+    stop_server
 done
-node tests/course-commerce/integration.mjs

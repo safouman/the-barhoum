@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
         const identity = await requestStudent(payload, request);
         if (!identity?.user._verified) throw new CommerceError("UNAUTHENTICATED");
         await rateLimit(payload, request, "course-checkout", String(identity.user.id), [15, 75], 5);
-        return commerceJSON(await createCheckout(payload, identity, parsed.data.offerId));
+        return commerceJSON(await createCheckout(payload, identity, parsed.data.offerId, request.headers));
     } catch (error) {
         return commerceFailure(error);
     }

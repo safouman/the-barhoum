@@ -1,5 +1,7 @@
 import { readCourseProgress } from "@/lib/learning/progress-reader";
-import { listCourseOffers } from "@/lib/commerce/course-payments/offers";
+import { purchaseAvailability } from "@/lib/commerce/course-payments/eligibility";
+import { headers } from "next/headers";
+import { listComingSoonOffers, listCourseOffers } from "@/lib/commerce/course-payments/offers";
 import { getCourseOwnership } from "@/lib/learning/entitlements";
 import { readStudentSession } from "@/lib/student-auth/session";
 import type { Metadata } from "next";
@@ -26,11 +28,13 @@ export default async function CoursePage({ params }: { params: Promise<{ courseS
   const student = await readStudentSession();
   const course = await getPublishedCourse(courseSlug, student?.id);
   if (!course) notFound();
-  const [offers, ownership] = await Promise.all([
-    listCourseOffers(course.id),
+  const availability = purchaseAvailability(await headers());
+  const [offers, comingSoonOffers, ownership] = await Promise.all([
+    availability === "available" ? listCourseOffers(course.id) : [],
+    availability === "coming-soon" ? listComingSoonOffers(course.id) : [],
     getCourseOwnership(student?.id, course.id),
   ]);
 
   const progress = student && ownership.base ? await readCourseProgress(student.id, courseSlug) : null;
-  return <CourseDetailView course={course} progress={progress} commerce={{ offers, ownership, signedIn: Boolean(student) }} />;
+  return <CourseDetailView course={course} progress={progress} commerce={{ offers, comingSoonOffers, ownership, signedIn: Boolean(student) }} />;
 }

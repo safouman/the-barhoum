@@ -9,6 +9,7 @@ import { stripeCheckoutHref } from "./checkout";
 const errorMessages: Record<string, string> = {
   ALREADY_OWNED: "You already have access. Reload the course to continue learning.",
   BASE_REQUIRED: "You need access to the base course before buying this module.",
+  GEOGRAPHIC_RESTRICTION: "Course purchases are coming soon in your location.",
   OFFER_UNAVAILABLE: "This offer is currently unavailable. Reload the course for the latest options.",
   UNAUTHENTICATED: "Sign in to continue to checkout.",
 };

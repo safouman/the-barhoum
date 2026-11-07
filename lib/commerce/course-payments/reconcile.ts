@@ -97,8 +97,8 @@ async function canonicalOrder(provider: CourseStripe, order: Order, sessionID: s
     return { ...state, status: "fulfilled", reason: refunded > 0 ? "partial_refund" : null, grant: "active" };
 }
 
-export async function reconcileOrder(payload: Payload, provider: CourseStripe, orderID: string, options: { sessionID?: string; event?: ProviderEvent } = {}) {
-    for (let attempt = 0; attempt < 3; attempt++) {
+export async function reconcileOrder(payload: Payload, provider: CourseStripe, orderID: string, options: { sessionID?: string; event?: ProviderEvent; maxAttempts?: 1 } = {}) {
+    for (let attempt = 0; attempt < (options.maxAttempts ?? 3); attempt++) {
         const snapshot = await authTransaction(payload, context => findOrder(context, orderID));
         if (!snapshot || !matchesStripeOrder(provider, snapshot)) return undefined;
         const sessionID = options.sessionID ?? snapshot.stripe_session_id;
