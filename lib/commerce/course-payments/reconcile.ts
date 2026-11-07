@@ -7,7 +7,8 @@ import { authTransaction } from "../../student-auth/core";
 import { CommerceError } from "./core";
 import { isCourseStripeMetadata } from "./marker";
 import { findOrder, lockCourseCommerce, type Order, type OrderStatus } from "./orders";
-import { matchesStripeOrder, stripeID, trustedCheckoutURL, type CourseStripe } from "./stripe";
+import { trustedCheckoutURL } from "../checkout-url";
+import { matchesStripeOrder, stripeID, type CourseStripe } from "./stripe";
 
 export type ProviderEvent = { id: string; type: string; reference: string | null; amount: number | null };
 

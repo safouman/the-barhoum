@@ -79,15 +79,6 @@ export async function createStripeSession(provider: CourseStripe, order: Order) 
     }, { idempotencyKey: `barhoum-course-checkout-${order.id}` });
 }
 
-export function trustedCheckoutURL(value: string | null | undefined) {
-    try {
-        const url = new URL(value ?? "");
-        return url.origin === "https://checkout.stripe.com" && !url.username && !url.password ? url.href : null;
-    } catch {
-        return null;
-    }
-}
-
 export function stripeID(value: string | { id: string } | null | undefined) {
     return typeof value === "string" ? value : value?.id ?? null;
 }

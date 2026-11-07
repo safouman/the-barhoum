@@ -1,3 +1,5 @@
+export { trustedCheckoutURL as stripeCheckoutHref } from "@/lib/commerce/checkout-url";
+
 export type CourseOffer = {
   id: number;
   moduleId: number | null;
@@ -27,14 +29,6 @@ export function formatOfferPrice({ amountMinor, currency }: CourseOffer): string
     minimumFractionDigits: fractionDigits,
     maximumFractionDigits: fractionDigits,
   }).format(amountMinor / divisor);
-}
-
-export function stripeCheckoutHref(value: unknown): string | undefined {
-  if (typeof value !== "string") return;
-  const url = URL.parse(value);
-  if (url?.origin === "https://checkout.stripe.com" && !url.username && !url.password) {
-    return url.href;
-  }
 }
 
 export function isOrderId(value: unknown): value is string {
