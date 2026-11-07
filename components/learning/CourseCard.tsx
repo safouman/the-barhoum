@@ -5,7 +5,7 @@ import { LearningIcon } from "./LearningIcon";
 
 type CardCourse = CourseSummary & Pick<CourseDetail, "estimatedDuration" | "difficulty" | "category">;
 
-export function CourseCard({ course }: { course: CardCourse }) {
+export function CourseCard({ course, owned = false }: { course: CardCourse; owned?: boolean }) {
   const metadata = [course.category, course.estimatedDuration, course.difficulty]
     .filter(Boolean)
     .join(" · ");
@@ -30,7 +30,7 @@ export function CourseCard({ course }: { course: CardCourse }) {
         <h2 className="text-xl leading-tight">{course.title}</h2>
         <p className="line-clamp-3 text-sm leading-relaxed text-subtle">{course.description}</p>
         <span className="mt-auto inline-flex items-center gap-2 pt-3 text-sm font-semibold text-[#12685f] underline-offset-4 group-hover:underline">
-          View course
+          {owned ? "Continue Learning" : "View course"}
           <LearningIcon name="right" />
         </span>
       </div>

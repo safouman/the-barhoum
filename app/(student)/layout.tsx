@@ -22,9 +22,10 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
             <Link href="/" aria-label="Barhoum home" className="inline-flex min-h-11 items-center">
               <Image src="/images/logo.png" alt="Barhoum" width={96} height={96} className="h-10 w-auto object-contain" />
             </Link>
-            <Link href="/courses" className="inline-flex min-h-11 items-center text-sm font-semibold text-[#12685f] hover:underline">
-              Browse Courses
-            </Link>
+            <nav aria-label="Learning" className="flex flex-wrap gap-x-4">
+              <Link href="/courses" className="inline-flex min-h-11 items-center text-sm font-semibold text-[#12685f] hover:underline">Courses</Link>
+              <Link href="/my-learning" className="inline-flex min-h-11 items-center text-sm font-semibold text-[#12685f] hover:underline">My Learning</Link>
+            </nav>
           </div>
         </header>
         <main>{children}</main>

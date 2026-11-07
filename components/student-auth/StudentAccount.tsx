@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/Button";
+import { CourseCard } from "@/components/learning/CourseCard";
+import type { CourseSummary } from "@/lib/learning/contracts";
 import { authError, authRequest, googleHref, loginHref, type AuthResult, type Student } from "./api";
 import { Field, fieldClass, GoogleLink, Notice, Panel, studentLink, StudentNav, Submit } from "./ui";
 import { fieldText, useSubmission } from "./use-submission";
@@ -12,7 +14,7 @@ const ageRanges = [
   ["35-44", "35–44"], ["45-54", "45–54"], ["55-64", "55–64"], ["65+", "65+"],
 ];
 
-export function StudentAccount({ learning = false, status }: { learning?: boolean; status?: string }) {
+export function StudentAccount({ learning = false, status, ownedCourses = [] }: { learning?: boolean; status?: string; ownedCourses?: CourseSummary[] }) {
   const [session, setSession] = useState<AuthResult<{ student: Student }> | null>(null);
   const [retry, setRetry] = useState(0);
   const logout = useSubmission();
@@ -45,11 +47,17 @@ export function StudentAccount({ learning = false, status }: { learning?: boolea
     <div className="space-y-5">
       <StudentNav learning={learning} />
       {learning ? (
-        <Panel>
-          <h2 className="text-2xl">Your courses will appear here</h2>
-          <p className="text-subtle">You can explore the catalog and try a free lesson while you decide where to start.</p>
-          <Button href="/courses" className="!text-[#14312e]">Browse Courses</Button>
-        </Panel>
+        ownedCourses.length ? (
+          <ul role="list" aria-label="Owned courses" className="grid gap-4 sm:grid-cols-2">
+            {ownedCourses.map((course) => <li key={course.slug} className="min-w-0"><CourseCard course={course} owned /></li>)}
+          </ul>
+        ) : (
+          <Panel>
+            <h2 className="text-2xl">Your courses will appear here</h2>
+            <p className="text-subtle">You can explore the catalog and try a free lesson while you decide where to start.</p>
+            <Button href="/courses" className="!text-[#14312e]">Browse Courses</Button>
+          </Panel>
+        )
       ) : (
         <>
           <ProfileForm student={student} onSave={(updated) => setSession({ ok: true, data: { student: updated } })} />
