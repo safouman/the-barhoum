@@ -90,17 +90,23 @@ try {
           button{font:inherit;background:#17332f;color:white;border:1px solid #7e9692;border-radius:6px;padding:6px 13px;cursor:pointer}
           .line{height:3px;flex:1;background:#a9b4b2;border-radius:4px}
         </style>
-        <div class="controls"><button type="button" aria-label="Play practice video" onclick="emit('pause', 42)">▶</button><span>0:32</span><div class="line"></div><span>2:30</span></div>
+        <div class="controls"><button type="button" aria-label="Play practice video" disabled onclick="playPractice()">▶</button><span>0:32</span><div class="line"></div><span>2:30</span></div>
         <script>
           const send = message => parent.postMessage(message, "*");
+          addEventListener("load", () => send({ event: "ready" }));
           const emit = (event, seconds) => send({ event, data: { seconds, duration: 150 } });
+          let played = false;
+          function playPractice() {
+            const start = Number(location.hash.match(/^#t=([0-9]+)s$/)?.[1] ?? 0);
+            emit("play", played ? 42 : start);
+            emit("pause", played ? 42 : start + 1);
+            played = true;
+          }
           addEventListener("message", event => {
             const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+            if (data.method === "addEventListener" && data.value === "pause") document.querySelector("button").disabled = false;
             if (data.method === "getDuration") send({ method: "getDuration", value: 150 });
-            else if (data.method === "setCurrentTime") {
-              send({ method: "setCurrentTime", value: data.value });
-              emit("pause", data.value + 1);
-            } else send({ method: data.method, value: data.value });
+            else send({ method: data.method, value: data.value });
           });
         </script>` }));
     }
@@ -113,7 +119,9 @@ try {
     await owned.getByText("Course completed", { exact: true }).waitFor();
     await assertNoOverflow();
     await screenshot("01-library");
+    const visit = page.waitForResponse((response) => response.url().endsWith("/visit") && response.ok());
     await owned.getByRole("link", { name: "Continue learning" }).click();
+    await visit;
     await page.getByRole("heading", { name: "Make room for focus" }).waitFor();
     await assertNoOverflow();
     if (process.env.LEARNING_TEST_REAL_VIMEO) await page.frameLocator("iframe[src*=vimeo]").getByRole("button", { name: /^play/i }).first().waitFor({ timeout: 15_000 });
@@ -135,6 +143,15 @@ try {
       await resume.waitFor();
       const conflict = page.waitForResponse((response) => response.url().endsWith("/resume") && response.status() === 409);
       await resume.click();
+      const frame = page.locator('iframe[src*="player.vimeo.com"]');
+      await frame.waitFor();
+      const resumeUrl = new URL(await frame.getAttribute("src"));
+      assert.equal(resumeUrl.hash, "#t=32s");
+      assert.equal(resumeUrl.searchParams.get("autoplay"), "1");
+      assert.match(await frame.getAttribute("allow"), /autoplay/);
+      const play = page.frameLocator("iframe").getByRole("button", { name: "Play practice video" });
+      assert.equal(await play.evaluate(() => location.hash), "#t=32s");
+      await play.click({ timeout: 8_000 });
       await conflict;
       const nextSave = page.waitForResponse((response) => response.url().endsWith("/resume") && response.ok());
       await page.frameLocator("iframe").getByRole("button", { name: "Play practice video" }).click();

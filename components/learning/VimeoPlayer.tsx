@@ -1,6 +1,5 @@
 "use client";
 
-import type Player from "@vimeo/player";
 import { useEffect, useRef, useState } from "react";
 import type { VideoResume } from "@/lib/learning/progress-contract";
 import { VimeoEmbed } from "./VimeoEmbed";
@@ -22,9 +21,9 @@ export function VimeoResumePlayer({ title, url, endpoint, videoId, initial }: {
   initial?: VideoResume;
 }) {
   const iframe = useRef<HTMLIFrameElement>(null);
-  const sdk = useRef<Player | null>(null);
   const initialResume = useRef(initial);
   const [resumeAt, setResumeAt] = useState<number | null>(null);
+  const [resumedUrl, setResumedUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const frame = iframe.current;
@@ -86,6 +85,7 @@ export function VimeoResumePlayer({ title, url, endpoint, videoId, initial }: {
 
     function observe(timing: Timing, force = false) {
       if (!Number.isFinite(timing.seconds) || timing.seconds < 0 || !Number.isFinite(timing.duration) || timing.duration <= 0) return;
+      if (!played && saved > 0 && timing.seconds === 0) return;
       observed = nearEnd(timing) ? 0 : Math.min(Math.floor(timing.seconds), 86_400);
       void save(force);
     }
@@ -112,9 +112,9 @@ export function VimeoResumePlayer({ title, url, endpoint, videoId, initial }: {
         player.off("ended", events.ended);
         player.off("play", events.play);
       });
+      if (resumedUrl) return;
       const duration = await player.getDuration();
       if (!active) return;
-      sdk.current = player;
       if (!played && observed === null && Number.isFinite(duration) && saved >= 2 && saved < duration && !nearEnd({ seconds: saved, duration })) {
         setResumeAt(saved);
       }
@@ -127,22 +127,25 @@ export function VimeoResumePlayer({ title, url, endpoint, videoId, initial }: {
     return () => {
       active = false;
       flush();
-      sdk.current = null;
       listeners.forEach((remove) => remove());
       document.removeEventListener("visibilitychange", visibility);
       window.removeEventListener("pagehide", flush);
     };
-  }, [endpoint, videoId]);
+  }, [endpoint, resumedUrl, videoId]);
 
   function resume() {
-    if (resumeAt === null || !sdk.current) return;
+    if (resumeAt === null) return;
+    const startUrl = new URL(url);
+    startUrl.searchParams.set("autoplay", "1");
+    // Vimeo reads the timecode when the embed loads, even if autoplay is blocked.
+    startUrl.hash = `t=${Math.floor(resumeAt)}s`;
+    setResumedUrl(startUrl.href);
     setResumeAt(null);
-    void sdk.current.setCurrentTime(resumeAt).catch(() => {});
   }
 
   return (
     <div className="space-y-2">
-      <VimeoEmbed title={title} url={url} frameRef={iframe} />
+      <VimeoEmbed key={resumedUrl ?? url} title={title} url={resumedUrl ?? url} frameRef={iframe} autoplay={resumedUrl !== null} />
       {resumeAt !== null ? (
         <button type="button" onClick={resume} className="inline-flex min-h-11 items-center rounded-full border border-[#12685f] px-4 py-2 text-sm font-semibold text-[#12685f] hover:bg-[#e4f8f5]">
           Resume at {timeLabel(resumeAt)}
