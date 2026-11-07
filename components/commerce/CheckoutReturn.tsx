@@ -11,14 +11,14 @@ const messages = {
   creating: ["Checking your payment", "We’re waiting for payment confirmation. This page will check again automatically."],
   open: ["Checking your payment", "We’re waiting for payment confirmation. If you completed checkout, give it a moment and check again."],
   processing: ["Payment is processing", "We’re waiting for payment confirmation. Access appears in My Learning once your order is complete."],
-  fulfilled: ["Your order is complete", "You can now start learning. Look for a receipt from Stripe in your email."],
+  fulfilled: ["Payment confirmed", "You can now start learning."],
   failed: ["Your order didn’t complete", "No access was added for this order. Return to the course to review your options."],
   expired: ["This checkout has expired", "Return to the course to start a new checkout."],
   support_required: ["This order needs review", "Please contact support with the order reference below. Wait for a response before trying to purchase again."],
 } as const;
 
 type Status = keyof typeof messages;
-type Order = { orderId: string; status: Status; courseSlug: string };
+type Order = { orderId: string; status: Status; courseSlug: string; courseTitle: string; paymentConfirmed?: boolean };
 type Result = { order: Order } | { error: "login" | "missing" | "unavailable" };
 
 const pollInterval = 3_000;
@@ -29,7 +29,7 @@ function isOrder(value: unknown, orderId: string): value is Order {
   const order = value as Partial<Order>;
   return order.orderId === orderId &&
     typeof order.status === "string" && Object.hasOwn(messages, order.status) &&
-    typeof order.courseSlug === "string";
+    typeof order.courseSlug === "string" && typeof order.courseTitle === "string";
 }
 
 export function CheckoutReturn({ orderId }: { orderId: string }) {
@@ -42,11 +42,13 @@ export function CheckoutReturn({ orderId }: { orderId: string }) {
     let timer: ReturnType<typeof setTimeout> | undefined;
     const orderPath = "/api/course-commerce/orders/" + encodeURIComponent(orderId);
 
-    async function readOrder(manual: boolean, pollsLeft: number) {
+    let paymentConfirmed = false;
+
+    async function readOrder(verify: boolean, pollsLeft: number) {
       let next: Result;
       try {
-        const response = await fetch(manual ? orderPath + "/refresh" : orderPath, {
-          method: manual ? "POST" : "GET",
+        const response = await fetch(verify ? orderPath + "/refresh" : orderPath, {
+          method: verify ? "POST" : "GET",
           credentials: "same-origin",
           cache: "no-store",
           signal: controller.signal,
@@ -62,14 +64,23 @@ export function CheckoutReturn({ orderId }: { orderId: string }) {
       }
 
       if (controller.signal.aborted) return;
+      if (verify && "error" in next && next.error === "unavailable") {
+        setRefreshing(false);
+        await readOrder(false, pollsLeft);
+        return;
+      }
+      if ("order" in next && pending.has(next.order.status)) {
+        paymentConfirmed ||= next.order.paymentConfirmed === true;
+        next.order = { ...next.order, paymentConfirmed };
+      }
       setResult(next);
-      if (manual) setRefreshing(false);
+      if (verify) setRefreshing(false);
       if ("order" in next && pending.has(next.order.status) && pollsLeft > 0) {
         timer = setTimeout(() => void readOrder(false, pollsLeft - 1), pollInterval);
       }
     }
 
-    void readOrder(refreshCount > 0, maxPolls);
+    void readOrder(true, maxPolls);
     return () => { controller.abort(); clearTimeout(timer); };
   }, [orderId, refreshCount]);
 
@@ -97,6 +108,7 @@ export function CheckoutReturn({ orderId }: { orderId: string }) {
           <>
             <Notice error>We couldn’t check your order right now. Try checking the status again.</Notice>
             <Button onClick={refresh} disabled={refreshing} variant="ghost">{refreshing ? "Checking…" : "Check payment status"}</Button>
+            <Link href="/#lead-form" className={studentLink}>Contact support</Link>
           </>
         )}
       </Panel>
@@ -110,20 +122,22 @@ export function CheckoutReturn({ orderId }: { orderId: string }) {
   return (
     <Panel>
       <div className="space-y-2" role="status">
-        <h2 className="text-2xl">{heading}</h2>
-        <p className="text-subtle">{description}</p>
+        <h2 className="text-2xl">{order.paymentConfirmed ? "Payment confirmed. We’re setting up your access." : heading}</h2>
+        <p className="font-semibold">{order.courseTitle}</p>
+        <p className="text-subtle">{order.paymentConfirmed ? "Your course will appear in My Learning when access is ready." : description}</p>
       </div>
       <p className="break-all text-sm text-subtle">Order reference <span className="font-mono">{orderId}</span></p>
       <div className="flex flex-wrap items-center gap-4">
         {pending.has(order.status) ? (
           <Button onClick={refresh} disabled={refreshing} variant="ghost">{refreshing ? "Checking…" : "Check payment status"}</Button>
         ) : order.status === "fulfilled" ? (
-          <Button href={courseHref} className="!text-[#14312e]">Go to course</Button>
+          <Button href={courseHref} className="!text-[#14312e]">Start course</Button>
         ) : order.status === "support_required" ? (
           <Link href="/#lead-form" className={studentLink}>Contact support</Link>
         ) : (
           <Button href={courseHref} className="!text-[#14312e]">Return to course</Button>
         )}
+        {pending.has(order.status) ? <Link href="/#lead-form" className={studentLink}>Contact support</Link> : null}
         <Link href="/my-learning" className={studentLink}>My Learning</Link>
       </div>
     </Panel>

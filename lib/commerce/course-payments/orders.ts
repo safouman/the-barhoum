@@ -31,6 +31,7 @@ export type Order = {
     reason: string | null;
     created_at: Date | string;
     course_slug: string;
+    course_title: string;
     revision: string;
 };
 
@@ -76,7 +77,7 @@ export async function readOffers({ tx }: AuthTx, target: { offerId: number } | {
 
 export async function findOrder({ tx }: AuthTx, orderID: string, studentID?: number) {
     const result = await tx.execute(sql`
-        SELECT o.*, c.slug AS course_slug, o.xmin::text AS revision
+        SELECT o.*, c.slug AS course_slug, c.title AS course_title, o.xmin::text AS revision
         FROM course_orders o JOIN courses c ON c.id = o.course_id
         WHERE o.id = ${orderID}::uuid ${studentID === undefined ? sql`` : sql`AND o.student_id = ${studentID}`}
     `);
@@ -85,7 +86,7 @@ export async function findOrder({ tx }: AuthTx, orderID: string, studentID?: num
 
 export function orderStatus(order: Order) {
     const status = ["creating", "open", "processing"].includes(order.status) ? "processing" : order.status;
-    return { orderId: order.id, status, courseSlug: order.course_slug };
+    return { orderId: order.id, status, courseSlug: order.course_slug, courseTitle: order.course_title };
 }
 
 export async function reserveOrder(payload: Payload, identity: StudentIdentity, offer: AvailableOffer, price: ChargePrice, settings: { account: string; livemode: boolean; origin: URL }) {

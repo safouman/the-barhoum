@@ -39,6 +39,7 @@ try {
     let orderMode = "processing";
     let reads = 0;
     let refreshes = 0;
+    let delayFulfillment = true;
     let hostedRedirects = 0;
 
     await page.route("**/api/student-auth/me", (route) => route.fulfill({ json: {
@@ -67,7 +68,7 @@ try {
       if (url.pathname.endsWith("/refresh")) {
         assert.equal(request.method(), "POST");
         refreshes += 1;
-        orderMode = "fulfilled";
+        if (orderMode === "processing" && !delayFulfillment) orderMode = "fulfilled";
       } else {
         assert.equal(request.method(), "GET");
         reads += 1;
@@ -75,7 +76,7 @@ try {
       if (orderMode === "login") return route.fulfill({ status: 401, json: { error: { code: "UNAUTHENTICATED" } } });
       if (orderMode === "missing") return route.fulfill({ status: 404, json: { error: { code: "NOT_FOUND" } } });
       if (orderMode === "unavailable") return route.fulfill({ status: 503, json: { error: { code: "UNAVAILABLE" } } });
-      return route.fulfill({ json: { orderId: id, status: orderMode, courseSlug: "attention-and-practice" } });
+      return route.fulfill({ json: { orderId: id, status: orderMode, courseSlug: "attention-and-practice", courseTitle: "Attention and Practice", paymentConfirmed: orderMode === "processing" } });
     });
 
     await fixture("visitor");
@@ -106,18 +107,21 @@ try {
     checkoutMode = "ok";
     await button("Buy course").click();
     await page.waitForURL(origin + returnPath);
-    await text("Payment is processing");
-    assert.equal(await link("Go to course").count(), 0);
+    await text("Payment confirmed. We’re setting up your access.");
+    assert.ok(refreshes >= 1, "Return should verify with Stripe automatically");
+    assert.equal(await link("Start course").count(), 0);
     await noOverflow();
     await screenshot("processing");
     const previousReads = reads;
     await page.waitForTimeout(3_500);
     assert.ok(reads > previousReads, "Pending status should poll");
+    const beforeManualRefresh = refreshes;
+    delayFulfillment = false;
     await button("Check payment status").click();
-    await text("Your order is complete");
-    assert.equal(await link("Go to course").getAttribute("href"), coursePath);
+    await text("Payment confirmed");
+    assert.equal(await link("Start course").getAttribute("href"), coursePath);
     assert.equal(hostedRedirects, 1);
-    assert.equal(refreshes, 1);
+    assert.ok(refreshes > beforeManualRefresh);
     assert.deepEqual(attempts, [17, 17, 17, 17, 17]);
 
     await fixture("owner");
@@ -128,7 +132,7 @@ try {
     await screenshot("owner-course");
     await button("Buy upgrade").click();
     await page.waitForURL(origin + returnPath);
-    await text("Your order is complete");
+    await text("Payment confirmed");
     assert.equal(attempts.at(-1), 18);
     assert.equal(hostedRedirects, 2);
 
@@ -157,12 +161,12 @@ try {
         assert.equal(new URL(await link("Sign in").getAttribute("href"), origin).searchParams.get("returnTo"), returnPath);
       }
       if (status === "support_required") assert.equal(await link("Contact support").getAttribute("href"), "/#lead-form");
-      if (status !== "fulfilled") assert.equal(await link("Go to course").count(), 0);
+      if (status !== "fulfilled") assert.equal(await link("Start course").count(), 0);
     }
-    const beforeInvalid = reads;
+    const beforeInvalid = reads + refreshes;
     await page.goto(origin + "/checkout/return?orderId=invalid");
     await text("This order link is missing or invalid.");
-    assert.equal(reads, beforeInvalid);
+    assert.equal(reads + refreshes, beforeInvalid);
 
     await context.close();
     console.log("PASS purchasing and order-status UI at", width + "px");

@@ -150,7 +150,7 @@ try {
     await json(orderRoute(initial), 404, { cookie: other });
     await json(orderRoute(initial) + "/refresh", 404, { cookie: other, method: "POST" });
     assert.deepEqual((await json(orderRoute(initial), 200, { cookie })).body, {
-        orderId: initial, status: "processing", courseSlug: "test-commerce-renamed",
+        orderId: initial, status: "processing", courseSlug: "test-commerce-renamed", courseTitle: course.title,
     });
 
     const sessionID = (await order(initial)).stripe_session_id;
@@ -168,11 +168,14 @@ try {
         FOR EACH ROW EXECUTE FUNCTION phase5_test_abort_grant();
     `);
     await deliver(paidIntent, { status: 503 });
+    const pendingAccess = await json(orderRoute(initial) + "/refresh", 200, { cookie, method: "POST" });
+    assert.equal(pendingAccess.body.status, "processing");
+    assert.equal(pendingAccess.body.paymentConfirmed, true);
     assert.equal(await grant(initial), undefined);
     assert.equal((await order(initial)).status, "processing");
     assert.equal((await dbClient.query("SELECT count(*)::int AS count FROM course_payment_events WHERE stripe_event_id=$1", [paidIntent.id])).rows[0].count, 0);
     await dbClient.query("DROP TRIGGER phase5_test_abort_grant ON course_entitlements; DROP FUNCTION phase5_test_abort_grant()");
-    await Promise.all([deliver(paidIntent), deliver(paidIntent), deliver(event("checkout.session.completed", paid.session))]);
+    await Promise.all([deliver(paidIntent), deliver(paidIntent), deliver(event("checkout.session.completed", paid.session)), refresh(initial, "fulfilled")]);
     assert.equal((await grant(initial)).status, "active");
     assert.equal((await dbClient.query("SELECT count(*)::int AS count FROM course_payment_events WHERE stripe_event_id=$1", [paidIntent.id])).rows[0].count, 1);
     await refresh(initial, "fulfilled");

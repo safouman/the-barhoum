@@ -10,6 +10,10 @@ import { findOrder, lockCourseCommerce, type Order, type OrderStatus } from "./o
 import { trustedCheckoutURL } from "../checkout-url";
 import { matchesStripeOrder, stripeID, type CourseStripe } from "./stripe";
 
+export class PaidAccessPending extends CommerceError {
+    constructor() { super("UNAVAILABLE"); }
+}
+
 export type ProviderEvent = { id: string; type: string; reference: string | null; amount: number | null };
 
 type CanonicalOrder = {
@@ -77,9 +81,9 @@ async function canonicalOrder(provider: CourseStripe, order: Order, sessionID: s
     const [refunds, disputes] = await Promise.all([
         stripe.refunds.list({ charge: charge.id, limit: 100 }),
         stripe.disputes.list({ charge: charge.id, limit: 100 }),
-    ]);
+    ]).catch(() => { throw new PaidAccessPending(); });
     if (refunds.has_more || disputes.has_more || (charge.disputed && disputes.data.length === 0)) {
-        throw new CommerceError("UNAVAILABLE");
+        throw new PaidAccessPending();
     }
     const refunded = refunds.data.filter(refund => refund.status === "succeeded")
         .reduce((sum, refund) => sum + refund.amount, 0);
@@ -178,6 +182,9 @@ export async function reconcileOrder(payload: Payload, provider: CourseStripe, o
             `);
             await finishEvent(reason ?? status);
             return findOrder(context, orderID);
+        }).catch(error => {
+            if (canonical?.grant === "active") throw new PaidAccessPending();
+            throw error;
         });
         if (result !== "retry") return result;
     }

@@ -3,7 +3,7 @@ import { authTransaction, rateLimit, studentPayload } from "../../../../../../li
 import { requestStudent } from "../../../../../../lib/student-auth/session";
 import { CommerceError, commerceFailure, commerceJSON, orderIdPattern, requireCommerceOrigin } from "../../../../../../lib/commerce/course-payments/core";
 import { findOrder, orderStatus } from "../../../../../../lib/commerce/course-payments/orders";
-import { reconcileOrder } from "../../../../../../lib/commerce/course-payments/reconcile";
+import { PaidAccessPending, reconcileOrder } from "../../../../../../lib/commerce/course-payments/reconcile";
 import { courseStripe } from "../../../../../../lib/commerce/course-payments/stripe";
 
 export const runtime = "nodejs";
@@ -21,9 +21,14 @@ export async function POST(request: NextRequest, context: RouteContext<"/api/cou
         if (!order) throw new CommerceError("NOT_FOUND");
         await rateLimit(payload, request, "course-order-refresh", String(identity.user.id), [8, 50], 5);
         if (!order.stripe_session_id) return commerceJSON(orderStatus(order));
-        const current = await reconcileOrder(payload, await courseStripe(), order.id);
-        if (!current) throw new CommerceError("UNAVAILABLE");
-        return commerceJSON(orderStatus(current));
+        try {
+            const current = await reconcileOrder(payload, await courseStripe(), order.id);
+            if (!current) throw new CommerceError("UNAVAILABLE");
+            return commerceJSON(orderStatus(current));
+        } catch (error) {
+            if (!(error instanceof PaidAccessPending) || !["creating", "open", "processing"].includes(order.status)) throw error;
+            return commerceJSON({ ...orderStatus(order), status: "processing", paymentConfirmed: true });
+        }
     } catch (error) {
         return commerceFailure(error);
     }
