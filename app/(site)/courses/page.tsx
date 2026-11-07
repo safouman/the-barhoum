@@ -1,7 +1,5 @@
-import { readStudentSession } from "@/lib/student-auth/session";
 import type { Metadata } from "next";
 import { Container } from "@/components/Container";
-import { LearningNavigation } from "@/components/learning/LearningNavigation";
 import { CourseCard } from "@/components/learning/CourseCard";
 import { getDemoCourses } from "@/components/learning/fixtures";
 
@@ -21,7 +19,6 @@ export default async function CoursesPage() {
     <div dir="ltr" lang="en">
       <section className="border-b border-border bg-[#f2f8f6] py-9 sm:py-12">
         <Container className="space-y-3">
-          <LearningNavigation active="courses" signedIn={Boolean(await readStudentSession())} />
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#12685f]">Barhoum learning</p>
           <h1 className="text-display">Courses</h1>
           <p className="text-lead max-w-[56ch]">

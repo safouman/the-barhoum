@@ -9,7 +9,6 @@ import type { CourseDetail } from "@/lib/learning/contracts";
 import type { CourseProgressView } from "@/lib/learning/progress-contract";
 import { CurriculumList } from "./CurriculumList";
 import { LearningIcon } from "./LearningIcon";
-import { LearningNavigation } from "./LearningNavigation";
 import { ProgressMeter } from "./ProgressMeter";
 import { lessonHref, orderedLessons } from "./curriculum";
 
@@ -41,7 +40,6 @@ export function CourseDetailView({ course, commerce, progress }: { course: Cours
       <section className="border-b border-border bg-[#f2f8f6] py-8 sm:py-9">
         <Container className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-14">
           <div className="space-y-4">
-            <LearningNavigation signedIn={commerce?.signedIn} />
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#12685f]">Barhoum learning</p>
             <h1 className="text-display leading-tight">{course.title}</h1>
             <p className="text-lead max-w-[55ch]">{course.description}</p>

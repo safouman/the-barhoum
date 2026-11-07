@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Run from an isolated checkout. Supply a fresh localhost PostgreSQL database
 # with a name starting barhoum_phase4_, and DATABASE_URL + DATABASE_URL_UNPOOLED.
+# To also run Phase 7 navigation checks, set STUDENT_TEST_NAVIGATION=1 and
+# provide Playwright via PLAYWRIGHT_MODULE (and BROWSER_CHANNEL if needed).
 set -euo pipefail
 
 node --input-type=module <<'NODE'
@@ -33,6 +35,9 @@ if [ "${STUDENT_TEST_MIGRATION_ROLLBACK:-0}" = 1 ]; then
     PAYLOAD_MIGRATING=1 node node_modules/payload/bin.js --disable-transpile migrate
     PAYLOAD_MIGRATING=1 node node_modules/payload/bin.js --disable-transpile migrate
 fi
+if [ "${STUDENT_TEST_NAVIGATION:-0}" = 1 ]; then
+    export NEXT_PUBLIC_LOCALIZATION_ENABLED_LOCALES=true
+fi
 npm run build
 
 NODE_OPTIONS="--import=\"$PWD/tests/student-auth/provider-fixture.mjs\"" node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port "${STUDENT_TEST_PORT:-4398}" >"$test_dir/server.log" 2>&1 &
@@ -43,3 +48,7 @@ for attempt in {1..25}; do
     sleep 0.25
 done
 STUDENT_TEST_SERVER_LOG="$test_dir/server.log" node tests/student-auth/integration.mjs
+
+if [ "${STUDENT_TEST_NAVIGATION:-0}" = 1 ]; then
+    node tests/phase7-navigation.browser.mjs
+fi

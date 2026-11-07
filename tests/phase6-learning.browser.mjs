@@ -29,7 +29,7 @@ try {
         import "../../styles/globals.css";
         const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-inter", display: "swap" });
         export default function FixtureLayout({ children }: { children: React.ReactNode }) {
-          return <StudentFrame signedIn fontClassName={inter.variable}>{children}</StudentFrame>;
+          return <StudentFrame signedIn brandLabel="Rebirth" fontClassName={inter.variable}>{children}</StudentFrame>;
         }
       `, { flag: "wx" });
     }
@@ -118,7 +118,10 @@ try {
     }
 
     await fixture("library");
-    await page.getByRole("navigation", { name: "Learning" }).getByRole("link", { name: "Account" }).waitFor();
+    const banner = page.getByRole("banner");
+    if (width < 768) await banner.getByRole("button", { name: "Menu" }).click();
+    await banner.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Account" }).waitFor();
+    if (width < 768) await banner.getByRole("button", { name: "Menu" }).press("Escape");
     const owned = page.getByRole("list", { name: "Owned courses" });
     await owned.getByRole("progressbar", { name: "Course progress" }).first().waitFor();
     assert.equal(await owned.getByRole("progressbar", { name: "Advanced practice" }).getAttribute("aria-valuenow"), "0");
