@@ -1,3 +1,5 @@
+import { CourseOffers } from "./payload/course-offers.ts";
+import { protectCommerceDeletion } from "./payload/commerce-lifecycle.ts";
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
 import { Students } from "./payload/students.ts";
@@ -26,7 +28,7 @@ export default buildConfig({
         user: Admins.slug,
         importMap: { importMapFile: "./app/(payload)/admin/importMap.ts" },
     },
-    collections: [Admins, Students, Courses, Modules, Lessons, Instructors, CourseCovers, LessonFiles],
+    collections: [{ ...CourseOffers, hooks: { ...CourseOffers.hooks, beforeDelete: [protectCommerceDeletion("course-offers")] } }, Admins, Students, Courses, Modules, Lessons, Instructors, CourseCovers, LessonFiles],
     db: postgresAdapter({
         pool: { connectionString },
         push: false,

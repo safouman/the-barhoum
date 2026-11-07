@@ -21,7 +21,7 @@ trap 'if [ -n "$server_pid" ]; then kill "$server_pid" 2>/dev/null || true; fi; 
 export COURSE_COMMERCE_ENABLED=true COURSE_STRIPE_LIVEMODE=false
 export COURSE_STRIPE_SECRET_KEY=sk_test_commerce_fixture COURSE_STRIPE_ACCOUNT_ID=acct_Fixture
 export COURSE_STRIPE_WEBHOOK_SECRET=whsec_course_fixture STRIPE_WEBHOOK_SECRET=whsec_legacy_fixture
-export STRIPE_SECRET_KEY=sk_test_legacy_fixture ENABLE_STRIPE=true
+export STRIPE_SECRET_KEY=sk_test_legacy_fixture NEXT_PUBLIC_ENABLE_STRIPE=true
 export GA4_MEASUREMENT_ID=G-FIXTURE GA4_API_SECRET=analytics-fixture-secret
 export GOOGLE_SCRIPT_URL=https://training-sheet.fixture.invalid GOOGLE_SCRIPT_SECRET=legacy-fixture-secret
 export COURSE_COMMERCE_ORIGIN="http://127.0.0.1:${COURSE_COMMERCE_TEST_PORT:-4389}"

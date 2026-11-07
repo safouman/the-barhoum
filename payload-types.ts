@@ -67,6 +67,7 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    'course-offers': CourseOffer;
     admins: Admin;
     students: Student;
     courses: Course;
@@ -82,6 +83,7 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    'course-offers': CourseOffersSelect<false> | CourseOffersSelect<true>;
     admins: AdminsSelect<false> | AdminsSelect<true>;
     students: StudentsSelect<false> | StudentsSelect<true>;
     courses: CoursesSelect<false> | CoursesSelect<true>;
@@ -149,60 +151,19 @@ export interface StudentAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "admins".
+ * via the `definition` "course-offers".
  */
-export interface Admin {
+export interface CourseOffer {
   id: number;
+  course: number | Course;
+  /**
+   * Leave empty for base course access. Select a premium module for an upgrade.
+   */
+  module?: (number | null) | Module;
+  enabled: boolean;
+  stripePriceId: string;
   updatedAt: string;
   createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  resetPasswordRequestedAt?: string | null;
-  loginAttempts?: number | null;
-  lockUntil?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'admins';
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "students".
- */
-export interface Student {
-  id: number;
-  name: string;
-  city?: string | null;
-  ageRange?: ('under-18' | '18-24' | '25-34' | '35-44' | '45-54' | '55-64' | '65+') | null;
-  picture?: string | null;
-  hasPassword: boolean;
-  googleSubject?: string | null;
-  updatedAt: string;
-  createdAt: string;
-  email: string;
-  resetPasswordToken?: string | null;
-  resetPasswordExpiration?: string | null;
-  salt?: string | null;
-  hash?: string | null;
-  _verified?: boolean | null;
-  _verificationToken?: string | null;
-  sessions?:
-    | {
-        id: string;
-        createdAt?: string | null;
-        expiresAt: string;
-      }[]
-    | null;
-  password?: string | null;
-  collection: 'students';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -420,6 +381,63 @@ export interface Module {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "admins".
+ */
+export interface Admin {
+  id: number;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  resetPasswordRequestedAt?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'admins';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "students".
+ */
+export interface Student {
+  id: number;
+  name: string;
+  city?: string | null;
+  ageRange?: ('under-18' | '18-24' | '25-34' | '35-44' | '45-54' | '55-64' | '65+') | null;
+  picture?: string | null;
+  hasPassword: boolean;
+  googleSubject?: string | null;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  _verified?: boolean | null;
+  _verificationToken?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'students';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -442,6 +460,10 @@ export interface PayloadKv {
 export interface PayloadLockedDocument {
   id: number;
   document?:
+    | ({
+        relationTo: 'course-offers';
+        value: number | CourseOffer;
+      } | null)
     | ({
         relationTo: 'admins';
         value: number | Admin;
@@ -525,6 +547,18 @@ export interface PayloadMigration {
   batch?: number | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "course-offers_select".
+ */
+export interface CourseOffersSelect<T extends boolean = true> {
+  course?: T;
+  module?: T;
+  enabled?: T;
+  stripePriceId?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
