@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
 import { Inter } from "next/font/google";
+import { StudentFrame } from "@/components/learning/StudentFrame";
+import { readStudentSession } from "@/lib/student-auth/session";
 import "../../styles/globals.css";
 
 const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-inter", display: "swap" });
@@ -13,23 +13,7 @@ export const metadata: Metadata = {
   referrer: "no-referrer",
 };
 
-export default function StudentLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en" dir="ltr" className={inter.variable}>
-      <body className="min-h-screen bg-[#f2f8f6]">
-        <header className="border-b border-border bg-white">
-          <div className="mx-auto flex min-h-16 max-w-screen-xl flex-wrap items-center justify-between gap-x-4 px-4 py-2 sm:px-6">
-            <Link href="/" aria-label="Barhoum home" className="inline-flex min-h-11 items-center">
-              <Image src="/images/logo.png" alt="Barhoum" width={96} height={96} className="h-10 w-auto object-contain" />
-            </Link>
-            <nav aria-label="Learning" className="flex flex-wrap gap-x-4">
-              <Link href="/courses" className="inline-flex min-h-11 items-center text-sm font-semibold text-[#12685f] hover:underline">Courses</Link>
-              <Link href="/my-learning" className="inline-flex min-h-11 items-center text-sm font-semibold text-[#12685f] hover:underline">My Learning</Link>
-            </nav>
-          </div>
-        </header>
-        <main>{children}</main>
-      </body>
-    </html>
-  );
+export default async function StudentLayout({ children }: { children: React.ReactNode }) {
+  const student = await readStudentSession();
+  return <StudentFrame signedIn={Boolean(student)} fontClassName={inter.variable}>{children}</StudentFrame>;
 }

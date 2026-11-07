@@ -103,7 +103,7 @@ try {
     checkoutMode = "auth";
     await button("Buy course").click();
     await text("Sign in to continue to checkout");
-    assert.equal(await link("Sign in").getAttribute("href"), "/login?returnTo=%2Fcourses%2Fattention-and-practice");
+    assert.equal(await page.getByRole("region", { name: "Purchase course" }).getByRole("link", { name: "Sign in", exact: true }).getAttribute("href"), "/login?returnTo=%2Fcourses%2Fattention-and-practice");
     checkoutMode = "ok";
     await button("Buy course").click();
     await page.waitForURL(origin + returnPath);
@@ -141,7 +141,7 @@ try {
     assert.equal(await button("Buy upgrade").count(), 0);
     await fixture("owned-learning");
     const owned = page.getByRole("list", { name: "Owned courses" });
-    assert.equal(await owned.getByRole("link").getAttribute("href"), coursePath);
+    assert.equal(await owned.getByRole("link", { name: "View course" }).getAttribute("href"), coursePath);
     await noOverflow();
     await screenshot("owned-learning");
     await fixture("empty-learning");
@@ -158,7 +158,7 @@ try {
       await page.goto(origin + returnPath);
       await text(heading);
       if (status === "login") {
-        assert.equal(new URL(await link("Sign in").getAttribute("href"), origin).searchParams.get("returnTo"), returnPath);
+        assert.equal(new URL(await page.getByRole("main").getByRole("link", { name: "Sign in", exact: true }).getAttribute("href"), origin).searchParams.get("returnTo"), returnPath);
       }
       if (status === "support_required") assert.equal(await link("Contact support").getAttribute("href"), "/#lead-form");
       if (status !== "fulfilled") assert.equal(await link("Start course").count(), 0);

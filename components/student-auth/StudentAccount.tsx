@@ -3,22 +3,19 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/Button";
-import { CourseCard } from "@/components/learning/CourseCard";
-import type { CourseSummary } from "@/lib/learning/contracts";
 import { authError, authRequest, googleHref, loginHref, type AuthResult, type Student } from "./api";
-import { Field, fieldClass, GoogleLink, Notice, Panel, studentLink, StudentNav, Submit } from "./ui";
+import { Field, fieldClass, GoogleLink, Notice, Panel, studentLink, Submit } from "./ui";
 import { fieldText, useSubmission } from "./use-submission";
+import { SignOut } from "./SignOut";
 
 const ageRanges = [
   ["under-18", "Under 18"], ["18-24", "18–24"], ["25-34", "25–34"],
   ["35-44", "35–44"], ["45-54", "45–54"], ["55-64", "55–64"], ["65+", "65+"],
 ];
 
-export function StudentAccount({ learning = false, status, ownedCourses = [] }: { learning?: boolean; status?: string; ownedCourses?: CourseSummary[] }) {
+export function StudentAccount({ status }: { status?: string }) {
   const [session, setSession] = useState<AuthResult<{ student: Student }> | null>(null);
   const [retry, setRetry] = useState(0);
-  const logout = useSubmission();
-  const currentPath = learning ? "/my-learning" : "/account";
 
   useEffect(() => {
     const controller = new AbortController();
@@ -34,7 +31,7 @@ export function StudentAccount({ learning = false, status, ownedCourses = [] }: 
       <Panel>
         <Notice error>{session.code === "UNAUTHENTICATED" ? "Sign in to view your student account." : authError(session.code)}</Notice>
         {session.code === "UNAUTHENTICATED" ? (
-          <Button href={loginHref(currentPath)} className="!text-[#14312e]">Sign in</Button>
+          <Button href={loginHref("/account")} className="!text-[#14312e]">Sign in</Button>
         ) : (
           <Button onClick={() => { setSession(null); setRetry((attempt) => attempt + 1); }} className="!text-[#14312e]">Try again</Button>
         )}
@@ -45,37 +42,10 @@ export function StudentAccount({ learning = false, status, ownedCourses = [] }: 
   const { student } = session.data;
   return (
     <div className="space-y-5">
-      <StudentNav learning={learning} />
-      {learning ? (
-        ownedCourses.length ? (
-          <ul role="list" aria-label="Owned courses" className="grid gap-4 sm:grid-cols-2">
-            {ownedCourses.map((course) => <li key={course.slug} className="min-w-0"><CourseCard course={course} owned /></li>)}
-          </ul>
-        ) : (
-          <Panel>
-            <h2 className="text-2xl">Your courses will appear here</h2>
-            <p className="text-subtle">You can explore the catalog and try a free lesson while you decide where to start.</p>
-            <Button href="/courses" className="!text-[#14312e]">Browse Courses</Button>
-          </Panel>
-        )
-      ) : (
-        <>
-          <ProfileForm student={student} onSave={(updated) => setSession({ ok: true, data: { student: updated } })} />
-          <EmailChangeForm student={student} />
-          <LoginMethods student={student} status={status} />
-        </>
-      )}
-      <form
-        method="post"
-        className="max-w-xs space-y-3"
-        aria-busy={logout.busy}
-        onSubmit={logout.handler("logout", () => ({}), () => window.location.replace("/login"))}
-      >
-        {logout.error ? <Notice error>{authError(logout.error)}</Notice> : null}
-        <Button type="submit" variant="ghost" disabled={logout.busy} className="min-h-11 !normal-case !tracking-normal">
-          {logout.busy ? "Signing out…" : "Sign out"}
-        </Button>
-      </form>
+      <ProfileForm student={student} onSave={(updated) => setSession({ ok: true, data: { student: updated } })} />
+      <EmailChangeForm student={student} />
+      <LoginMethods student={student} status={status} />
+      <SignOut />
     </div>
   );
 }

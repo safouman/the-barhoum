@@ -1,5 +1,4 @@
 import type { ComponentProps, ReactNode } from "react";
-import Link from "next/link";
 import { Button } from "@/components/Button";
 
 export const fieldClass = "min-h-12 w-full rounded-[var(--radius-interactive)] border border-[#767f7d] bg-white px-3 py-2 text-base text-text focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#12685f]";
@@ -45,15 +44,6 @@ export function Submit({ busy, children }: { busy: boolean; children: ReactNode 
     <Button type="submit" disabled={busy} fullWidth className="min-h-12 !text-[#14312e] disabled:cursor-wait disabled:opacity-60">
       {busy ? "Please wait…" : children}
     </Button>
-  );
-}
-
-export function StudentNav({ learning }: { learning: boolean }) {
-  return (
-    <nav aria-label="Student account" className="mb-5 flex flex-wrap gap-4 text-sm">
-      <Link href="/my-learning" aria-current={learning ? "page" : undefined} className={studentLink}>My Learning</Link>
-      <Link href="/account" aria-current={learning ? undefined : "page"} className={studentLink}>Account</Link>
-    </nav>
   );
 }
 

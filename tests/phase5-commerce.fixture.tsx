@@ -1,6 +1,5 @@
 import { CourseDetailView } from "@/components/learning/CourseDetailView";
-import { StudentAccount } from "@/components/student-auth/StudentAccount";
-import { StudentShell } from "@/components/student-auth/ui";
+import { LearningLibrary } from "@/components/learning/LearningLibrary";
 import type { CourseDetail } from "@/lib/learning/contracts";
 
 export default async function CommerceFixture({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
@@ -31,7 +30,7 @@ export default async function CommerceFixture({ searchParams }: { searchParams: 
   };
 
   if (view === "owned-learning" || view === "empty-learning") {
-    return <StudentShell title="My Learning" wide><StudentAccount learning ownedCourses={view === "owned-learning" ? [course] : []} /></StudentShell>;
+    return <LearningLibrary entries={view === "owned-learning" ? [{ course, progress: null }] : []} />;
   }
 
   return (

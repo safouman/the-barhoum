@@ -26,13 +26,15 @@ export function LessonAccessBadge({ access }: { access: LessonSummary["access"] 
 type ListProps = {
   courseSlug: string;
   activeLessonId?: string;
+  completedLessonIds?: number[];
 };
 
-function LessonList({ lessons, courseSlug, activeLessonId }: ListProps & { lessons: LessonSummary[] }) {
+function LessonList({ lessons, courseSlug, activeLessonId, completedLessonIds }: ListProps & { lessons: LessonSummary[] }) {
   return (
     <ul className="divide-y divide-border" role="list">
       {lessons.map((lesson) => {
         const current = activeLessonId === lesson.id;
+        const complete = lesson.access !== "locked" && completedLessonIds?.includes(Number(lesson.id));
 
         return (
           <li key={lesson.id}>
@@ -42,10 +44,11 @@ function LessonList({ lessons, courseSlug, activeLessonId }: ListProps & { lesso
               className={`flex min-h-12 items-center gap-3 rounded-sm px-3 py-2 text-sm transition-colors hover:bg-[#eaf8f6] ${current ? "bg-[#eaf8f6] font-semibold" : ""}`}
             >
               <span className="grid size-8 shrink-0 place-items-center rounded-full border border-border bg-white text-[#12685f]">
-                <LearningIcon name={lesson.access === "locked" ? "lock" : "list"} />
+                <LearningIcon name={lesson.access === "locked" ? "lock" : complete ? "check" : "list"} />
               </span>
               <span className="min-w-0 flex-1">{lesson.title}</span>
-              <LessonAccessBadge access={lesson.access} />
+              {complete ? <span className="sr-only">Completed</span> : null}
+              {lesson.access !== "unlocked" ? <LessonAccessBadge access={lesson.access} /> : null}
             </Link>
           </li>
         );

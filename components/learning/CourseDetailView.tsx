@@ -6,11 +6,14 @@ import { formatOfferPrice, type CourseCommerce } from "@/components/commerce/che
 import { PurchaseButton } from "@/components/commerce/PurchaseButton";
 import { loginHref } from "@/components/student-auth/api";
 import type { CourseDetail } from "@/lib/learning/contracts";
+import type { CourseProgressView } from "@/lib/learning/progress-contract";
 import { CurriculumList } from "./CurriculumList";
 import { LearningIcon } from "./LearningIcon";
+import { LearningNavigation } from "./LearningNavigation";
+import { ProgressMeter } from "./ProgressMeter";
 import { lessonHref, orderedLessons } from "./curriculum";
 
-export function CourseDetailView({ course, commerce }: { course: CourseDetail; commerce?: CourseCommerce }) {
+export function CourseDetailView({ course, commerce, progress }: { course: CourseDetail; commerce?: CourseCommerce; progress?: CourseProgressView | null }) {
   const lessons = orderedLessons(course.curriculum);
   const preview = lessons.find(({ access }) => access === "free");
   const firstOwned = commerce?.ownership.base ? lessons.find(({ access }) => access === "unlocked") ?? preview : undefined;
@@ -38,10 +41,7 @@ export function CourseDetailView({ course, commerce }: { course: CourseDetail; c
       <section className="border-b border-border bg-[#f2f8f6] py-8 sm:py-9">
         <Container className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-14">
           <div className="space-y-4">
-            <Link href="/courses" className="inline-flex items-center gap-2 text-sm font-medium text-[#12685f] hover:underline">
-              <LearningIcon name="left" />
-              Courses
-            </Link>
+            <LearningNavigation signedIn={commerce?.signedIn} />
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#12685f]">Barhoum learning</p>
             <h1 className="text-display leading-tight">{course.title}</h1>
             <p className="text-lead max-w-[55ch]">{course.description}</p>
@@ -49,7 +49,12 @@ export function CourseDetailView({ course, commerce }: { course: CourseDetail; c
             {commerce?.ownership.base ? (
               <div className="space-y-3">
                 <p className="text-sm font-semibold text-[#12685f]">You own this course</p>
-                {firstOwned ? (
+                {progress ? <ProgressMeter label="Course progress" count={progress.courseProgress.base} /> : null}
+                {progress?.continueTarget ? (
+                  <Button href={progress.continueTarget.href} className="!text-[#14312e] max-sm:w-full">
+                    {progress.continueState === "review" ? "Review course" : progress.continueState === "start" ? "Start course" : "Continue Learning"}
+                  </Button>
+                ) : firstOwned ? (
                   <Button href={lessonHref(course.slug, firstOwned.id)} className="!text-[#14312e] max-sm:w-full">Continue Learning</Button>
                 ) : null}
               </div>

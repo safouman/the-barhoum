@@ -205,7 +205,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
 
   await page.goto(origin + "/account");
   await expectText(page, "Sign in to view your student account.");
-  await page.getByRole("link", { name: "Sign in", exact: true }).click();
+  await page.getByRole("main").getByRole("link", { name: "Sign in", exact: true }).click();
   await login(page);
   await page.waitForURL(origin + "/account");
   await expectText(page, "student@example.test");
@@ -239,17 +239,16 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
   await page.goto(origin + "/login");
   await login(page);
   await page.waitForURL(origin + "/my-learning");
-  await expectText(page, "Your courses will appear here");
-  assert.equal(await page.getByRole("link", { name: "Browse Courses" }).last().getAttribute("href"), "/courses");
-  await snapshot(page, "my-learning", viewport.width);
-  await page.getByRole("link", { name: "Account", exact: true }).click();
+  await expectText(page, "Sign in to view your student account.");
+  await page.goto(origin + "/account");
   await page.getByRole("link", { name: "Link Google account" }).click();
   await expectText(page, "Google is linked. Sign in again");
   fixture.setGoogleMode("signed-in");
   await page.getByRole("link", { name: "Continue with Google" }).click();
   await page.waitForURL(origin + "/my-learning");
-  await expectText(page, "Your courses will appear here");
-  await page.getByRole("link", { name: "Account", exact: true }).click();
+  // The simulated authentication API does not create a real server session.
+  await page.goto(origin + "/account");
+  await expectText(page, "Profile");
   fixture.expireFreshness();
   await page.getByLabel("New email address").fill("new@example.test");
   await button(page, "Send confirmation link").click();
@@ -265,6 +264,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
   await page.goto(origin + "/login");
   await login(page);
   await page.waitForURL(origin + "/my-learning");
+  await page.goto(origin + "/account");
   await button(page, "Sign out").click();
   await page.waitForURL(origin + "/login");
   await page.goto(origin + "/my-learning");
