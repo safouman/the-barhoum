@@ -1,3 +1,4 @@
+import { readLessonProgress } from "@/lib/learning/progress-reader";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { LessonExperience } from "@/components/learning/LessonExperience";
@@ -15,7 +16,11 @@ export default async function LessonPage({
 }) {
   const { courseSlug, lessonId } = await params;
   const student = await readStudentSession();
-  const detail = getDemoCourses() ? getDemoLesson(courseSlug, lessonId) : await getPublishedLesson(courseSlug, lessonId, student?.id);
+  const demo = Boolean(getDemoCourses());
+  const detail = demo ? getDemoLesson(courseSlug, lessonId) : await getPublishedLesson(courseSlug, lessonId, student?.id);
   if (!detail) notFound();
-  return <LessonExperience detail={detail} signedIn={Boolean(student)} />;
+  const progress = !demo && student && detail.lesson.access !== "locked"
+    ? await readLessonProgress(student.id, courseSlug, Number(lessonId))
+    : null;
+  return <LessonExperience detail={detail} progress={progress} signedIn={Boolean(student)} />;
 }

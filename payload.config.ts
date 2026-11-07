@@ -27,6 +27,15 @@ export default buildConfig({
     admin: {
         user: Admins.slug,
         importMap: { importMapFile: "./app/(payload)/admin/importMap.ts" },
+        components: {
+            afterNavLinks: ["/payload/progress/StudentProgressNav"],
+            views: {
+                studentProgress: {
+                    Component: "/payload/progress/StudentProgressView",
+                    path: "/student-progress",
+                },
+            },
+        },
     },
     collections: [{ ...CourseOffers, hooks: { ...CourseOffers.hooks, beforeDelete: [protectCommerceDeletion("course-offers")] } }, Admins, Students, Courses, Modules, Lessons, Instructors, CourseCovers, LessonFiles],
     db: postgresAdapter({

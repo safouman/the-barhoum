@@ -1,3 +1,4 @@
+import { readCourseProgress } from "@/lib/learning/progress-reader";
 import { listCourseOffers } from "@/lib/commerce/course-payments/offers";
 import { getCourseOwnership } from "@/lib/learning/entitlements";
 import { readStudentSession } from "@/lib/student-auth/session";
@@ -30,5 +31,6 @@ export default async function CoursePage({ params }: { params: Promise<{ courseS
     getCourseOwnership(student?.id, course.id),
   ]);
 
-  return <CourseDetailView course={course} commerce={{ offers, ownership, signedIn: Boolean(student) }} />;
+  const progress = student && ownership.base ? await readCourseProgress(student.id, courseSlug) : null;
+  return <CourseDetailView course={course} progress={progress} commerce={{ offers, ownership, signedIn: Boolean(student) }} />;
 }

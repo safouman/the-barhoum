@@ -1,5 +1,4 @@
-import { listOwnedCourseIds } from "@/lib/learning/entitlements";
-import { listPublishedCourses } from "@/lib/learning/payload-reader";
+import { readOwnedLearningProgress } from "@/lib/learning/progress-reader";
 import { readStudentSession } from "@/lib/student-auth/session";
 import { LearningLibrary } from "@/components/learning/LearningLibrary";
 import { Button } from "@/components/Button";
@@ -20,6 +19,5 @@ export default async function MyLearningPage() {
       </StudentShell>
     );
   }
-  const courses = await listPublishedCourses(await listOwnedCourseIds(student.id));
-  return <LearningLibrary entries={courses.map((course) => ({ course, progress: null }))} />;
+  return <LearningLibrary entries={await readOwnedLearningProgress(student.id)} />;
 }
