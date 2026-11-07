@@ -74,9 +74,9 @@ export default async function LessonPage({
                   <LearningIcon name="lock" className="size-5" />
                 </span>
                 <h2 className="text-2xl">This lesson is locked</h2>
-                <p className="text-sm text-subtle">You can return to the curriculum to find the free preview.</p>
-                <Link href={courseHref + "#curriculum"} className="inline-block text-sm font-semibold text-[#12685f] underline underline-offset-4">
-                  Browse curriculum
+                <p className="text-sm text-subtle">See the course page for access options and free previews.</p>
+                <Link href={courseHref} className="inline-block text-sm font-semibold text-[#12685f] underline underline-offset-4">
+                  See course access options
                 </Link>
               </div>
             </section>
