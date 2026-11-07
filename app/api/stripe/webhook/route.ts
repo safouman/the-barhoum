@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
+import { isCourseStripeMetadata } from "@/lib/commerce/course-payments/marker";
 import { getStripeClient } from "@/lib/stripe/client";
 import { trackAutomationEvent } from "@/lib/analytics/server";
 import { sendPaymentWhatsAppNotification } from "@/lib/whatsapp/notifications";
@@ -131,9 +132,14 @@ export async function POST(req: NextRequest) {
   let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(payload, signature, webhookSecret);
-  } catch (error) {
-    console.error("[Stripe Webhook] Signature verification failed", error);
+  } catch {
+    console.error("[Stripe Webhook] Signature verification failed");
     return NextResponse.json({ success: false }, { status: 400 });
+  }
+
+  if ((event.type === "checkout.session.completed" || event.type === "payment_intent.succeeded") &&
+      isCourseStripeMetadata(event.data.object.metadata)) {
+    return NextResponse.json({ success: true });
   }
 
   try {

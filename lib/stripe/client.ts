@@ -10,7 +10,6 @@ export function getStripeClient(): Stripe | null {
 
   const secretKey = process.env.STRIPE_SECRET_KEY;
 
-  console.log('[Stripe Client] 🔑 Checking STRIPE_SECRET_KEY:', secretKey ? `present (${secretKey.substring(0, 7)}...)` : 'missing');
 
   if (!secretKey) {
     console.error('[Stripe Client] ❌ STRIPE_SECRET_KEY is not configured in environment variables');
@@ -24,11 +23,8 @@ export function getStripeClient(): Stripe | null {
   });
     console.log('[Stripe Client] ✅ Stripe instance created successfully');
     return stripeInstance;
-  } catch (error) {
-    console.error('[Stripe Client] ❌ Failed to initialize Stripe client:', {
-      error: error instanceof Error ? error.message : String(error),
-      stack: error instanceof Error ? error.stack : undefined,
-    });
+  } catch {
+    console.error('[Stripe Client] ❌ Failed to initialize Stripe client');
     return null;
   }
 }
