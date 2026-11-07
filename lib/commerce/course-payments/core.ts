@@ -7,6 +7,7 @@ const errors = {
     INVALID_INPUT: [400, "Check the information and try again."],
     NOT_FOUND: [404, "Order not found."],
     OFFER_UNAVAILABLE: [409, "This offer is unavailable."],
+    GEOGRAPHIC_RESTRICTION: [403, "Course purchases are coming soon in your location."],
     ALREADY_OWNED: [409, "You already have access to this offer."],
     BASE_REQUIRED: [409, "Buy the base course before purchasing this upgrade."],
     RATE_LIMITED: [429, "Too many requests. Try again later."],

@@ -4,7 +4,8 @@ import { sql } from "@payloadcms/db-postgres";
 import type { Payload } from "payload";
 import { authTransaction } from "../../student-auth/core";
 import type { StudentIdentity } from "../../student-auth/session";
-import { checkoutEnabled, CommerceError, commerceOrigin } from "./core";
+import { CommerceError, commerceOrigin } from "./core";
+import { purchaseAvailability } from "./eligibility";
 import { findOrder, lockCourseCommerce, readOffers, reserveOrder, type Order } from "./orders";
 import { reconcileOrder } from "./reconcile";
 import { courseStripe, createStripeSession, matchesStripeOrder, readStripePrice, type CourseStripe } from "./stripe";
@@ -39,8 +40,10 @@ async function reconcileOrCreate(payload: Payload, provider: CourseStripe, order
     }
 }
 
-export async function createCheckout(payload: Payload, identity: StudentIdentity, offerID: number) {
-    if (!checkoutEnabled()) throw new CommerceError("UNAVAILABLE");
+export async function createCheckout(payload: Payload, identity: StudentIdentity, offerID: number, headers: Pick<Headers, "get">) {
+    const availability = purchaseAvailability(headers);
+    if (availability === "coming-soon") throw new CommerceError("GEOGRAPHIC_RESTRICTION");
+    if (availability !== "available") throw new CommerceError("UNAVAILABLE");
     const origin = commerceOrigin();
     const [offer] = await authTransaction(payload, context => readOffers(context, { offerId: offerID }));
     if (!offer) throw new CommerceError("OFFER_UNAVAILABLE");

@@ -7,9 +7,10 @@ import type { ChargePrice, Order } from "./orders";
 
 type StripeContext = { stripe: Stripe; account: string; livemode: boolean };
 
-let cached: { key: string; account: string; livemode: boolean; client: Promise<StripeContext> } | undefined;
+type CachedClient = { key: string; account: string; livemode: boolean; client: Promise<StripeContext> };
+const clients: Partial<Record<"request" | "scheduled", CachedClient>> = {};
 
-export function courseStripe() {
+export function courseStripe(traffic: "request" | "scheduled" = "request") {
     const key = process.env.COURSE_STRIPE_SECRET_KEY;
     const account = process.env.COURSE_STRIPE_ACCOUNT_ID;
     const mode = process.env.COURSE_STRIPE_LIVEMODE;
@@ -18,18 +19,25 @@ export function courseStripe() {
         !new RegExp(`^(?:sk|rk)_${livemode ? "live" : "test"}_`).test(key) ||
         (livemode && process.env.VERCEL_ENV === "preview")) throw new CommerceError("UNAVAILABLE");
 
+    const cached = clients[traffic];
     if (!cached || cached.key !== key || cached.account !== account || cached.livemode !== livemode) {
-        const stripe = new Stripe(key, { typescript: true, httpClient: Stripe.createFetchHttpClient(), maxNetworkRetries: 1, timeout: 8_000 });
+        const scheduled = traffic === "scheduled";
+        const stripe = new Stripe(key, {
+            typescript: true,
+            httpClient: Stripe.createFetchHttpClient(),
+            maxNetworkRetries: scheduled ? 0 : 1,
+            timeout: scheduled ? 4_000 : 8_000,
+        });
         const client = stripe.accounts.retrieve().then(result => {
             if (result.id !== account) throw new CommerceError("UNAVAILABLE");
             return { stripe, account, livemode };
         }).catch(() => {
-            if (cached?.client === client) cached = undefined;
+            if (clients[traffic]?.client === client) delete clients[traffic];
             throw new CommerceError("UNAVAILABLE");
         });
-        cached = { key, account, livemode, client };
+        clients[traffic] = { key, account, livemode, client };
     }
-    return cached.client;
+    return clients[traffic]!.client;
 }
 
 export type CourseStripe = Awaited<ReturnType<typeof courseStripe>>;

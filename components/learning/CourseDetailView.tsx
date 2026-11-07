@@ -18,6 +18,7 @@ export function CourseDetailView({ course, commerce, progress }: { course: Cours
   const preview = lessons.find(({ access }) => access === "free");
   const firstOwned = commerce?.ownership.base ? lessons.find(({ access }) => access === "unlocked") ?? preview : undefined;
   const baseOffer = commerce?.offers.find(({ moduleId }) => moduleId === null);
+  const baseComingSoon = commerce?.comingSoonOffers?.includes(null);
   const courseHref = "/courses/" + encodeURIComponent(course.slug);
   const signInHref = commerce?.signInHref ?? loginHref(courseHref);
   const modules = course.curriculum.type === "simple" ? [] : course.curriculum.type === "modular"
@@ -28,7 +29,8 @@ export function CourseDetailView({ course, commerce, progress }: { course: Cours
     if (module.classification !== "premium") return [];
     const owned = commerce.ownership.moduleIds.includes(Number(module.id));
     const offer = commerce.offers.find(({ moduleId }) => moduleId === Number(module.id));
-    return owned || offer ? [{ module, owned, offer }] : [];
+    const comingSoon = commerce.comingSoonOffers?.includes(Number(module.id));
+    return owned || offer || comingSoon ? [{ module, owned, offer, comingSoon }] : [];
   }) : [];
   const info = [
     `${lessons.length} lessons`,
@@ -58,11 +60,13 @@ export function CourseDetailView({ course, commerce, progress }: { course: Cours
                   <Button href={lessonHref(course.slug, firstOwned.id)} className="!text-[#14312e] max-sm:w-full">Continue Learning</Button>
                 ) : null}
               </div>
-            ) : baseOffer && commerce ? (
+            ) : (baseOffer || baseComingSoon) && commerce ? (
               <section aria-label="Purchase course" className="space-y-3 rounded-sm border border-border bg-white p-4">
-                <p className="text-2xl font-semibold">{formatOfferPrice(baseOffer)} <span className="text-sm font-normal text-subtle">one-time purchase</span></p>
+                {baseOffer ? <p className="text-2xl font-semibold">{formatOfferPrice(baseOffer)} <span className="text-sm font-normal text-subtle">one-time purchase</span></p> : null}
                 <p className="text-sm text-subtle">{regularLessons} regular {regularLessons === 1 ? "lesson" : "lessons"} included, plus future regular lessons. Premium modules are separate.</p>
-                <PurchaseButton offerId={baseOffer.id} signedIn={commerce.signedIn} signInHref={signInHref} courseHref={courseHref}>Buy course</PurchaseButton>
+                {baseComingSoon ? <p className="text-sm font-semibold">Coming soon</p> : baseOffer ? (
+                  <PurchaseButton offerId={baseOffer.id} signedIn={commerce.signedIn} signInHref={signInHref} courseHref={courseHref}>Buy course</PurchaseButton>
+                ) : null}
                 {preview ? (
                   <Link href={lessonHref(course.slug, preview.id)} className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#12685f] underline underline-offset-4">
                     <LearningIcon name="play" /> Watch free preview
@@ -101,10 +105,10 @@ export function CourseDetailView({ course, commerce, progress }: { course: Cours
             <section aria-labelledby="upgrades-title" className="space-y-3 pt-3">
               <h2 id="upgrades-title" className="text-2xl">Premium modules</h2>
               <ul role="list" className="space-y-3">
-                {upgrades.map(({ module, owned, offer }) => (
+                {upgrades.map(({ module, owned, offer, comingSoon }) => (
                   <li key={module.id} className="space-y-3 rounded-sm border border-border bg-surface p-4">
                     <h3 className="text-lg">{module.title}</h3>
-                    {owned ? <p className="text-sm font-semibold text-[#12685f]">Module owned</p> : offer ? (
+                    {owned ? <p className="text-sm font-semibold text-[#12685f]">Module owned</p> : comingSoon ? <p className="text-sm font-semibold">Coming soon</p> : offer ? (
                       <>
                         <p className="text-sm text-subtle">{formatOfferPrice(offer)} · one-time upgrade</p>
                         <PurchaseButton offerId={offer.id} signedIn={commerce.signedIn} signInHref={signInHref} courseHref={courseHref}>Buy upgrade</PurchaseButton>

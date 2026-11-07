@@ -9,6 +9,7 @@ export type CourseOffer = {
 
 export type CourseCommerce = {
   offers: CourseOffer[];
+  comingSoonOffers?: (number | null)[];
   ownership: { base: boolean; moduleIds: number[] };
   signedIn: boolean;
   signInHref?: string;

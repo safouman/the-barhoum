@@ -81,8 +81,14 @@ try {
     const cover = await createAdmin("/api/course-covers", { alt: "Commerce", publicURL: "/images/hero.jpeg" });
     const course = await createAdmin("/api/courses?draft=true", { title: "Test commerce", slug: "test-commerce", description: "Fixture", cover: cover.id });
     const premium = await createAdmin("/api/modules", { title: "Premium", course: course.id, classification: "premium", _status: "published" });
+    const regular = await createAdmin("/api/modules", { title: "Regular", course: course.id, classification: "regular", _status: "published" });
+    const free = await createAdmin("/api/lessons", {
+        title: "Free checkout fixture", course: course.id, freePreview: true, _status: "published",
+        content: [{ blockType: "video", videos: [{ title: "Fixture", provider: "vimeo", reference: "111110" }] }],
+    });
+    edit(store => { store.freeLesson = free.id; });
     const updateCourse = data => json("/api/courses/" + course.id, 200, { method: "PATCH", data, admin });
-    await updateCourse({ structure: "modular", modules: [{ module: premium.id }], _status: "published" });
+    await updateCourse({ structure: "modular", modules: [{ module: regular.id, lessons: [{ lesson: free.id }] }, { module: premium.id }], _status: "published" });
     const base = await createAdmin("/api/course-offers", { course: course.id, enabled: true, stripePriceId: "price_FixtureBase" });
     const upgradeOffer = await createAdmin("/api/course-offers", { course: course.id, module: premium.id, enabled: true, stripePriceId: "price_FixturePremium" });
     const baseOffer = base.id;
@@ -94,6 +100,16 @@ try {
     })).body;
     const order = async id => (await dbClient.query("SELECT * FROM course_orders WHERE id=$1", [id])).rows[0];
     const grant = async id => (await dbClient.query("SELECT * FROM course_entitlements WHERE source_order_id=$1", [id])).rows[0];
+    const scheduledPath = "/api/course-commerce/reconcile/scheduled";
+    const cron = (status = 200, token = process.env.CRON_SECRET) => json(scheduledPath, status, { admin: token });
+    async function makeDue(id) {
+        await dbClient.query("UPDATE course_orders SET ops_next_check_at=now()+interval '24 hours'");
+        await dbClient.query("UPDATE course_orders SET ops_next_check_at=now()-interval '1 minute' WHERE id=$1", [id]);
+    }
+    await json(scheduledPath, 401);
+    await json(scheduledPath, 401, { cookie });
+    await cron(401, admin);
+    await cron(401, "incorrect-schedule-secret");
     const refresh = async (id, expect) => assert.equal((await json(orderRoute(id) + "/refresh", 200, { method: "POST", cookie })).body.status, expect);
     const settle = (id, paid = true) => edit(store => {
         const session = store.sessions[id];
@@ -112,15 +128,15 @@ try {
         };
         return { session, intent: store.intents[pi], charge };
     });
-    async function setRefund({ intent, charge }, amount, type = "refund.updated") {
+    async function setRefund({ intent, charge }, amount, type = "refund.updated", send = true) {
         const refund = { id: "re_Fixture" + amount, object: "refund", amount, status: "succeeded", charge, payment_intent: intent.id };
         edit(store => { store.refunds[charge] = [refund]; store.charges[charge].amount_refunded = amount; });
-        await deliver(event(type, refund));
+        if (send) await deliver(event(type, refund));
     }
-    async function setDispute({ intent, charge }, status, type) {
+    async function setDispute({ intent, charge }, status, type, send = true) {
         const dispute = { id: "dp_Fixture", object: "dispute", amount: intent.amount, status, charge, payment_intent: intent.id };
         edit(store => { store.disputes[charge] = [dispute]; });
-        await deliver(event(type, dispute));
+        if (send) await deliver(event(type, dispute));
     }
 
     await json("/api/course-commerce/checkout", 401, { method: "POST", data: { offerId: baseOffer } });
@@ -168,6 +184,10 @@ try {
         FOR EACH ROW EXECUTE FUNCTION phase5_test_abort_grant();
     `);
     await deliver(paidIntent, { status: 503 });
+    for (let attempt = 0; !Object.keys(state().alerts).length && attempt < 20; attempt++) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    assert.equal(Object.keys(state().alerts).length, 1);
     const pendingAccess = await json(orderRoute(initial) + "/refresh", 200, { cookie, method: "POST" });
     assert.equal(pendingAccess.body.status, "processing");
     assert.equal(pendingAccess.body.paymentConfirmed, true);
@@ -187,7 +207,11 @@ try {
     }
 
     const upgrade = (await checkout(premiumOffer)).orderId;
-    await setRefund(paid, paid.intent.amount);
+    await setRefund(paid, paid.intent.amount, undefined, false);
+    await makeDue(initial);
+    const refundSweep = (await cron()).body;
+    assert.equal(refundSweep.reversalsObserved, 1);
+    assert.equal(refundSweep.alertDelivery, "accepted");
     assert.equal((await grant(initial)).status, "revoked");
     const premiumPaid = settle((await order(upgrade)).stripe_session_id);
     await deliver(event("checkout.session.completed", premiumPaid.session));
@@ -199,7 +223,9 @@ try {
     await refresh(replacement, "fulfilled");
     await setRefund(repaid, 100);
     assert.equal((await grant(replacement)).status, "active");
-    await setDispute(repaid, "needs_response", "charge.dispute.created");
+    await setDispute(repaid, "needs_response", "charge.dispute.created", false);
+    await makeDue(replacement);
+    assert.equal((await cron()).body.reversalsObserved, 1);
     assert.equal((await grant(replacement)).status, "suspended");
     await setDispute(repaid, "won", "charge.dispute.closed");
     assert.equal((await grant(replacement)).status, "active");
@@ -215,6 +241,24 @@ try {
     assert.notEqual(current, outdated);
     assert.equal(state().sessions[outdatedSessionID].status, "expired");
     const currentPaid = settle((await order(current)).stripe_session_id);
+    await makeDue(current);
+    const historicalBacklog = (await dbClient.query(`
+        INSERT INTO course_orders (id, student_id, offer_id, course_id, module_id, stripe_account, livemode, stripe_price_id,
+            amount_minor, currency, checkout_origin, cancel_course_slug, status, ops_next_check_at)
+        SELECT gen_random_uuid(), student_id, offer_id, course_id, module_id, stripe_account, livemode, stripe_price_id,
+            amount_minor, currency, checkout_origin, cancel_course_slug, 'fulfilled', now()-interval '2 hours'
+        FROM course_orders CROSS JOIN generate_series(1, 15) WHERE id=$1 RETURNING id
+    `, [current])).rows.map(row => row.id);
+    const paymentSweep = (await cron()).body;
+    assert.equal(paymentSweep.checked, 12);
+    assert.equal(paymentSweep.paidRecovered, 1);
+    assert.equal(paymentSweep.backlog, true);
+    await dbClient.query("DELETE FROM course_orders WHERE id=ANY($1::uuid[])", [historicalBacklog]);
+    await makeDue(current);
+    const paymentSweeps = await Promise.all([cron(), cron()]);
+    assert.equal(paymentSweeps.reduce((sum, { body }) => sum + body.paidRecovered, 0), 0);
+    assert.equal(paymentSweeps.reduce((sum, { body }) => sum + body.checked, 0), 1);
+    assert.equal(Object.keys(state().alerts).length, 1);
     await deliver(event("checkout.session.completed", currentPaid.session));
     const duplicate = settle(outdatedSessionID);
     await deliver(event("checkout.session.completed", duplicate.session));
@@ -230,6 +274,23 @@ try {
     assert.equal((await order(ambiguous.id)).reason, "ambiguous_checkout");
     const providerSession = Object.values(state().sessions).find(item => item.client_reference_id === ambiguous.id);
     await json("/api/course-commerce/reconcile", 401, { method: "POST", data: { orderId: ambiguous.id, stripeSessionId: providerSession.id }, cookie: other });
+    edit(store => {
+        for (let index = 0; index < 25; index++) {
+            const id = "cs_test_unmarked" + index;
+            store.sessions[id] = { ...providerSession, id, metadata: { lead_id: "training" } };
+        }
+    });
+    await makeDue(ambiguous.id);
+    const discoveryFirst = (await cron()).body;
+    assert.equal(discoveryFirst.failed, 0);
+    assert.equal(discoveryFirst.manualReview, 0);
+    assert.ok((await order(ambiguous.id)).ops_session_cursor);
+    assert.equal((await order(ambiguous.id)).stripe_session_id, null);
+    await makeDue(ambiguous.id);
+    const discoverySecond = (await cron()).body;
+    assert.equal(discoverySecond.failed, 0);
+    assert.equal((await order(ambiguous.id)).stripe_session_id, providerSession.id);
+    assert.equal((await order(ambiguous.id)).ops_session_cursor, null);
     await json("/api/course-commerce/reconcile", 200, { method: "POST", data: { orderId: ambiguous.id, stripeSessionId: providerSession.id }, admin });
     assert.equal((await checkout(baseOffer, 200, other)).orderId, ambiguous.id);
 
@@ -241,6 +302,24 @@ try {
     assert.equal((await dbClient.query("SELECT count(*)::int AS count FROM course_orders WHERE student_id=$1", [studentIDs[1]])).rows[0].count, 1);
     edit(store => { Object.assign(store.sessions[providerSession.id], { status: "expired", url: null }); });
     assert.notEqual((await checkout(baseOffer, 200, other)).orderId, ambiguous.id);
+
+    const retrySession = (await order(current)).stripe_session_id;
+    edit(store => { store.failRetrieve = retrySession; });
+    for (let attempt = 1; attempt <= 3; attempt++) {
+        await makeDue(current);
+        const failure = (await cron()).body;
+        assert.equal(failure.failed, 1);
+        assert.equal(failure.repeatedFailures, attempt === 3 ? 1 : 0);
+        const retried = await order(current);
+        assert.equal(retried.ops_failures, attempt);
+        assert.ok(new Date(retried.ops_next_check_at).getTime() > Date.now());
+        assert.equal((await cron()).body.checked, 0);
+    }
+    edit(store => { delete store.failRetrieve; });
+    await makeDue(current);
+    assert.equal((await cron()).body.failed, 0);
+    assert.equal((await order(current)).ops_failures, 0);
+    assert.equal((await grant(current)).status, "active");
 
     const legacySession = { ...currentPaid.session, metadata: { lead_id: "fixture-legacy" } };
     await deliver(event("checkout.session.completed", legacySession));
@@ -258,7 +337,8 @@ try {
     assert.deepEqual(state().legacyAnalytics, baselineLegacyAnalytics);
     await deliver(event("payment_intent.succeeded", legacyIntent), { secret: legacySecret, legacy: true });
     assert.deepEqual(state().legacyAnalytics, [...baselineLegacyAnalytics, legacyIntent.id]);
-    console.log("Passed checkout reservation, ambiguous retries, course/webhook isolation, fulfillment, refunds, disputes, and repurchase.");
+    edit(store => { store.baseOffer = baseOffer; });
+    console.log("Passed checkout reservation, isolated webhooks, scheduled payment/refund/dispute recovery, durable pagination, concurrent claims, retry backoff, alert deduplication, and repurchase.");
 } finally {
     await dbClient.end();
 }
