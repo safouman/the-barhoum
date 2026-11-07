@@ -1,3 +1,4 @@
+import * as migration_20261107_230000_course_commerce_operations from './20261107_230000_course_commerce_operations';
 import * as migration_20261107_160000_learning_progress from './20261107_160000_learning_progress';
 import * as migration_20261107_120000_course_commerce from './20261107_120000_course_commerce';
 import * as migration_20261106_105408_initial from './20261106_105408_initial';
@@ -47,5 +48,10 @@ export const migrations = [
     up: migration_20261107_160000_learning_progress.up,
     down: migration_20261107_160000_learning_progress.down,
     name: '20261107_160000_learning_progress',
+  },
+  {
+    up: migration_20261107_230000_course_commerce_operations.up,
+    down: migration_20261107_230000_course_commerce_operations.down,
+    name: '20261107_230000_course_commerce_operations',
   },
 ];
