@@ -23,7 +23,7 @@ export async function createStudent(payload: Payload, { req }: AuthTx, input: { 
     });
 }
 
-export function startSignup(payload: Payload, email: string) {
+export function startSignup(payload: Payload, email: string, returnTo?: string) {
     requireStudentEmail();
     queueEmailWork(payload, async () => {
         const token = await authTransaction(payload, async context => {
@@ -31,7 +31,7 @@ export function startSignup(payload: Payload, email: string) {
             if (await getStudent(payload, "email", email, context.req)) return;
             return createChallenge(context, "signup", { email }, 30);
         });
-        if (token) await sendStudentEmail(payload, email, "signup", token);
+        if (token) await sendStudentEmail(payload, email, "signup", token, returnTo);
     });
 }
 

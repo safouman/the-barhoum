@@ -3,6 +3,7 @@ import { z } from "zod";
 import { confirmEmailChange, passwordLogin, resetStudentPassword, startEmailChange, startRecovery, startSignup, verifySignup } from "../../../../lib/student-auth/accounts";
 import { ageRangeInput, AuthError, authFailure, authJSON, authOrigin, authTransaction, emailInput, nameInput, passwordInput, rateLimit, studentPayload, tokenInput, updateStudent } from "../../../../lib/student-auth/core";
 import { googleCallback, startGoogle } from "../../../../lib/student-auth/google";
+import { safeReturnTo } from "../../../../lib/student-auth/return-to";
 import { profile, requestStudent, requireCurrentStudent, revokeStudentSession, studentCookieHeader } from "../../../../lib/student-auth/session";
 
 export const runtime = "nodejs";
@@ -11,6 +12,7 @@ export const dynamic = "force-dynamic";
 const routePrefix = "/api/student-auth/";
 const operation = (request: NextRequest) => request.nextUrl.pathname.slice(routePrefix.length).replace(/\/$/, "");
 const emailBody = z.object({ email: emailInput }).strict();
+const registrationBody = emailBody.extend({ returnTo: z.string().max(256).optional() });
 const verifyBody = z.object({ token: tokenInput, name: nameInput, password: passwordInput.optional() }).strict();
 const credentialsBody = z.object({ email: emailInput, password: z.string().min(1).max(128) }).strict();
 const resetBody = z.object({ token: tokenInput, password: passwordInput }).strict();
@@ -82,9 +84,9 @@ export async function POST(request: NextRequest) {
         switch (action) {
             case "register":
             case "resend-verification": {
-                const { email } = readBody(emailBody, data);
+                const { email, returnTo } = readBody(registrationBody, data);
                 await rateLimit(payload, request, "register", email, [5, 25], 30);
-                startSignup(payload, email);
+                startSignup(payload, email, returnTo ? safeReturnTo(returnTo) : undefined);
                 return authJSON({ ok: true }, 202);
             }
             case "verify": {

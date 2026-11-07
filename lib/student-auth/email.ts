@@ -34,11 +34,12 @@ export function queueEmailWork(payload: Payload, work: () => Promise<void>) {
     });
 }
 
-export async function sendStudentEmail(payload: Payload, to: string, kind: EmailKind, token?: string) {
+export async function sendStudentEmail(payload: Payload, to: string, kind: EmailKind, token?: string, returnTo?: string) {
     const settings = requireStudentEmail();
     if (settings.restricted && !settings.allowlist.has(to)) return;
     const message = messages[kind];
     const link = new URL(message.path, authOrigin());
+    if (returnTo) link.searchParams.set("returnTo", returnTo);
     if (token) link.hash = new URLSearchParams({ token }).toString();
     const text = token
         ? `${message.action}: ${link.href}\n\nIf you did not request this, you can ignore this email.`
@@ -47,6 +48,6 @@ export async function sendStudentEmail(payload: Payload, to: string, kind: Email
     await adapter.sendEmail({ to, subject: message.subject, text });
 }
 
-export function queueStudentEmail(payload: Payload, to: string, kind: EmailKind, token?: string) {
-    queueEmailWork(payload, () => sendStudentEmail(payload, to, kind, token));
+export function queueStudentEmail(payload: Payload, to: string, kind: EmailKind, token?: string, returnTo?: string) {
+    queueEmailWork(payload, () => sendStudentEmail(payload, to, kind, token, returnTo));
 }

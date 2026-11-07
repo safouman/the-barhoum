@@ -1,3 +1,4 @@
+import * as migration_20261107_120000_course_commerce from './20261107_120000_course_commerce';
 import * as migration_20261106_105408_initial from './20261106_105408_initial';
 import * as migration_20261106_123150_course_content from './20261106_123150_course_content';
 import * as migration_20261106_125512_public_cover_url from './20261106_125512_public_cover_url';
@@ -35,5 +36,10 @@ export const migrations = [
     up: migration_20261106_213612_student_auth.up,
     down: migration_20261106_213612_student_auth.down,
     name: '20261106_213612_student_auth'
+  },,
+  {
+    up: migration_20261107_120000_course_commerce.up,
+    down: migration_20261107_120000_course_commerce.down,
+    name: '20261107_120000_course_commerce'
   },
 ];

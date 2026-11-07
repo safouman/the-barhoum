@@ -7,6 +7,7 @@ import { z } from "zod";
 import { createStudent } from "./accounts";
 import { consumeChallenge, createChallenge } from "./challenges";
 import { AuthError, authOrigin, authTransaction, digest, emailInput, getStudent, lockEmail, lockGoogleSubject, lockStudent, noStore, opaqueToken, rateLimit, tokenInput, updateStudent } from "./core";
+import { safeReturnTo } from "./return-to";
 import { queueStudentEmail, requireStudentEmail } from "./email";
 import { issueGoogleSession, requestStudent, requireCurrentStudent, setStudentSessions, studentCookieHeader } from "./session";
 
@@ -36,13 +37,6 @@ function googleConfiguration() {
     return configuration;
 }
 
-export function safeStudentReturn(path: string | null, fallback = "/my-learning") {
-    if (!path || path.length > 1024 || !path.startsWith("/") || path.startsWith("//") || /[\\\x00-\x20]/.test(path)) return fallback;
-    const url = new URL(path, "https://barhoum.invalid");
-    if (url.origin !== "https://barhoum.invalid" || !/^\/(?:courses(?:\/[a-z0-9-]+(?:\/lessons\/[a-zA-Z0-9_-]+)?)?|my-learning|account)\/?$/.test(url.pathname)) return fallback;
-    return url.pathname + url.search;
-}
-
 function redirect(location: URL | string, ...cookies: string[]) {
     const headers = new Headers({ ...noStore, Location: typeof location === "string" ? new URL(location, authOrigin()).href : location.href });
     for (const cookie of cookies) headers.append("Set-Cookie", cookie);
@@ -68,7 +62,7 @@ export async function startGoogle(payload: Payload, request: NextRequest) {
     const parsed = intentInput.safeParse(request.nextUrl.searchParams.get("intent") ?? "login");
     if (!parsed.success) throw new AuthError("INVALID_INPUT");
     const intent = parsed.data;
-    const returnTo = safeStudentReturn(request.nextUrl.searchParams.get("returnTo"), intent === "reauth" ? "/account" : "/my-learning");
+    const returnTo = safeReturnTo(request.nextUrl.searchParams.get("returnTo"), intent === "reauth" ? "/account" : "/my-learning");
     await rateLimit(payload, request, "google-start", undefined, [8, 40]);
     const browserToken = opaqueToken();
     const verifier = oidc.randomPKCECodeVerifier();
@@ -175,10 +169,10 @@ export async function googleCallback(payload: Payload, request: NextRequest) {
                 return redirect(`/login?${params}`, closeCookie);
             }
             if ("inboxToken" in result) {
-                queueStudentEmail(payload, claims.email, "google-signup", result.inboxToken);
+                queueStudentEmail(payload, claims.email, "google-signup", result.inboxToken, state.returnTo);
                 return redirect("/verify-email?status=check-inbox", closeCookie);
             }
-            return redirect(safeStudentReturn(state.returnTo), closeCookie, studentCookieHeader(result.token));
+            return redirect(safeReturnTo(state.returnTo), closeCookie, studentCookieHeader(result.token));
         }
 
         const intent = state.intent;
@@ -205,7 +199,7 @@ export async function googleCallback(payload: Payload, request: NextRequest) {
             return null;
         }, identity.user.id);
         return result
-            ? redirect(safeStudentReturn(state.returnTo, "/account"), closeCookie, studentCookieHeader(result.token))
+            ? redirect(safeReturnTo(state.returnTo, "/account"), closeCookie, studentCookieHeader(result.token))
             : redirect("/login?status=google-linked", closeCookie, studentCookieHeader());
     } catch (error) {
         const status = error instanceof AuthError && ["UNAUTHENTICATED", "REAUTH_REQUIRED"].includes(error.code) ? "reauth-required" : "google-failed";

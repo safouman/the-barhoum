@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { authError, googleHref } from "./api";
+import { authError, googleHref, loginHref } from "./api";
 import { Field, GoogleLink, Notice, Panel, studentLink, Submit } from "./ui";
 import { fieldText, useSubmission } from "./use-submission";
 
@@ -37,7 +37,7 @@ export function LoginForm({ returnTo, status }: { returnTo: string; status?: str
       </form>
       <p className="text-center text-sm text-subtle">or</p>
       <GoogleLink href={googleHref("login", returnTo)}>Continue with Google</GoogleLink>
-      <p className="text-sm text-subtle">New to Barhoum Learning? <Link href="/register" className={studentLink}>Create an account</Link></p>
+      <p className="text-sm text-subtle">New to Barhoum Learning? <Link href={`/register?${new URLSearchParams({ returnTo })}`} className={studentLink}>Create an account</Link></p>
     </Panel>
   );
 }
@@ -57,7 +57,7 @@ const inboxCopy = {
   },
 } as const;
 
-export function InboxForm({ mode }: { mode: keyof typeof inboxCopy }) {
+export function InboxForm({ mode, returnTo }: { mode: keyof typeof inboxCopy; returnTo?: string }) {
   const submission = useSubmission();
   const [sent, setSent] = useState(false);
   const copy = inboxCopy[mode];
@@ -71,7 +71,7 @@ export function InboxForm({ mode }: { mode: keyof typeof inboxCopy }) {
         aria-busy={submission.busy}
         onSubmit={submission.handler(mode, (data) => {
           setSent(false);
-          return { email: fieldText(data, "email").trim() };
+          return { email: fieldText(data, "email").trim(), ...(returnTo && returnTo !== "/my-learning" && mode !== "forgot-password" ? { returnTo } : {}) };
         }, () => setSent(true))}
       >
         <Field id="inbox-email" name="email" type="email" label="Email address" autoComplete="email" required maxLength={254} />
@@ -81,11 +81,11 @@ export function InboxForm({ mode }: { mode: keyof typeof inboxCopy }) {
       {mode === "register" ? (
         <>
           <p className="text-center text-sm text-subtle">or</p>
-          <GoogleLink href={googleHref("login", "/my-learning")}>Continue with Google</GoogleLink>
-          <p className="text-sm text-subtle">No email yet? <Link href="/verify-email" className={studentLink}>Request another verification link</Link></p>
+          <GoogleLink href={googleHref("login", returnTo ?? "/my-learning")}>Continue with Google</GoogleLink>
+          <p className="text-sm text-subtle">No email yet? <Link href={returnTo ? `/verify-email?${new URLSearchParams({ returnTo })}` : "/verify-email"} className={studentLink}>Request another verification link</Link></p>
         </>
       ) : null}
-      <p className="text-sm"><Link href="/login" className={studentLink}>Back to sign in</Link></p>
+      <p className="text-sm"><Link href={returnTo ? loginHref(returnTo) : "/login"} className={studentLink}>Back to sign in</Link></p>
     </Panel>
   );
 }

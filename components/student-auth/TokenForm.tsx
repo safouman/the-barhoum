@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { authError } from "./api";
+import { authError, loginHref } from "./api";
 import { InboxForm } from "./EntryForms";
 import { Field, Notice, Panel, studentLink, Submit } from "./ui";
 import { fieldText, useSubmission } from "./use-submission";
@@ -28,7 +28,7 @@ const tokenCopy = {
   },
 } as const;
 
-export function TokenForm({ mode, google = false, checkInbox = false }: { mode: keyof typeof tokenCopy; google?: boolean; checkInbox?: boolean }) {
+export function TokenForm({ mode, google = false, checkInbox = false, returnTo }: { mode: keyof typeof tokenCopy; google?: boolean; checkInbox?: boolean; returnTo?: string }) {
   const submission = useSubmission();
   const [complete, setComplete] = useState(false);
   const [token, setToken] = useState<string | null>();
@@ -57,7 +57,7 @@ export function TokenForm({ mode, google = false, checkInbox = false }: { mode: 
     return (
       <div className="space-y-4">
         {checkInbox ? <Notice>Check your inbox for the link to finish registration.</Notice> : null}
-        <InboxForm mode="resend-verification" />
+        <InboxForm mode="resend-verification" returnTo={returnTo} />
       </div>
     );
   }
@@ -67,7 +67,7 @@ export function TokenForm({ mode, google = false, checkInbox = false }: { mode: 
       {complete ? (
         <>
           <Notice>{copy.done}</Notice>
-          <p><Link href="/login" className={studentLink}>Sign in</Link></p>
+          <p><Link href={returnTo ? loginHref(returnTo) : "/login"} className={studentLink}>Sign in</Link></p>
         </>
       ) : token === undefined ? (
         <p role="status" className="text-sm text-subtle">Checking the link…</p>
