@@ -1,3 +1,4 @@
+import { readStudentSession } from "@/lib/student-auth/session";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -24,7 +25,7 @@ export default async function LessonPage({
   params: Promise<{ courseSlug: string; lessonId: string }>;
 }) {
   const { courseSlug, lessonId } = await params;
-  const detail = getDemoCourses() ? getDemoLesson(courseSlug, lessonId) : await getPublishedLesson(courseSlug, lessonId);
+  const detail = getDemoCourses() ? getDemoLesson(courseSlug, lessonId) : await getPublishedLesson(courseSlug, lessonId, (await readStudentSession())?.id);
   if (!detail) notFound();
 
   const { course, curriculum, lesson } = detail;

@@ -1,3 +1,4 @@
+import { markCommercePublication, protectCommerceDeletion, protectCourseCommerce, protectLessonCommerce, protectModuleCommerce } from "./commerce-lifecycle.ts";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { APIError, ValidationError, type Access, type Block, type CollectionBeforeOperationHook, type CollectionConfig, type Field, type TextFieldSingleValidation } from "payload";
 import { text as validateText } from "payload/shared";
@@ -185,8 +186,9 @@ export const Courses: CollectionConfig = {
     disableDuplicate: true,
     versions: { drafts: true },
     hooks: {
-        beforeChange: [validateCurriculum],
-        beforeDelete: [async ({ id, req }) => {
+        beforeOperation: [markCommercePublication],
+        beforeChange: [validateCurriculum, protectCourseCommerce],
+        beforeDelete: [protectCommerceDeletion("courses"), async ({ id, req }) => {
             for (const collection of ["modules", "lessons"] as const) {
                 const { totalDocs } = await req.payload.find({
                     collection, depth: 0, draft: true, limit: 1, req,
@@ -220,7 +222,11 @@ export const Modules: CollectionConfig = {
     access: { ...adminAccess, readVersions: isAdmin },
     admin: { useAsTitle: "title", defaultColumns: ["title", "course", "classification", "_status"] },
     versions: { drafts: true },
-    hooks: { beforeChange: [keepCourseOwnership], beforeDelete: [protectPlacedRecord("modules")] },
+    hooks: {
+        beforeOperation: [markCommercePublication],
+        beforeChange: [keepCourseOwnership, protectModuleCommerce],
+        beforeDelete: [protectPlacedRecord("modules"), protectCommerceDeletion("modules")],
+    },
     fields: [
         { name: "title", type: "text", required: true },
         ownedCourse,
@@ -238,7 +244,11 @@ export const Lessons: CollectionConfig = {
     },
     endpoints: [copyLessonEndpoint],
     versions: { drafts: true },
-    hooks: { beforeChange: [keepCourseOwnership], beforeDelete: [protectPlacedRecord("lessons")] },
+    hooks: {
+        beforeOperation: [markCommercePublication],
+        beforeChange: [keepCourseOwnership, protectLessonCommerce],
+        beforeDelete: [protectPlacedRecord("lessons")],
+    },
     fields: [
         { name: "title", type: "text", required: true },
         ownedCourse,

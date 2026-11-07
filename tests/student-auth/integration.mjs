@@ -41,13 +41,14 @@ const cookie = (response, name = "barhoum-student") => {
     return value.split(";")[0];
 };
 
-async function tokenFor(to, route, previous) {
+async function tokenFor(to, route, previous, returnTo) {
     for (let i = 0; i < 50; i++) {
         const entries = (await readFile(mailbox, "utf8").catch(() => "")).trim().split("\n").filter(Boolean).map(line => JSON.parse(line));
         const matches = entries.filter(entry => entry.to.includes(to) && entry.text.includes(route));
         if (matches.length) {
             const url = new URL(matches.at(-1).text.match(/https?:\/\/[^\s]+/)[0]);
             assert.equal(url.searchParams.has("token"), false);
+            if (returnTo) assert.equal(url.searchParams.get("returnTo"), returnTo);
             const token = new URLSearchParams(url.hash.slice(1)).get("token");
             assert.ok(token);
             if (token !== previous) return token;
@@ -69,9 +70,10 @@ assert.equal(adminLogin.status, 200);
 const admin = "Bearer " + (await adminLogin.json()).token;
 assert.equal((await adminRequest("admins", "GET", undefined, admin)).status, 200);
 await check(await post("register", { email: inbox }, undefined, { Origin: "https://evil.invalid" }), 400);
-const registration = await check(await post("register", { email: `  ${inbox.toUpperCase()}  ` }), 202);
+const purchaseReturn = "/courses/phase-five-test";
+const registration = await check(await post("register", { email: `  ${inbox.toUpperCase()}  `, returnTo: purchaseReturn }), 202);
 assert.deepEqual(await registration.json(), { ok: true });
-const enrollment = await tokenFor(inbox, "/verify-email");
+const enrollment = await tokenFor(inbox, "/verify-email", undefined, purchaseReturn);
 await check(await post("resend-verification", { email: inbox }), 202);
 const resent = await tokenFor(inbox, "/verify-email", enrollment);
 const claims = await Promise.all([
