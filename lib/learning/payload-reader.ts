@@ -14,6 +14,7 @@ import type {
     LessonSummary,
     ModulePlacement,
 } from "./contracts";
+import type { AuthTx } from "../student-auth/core";
 import { vimeoEmbedURL } from "./vimeo";
 import { getCourseOwnership, lessonAccess } from "./entitlements";
 
@@ -69,9 +70,10 @@ export async function listPublishedCourses(courseIds?: number[]) {
 type ModuleRow = NonNullable<Course["modules"]>[number];
 type LessonRow = NonNullable<Course["lessons"]>[number];
 
-async function readCourse(slug: string, studentId?: number): Promise<{ course: Course; curriculum: Curriculum } | null> {
+async function readCourse(slug: string, studentId?: number, context?: AuthTx): Promise<{ course: Course; curriculum: Curriculum } | null> {
     const payload = await getPayload({ config });
     const { docs: [course] } = await payload.find({
+        req: context?.req,
         collection: "courses",
         where: { slug: { equals: slug }, _status: { equals: "published" } },
         draft: false,
@@ -89,6 +91,7 @@ async function readCourse(slug: string, studentId?: number): Promise<{ course: C
         : placements.flatMap((row) => row.lessons ?? []);
     const lessonIDs = lessonRows.map((row) => relationID(row.lesson)).filter((id) => id !== undefined);
     const { docs } = lessonIDs.length > 0 ? await payload.find({
+        req: context?.req,
         collection: "lessons",
         where: {
             id: { in: lessonIDs },
@@ -102,7 +105,7 @@ async function readCourse(slug: string, studentId?: number): Promise<{ course: C
         select: { title: true, description: true, freePreview: true },
     }) : { docs: [] };
 
-    const ownership = await getCourseOwnership(studentId, course.id);
+    const ownership = await getCourseOwnership(studentId, course.id, context);
     const summaries = new Map(docs.map((lesson) => [lesson.id, lesson]));
 
     function projectLessons(rows: LessonRow[], premiumModuleId?: number): LessonSummary[] {
@@ -153,8 +156,8 @@ async function readCourse(slug: string, studentId?: number): Promise<{ course: C
     }
 }
 
-export async function getPublishedCourse(slug: string, studentId?: number): Promise<(CourseDetail & { id: number }) | null> {
-    const result = await readCourse(slug, studentId);
+export async function getPublishedCourse(slug: string, studentId?: number, context?: AuthTx): Promise<(CourseDetail & { id: number }) | null> {
+    const result = await readCourse(slug, studentId, context);
     if (!result) return null;
     const { course, curriculum } = result;
     return {
@@ -221,8 +224,8 @@ async function paidDownloadIds(db: PostgresAdapter, blocks: NonNullable<Lesson["
     return new Set(rows.map(({ file_id }) => file_id));
 }
 
-export async function getPublishedLesson(slug: string, lessonID: string, studentId?: number): Promise<LessonDetail | null> {
-    const result = await readCourse(slug, studentId);
+export async function getPublishedLesson(slug: string, lessonID: string, studentId?: number, context?: AuthTx): Promise<LessonDetail | null> {
+    const result = await readCourse(slug, studentId, context);
     if (!result) return null;
     const { course, curriculum } = result;
     const modules = curriculum.type === "structured"
@@ -237,6 +240,7 @@ export async function getPublishedLesson(slug: string, lessonID: string, student
 
     const payload = await getPayload({ config });
     const { docs: [published] } = await payload.find({
+        req: context?.req,
         collection: "lessons",
         where: {
             id: { equals: Number(lessonID) },

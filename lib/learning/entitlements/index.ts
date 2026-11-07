@@ -2,13 +2,14 @@ import "server-only";
 import config from "@payload-config";
 import { sql, type PostgresAdapter } from "@payloadcms/db-postgres";
 import { getPayload } from "payload";
+import type { AuthTx } from "../../student-auth/core";
 
 export type CourseOwnership = { base: boolean; moduleIds: number[] };
 
-export async function getCourseOwnership(studentId: number | undefined, courseId: number): Promise<CourseOwnership> {
+export async function getCourseOwnership(studentId: number | undefined, courseId: number, context?: AuthTx): Promise<CourseOwnership> {
     if (studentId === undefined) return { base: false, moduleIds: [] };
-    const payload = await getPayload({ config });
-    const { rows } = await (payload.db as unknown as PostgresAdapter).drizzle.execute<{ module_id: number | null }>(sql`
+    const db = context?.tx ?? ((await getPayload({ config })).db as unknown as PostgresAdapter).drizzle;
+    const { rows } = await db.execute<{ module_id: number | null }>(sql`
         SELECT module_id FROM course_entitlements
         WHERE student_id = ${studentId} AND course_id = ${courseId} AND status = 'active'
     `);
