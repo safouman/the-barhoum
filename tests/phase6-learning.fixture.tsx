@@ -78,5 +78,5 @@ export default async function LearningFixture({ searchParams }: { searchParams: 
     nextLesson: { lessonId: 3, title: lessons[2].title, href: path("pdf") },
   } : null;
 
-  return <LessonExperience detail={{ course, lesson, curriculum, blocks }} signedIn={signedIn} progress={lessonProgress} />;
+  return <LessonExperience detail={{ course, lesson, curriculum, blocks }} progress={lessonProgress} />;
 }

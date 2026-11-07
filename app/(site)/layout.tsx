@@ -8,9 +8,10 @@ import { Inter, Noto_Naskh_Arabic } from "next/font/google";
 import "../../styles/globals.css";
 import { LocaleProvider } from "@/providers/locale-provider";
 import { AnalyticsProvider } from "@/providers/analytics-provider";
-import { SiteHeader } from "@/components/SiteHeader";
+import { LocalizedSiteHeader } from "@/components/SiteHeader";
+import { readHeaderSignedIn } from "@/components/SiteHeaderSession";
 import { Footer } from "@/components/Footer";
-import { getSiteConfig, getUiStrings, type UIStrings } from "@/lib/content";
+import { getSiteConfig } from "@/lib/content";
 import { getDirection } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/i18n.server";
 import { getDefaultMetadata, siteUrl } from "@/lib/seo";
@@ -78,14 +79,6 @@ const fontStyleVariables = {
     ...(primaryNotoFont ? { "--font-noto-primary": primaryNotoFont } : {}),
 };
 
-async function loadUi(): Promise<Record<"ar" | "en", UIStrings>> {
-    const [ar, en] = await Promise.all([
-        getUiStrings("ar"),
-        getUiStrings("en"),
-    ]);
-    return { ar, en };
-}
-
 export const metadata = getDefaultMetadata();
 
 export default async function RootLayout({
@@ -95,7 +88,7 @@ export default async function RootLayout({
 }) {
     const locale = await resolveLocale();
     const direction = getDirection(locale);
-    const [ui, site] = await Promise.all([loadUi(), getSiteConfig()]);
+    const [site, signedIn] = await Promise.all([getSiteConfig(), readHeaderSignedIn()]);
     const fontClass = `${inter.variable} ${notoNaskhArabic.variable}`;
     const brand = seoConfig.brand;
     const sameAs = brand.socials;
@@ -221,7 +214,7 @@ export default async function RootLayout({
                 </Script>
                 <LocaleProvider initialLocale={locale}>
                     <AnalyticsProvider>
-                        <SiteHeader ui={ui} site={site} />
+                        <LocalizedSiteHeader site={site} signedIn={signedIn} />
                         <main>{children}</main>
                         <Footer site={site} />
                     </AnalyticsProvider>

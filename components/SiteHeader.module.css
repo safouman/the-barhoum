@@ -1,93 +1,105 @@
 .header {
-    top: 0;
-    z-index: 50;
-    inset-inline: 0;
-    height: 4rem;
-    overflow: visible;
-}
-
-.chrome {
     position: relative;
-    background: transparent;
-    transition: background 200ms ease-out, border-color 200ms ease-out,
-        box-shadow 200ms ease-out;
+    z-index: 50;
+    height: 4rem;
+    background: var(--color-background, #fff);
 }
 
-.scrolled .chrome {
-    background: rgba(255, 255, 255, 0.65);
-    -webkit-backdrop-filter: saturate(1.05) blur(6px);
-    backdrop-filter: saturate(1.05) blur(6px);
-    border-bottom: 1px solid rgba(42, 214, 202, 0.12);
-}
-
-/* Soft wave at the footer of the header */
-.wave {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -12px; /* overlap content by ~12px */
-    height: 12px; /* amplitude ~10–12px at top */
-    pointer-events: none;
-    transition: height 200ms ease-out, bottom 200ms ease-out;
-    /* Soft fade at the bottom so it melts into the page */
-    -webkit-mask-image: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 1) 0%,
-        rgba(0, 0, 0, 0) 100%
-    );
-    mask-image: linear-gradient(
-        to bottom,
-        rgba(0, 0, 0, 1) 0%,
-        rgba(0, 0, 0, 0) 100%
-    );
-}
-
-.wave svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-.wave path {
-    /* Light tint so the wave remains visible on white pages */
-    fill: #f5f7f7;
-    transition: fill 200ms ease-out;
-}
-
-/* Gentle grey→white gradient overlay, keeps the look premium and subtle */
-.wave::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to bottom, #f5f7f7 0%, #ffffff 70%);
-    pointer-events: none;
-}
-
-.scrolled .wave {
-    height: 6px; /* reduce amplitude ~50% when scrolled */
-    bottom: -6px;
-}
-
-/* Nav link pill for active state */
-.nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
+.brand {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    flex: none;
     align-items: center;
+    margin-inline-end: auto;
+    transform: translateY(12px);
 }
 
+.toggle,
 .link {
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    transition: background 200ms ease-out, color 200ms ease-out;
+    display: inline-flex;
+    min-height: 2.75rem;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    color: #12685f;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.4;
+    text-underline-offset: 0.25em;
 }
 
-.link:hover {
-    background: rgba(42, 214, 202, 0.1);
-    color: var(--color-primary);
+.toggle {
+    border: 1px solid #ccdcd8;
 }
 
-.active {
-    background: rgba(42, 214, 202, 0.18);
-    color: var(--color-primary);
+.link:hover,
+.link[aria-current] {
+    background: #e9f4f1;
+    text-decoration: underline;
+}
+
+.brand:focus-visible,
+.toggle:focus-visible,
+.link:focus-visible {
+    outline: 2px solid #12685f;
+    outline-offset: 2px;
+}
+
+.navigation {
+    position: absolute;
+    z-index: 2;
+    inset: 100% 0 auto;
+    display: none;
+    border-bottom: 1px solid #ccdcd8;
+    padding: 0.75rem 1rem;
+    background: #fff;
+    box-shadow: 0 8px 12px rgb(20 49 46 / 10%);
+}
+
+.navigation[data-open="true"] {
+    display: block;
+}
+
+.links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.links .link {
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .header {
+        background: rgb(255 255 255 / 70%);
+        backdrop-filter: blur(8px);
+    }
+
+    .brand {
+        transform: translateY(18px);
+    }
+
+    .toggle {
+        display: none;
+    }
+
+    .navigation,
+    .navigation[data-open="true"] {
+        position: static;
+        display: block;
+        border: 0;
+        padding: 0;
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .links {
+        flex-direction: row;
+    }
 }

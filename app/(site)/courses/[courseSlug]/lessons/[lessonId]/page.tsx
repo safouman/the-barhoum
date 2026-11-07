@@ -22,5 +22,5 @@ export default async function LessonPage({
   const progress = !demo && student && detail.lesson.access !== "locked"
     ? await readLessonProgress(student.id, courseSlug, Number(lessonId))
     : null;
-  return <LessonExperience detail={detail} progress={progress} signedIn={Boolean(student)} />;
+  return <LessonExperience detail={detail} progress={progress} />;
 }

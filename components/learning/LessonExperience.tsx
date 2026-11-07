@@ -5,17 +5,15 @@ import type { LessonDetail } from "@/lib/learning/contracts";
 import type { LessonProgressView } from "@/lib/learning/progress-contract";
 import { CurriculumList, LessonAccessBadge } from "./CurriculumList";
 import { LearningIcon } from "./LearningIcon";
-import { LearningNavigation } from "./LearningNavigation";
 import { LessonBlocks } from "./LessonBlocks";
 import { LessonCompletion } from "./LessonCompletion";
 import { progressEndpoint } from "./progress-endpoint";
 import { ProgressMeter } from "./ProgressMeter";
 import { lessonHref, orderedLessons } from "./curriculum";
 
-export function LessonExperience({ detail, progress, signedIn }: {
+export function LessonExperience({ detail, progress }: {
   detail: LessonDetail;
   progress?: LessonProgressView | null;
-  signedIn?: boolean;
 }) {
   const { course, curriculum, lesson } = detail;
   const lessons = orderedLessons(curriculum);
@@ -42,7 +40,6 @@ export function LessonExperience({ detail, progress, signedIn }: {
       <Container className="grid items-start gap-7 py-6 sm:py-9 lg:grid-cols-[minmax(0,1fr)_minmax(17rem,0.44fr)] lg:gap-10">
         <div className="min-w-0 space-y-6">
           <header className="space-y-3">
-            <LearningNavigation signedIn={signedIn} />
             <Link href={courseHref} className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-[#12685f] hover:underline">
               <LearningIcon name="left" />
               {course.title}

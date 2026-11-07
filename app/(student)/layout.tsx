@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { StudentFrame } from "@/components/learning/StudentFrame";
-import { readStudentSession } from "@/lib/student-auth/session";
+import { readHeaderSignedIn } from "@/components/SiteHeaderSession";
+import { getSiteConfig } from "@/lib/content";
 import "../../styles/globals.css";
 
 const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-inter", display: "swap" });
@@ -14,6 +15,6 @@ export const metadata: Metadata = {
 };
 
 export default async function StudentLayout({ children }: { children: React.ReactNode }) {
-  const student = await readStudentSession();
-  return <StudentFrame signedIn={Boolean(student)} fontClassName={inter.variable}>{children}</StudentFrame>;
+  const [site, signedIn] = await Promise.all([getSiteConfig(), readHeaderSignedIn()]);
+  return <StudentFrame signedIn={signedIn} brandLabel={site.brand.header.en} fontClassName={inter.variable}>{children}</StudentFrame>;
 }
