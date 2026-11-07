@@ -97,16 +97,22 @@ try {
           const emit = (event, seconds) => send({ event, data: { seconds, duration: 150 } });
           let played = false;
           function playPractice() {
-            const start = Number(location.hash.match(/^#t=([0-9]+)s$/)?.[1] ?? 0);
-            emit("play", played ? 42 : start);
-            emit("pause", played ? 42 : start + 1);
+            if (played) emit("pause", 42);
+            else {
+              emit("play", 0);
+              emit("playing", 0);
+            }
             played = true;
           }
           addEventListener("message", event => {
             const data = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
             if (data.method === "addEventListener" && data.value === "pause") document.querySelector("button").disabled = false;
             if (data.method === "getDuration") send({ method: "getDuration", value: 150 });
-            else send({ method: data.method, value: data.value });
+            else if (data.method === "getPaused") send({ method: "getPaused", value: true });
+            else if (data.method === "setCurrentTime") {
+              send({ method: "setCurrentTime", value: data.value });
+              emit("pause", data.value + 1);
+            } else send({ method: data.method, value: data.value });
           });
         </script>` }));
     }
@@ -153,6 +159,7 @@ try {
       assert.equal(await play.evaluate(() => location.hash), "#t=32s");
       await play.click({ timeout: 8_000 });
       await conflict;
+      assert.equal(writes.find(({ action }) => action === "resume")?.data.seconds, 33);
       const nextSave = page.waitForResponse((response) => response.url().endsWith("/resume") && response.ok());
       await page.frameLocator("iframe").getByRole("button", { name: "Play practice video" }).click();
       await nextSave;

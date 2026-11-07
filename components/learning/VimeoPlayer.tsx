@@ -13,6 +13,13 @@ function timeLabel(seconds: number) {
   return `${Math.floor(whole / 60)}:${String(whole % 60).padStart(2, "0")}`;
 }
 
+function resumeUrl(url: string, seconds: number) {
+  const startUrl = new URL(url);
+  startUrl.searchParams.set("autoplay", "1");
+  startUrl.hash = `t=${Math.floor(seconds)}s`;
+  return startUrl.href;
+}
+
 export function VimeoResumePlayer({ title, url, endpoint, videoId, initial }: {
   title: string;
   url: string;
@@ -23,7 +30,9 @@ export function VimeoResumePlayer({ title, url, endpoint, videoId, initial }: {
   const iframe = useRef<HTMLIFrameElement>(null);
   const initialResume = useRef(initial);
   const [resumeAt, setResumeAt] = useState<number | null>(null);
-  const [resumedUrl, setResumedUrl] = useState<string | null>(null);
+  const [requestedTime, setRequestedTime] = useState<number | null>(null);
+  const [resumeError, setResumeError] = useState(false);
+  const resumedUrl = requestedTime === null ? null : resumeUrl(url, requestedTime);
 
   useEffect(() => {
     const frame = iframe.current;
@@ -40,6 +49,7 @@ export function VimeoResumePlayer({ title, url, endpoint, videoId, initial }: {
     let queued = false;
     let writable = true;
     let lastAttemptAt = Date.now();
+    let pendingSeek = requestedTime;
 
     async function save(force: boolean) {
       if (!writable || observed === null || observed === conflictedPosition || Math.abs(observed - saved) < (force ? 1 : 4)) return;
@@ -85,7 +95,7 @@ export function VimeoResumePlayer({ title, url, endpoint, videoId, initial }: {
 
     function observe(timing: Timing, force = false) {
       if (!Number.isFinite(timing.seconds) || timing.seconds < 0 || !Number.isFinite(timing.duration) || timing.duration <= 0) return;
-      if (!played && saved > 0 && timing.seconds === 0) return;
+      if (pendingSeek !== null || (!played && saved > 0 && timing.seconds === 0)) return;
       observed = nearEnd(timing) ? 0 : Math.min(Math.floor(timing.seconds), 86_400);
       void save(force);
     }
@@ -93,7 +103,26 @@ export function VimeoResumePlayer({ title, url, endpoint, videoId, initial }: {
     void import("@vimeo/player").then(async ({ default: Player }) => {
       if (!active) return;
       const player = new Player(frame);
+      let seeking = false;
+      async function confirmStart() {
+        const target = pendingSeek;
+        if (target === null || seeking) return;
+        seeking = true;
+        try {
+          // Some embeds ignore the initial timecode. Seek after playback starts.
+          const actual = await player.setCurrentTime(target);
+          if (!Number.isFinite(actual) || Math.abs(actual - target) > 2) throw new Error("Vimeo seek did not reach the saved position");
+          pendingSeek = null;
+          if (active) setResumeError(false);
+        } catch {
+          if (active) setResumeError(true);
+        } finally {
+          seeking = false;
+        }
+      }
+
       const events = {
+        playing: () => void confirmStart(),
         timeupdate: (timing: Timing) => observe(timing),
         pause: (timing: Timing) => observe(timing, true),
         ended: (timing: Timing) => observe(timing, true),
@@ -102,17 +131,22 @@ export function VimeoResumePlayer({ title, url, endpoint, videoId, initial }: {
           setResumeAt(null);
         },
       };
+      player.on("playing", events.playing);
       player.on("timeupdate", events.timeupdate);
       player.on("pause", events.pause);
       player.on("ended", events.ended);
       player.on("play", events.play);
       listeners.push(() => {
+        player.off("playing", events.playing);
         player.off("timeupdate", events.timeupdate);
         player.off("pause", events.pause);
         player.off("ended", events.ended);
         player.off("play", events.play);
       });
-      if (resumedUrl) return;
+      if (requestedTime !== null) {
+        if (!(await player.getPaused()) && active) void confirmStart();
+        return;
+      }
       const duration = await player.getDuration();
       if (!active) return;
       if (!played && observed === null && Number.isFinite(duration) && saved >= 2 && saved < duration && !nearEnd({ seconds: saved, duration })) {
@@ -131,21 +165,18 @@ export function VimeoResumePlayer({ title, url, endpoint, videoId, initial }: {
       document.removeEventListener("visibilitychange", visibility);
       window.removeEventListener("pagehide", flush);
     };
-  }, [endpoint, resumedUrl, videoId]);
+  }, [endpoint, requestedTime, videoId]);
 
   function resume() {
     if (resumeAt === null) return;
-    const startUrl = new URL(url);
-    startUrl.searchParams.set("autoplay", "1");
-    // Vimeo reads the timecode when the embed loads, even if autoplay is blocked.
-    startUrl.hash = `t=${Math.floor(resumeAt)}s`;
-    setResumedUrl(startUrl.href);
+    setRequestedTime(resumeAt);
     setResumeAt(null);
   }
 
   return (
     <div className="space-y-2">
       <VimeoEmbed key={resumedUrl ?? url} title={title} url={resumedUrl ?? url} frameRef={iframe} autoplay={resumedUrl !== null} />
+      {resumeError ? <p role="status" className="text-sm">Couldn’t jump to {timeLabel(requestedTime ?? 0)}. Pause and play to retry, or use the video timeline.</p> : null}
       {resumeAt !== null ? (
         <button type="button" onClick={resume} className="inline-flex min-h-11 items-center rounded-full border border-[#12685f] px-4 py-2 text-sm font-semibold text-[#12685f] hover:bg-[#e4f8f5]">
           Resume at {timeLabel(resumeAt)}
