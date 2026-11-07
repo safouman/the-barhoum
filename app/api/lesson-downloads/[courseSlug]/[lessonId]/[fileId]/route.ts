@@ -2,6 +2,7 @@ import config from "@payload-config";
 import { getPayload } from "payload";
 import { getPublishedLesson, lessonDownloadBase } from "@/lib/learning/payload-reader";
 import { readLessonPDF } from "@/lib/learning/lesson-file-storage";
+import { readStudentSession } from "@/lib/student-auth/session";
 
 const noStore = { "Cache-Control": "private, no-store" };
 const missing = () => new Response("File not found.", { status: 404, headers: noStore });
@@ -9,7 +10,8 @@ const missing = () => new Response("File not found.", { status: 404, headers: no
 export async function GET(_request: Request, context: RouteContext<"/api/lesson-downloads/[courseSlug]/[lessonId]/[fileId]">) {
     const { courseSlug, lessonId, fileId } = await context.params;
     if (!/^[1-9]\d{0,9}$/.test(fileId) || Number(fileId) > 2147483647) return missing();
-    const detail = await getPublishedLesson(courseSlug, lessonId);
+    const student = await readStudentSession();
+    const detail = await getPublishedLesson(courseSlug, lessonId, student?.id);
     const url = `${lessonDownloadBase(courseSlug, lessonId)}/${fileId}`;
     const download = detail?.blocks?.some((block) => block.type === "resources"
         && block.items.some((item) => item.kind === "download" && item.url === url));

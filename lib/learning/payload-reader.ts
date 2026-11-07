@@ -1,5 +1,6 @@
 import "server-only";
 import config from "@payload-config";
+import { sql, type PostgresAdapter } from "@payloadcms/db-postgres";
 import { convertLexicalToMarkdown, editorConfigFactory } from "@payloadcms/richtext-lexical";
 import { getPayload } from "payload";
 
@@ -14,6 +15,7 @@ import type {
     ModulePlacement,
 } from "./contracts";
 import { vimeoEmbedURL } from "./vimeo";
+import { getCourseOwnership, lessonAccess } from "./entitlements";
 
 function relationID(relation: number | { id: number } | null | undefined): number | undefined {
     return typeof relation === "number" ? relation : relation?.id;
@@ -43,11 +45,12 @@ function courseSummary(course: Pick<Course, "slug" | "title" | "description" | "
     };
 }
 
-export async function listPublishedCourses() {
+export async function listPublishedCourses(courseIds?: number[]) {
+    if (courseIds?.length === 0) return [];
     const payload = await getPayload({ config });
     const { docs } = await payload.find({
         collection: "courses",
-        where: { _status: { equals: "published" } },
+        where: { _status: { equals: "published" }, ...(courseIds ? { id: { in: courseIds } } : {}) },
         draft: false,
         depth: 1,
         limit: 0,
@@ -66,7 +69,7 @@ export async function listPublishedCourses() {
 type ModuleRow = NonNullable<Course["modules"]>[number];
 type LessonRow = NonNullable<Course["lessons"]>[number];
 
-async function readCourse(slug: string): Promise<{ course: Course; curriculum: Curriculum } | null> {
+async function readCourse(slug: string, studentId?: number): Promise<{ course: Course; curriculum: Curriculum } | null> {
     const payload = await getPayload({ config });
     const { docs: [course] } = await payload.find({
         collection: "courses",
@@ -99,21 +102,19 @@ async function readCourse(slug: string): Promise<{ course: Course; curriculum: C
         select: { title: true, description: true, freePreview: true },
     }) : { docs: [] };
 
-    const summaries = new Map<number, LessonSummary>(docs.map((lesson) => [
-        lesson.id,
-        {
-            id: String(lesson.id),
-            title: lesson.title ?? "",
-            description: lesson.freePreview ? lesson.description ?? undefined : undefined,
-            access: lesson.freePreview ? "free" : "locked",
-        },
-    ]));
+    const ownership = await getCourseOwnership(studentId, course.id);
+    const summaries = new Map(docs.map((lesson) => [lesson.id, lesson]));
 
-    function projectLessons(rows: LessonRow[]): LessonSummary[] {
+    function projectLessons(rows: LessonRow[], premiumModuleId?: number): LessonSummary[] {
         return rows.flatMap((row) => {
             const id = relationID(row.lesson);
             const summary = id === undefined ? undefined : summaries.get(id);
-            return summary ? [summary] : [];
+            if (!summary) return [];
+            const access = lessonAccess(summary.freePreview, ownership, premiumModuleId);
+            return [{
+                id: String(summary.id), title: summary.title ?? "", access,
+                description: access === "locked" ? undefined : summary.description ?? undefined,
+            }];
         });
     }
 
@@ -127,7 +128,7 @@ async function readCourse(slug: string): Promise<{ course: Course; curriculum: C
                 id: String(placedModule.id),
                 title: placedModule.title,
                 classification: placedModule.classification,
-                lessons: projectLessons(row.lessons ?? []),
+                lessons: projectLessons(row.lessons ?? [], placedModule.classification === "premium" ? placedModule.id : undefined),
             }];
         });
     }
@@ -152,12 +153,13 @@ async function readCourse(slug: string): Promise<{ course: Course; curriculum: C
     }
 }
 
-export async function getPublishedCourse(slug: string): Promise<CourseDetail | null> {
-    const result = await readCourse(slug);
+export async function getPublishedCourse(slug: string, studentId?: number): Promise<(CourseDetail & { id: number }) | null> {
+    const result = await readCourse(slug, studentId);
     if (!result) return null;
     const { course, curriculum } = result;
     return {
         ...courseSummary(course),
+        id: course.id,
         estimatedDuration: course.estimatedDuration ?? undefined,
         learningOutcomes: course.learningOutcomes?.map(({ outcome }) => outcome),
         difficulty: course.difficulty ?? undefined,
@@ -170,6 +172,8 @@ function projectBlocks(
     blocks: NonNullable<Lesson["content"]>,
     editorConfig: Awaited<ReturnType<typeof editorConfigFactory.default>>,
     downloadBase: string,
+    freePreview: boolean,
+    paidFiles: ReadonlySet<number>,
 ): LessonBlock[] {
     return blocks.map((block, index) => {
         const id = block.id ?? String(index);
@@ -192,9 +196,9 @@ function projectBlocks(
                     items: block.items.flatMap<{ kind: "link" | "download"; label: string; url: string }>((item) => {
                         if (item.blockType === "download") {
                             const fileID = relationID(item.file);
-                            return fileID === undefined ? [] : [{ kind: "download", label: item.label, url: `${downloadBase}/${fileID}` }];
+                            return fileID === undefined || paidFiles.has(fileID) ? [] : [{ kind: "download", label: item.label, url: `${downloadBase}/${fileID}` }];
                         }
-                        if (item.blockType !== "link" || !/^https?:\/\//i.test(item.url)) return [];
+                        if (!freePreview || item.blockType !== "link" || !/^https?:\/\//i.test(item.url)) return [];
                         return [{ kind: "link", label: item.label, url: item.url }];
                     }),
                 };
@@ -202,8 +206,23 @@ function projectBlocks(
     });
 }
 
-export async function getPublishedLesson(slug: string, lessonID: string): Promise<LessonDetail | null> {
-    const result = await readCourse(slug);
+async function paidDownloadIds(db: PostgresAdapter, blocks: NonNullable<Lesson["content"]>) {
+    const ids = blocks.flatMap((block) => block.blockType === "resources"
+        ? block.items.flatMap((item) => item.blockType === "download" ? [relationID(item.file)] : [])
+        : []).filter((id): id is number => id !== undefined);
+    if (!ids.length) return new Set<number>();
+    const { rows } = await db.drizzle.execute<{ file_id: number }>(sql`
+        SELECT DISTINCT download.file_id
+        FROM lessons_blocks_download download
+        JOIN lessons lesson ON lesson.id = download._parent_id
+        WHERE download.file_id IN (${sql.join(ids.map((id) => sql`${id}`), sql`, `)})
+          AND lesson._status = 'published' AND lesson.free_preview IS NOT TRUE
+    `);
+    return new Set(rows.map(({ file_id }) => file_id));
+}
+
+export async function getPublishedLesson(slug: string, lessonID: string, studentId?: number): Promise<LessonDetail | null> {
+    const result = await readCourse(slug, studentId);
     if (!result) return null;
     const { course, curriculum } = result;
     const modules = curriculum.type === "structured"
@@ -214,7 +233,7 @@ export async function getPublishedLesson(slug: string, lessonID: string): Promis
     if (!lesson) return null;
 
     const detail = { course: { slug: course.slug, title: course.title }, curriculum, lesson };
-    if (lesson.access !== "free") return detail;
+    if (lesson.access === "locked") return detail;
 
     const payload = await getPayload({ config });
     const { docs: [published] } = await payload.find({
@@ -223,7 +242,7 @@ export async function getPublishedLesson(slug: string, lessonID: string): Promis
             id: { equals: Number(lessonID) },
             course: { equals: course.id },
             _status: { equals: "published" },
-            freePreview: { equals: true },
+            ...(lesson.access === "free" ? { freePreview: { equals: true } } : {}),
         },
         draft: false,
         depth: 0,
@@ -231,8 +250,11 @@ export async function getPublishedLesson(slug: string, lessonID: string): Promis
         select: { content: true },
     });
     if (!published) return null;
+    const blocks = published.content ?? [];
+    const isFree = lesson.access === "free";
+    const paidFiles = isFree ? await paidDownloadIds(payload.db as unknown as PostgresAdapter, blocks) : new Set<number>();
     const editorConfig = await editorConfigFactory.default({ config: payload.config });
-    return { ...detail, blocks: projectBlocks(published.content ?? [], editorConfig, lessonDownloadBase(slug, lessonID)) };
+    return { ...detail, blocks: projectBlocks(blocks, editorConfig, lessonDownloadBase(slug, lessonID), isFree, paidFiles) };
 }
 
 export function lessonDownloadBase(slug: string, lessonID: string) {
