@@ -42,4 +42,4 @@ for attempt in {1..25}; do
     if ! kill -0 "$server_pid" 2>/dev/null; then echo "The isolated test server failed to start." >&2; exit 1; fi
     sleep 0.25
 done
-node tests/student-auth/integration.mjs
+STUDENT_TEST_SERVER_LOG="$test_dir/server.log" node tests/student-auth/integration.mjs

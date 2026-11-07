@@ -32,7 +32,7 @@
     "@payloadcms/storage-vercel-blob": "3.93.0",
     "@vercel/analytics": "^1.5.0",
     "@vercel/blob": "2.6.1",
-    "@vercel/oidc": "3.8.10",
+    "@vercel/oidc": "4.0.7",
     "@vimeo/player": "2.30.4",
     "classnames": "^2.5.1",
     "graphql": "16.15.0",
@@ -45,7 +45,7 @@
     "react-dom": "19.3.1",
     "react-markdown": "^9.1.0",
     "stripe": "^19.1.0",
-    "zod": "^4.1.9"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/node": "^24.5.1",
@@ -66,5 +66,25 @@
   },
   "engines": {
     "node": "24.x"
+  },
+  "overrides": {
+    "@vercel/blob": {
+      "@vercel/oidc": "$@vercel/oidc"
+    },
+    "@lexical/headless": {
+      "happy-dom": "21.0.4"
+    },
+    "monaco-editor": {
+      "dompurify": "3.4.17"
+    },
+    "browserslist": "4.29.5",
+    "picomatch@2": "2.3.2",
+    "picomatch@4": "4.0.4",
+    "preact@10": "10.27.3",
+    "source-map-js": "1.2.2",
+    "brace-expansion@1": "1.1.21",
+    "brace-expansion@2": "2.1.7",
+    "glob@10": "10.5.0",
+    "minimatch@9": "9.0.9"
   }
 }

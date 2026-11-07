@@ -4,7 +4,9 @@
 // and STUDENT_AUTH_EMAIL_ALLOWLIST set to the test inboxes listed below.
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { createHash, randomBytes } from "node:crypto";
+import { createHash, pbkdf2Sync, randomBytes } from "node:crypto";
+
+import pg from "pg";
 
 const base = process.env.STUDENT_AUTH_ORIGIN;
 const mailbox = process.env.STUDENT_TEST_MAILBOX;
@@ -26,7 +28,11 @@ const call = (action, method = "GET", data, cookie, extraHeaders = {}) => fetch(
     headers: { ...(cookie ? { Cookie: cookie } : {}), ...(data === undefined ? {} : { Origin: base, "Content-Type": "application/json" }), ...extraHeaders },
 });
 async function check(result, status) {
-    assert.equal(result.status, status, (await result.clone().text()).slice(0, 500));
+    const body = await result.clone().text();
+    for (const secret of [password, newPassword]) {
+        assert.ok(!body.includes(secret), "Auth response exposed a fixture password");
+    }
+    assert.equal(result.status, status, body.slice(0, 500));
     assert.equal(result.headers.get("cache-control"), "no-store");
     return result;
 }
@@ -63,8 +69,27 @@ const adminRequest = async (route, method = "GET", data, authorization) => fetch
     method, body: data === undefined ? undefined : JSON.stringify(data),
     headers: { ...(data === undefined ? {} : { "Content-Type": "application/json" }), ...(authorization ? { Authorization: authorization } : {}) },
 });
+async function checkStoredPassword(table, email, secret) {
+    const client = new pg.Client({ connectionString: process.env.DATABASE_URL_UNPOOLED });
+    await client.connect();
+    try {
+        const query = table === "admins" ? "SELECT hash, salt FROM admins WHERE email = $1" : "SELECT hash, salt FROM students WHERE email = $1";
+        const { rows } = await client.query(query, [email]);
+        assert.equal(rows.length, 1);
+        const { hash, salt } = rows[0];
+        assert.ok(/^[a-f0-9]{64}$/.test(salt), "Expected a Payload password salt");
+        const match = /^pbkdf2-sha256-(100k-)?v1:([a-f0-9]{64})$/.exec(hash);
+        assert.ok(match, "Expected a Payload PBKDF2-SHA256 hash");
+        const derived = pbkdf2Sync(secret, salt, match[1] ? 100000 : 600000, 32, "sha256").toString("hex");
+        assert.ok(match[2] === derived, "Stored hash does not match the password");
+    } finally {
+        await client.end();
+    }
+}
+
 const firstAdmin = await adminRequest("admins/first-register", "POST", { email: inbox, password });
 assert.ok(firstAdmin.ok);
+await checkStoredPassword("admins", inbox, password);
 const adminLogin = await adminRequest("admins/login", "POST", { email: inbox, password });
 assert.equal(adminLogin.status, 200);
 const admin = "Bearer " + (await adminLogin.json()).token;
@@ -81,6 +106,7 @@ const claims = await Promise.all([
     post("verify", { token: resent, name: "Fixture Student", password }),
 ]);
 assert.deepEqual(claims.map(result => result.status).sort(), [200, 400]);
+await checkStoredPassword("students", inbox, password);
 await check(await post("verify", { token: enrollment, name: "Fixture Student", password }), 400);
 assert.deepEqual(await (await check(await post("register", { email: inbox }), 202)).json(), { ok: true });
 const a = cookie(await check(await login(), 200));
@@ -165,6 +191,7 @@ assert.equal((await fetch(base + "/api/admins", { headers: { Cookie: dualCookie 
 await check(await post("forgot-password", { email: inbox }), 202);
 const recovery = await tokenFor(inbox, "/reset-password");
 await check(await post("reset-password", { token: recovery, password: newPassword }), 200);
+await checkStoredPassword("students", inbox, newPassword);
 await check(await post("reset-password", { token: recovery, password: newPassword }), 400);
 await check(await me(b), 401);
 await check(await login(), 401);
@@ -314,4 +341,10 @@ for (let attempt = 0; attempt < 10; attempt++) {
     await check(await login("rate-limit@example.invalid"), 401);
 }
 await check(await login("RATE-LIMIT@EXAMPLE.INVALID"), 429);
+if (process.env.STUDENT_TEST_SERVER_LOG) {
+    const logs = await readFile(process.env.STUDENT_TEST_SERVER_LOG, "utf8");
+    for (const secret of [password, newPassword]) {
+        assert.ok(!logs.includes(secret), "Server logs exposed a fixture password");
+    }
+}
 console.log("Passed signup, replay, profile, session isolation, password recovery, verified email change, and signed Google/OIDC fixtures.");
