@@ -83,12 +83,11 @@ try {
     const premium = await createAdmin("/api/modules", { title: "Premium", course: course.id, classification: "premium", _status: "published" });
     const updateCourse = data => json("/api/courses/" + course.id, 200, { method: "PATCH", data, admin });
     await updateCourse({ structure: "modular", modules: [{ module: premium.id }], _status: "published" });
-    const offers = (await dbClient.query(`
-        INSERT INTO course_offers (course_id, module_id, enabled, stripe_price_id) VALUES
-        ($1, NULL, true, 'price_FixtureBase'), ($1, $2, true, 'price_FixturePremium')
-        RETURNING id
-    `, [course.id, premium.id])).rows;
-    const [baseOffer, premiumOffer] = offers.map(offer => offer.id);
+    const base = await createAdmin("/api/course-offers", { course: course.id, enabled: true, stripePriceId: "price_FixtureBase" });
+    const upgradeOffer = await createAdmin("/api/course-offers", { course: course.id, module: premium.id, enabled: true, stripePriceId: "price_FixturePremium" });
+    const baseOffer = base.id;
+    const premiumOffer = upgradeOffer.id;
+    await json("/api/course-offers/" + baseOffer, 400, { method: "PATCH", data: { module: premium.id }, admin });
     const orderRoute = id => "/api/course-commerce/orders/" + id;
     const checkout = async (offerId, status = 200, student = cookie, extras) => (await json("/api/course-commerce/checkout", status, {
         method: "POST", data: { offerId, ...extras }, cookie: student,

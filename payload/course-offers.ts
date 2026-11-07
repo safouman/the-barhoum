@@ -14,10 +14,10 @@ export const CourseOffers: CollectionConfig = {
     disableDuplicate: true,
     admin: { useAsTitle: "stripePriceId", defaultColumns: ["course", "module", "enabled", "stripePriceId"] },
     hooks: {
-        beforeChange: [async ({ data, originalDoc, req }) => {
+        beforeChange: [async ({ data, operation, originalDoc, req }) => {
             const course = relationshipID(data.course ?? originalDoc?.course);
             const moduleID = relationshipID(data.module === undefined ? originalDoc?.module : data.module);
-            if (originalDoc && (String(course) !== String(relationshipID(originalDoc.course)) ||
+            if (operation === "update" && originalDoc && (String(course) !== String(relationshipID(originalDoc.course)) ||
                 String(moduleID) !== String(relationshipID(originalDoc.module)))) {
                 invalid("course", "The target is fixed. Disable this offer and create one for the new target.");
             }
