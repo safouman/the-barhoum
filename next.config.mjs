@@ -19,13 +19,20 @@ const nextConfig = {
         value: "public, max-age=31536000, immutable",
       },
     ];
+    const authHeaders = [
+      { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+      { key: "X-Frame-Options", value: "DENY" },
+      { key: "X-Content-Type-Options", value: "nosniff" },
+      { key: "Referrer-Policy", value: "no-referrer" },
+    ];
 
     return [
       ...(process.env.VERCEL_ENV === "preview"
-        ? [{
-            source: "/:path*",
-            headers: [{ key: "X-Robots-Tag", value: "noindex" }],
-          }]
+        ? [
+            { source: "/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex" }] },
+            { source: "/:auth(login|register|forgot-password|reset-password|verify-email|confirm-email|account)", headers: authHeaders },
+            { source: "/admin/:path*", headers: authHeaders },
+          ]
         : []),
       {
         source: "/fonts/:path*",
