@@ -328,15 +328,15 @@ try {
     assert.deepEqual(state().legacyLeads, []);
     await deliver(event("checkout.session.completed", legacySession), { secret: legacySecret, legacy: true });
     assert.deepEqual(state().legacyLeads, ["fixture-legacy"]);
-    const baselineLegacyAnalytics = state().legacyAnalytics;
-    assert.ok(baselineLegacyAnalytics.length && baselineLegacyAnalytics.every(value => value === legacySession.id));
+    // Fixture webhooks have no affirmative analytics consent.
+    assert.deepEqual(state().legacyAnalytics, []);
     await deliver(event("payment_intent.succeeded", currentPaid.intent), { secret: legacySecret, legacy: true });
-    assert.deepEqual(state().legacyAnalytics, baselineLegacyAnalytics);
+    assert.deepEqual(state().legacyAnalytics, []);
     const legacyIntent = { ...currentPaid.intent, id: "pi_LegacyFixture", metadata: {} };
     await deliver(event("payment_intent.succeeded", legacyIntent));
-    assert.deepEqual(state().legacyAnalytics, baselineLegacyAnalytics);
+    assert.deepEqual(state().legacyAnalytics, []);
     await deliver(event("payment_intent.succeeded", legacyIntent), { secret: legacySecret, legacy: true });
-    assert.deepEqual(state().legacyAnalytics, [...baselineLegacyAnalytics, legacyIntent.id]);
+    assert.deepEqual(state().legacyAnalytics, []);
     const technical = await createAdmin("/api/courses?draft=true", {
         title: "Technical catalog fixture", slug: "phase-5-checkout-test", description: "Fixture", cover: cover.id,
     });
