@@ -7,9 +7,9 @@ export function StudentFrame({ children, signedIn, brandLabel, fontClassName }: 
   fontClassName: string;
 }) {
   return (
-    <html lang="en" dir="ltr" className={fontClassName}>
+    <html lang="ar" dir="rtl" className={fontClassName}>
       <body className="min-h-screen bg-[#f2f8f6]">
-        <SiteHeader locale="en" signedIn={signedIn} brandLabel={brandLabel} />
+        <SiteHeader locale="ar" signedIn={signedIn} brandLabel={brandLabel} />
         <main>{children}</main>
       </body>
     </html>

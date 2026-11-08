@@ -4,8 +4,8 @@ export function ProgressMeter({ label, count }: { label: string; count: Progress
   return (
     <div className="min-w-0 space-y-2">
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 text-sm">
-        <span className="font-semibold text-text">{label}</span>
-        <span className="text-subtle">{count.total ? `${count.completed}/${count.total} complete · ${count.percent}%` : "No published lessons yet"}</span>
+        <span className="font-semibold text-text"><bdi>{label}</bdi></span>
+        <span className="text-subtle">{count.total ? <>مكتمل <bdi dir="ltr" className="tabular-nums">{count.completed}/{count.total} · {count.percent}%</bdi></> : "لا توجد دروس منشورة بعد"}</span>
       </div>
       {count.percent !== null ? (
         <div role="progressbar" aria-label={label} aria-valuenow={count.percent} className="h-1.5 overflow-hidden rounded-full bg-[#e1ebe8]">

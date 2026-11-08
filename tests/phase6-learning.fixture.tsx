@@ -1,3 +1,5 @@
+import { CourseCatalogView } from "@/components/learning/CourseCatalogView";
+import { CourseDetailView } from "@/components/learning/CourseDetailView";
 import { LearningLibrary } from "@/components/learning/LearningLibrary";
 import { LessonExperience } from "@/components/learning/LessonExperience";
 import type { Curriculum, LessonBlock, LessonSummary } from "@/lib/learning/contracts";
@@ -5,8 +7,8 @@ import type { CourseProgress, LessonProgressView } from "@/lib/learning/progress
 
 const course = {
   slug: "attention-and-practice",
-  title: "The Art of Paying Attention",
-  description: "Build a calmer, more deliberate relationship with your attention through small, repeatable practices.",
+  title: "من الفكرة إلى العادة · Focus Lab",
+  description: "خطوات عملية لتحويل فكرة صغيرة إلى عادة تدوم. تعلّم كيف تبدأ، وكيف تتابع تقدّمك يومًا بعد يوم.",
   cover: { url: "/images/hero.jpeg", alt: "Barhoum instructor" },
 };
 
@@ -20,12 +22,13 @@ const lessons: LessonSummary[] = [
 ];
 
 const curriculum: Curriculum = {
-  type: "modular",
-  modules: [
+  type: "structured",
+  parts: [{ id: "11", title: "البداية · Foundations", modules: [
     { id: "21", title: "Foundations", classification: "regular", lessons: lessons.slice(0, 4) },
+  ] }, { id: "12", title: "التطبيق", modules: [
     { id: "22", title: "Advanced practice", classification: "premium", lessons: [lessons[5]] },
     { id: "23", title: "The focused mind", classification: "premium", lessons: [lessons[4]] },
-  ],
+  ] }],
 };
 
 const progress: CourseProgress = {
@@ -50,6 +53,13 @@ const path = (view: string) => `/phase-6-lesson-browser-test?view=${view}`;
 
 export default async function LearningFixture({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
   const view = (await searchParams).view ?? "video";
+  const commerce = { offers: [{ id: 1, moduleId: null, amountMinor: 4900, currency: "eur" }], ownership: { base: false, moduleIds: [] }, signedIn: false };
+  if (view === "catalog") return <CourseCatalogView entries={[
+    { course, commerce },
+    { course: { ...course, slug: "steady-habits", title: "Steady Habits" }, commerce: { ...commerce, ownership: { base: true, moduleIds: [] } } },
+    { course: { ...course, slug: "coming-soon", title: "تعلّم بتركيز" }, commerce: { ...commerce, offers: [], comingSoonOffers: [null] } },
+  ]} />;
+  if (view === "detail") return <CourseDetailView course={{ ...course, curriculum }} commerce={commerce} />;
   if (view === "library" || view === "empty") {
     return <LearningLibrary entries={view === "empty" ? [] : [
       {

@@ -26,7 +26,13 @@ export function LessonBlocks({ blocks, endpoint, resumePositions }: {
           case "text":
             return (
               <div key={block.id} className="max-w-[68ch] space-y-4 leading-relaxed text-subtle [&_a]:underline [&_h2]:text-2xl [&_h3]:text-xl [&_ol]:list-decimal [&_ol]:ps-5 [&_ul]:list-disc [&_ul]:ps-5">
-                <Markdown>{block.markdown}</Markdown>
+                <Markdown components={{
+                  p: ({ children }) => <p dir="auto" className="break-words">{children}</p>,
+                  li: ({ children }) => <li dir="auto" className="break-words">{children}</li>,
+                  h2: ({ children }) => <h2 dir="auto">{children}</h2>,
+                  h3: ({ children }) => <h3 dir="auto">{children}</h3>,
+                  a: ({ href, children }) => <a href={href} className="[overflow-wrap:anywhere]"><bdi>{children}</bdi></a>,
+                }}>{block.markdown}</Markdown>
               </div>
             );
           case "video":
@@ -51,14 +57,14 @@ export function LessonBlocks({ blocks, endpoint, resumePositions }: {
                           preload="none"
                           aria-label={video.title}
                         >
-                          Your browser does not support video playback.
+                          متصفّحك لا يدعم تشغيل الفيديو.
                         </video>
                       ) : (
                         <div className="grid aspect-video place-items-center rounded-sm bg-surface p-4 text-center text-sm text-subtle">
-                          Video playback is unavailable.
+                          تشغيل الفيديو غير متاح الآن.
                         </div>
                       )}
-                      <figcaption className="text-xs text-subtle">{video.title}</figcaption>
+                      <figcaption className="text-xs text-subtle"><bdi>{video.title}</bdi></figcaption>
                     </figure>
                   );
                 })}
@@ -67,8 +73,8 @@ export function LessonBlocks({ blocks, endpoint, resumePositions }: {
           case "resources":
             if (!block.items.length) return null;
             return (
-              <section key={block.id} aria-label="Lesson resources" className="rounded-sm border border-border bg-surface p-4 sm:p-5">
-                <h2 className="text-base font-semibold">Resources</h2>
+              <section key={block.id} aria-label="مواد الدرس" className="rounded-sm border border-border bg-surface p-4 sm:p-5">
+                <h2 className="text-base font-semibold">مواد الدرس</h2>
                 <ul className="mt-2 divide-y divide-border" role="list">
                   {block.items.map((item, index) => (
                     <li key={index}>
@@ -78,7 +84,7 @@ export function LessonBlocks({ blocks, endpoint, resumePositions }: {
                         className="flex min-h-11 items-center gap-2 text-sm font-medium text-[#12685f] underline-offset-4 hover:underline"
                       >
                         <LearningIcon name={item.kind === "download" ? "download" : "external"} className="size-4 shrink-0" />
-                        {item.label}
+                        <bdi className="min-w-0 [overflow-wrap:anywhere]">{item.label}</bdi>
                       </a>
                     </li>
                   ))}

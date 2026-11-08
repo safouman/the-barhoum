@@ -176,10 +176,10 @@ export function VimeoResumePlayer({ title, url, endpoint, videoId, initial }: {
   return (
     <div className="space-y-2">
       <VimeoEmbed key={resumedUrl ?? url} title={title} url={resumedUrl ?? url} frameRef={iframe} autoplay={resumedUrl !== null} />
-      {resumeError ? <p role="status" className="text-sm">Couldn’t jump to {timeLabel(requestedTime ?? 0)}. Pause and play to retry, or use the video timeline.</p> : null}
+      {resumeError ? <p role="status" className="text-sm">تعذّر الانتقال إلى <bdi dir="ltr">{timeLabel(requestedTime ?? 0)}</bdi>. أوقف الفيديو مؤقتًا ثم شغّله مجددًا، أو استخدم شريط التقدّم.</p> : null}
       {resumeAt !== null ? (
         <button type="button" onClick={resume} className="inline-flex min-h-11 items-center rounded-full border border-[#12685f] px-4 py-2 text-sm font-semibold text-[#12685f] hover:bg-[#e4f8f5]">
-          Resume at {timeLabel(resumeAt)}
+          تابع من <bdi dir="ltr" className="ms-1 tabular-nums">{timeLabel(resumeAt)}</bdi>
         </button>
       ) : null}
     </div>
