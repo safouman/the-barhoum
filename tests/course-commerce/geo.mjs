@@ -52,9 +52,9 @@ try {
         const before = readFixture().stripeCalls;
         const ordersBefore = await client.query("SELECT count(*) FROM course_orders");
         const blocked = await page(coursePath, { country: "TN" });
-        assert.match(blocked, />Coming soon</);
-        assert.doesNotMatch(blocked, />Sign in to purchase</);
-        assert.match(blocked, /Watch free preview/);
+        assert.match(blocked, />(Coming soon|قريبًا)</);
+        assert.doesNotMatch(blocked, />(Sign in to purchase|سجّل الدخول للشراء)</);
+        assert.match(blocked, /Watch free preview|شاهد الدرس المجاني/);
         assert.match(await page(coursePath + "/lessons/" + freeLesson, { country: "TN" }), /Free checkout fixture/);
 
         const attempt = await checkout("TN", undefined, { "x-country": "FR", "x-forwarded-for": "8.8.8.8" });
@@ -67,18 +67,26 @@ try {
         assert.deepEqual((await client.query("SELECT count(*) FROM course_orders")).rows, ordersBefore.rows);
 
         const owner = await signIn("commerce-one@example.invalid");
-        assert.match(await page(coursePath, { country: "TN", cookie: owner }), /You own this course/);
+        assert.match(await page(coursePath, { country: "TN", cookie: owner }), /You own this course|هذه الدورة ضمن دوراتك/);
         const permitted = await page(coursePath, { country: "FR", cookie: other });
-        assert.match(permitted, />Buy course</);
+        assert.match(permitted, />(Buy course|اشترِ الدورة)</);
+        const catalog = await page("/courses", { country: "FR", cookie: other });
+        assert.match(catalog, /EUR\s*59\.00/);
+        assert.match(permitted, /EUR\s*59\.00/);
+        assert.match(catalog, /Technical catalog fixture/);
+        const ownedCatalog = await page("/courses", { country: "FR", cookie: owner });
+        assert.match(ownedCatalog, /Continue Learning|تابع التعلّم|هذه الدورة ضمن دوراتك|ضمن دوراتك/);
         assert.equal((await checkout("FR")).status, 200);
     } else if (scenario === "preview-override") {
-        assert.match(await page(coursePath, { country: "TN", cookie: other }), />Buy course</);
+        assert.doesNotMatch(await page("/courses", { country: "TN" }), /Technical catalog fixture/);
+        assert.match(await page("/courses/phase-5-checkout-test", { country: "TN" }), /Technical catalog fixture/);
+        assert.match(await page(coursePath, { country: "TN", cookie: other }), />(Buy course|اشترِ الدورة)</);
         assert.equal((await checkout("TN")).status, 200);
     } else {
         const before = readFixture().stripeCalls;
         const disabled = await page(coursePath, { country: "FR" });
-        assert.doesNotMatch(disabled, />Coming soon<|>Sign in to purchase</);
-        assert.match(disabled, /Watch free preview/);
+        assert.doesNotMatch(disabled, />(Coming soon|قريبًا|Sign in to purchase|سجّل الدخول للشراء)</);
+        assert.match(disabled, /Watch free preview|شاهد الدرس المجاني/);
         assert.equal((await checkout("FR")).status, 503);
         assert.equal(readFixture().stripeCalls, before);
 

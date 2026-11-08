@@ -1,44 +1,40 @@
 import type { Metadata } from "next";
-import { Container } from "@/components/Container";
-import { CourseCard } from "@/components/learning/CourseCard";
+import { headers } from "next/headers";
+import { CourseCatalogView } from "@/components/learning/CourseCatalogView";
 import { getDemoCourses } from "@/components/learning/fixtures";
-
+import { purchaseAvailability } from "@/lib/commerce/course-payments/eligibility";
+import { readCourseCommerce } from "@/lib/commerce/course-payments/offers";
 import { listPublishedCourses } from "@/lib/learning/payload-reader";
+import { readStudentSession } from "@/lib/student-auth/session";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Courses",
+  title: "الدورات",
   robots: { index: false, follow: false },
 };
 
-export default async function CoursesPage() {
-  const courses = getDemoCourses() ?? await listPublishedCourses();
+const technicalCourseSlugs = new Set([
+  "preview-simple", "preview-modular", "preview-structured", "test-course", "phase-5-checkout-test",
+]);
 
-  return (
-    <div dir="ltr" lang="en">
-      <section className="border-b border-border bg-[#f2f8f6] py-9 sm:py-12">
-        <Container className="space-y-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#12685f]">Barhoum learning</p>
-          <h1 className="text-display">Courses</h1>
-          <p className="text-lead max-w-[56ch]">
-            Make time for a practice that matters to you. Explore the curriculum and start with a free lesson.
-          </p>
-        </Container>
-      </section>
-      <Container className="py-8 sm:py-10">
-        {courses.length ? (
-          <ul role="list" aria-label="Course catalog" className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {courses.map((course) => (
-              <li key={course.slug} className="min-w-0">
-                <CourseCard course={course} />
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-subtle">No courses are available yet. Check back soon.</p>
-        )}
-      </Container>
-    </div>
-  );
+export default async function CoursesPage() {
+  const demo = getDemoCourses();
+  if (demo) return <CourseCatalogView entries={demo.map((course) => ({ course }))} />;
+
+  const [courses, student, requestHeaders] = await Promise.all([
+    listPublishedCourses(),
+    readStudentSession(),
+    headers(),
+  ]);
+  const hideTechnicalCourses = process.env.VERCEL_ENV === "preview" ||
+    process.env.VERCEL_ENV === "development" || (process.env.NODE_ENV === "development" && !process.env.VERCEL_ENV);
+  const availability = purchaseAvailability(requestHeaders);
+  const entries = await Promise.all(courses
+    .filter(({ slug }) => !hideTechnicalCourses || !technicalCourseSlugs.has(slug))
+    .map(async (course) => ({
+      course,
+      commerce: await readCourseCommerce(course.id, student?.id, availability, "catalog"),
+    })));
+  return <CourseCatalogView entries={entries} />;
 }

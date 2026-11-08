@@ -337,6 +337,15 @@ try {
     assert.deepEqual(state().legacyAnalytics, baselineLegacyAnalytics);
     await deliver(event("payment_intent.succeeded", legacyIntent), { secret: legacySecret, legacy: true });
     assert.deepEqual(state().legacyAnalytics, [...baselineLegacyAnalytics, legacyIntent.id]);
+    const technical = await createAdmin("/api/courses?draft=true", {
+        title: "Technical catalog fixture", slug: "phase-5-checkout-test", description: "Fixture", cover: cover.id,
+    });
+    const technicalLesson = await createAdmin("/api/lessons", {
+        title: "Technical preview", course: technical.id, freePreview: true, _status: "published",
+    });
+    await json("/api/courses/" + technical.id, 200, {
+        method: "PATCH", data: { structure: "simple", lessons: [{ lesson: technicalLesson.id }], _status: "published" }, admin,
+    });
     edit(store => { store.baseOffer = baseOffer; });
     console.log("Passed checkout reservation, isolated webhooks, scheduled payment/refund/dispute recovery, durable pagination, concurrent claims, retry backoff, alert deduplication, and repurchase.");
 } finally {

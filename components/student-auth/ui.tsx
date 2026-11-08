@@ -39,10 +39,10 @@ export function Field({ label, hint, id, ...props }: ComponentProps<"input"> & {
   );
 }
 
-export function Submit({ busy, children }: { busy: boolean; children: ReactNode }) {
+export function Submit({ busy, children, busyLabel = "Please wait…" }: { busy: boolean; children: ReactNode; busyLabel?: string }) {
   return (
     <Button type="submit" disabled={busy} fullWidth className="min-h-12 !text-[#14312e] disabled:cursor-wait disabled:opacity-60">
-      {busy ? "Please wait…" : children}
+      {busy ? busyLabel : children}
     </Button>
   );
 }

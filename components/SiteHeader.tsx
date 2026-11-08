@@ -13,8 +13,8 @@ import type { Locale, SiteConfig } from "@/lib/content";
 import styles from "./SiteHeader.module.css";
 
 const labels = {
-    en: { primary: "Primary", menu: "Menu", courses: "Courses", login: "Sign in", register: "Register", library: "My Learning", account: "Account" },
-    ar: { primary: "التنقل الرئيسي", menu: "القائمة", courses: "الدورات", login: "تسجيل الدخول", register: "إنشاء حساب", library: "دوراتي", account: "حسابي" },
+    en: { primary: "Primary", menu: "Menu", courses: "Courses", entry: "Sign in / Register", library: "My Learning", account: "Account" },
+    ar: { primary: "التنقل الرئيسي", menu: "القائمة", courses: "الدورات", entry: "دخول / تسجيل", library: "دروسي", account: "حسابي" },
 };
 
 type HeaderProps = {
@@ -43,7 +43,11 @@ export function SiteHeader(props: HeaderProps) {
     const pathname = usePathname();
     const search = useSearchParams();
     const orderId = pathname === "/checkout/return" ? search.get("orderId") : null;
-    const returnTo = safeReturnTo(orderId ? pathname + "?orderId=" + orderId : pathname.startsWith("/courses") ? pathname : null, "");
+    const authEntry = pathname === "/login" || pathname === "/register";
+    const destination = authEntry
+        ? search.get("returnTo")
+        : orderId ? pathname + "?orderId=" + orderId : pathname.startsWith("/courses") ? pathname : null;
+    const returnTo = safeReturnTo(destination, "");
     // Reset the disclosure on history navigation as well as link activation.
     return <Header key={pathname} {...props} pathname={pathname} returnTo={returnTo} />;
 }
@@ -58,7 +62,7 @@ function Header({ brandLabel, signedIn, locale, languageSwitch, pathname, return
         { href: "/courses", label: text.courses },
         ...(signedIn
             ? [{ href: "/my-learning", label: text.library }, { href: "/account", label: text.account }]
-            : [{ href: "/login", label: text.login }, { href: "/register", label: text.register }]),
+            : [{ href: "/login", label: text.entry }]),
     ];
 
     function closeMenu(restoreFocus = false) {
@@ -105,11 +109,11 @@ function Header({ brandLabel, signedIn, locale, languageSwitch, pathname, return
                     <ul className={styles.links}>
                         {links.map(({ href, label }) => {
                             const current = pathname === href;
-                            const active = current || pathname.startsWith(href + "/");
+                            const active = current || pathname.startsWith(href + "/") || (href === "/login" && pathname === "/register");
 
                             return <li key={href}>
                                 <Link
-                                    href={href === "/login" || href === "/register" ? href + authQuery : href}
+                                    href={href === "/login" ? href + authQuery : href}
                                     aria-current={current ? "page" : active ? "location" : undefined}
                                     className={styles.link}
                                     onClick={() => closeMenu(current && open)}

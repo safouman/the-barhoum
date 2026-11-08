@@ -45,7 +45,7 @@ export function StudentAccount({ status }: { status?: string }) {
       <ProfileForm student={student} onSave={(updated) => setSession({ ok: true, data: { student: updated } })} />
       <EmailChangeForm student={student} />
       <LoginMethods student={student} status={status} />
-      <SignOut />
+      <SignOut locale="ar" />
     </div>
   );
 }
