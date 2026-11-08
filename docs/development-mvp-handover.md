@@ -1,0 +1,10 @@
+# Barhoum Development MVP handover
+
+The owner accepted the core Development MVP as functionally complete. The verified public-feedback Preview at dev.ibrahimbenabdallah.com runs 54b567a. Preview access is intentionally public; account authorization, paid lesson and private PDF access checks, noindex, and Stripe Test Mode remain in scope. Production and live sales are outside this closeout.
+
+Accepted coverage includes the Payload creator and publication workflow, student signup and sign-in, Sandbox purchase and signed fulfillment, refunds and ownership removal, private content, curriculum, lesson completion, Continue Learning and Vimeo resume. The closeout includes a consent-aware regression assertion correction and the readiness register; it changes no application runtime code.
+
+- **Analytics outbound verification — open.** The hosted positive-control run did not capture a provider request after consent. Do not infer outbound redaction or no-consent suppression from that result. Before enabling production analytics, use synthetic data in an isolated test with a working positive control: capture an actual consented provider request and inspect its URL and body for sensitive data, then verify denial and withdrawal suppress subsequent funnel events.
+- **Customer content accessibility — open.** The QA Vimeo clip exposed no caption tracks, and the QA PDF was untagged. Before publishing real customer content, verify accurate captions for prerecorded video with audio and test the caption controls. Provide tagged PDFs with semantic headings, logical reading order, document language, selectable text, descriptive links and relevant alternative text, or offer an equivalent accessible HTML resource. Verify representative files with keyboard and assistive technology.
+
+See [the post-development readiness register](post-development-readiness-register.md) for staging and live-sales gates, including environment isolation, backups and restore, Vimeo domain protection, refund access regression, webhook operations, Tunisia enforcement, customer communications, and legal and tax decisions. Development work stops here pending the owner's next decision.
