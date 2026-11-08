@@ -18,6 +18,7 @@ export function CourseDetailView({ course, commerce, progress }: { course: Cours
   const firstOwned = commerce?.ownership.base ? lessons.find(({ access }) => access === "unlocked") ?? preview : undefined;
   const baseOffer = commerce?.offers.find(({ moduleId }) => moduleId === null);
   const baseComingSoon = commerce?.comingSoonOffers?.includes(null);
+  const basePriceUnavailable = commerce?.unavailableOffers?.includes(null);
   const courseHref = "/courses/" + encodeURIComponent(course.slug);
   const signInHref = commerce?.signInHref ?? loginHref(courseHref);
   const modules = course.curriculum.type === "simple" ? [] : course.curriculum.type === "modular"
@@ -29,7 +30,8 @@ export function CourseDetailView({ course, commerce, progress }: { course: Cours
     const owned = commerce.ownership.moduleIds.includes(Number(module.id));
     const offer = commerce.offers.find(({ moduleId }) => moduleId === Number(module.id));
     const comingSoon = commerce.comingSoonOffers?.includes(Number(module.id));
-    return owned || offer || comingSoon ? [{ module, owned, offer, comingSoon }] : [];
+    const priceUnavailable = commerce.unavailableOffers?.includes(Number(module.id));
+    return owned || offer || comingSoon || priceUnavailable ? [{ module, owned, offer, comingSoon }] : [];
   }) : [];
   const info = [
     course.estimatedDuration,
@@ -57,13 +59,13 @@ export function CourseDetailView({ course, commerce, progress }: { course: Cours
                   <Button href={lessonHref(course.slug, firstOwned.id)} className="!text-[#14312e] max-sm:w-full">تابع التعلّم</Button>
                 ) : null}
               </div>
-            ) : (baseOffer || baseComingSoon) && commerce ? (
+            ) : (baseOffer || baseComingSoon || basePriceUnavailable) && commerce ? (
               <section aria-label="شراء الدورة" className="space-y-3 rounded-sm border border-border bg-white p-4">
                 {baseOffer ? <p className="text-2xl font-semibold"><bdi dir="ltr" className="tabular-nums">{formatOfferPrice(baseOffer)}</bdi> <span className="text-sm font-normal text-subtle">دفعة واحدة</span></p> : null}
                 <p className="text-sm text-subtle">تشمل الدورة <bdi dir="ltr">{regularLessons}</bdi> من الدروس الأساسية، بما فيها أي دروس أساسية تضاف لاحقًا. الوحدات الإضافية تُشترى بشكل منفصل.</p>
                 {baseComingSoon ? <p className="text-sm font-semibold">قريبًا</p> : baseOffer ? (
                   <PurchaseButton offerId={baseOffer.id} signedIn={commerce.signedIn} signInHref={signInHref} courseHref={courseHref}>اشترِ الدورة</PurchaseButton>
-                ) : null}
+                ) : <p className="text-sm font-semibold">السعر غير متاح حاليًا</p>}
                 {preview ? (
                   <Link href={lessonHref(course.slug, preview.id)} className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#12685f] underline underline-offset-4">
                     <LearningIcon name="play" /> شاهد الدرس المجاني
@@ -110,7 +112,7 @@ export function CourseDetailView({ course, commerce, progress }: { course: Cours
                         <p className="text-sm text-subtle"><bdi dir="ltr" className="tabular-nums">{formatOfferPrice(offer)}</bdi> · دفعة واحدة</p>
                         <PurchaseButton offerId={offer.id} signedIn={commerce.signedIn} signInHref={signInHref} courseHref={courseHref}>اشترِ الوحدة</PurchaseButton>
                       </>
-                    ) : null}
+                    ) : <p className="text-sm font-semibold">السعر غير متاح حاليًا</p>}
                   </li>
                 ))}
               </ul>

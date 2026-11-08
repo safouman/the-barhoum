@@ -13,6 +13,7 @@ export function CourseCard({ course, commerce, owned = commerce?.ownership.base 
 
   const offer = commerce?.offers.find(({ moduleId }) => moduleId === null);
   const comingSoon = commerce?.comingSoonOffers?.includes(null);
+  const priceUnavailable = commerce?.unavailableOffers?.includes(null);
 
   return (
     <Link
@@ -33,9 +34,9 @@ export function CourseCard({ course, commerce, owned = commerce?.ownership.base 
         {metadata ? <p className="text-xs font-medium text-[#12685f]"><bdi>{metadata}</bdi></p> : null}
         <h2 className="text-xl leading-tight"><bdi>{course.title}</bdi></h2>
         <p className="line-clamp-3 text-sm leading-relaxed text-subtle" dir="auto">{course.description}</p>
-        {owned || comingSoon || offer ? (
+        {owned || comingSoon || offer || priceUnavailable ? (
           <p className="text-sm font-semibold text-[#12685f]">
-            {owned ? "ضمن دوراتك" : comingSoon ? "قريبًا" : offer ? <bdi dir="ltr" className="tabular-nums">{formatOfferPrice(offer)}</bdi> : null}
+            {owned ? "ضمن دوراتك" : comingSoon ? "قريبًا" : offer ? <bdi dir="ltr" className="tabular-nums">{formatOfferPrice(offer)}</bdi> : "السعر غير متاح حاليًا"}
           </p>
         ) : null}
         <span className="mt-auto inline-flex items-center gap-2 pt-3 text-sm font-semibold text-[#12685f] underline-offset-4 group-hover:underline">

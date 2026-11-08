@@ -26,16 +26,24 @@ async function listComingSoonOffers(courseId: number, baseOnly: boolean) {
 const stripePrice = cache(readStripePrice);
 
 const listCourseOffers = cache(async (courseId: number, baseOnly: boolean) => {
+    let configured: Awaited<ReturnType<typeof getOffers>>;
     try {
-        const offers = (await getOffers(courseId)).filter(({ module_id }) => !baseOnly || module_id === null);
-        if (!offers.length) return [];
+        configured = (await getOffers(courseId)).filter(({ module_id }) => !baseOnly || module_id === null);
+    } catch {
+        return { offers: [], unavailable: [] };
+    }
+    if (!configured.length) return { offers: [], unavailable: [] };
+    try {
         const provider = await courseStripe();
-        const results = await Promise.allSettled(offers.map(async offer => ({
+        const results = await Promise.allSettled(configured.map(async offer => ({
             id: offer.id, moduleId: offer.module_id, ...await stripePrice(provider, offer.stripe_price_id),
         })));
-        return results.flatMap(result => result.status === "fulfilled" ? [result.value] : []);
+        return {
+            offers: results.flatMap(result => result.status === "fulfilled" ? [result.value] : []),
+            unavailable: configured.filter((_, index) => results[index].status === "rejected").map(offer => offer.module_id),
+        };
     } catch {
-        return [];
+        return { offers: [], unavailable: configured.map(offer => offer.module_id) };
     }
 });
 
@@ -46,10 +54,10 @@ export async function readCourseCommerce(
     scope: "catalog" | "detail" = "detail",
 ): Promise<CourseCommerce> {
     const baseOnly = scope === "catalog";
-    const [offers, comingSoonOffers, ownership] = await Promise.all([
-        availability === "available" ? listCourseOffers(courseId, baseOnly) : [],
+    const [{ offers, unavailable }, comingSoonOffers, ownership] = await Promise.all([
+        availability === "available" ? listCourseOffers(courseId, baseOnly) : { offers: [], unavailable: [] },
         availability === "coming-soon" ? listComingSoonOffers(courseId, baseOnly) : [],
         getCourseOwnership(studentId, courseId),
     ]);
-    return { offers, comingSoonOffers, ownership, signedIn: studentId !== undefined };
+    return { offers, unavailableOffers: unavailable, comingSoonOffers, ownership, signedIn: studentId !== undefined };
 }
