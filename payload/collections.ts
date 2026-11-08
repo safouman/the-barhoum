@@ -182,7 +182,26 @@ export const Instructors: CollectionConfig = {
 export const Courses: CollectionConfig = {
     slug: "courses",
     access: { ...adminAccess, readVersions: isAdmin },
-    admin: { useAsTitle: "title", defaultColumns: ["title", "structure", "_status", "updatedAt"] },
+    admin: {
+        useAsTitle: "title",
+        defaultColumns: ["title", "structure", "_status", "updatedAt"],
+        components: {
+            edit: {
+                beforeDocumentControls: ["/payload/course-workspace/Guide#CourseGuide"],
+                PublishButton: "/payload/course-workspace/Guide#CoursePublishButton",
+            },
+            views: {
+                edit: {
+                    default: { tab: { label: "Course Workspace", order: 0 } },
+                    pricing: {
+                        Component: "/payload/course-workspace/Pricing#CoursePricing",
+                        path: "/pricing",
+                        tab: { label: "Pricing", order: 50 },
+                    },
+                },
+            },
+        },
+    },
     disableDuplicate: true,
     versions: { drafts: true },
     hooks: {
@@ -200,21 +219,46 @@ export const Courses: CollectionConfig = {
             }
         }],
     },
-    fields: [
-        { name: "title", type: "text", required: true },
-        {
-            name: "slug", type: "text", required: true, unique: true,
-            validate: validateSlug,
-        },
-        { name: "description", type: "textarea", required: true },
-        { name: "cover", type: "upload", relationTo: "course-covers", required: true },
-        { name: "instructor", type: "relationship", relationTo: "instructors" },
-        { name: "estimatedDuration", type: "text" },
-        { name: "learningOutcomes", type: "array", fields: [{ name: "outcome", type: "text", required: true }] },
-        { name: "difficulty", type: "text" },
-        { name: "category", type: "text" },
-        ...curriculumFields,
-    ],
+    fields: [{
+        type: "tabs",
+        tabs: [
+            {
+                label: "Curriculum",
+                admin: { condition: (_data, _siblingData, { operation }) => operation !== "create" },
+                fields: curriculumFields.slice(1),
+            },
+            {
+                label: "Basics",
+                fields: [
+                    { name: "title", type: "text", required: true },
+                    { name: "slug", type: "text", required: true, unique: true, validate: validateSlug },
+                    { name: "description", type: "textarea", required: true },
+                    { name: "cover", type: "upload", relationTo: "course-covers", required: true },
+                    curriculumFields[0],
+                ],
+            },
+            {
+                label: "Course details",
+                admin: { condition: (_data, _siblingData, { operation }) => operation !== "create" },
+                fields: [
+                    { name: "instructor", type: "relationship", relationTo: "instructors" },
+                    { name: "estimatedDuration", type: "text" },
+                    { name: "learningOutcomes", type: "array", fields: [{ name: "outcome", type: "text", required: true }] },
+                    { name: "difficulty", type: "text" },
+                    { name: "category", type: "text" },
+                ],
+            },
+            {
+                label: "Readiness",
+                admin: { condition: (_data, _siblingData, { operation }) => operation !== "create" },
+                fields: [{
+                    name: "courseReadiness",
+                    type: "ui",
+                    admin: { components: { Field: "/payload/course-workspace/Readiness#CourseReadiness" } },
+                }],
+            },
+        ],
+    }],
 };
 
 export const Modules: CollectionConfig = {

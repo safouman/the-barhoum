@@ -38,6 +38,11 @@ function references(data: z.infer<typeof curriculum>) {
     };
 }
 
+export function courseCurriculumReferences(data: unknown) {
+    const parsed = curriculum.safeParse(data);
+    return parsed.success ? references(parsed.data) : undefined;
+}
+
 export const validateCurriculum: CollectionBeforeChangeHook = async ({ data, originalDoc, req }) => {
     const proposed = { ...originalDoc, ...data };
     const parsed = curriculum.safeParse(proposed);

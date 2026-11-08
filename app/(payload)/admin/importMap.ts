@@ -1,4 +1,8 @@
 import { CurriculumRelationshipField as CurriculumRelationshipField_45c3b83f5bfdb2255604b7f3cd19d557 } from '../../../payload/CurriculumRelationshipField'
+import { CourseReadiness as CourseReadiness_24fe8cd5368e39d760a61bd8196264d7 } from '../../../payload/course-workspace/Readiness'
+import { CourseGuide as CourseGuide_d5ab22d0e623629394618ea3a56f163d } from '../../../payload/course-workspace/Guide'
+import { CoursePublishButton as CoursePublishButton_d5ab22d0e623629394618ea3a56f163d } from '../../../payload/course-workspace/Guide'
+import { CoursePricing as CoursePricing_ba5c966820a9981629d863ca1a696cce } from '../../../payload/course-workspace/Pricing'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -31,6 +35,10 @@ import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e
 /** @type import('payload').ImportMap */
 export const importMap = {
   "/payload/CurriculumRelationshipField#CurriculumRelationshipField": CurriculumRelationshipField_45c3b83f5bfdb2255604b7f3cd19d557,
+  "/payload/course-workspace/Readiness#CourseReadiness": CourseReadiness_24fe8cd5368e39d760a61bd8196264d7,
+  "/payload/course-workspace/Guide#CourseGuide": CourseGuide_d5ab22d0e623629394618ea3a56f163d,
+  "/payload/course-workspace/Guide#CoursePublishButton": CoursePublishButton_d5ab22d0e623629394618ea3a56f163d,
+  "/payload/course-workspace/Pricing#CoursePricing": CoursePricing_ba5c966820a9981629d863ca1a696cce,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
