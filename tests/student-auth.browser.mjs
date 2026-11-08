@@ -130,13 +130,13 @@ async function snapshot(page, name, width) {
 }
 
 async function email(page, address = "student@example.test") {
-  await page.getByRole("textbox", { name: "Email address", exact: true }).fill(address);
+  await page.getByRole("textbox", { name: /^(Email address|البريد الإلكتروني)$/ }).fill(address);
 }
 
 async function login(page, password = "a-valid-password") {
   await email(page);
-  await page.getByLabel("Password", { exact: true }).fill(password);
-  await button(page, "Sign in").click();
+  await page.getByLabel("كلمة المرور", { exact: true }).fill(password);
+  await button(page, "تسجيل الدخول").click();
 }
 
 async function fragmentPage(page, path, token) {
@@ -157,12 +157,12 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
   await page.goto(origin + "/register");
   await snapshot(page, "register", viewport.width);
   await email(page);
-  await button(page, "Send verification email").click();
-  await expectText(page, "If this email can be used to register");
+  await button(page, "إرسال رابط التحقق").click();
+  await expectText(page, "إذا كان التسجيل بهذا البريد ممكنًا");
   await email(page, "already-registered@example.test");
-  await button(page, "Send verification email").click();
-  await expectText(page, "If this email can be used to register");
-  await page.getByRole("link", { name: "Request another verification link" }).click();
+  await button(page, "إرسال رابط التحقق").click();
+  await expectText(page, "إذا كان التسجيل بهذا البريد ممكنًا");
+  await page.getByRole("link", { name: "اطلب رابط تحقق جديدًا" }).click();
   await button(page, "Resend verification email").waitFor();
   await email(page);
   await button(page, "Resend verification email").click();
@@ -186,16 +186,16 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
   await button(page, "Resend verification email").waitFor();
 
   await page.goto(origin + "/login?returnTo=" + encodeURIComponent("//example.test"));
-  assert.match(await page.getByRole("link", { name: "Continue with Google" }).getAttribute("href"), /returnTo=%2Fmy-learning/);
+  assert.match(await page.getByRole("link", { name: /Continue with Google|المتابعة باستخدام Google/ }).getAttribute("href"), /returnTo=%2Fmy-learning/);
   await login(page, "incorrect-password");
-  await expectText(page, "combination didn’t work");
-  await page.getByRole("link", { name: "Continue with Google" }).click();
-  await expectText(page, "Google sign-in was canceled");
+  await expectText(page, "البريد الإلكتروني أو كلمة المرور غير صحيحة");
+  await page.getByRole("link", { name: /Continue with Google|المتابعة باستخدام Google/ }).click();
+  await expectText(page, "أُلغي تسجيل الدخول عبر Google");
   fixture.setGoogleMode("google-link-required");
-  await page.getByRole("link", { name: "Continue with Google" }).click();
-  await expectText(page, "sign in to your existing account first");
+  await page.getByRole("link", { name: /Continue with Google|المتابعة باستخدام Google/ }).click();
+  await expectText(page, "سجّل الدخول إلى حسابك أولًا");
   fixture.setGoogleMode("signup");
-  await page.getByRole("link", { name: "Continue with Google" }).click();
+  await page.getByRole("link", { name: /Continue with Google|المتابعة باستخدام Google/ }).click();
   await expectText(page, "Check your inbox for the link");
   await fragmentPage(page, "/verify-email?method=google", "google-test");
   assert.equal(await page.getByLabel("New password").count(), 0);
@@ -239,12 +239,12 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
   await page.goto(origin + "/login");
   await login(page);
   await page.waitForURL(origin + "/my-learning");
-  await expectText(page, "Sign in to view your student account.");
+  await page.getByRole("main").getByRole("link", { name: /Sign in|تسجيل الدخول|دخول \/ تسجيل/ }).waitFor();
   await page.goto(origin + "/account");
   await page.getByRole("link", { name: "Link Google account" }).click();
-  await expectText(page, "Google is linked. Sign in again");
+  await expectText(page, "تم ربط حساب Google. سجّل الدخول مجددًا");
   fixture.setGoogleMode("signed-in");
-  await page.getByRole("link", { name: "Continue with Google" }).click();
+  await page.getByRole("link", { name: /Continue with Google|المتابعة باستخدام Google/ }).click();
   await page.waitForURL(origin + "/my-learning");
   // The simulated authentication API does not create a real server session.
   await page.goto(origin + "/account");
@@ -252,7 +252,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
   fixture.expireFreshness();
   await page.getByLabel("New email address").fill("new@example.test");
   await button(page, "Send confirmation link").click();
-  await page.getByRole("link", { name: "Continue with Google" }).click();
+  await page.getByRole("link", { name: /Continue with Google|المتابعة باستخدام Google/ }).click();
   await page.getByRole("link", { name: "Set a password using email" }).click();
   await email(page);
   await button(page, "Send reset link").click();
@@ -265,10 +265,10 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 
   await login(page);
   await page.waitForURL(origin + "/my-learning");
   await page.goto(origin + "/account");
-  await button(page, "Sign out").click();
+  await button(page, "تسجيل الخروج").click();
   await page.waitForURL(origin + "/login");
   await page.goto(origin + "/my-learning");
-  await expectText(page, "Sign in to view your student account.");
+  await page.getByRole("main").getByRole("link", { name: /Sign in|تسجيل الدخول|دخول \/ تسجيل/ }).waitFor();
   await context.close();
   console.log("PASS student account and recovery UI at", viewport.width + "px");
 }

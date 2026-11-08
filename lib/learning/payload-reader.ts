@@ -61,6 +61,7 @@ export async function listPublishedCourses(courseIds?: number[]) {
     });
     return docs.map((course) => ({
         ...courseSummary(course),
+        id: course.id,
         estimatedDuration: course.estimatedDuration ?? undefined,
         difficulty: course.difficulty ?? undefined,
         category: course.category ?? undefined,

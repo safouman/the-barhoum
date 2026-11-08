@@ -37,7 +37,19 @@ export async function authRequest<T>(
   }
 }
 
-export function authError(code: string) {
+const arabicAuthErrors: Record<string, string> = {
+  INVALID_INPUT: "تحقّق من البيانات وحاول مجددًا.",
+  INVALID_CREDENTIALS: "البريد الإلكتروني أو كلمة المرور غير صحيحة. حاول مجددًا أو أعد تعيين كلمة المرور.",
+  INVALID_TOKEN: "هذا الرابط غير صالح أو منتهي الصلاحية أو سبق استخدامه.",
+  UNAUTHENTICATED: "انتهت جلستك. سجّل الدخول للمتابعة.",
+  REAUTH_REQUIRED: "أكّد هويتك قبل إجراء هذا التغيير.",
+  RATE_LIMITED: "محاولات كثيرة. انتظر قليلًا ثم حاول مجددًا.",
+};
+
+export function authError(code: string, locale: "ar" | "en" = "en") {
+  if (locale === "ar") {
+    return Object.hasOwn(arabicAuthErrors, code) ? arabicAuthErrors[code] : "الخدمة غير متاحة حاليًا. حاول مجددًا بعد قليل.";
+  }
   switch (code) {
     case "INVALID_INPUT": return "Check the fields and try again.";
     case "INVALID_CREDENTIALS": return "That email and password combination didn’t work. You can try again or reset your password.";

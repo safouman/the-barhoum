@@ -81,31 +81,31 @@ try {
 
     await fixture("visitor");
     await text("USD 149.00");
-    await text("2 regular lessons included");
-    assert.equal(await link("Sign in to purchase").getAttribute("href"), "/login?returnTo=%2Fcourses%2Fattention-and-practice");
-    assert.equal(await link("Watch free preview").getAttribute("href"), coursePath + "/lessons/1");
-    assert.equal(await button("Buy upgrade").count(), 0);
+    await text(/2 regular lessons included|تشمل الدورة 2 من الدروس الأساسية/);
+    assert.equal(await link(/^(Sign in to purchase|سجّل الدخول للشراء)$/).getAttribute("href"), "/login?returnTo=%2Fcourses%2Fattention-and-practice");
+    assert.equal(await link(/^(Watch free preview|شاهد الدرس المجاني)$/).getAttribute("href"), coursePath + "/lessons/1");
+    assert.equal(await button(/^(Buy upgrade|اشترِ الوحدة)$/).count(), 0);
     assert.deepEqual(attempts, []);
     await noOverflow();
     await screenshot("visitor-course");
 
     await fixture("buyer");
-    await button("Buy course").click();
-    await text("Checkout couldn’t open");
+    await button(/^(Buy course|اشترِ الدورة)$/).click();
+    await text(/Checkout couldn’t open|تعذّر فتح صفحة الدفع/);
     assert.equal(await page.getByText("Raw backend detail").count(), 0);
     checkoutMode = "unsafe";
-    await button("Buy course").click();
-    await text("Checkout couldn’t open");
+    await button(/^(Buy course|اشترِ الدورة)$/).click();
+    await text(/Checkout couldn’t open|تعذّر فتح صفحة الدفع/);
     assert.equal(hostedRedirects, 0);
     checkoutMode = "owned";
-    await button("Buy course").click();
-    await text("You already have access");
+    await button(/^(Buy course|اشترِ الدورة)$/).click();
+    await text(/You already have access|الدورة متاحة لك بالفعل/);
     checkoutMode = "auth";
-    await button("Buy course").click();
-    await text("Sign in to continue to checkout");
-    assert.equal(await page.getByRole("region", { name: "Purchase course" }).getByRole("link", { name: "Sign in", exact: true }).getAttribute("href"), "/login?returnTo=%2Fcourses%2Fattention-and-practice");
+    await button(/^(Buy course|اشترِ الدورة)$/).click();
+    await text(/Sign in to continue to checkout|سجّل الدخول لإتمام الشراء/);
+    assert.equal(await page.getByRole("region", { name: /^(Purchase course|شراء الدورة)$/ }).getByRole("link", { name: /^(Sign in|دخول \/ تسجيل)$/ }).getAttribute("href"), "/login?returnTo=%2Fcourses%2Fattention-and-practice");
     checkoutMode = "ok";
-    await button("Buy course").click();
+    await button(/^(Buy course|اشترِ الدورة)$/).click();
     await page.waitForURL(origin + returnPath);
     await text("Payment confirmed. We’re setting up your access.");
     assert.ok(refreshes >= 1, "Return should verify with Stripe automatically");
@@ -125,28 +125,28 @@ try {
     assert.deepEqual(attempts, [17, 17, 17, 17, 17]);
 
     await fixture("owner");
-    assert.equal(await link("Continue Learning").getAttribute("href"), coursePath + "/lessons/2");
-    assert.equal(await button("Buy course").count(), 0);
+    assert.equal(await link(/^(Continue Learning|تابع التعلّم)$/).getAttribute("href"), coursePath + "/lessons/2");
+    assert.equal(await button(/^(Buy course|اشترِ الدورة)$/).count(), 0);
     await text("USD 45.00");
     await noOverflow();
     await screenshot("owner-course");
-    await button("Buy upgrade").click();
+    await button(/^(Buy upgrade|اشترِ الوحدة)$/).click();
     await page.waitForURL(origin + returnPath);
     await text("Payment confirmed");
     assert.equal(attempts.at(-1), 18);
     assert.equal(hostedRedirects, 2);
 
     await fixture("upgraded");
-    await text("Module owned");
-    assert.equal(await button("Buy upgrade").count(), 0);
+    await text(/Module owned|لديك وصول إلى هذه الوحدة/);
+    assert.equal(await button(/^(Buy upgrade|اشترِ الوحدة)$/).count(), 0);
     await fixture("owned-learning");
-    const owned = page.getByRole("list", { name: "Owned courses" });
-    assert.equal(await owned.getByRole("link", { name: "View course" }).getAttribute("href"), coursePath);
+    const owned = page.getByRole("list", { name: /^(Owned courses|دوراتك)$/ });
+    assert.equal(await owned.getByRole("link", { name: /^(View course|عرض الدورة)$/ }).getAttribute("href"), coursePath);
     await noOverflow();
     await screenshot("owned-learning");
     await fixture("empty-learning");
-    await text("Your courses will appear here");
-    assert.equal(await link("Browse Courses").getAttribute("href"), "/courses");
+    await text(/Your courses will appear here|ستظهر دوراتك هنا/);
+    assert.equal(await link(/^(Browse Courses|تصفّح الدورات)$/).getAttribute("href"), "/courses");
 
     for (const [status, heading] of [
       ["open", "Checking your payment"], ["failed", "Your order didn’t complete"],
