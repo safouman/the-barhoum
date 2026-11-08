@@ -151,13 +151,13 @@ try {
     assert.equal(JSON.stringify(premiumDone).includes("privatefixturehash"), false);
     if (process.env.TEST_PROGRESS_ADMIN === "1") {
         const learning = await (await expect(await request("/my-learning", { cookie: owner.cookie }), 200)).text();
-        assert.match(learning, /Course completed/);
-        assert.match(learning, /3\/3 complete/);
-        assert.match(learning, /Premium modules/);
-        assert.match(learning, /Review course/);
+        assert.match(learning, /دورة مكتملة/);
+        assert.match(learning.replaceAll("<!-- -->", ""), /3\/3 · 100%/);
+        assert.match(learning, /الوحدات الإضافية/);
+        assert.match(learning, /راجع الدورة/);
         const locked = await (await expect(await request(`/courses/${slug}/lessons/${paid.id}`, { cookie: other.cookie }), 200)).text();
-        assert.match(locked, /This lesson is locked/);
-        assert.doesNotMatch(locked, /privatefixturehash|Lesson completion/);
+        assert.match(locked, /هذا الدرس مغلق/);
+        assert.doesNotMatch(locked, /privatefixturehash|إكمال الدرس/);
     }
 
 
