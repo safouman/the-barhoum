@@ -4,9 +4,9 @@ import { lessonHref } from "./curriculum";
 import { LearningIcon } from "./LearningIcon";
 
 const accessLabels = {
-  free: "Free preview",
-  unlocked: "Unlocked",
-  locked: "Locked",
+  free: "درس مجاني",
+  unlocked: "متاح",
+  locked: "مغلق",
 } as const;
 
 export function LessonAccessBadge({ access }: { access: LessonSummary["access"] }) {
@@ -46,8 +46,8 @@ function LessonList({ lessons, courseSlug, activeLessonId, completedLessonIds }:
               <span className="grid size-8 shrink-0 place-items-center rounded-full border border-border bg-white text-[#12685f]">
                 <LearningIcon name={lesson.access === "locked" ? "lock" : complete ? "check" : "list"} />
               </span>
-              <span className="min-w-0 flex-1">{lesson.title}</span>
-              {complete ? <span className="sr-only">Completed</span> : null}
+              <span className="min-w-0 flex-1 break-words"><bdi>{lesson.title}</bdi></span>
+              {complete ? <span className="sr-only">مكتمل</span> : null}
               {lesson.access !== "unlocked" ? <LessonAccessBadge access={lesson.access} /> : null}
             </Link>
           </li>
@@ -68,9 +68,9 @@ function Modules({ modules, ...listProps }: ListProps & { modules: ModulePlaceme
         >
           <summary className="flex min-h-12 cursor-pointer list-none items-center gap-2 rounded-sm px-3 py-2 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-focus [&::-webkit-details-marker]:hidden">
             <LearningIcon name="down" className="size-4 shrink-0 transition-transform group-open/module:rotate-180" />
-            <span className="min-w-0 flex-1">{module.title}</span>
+            <span className="min-w-0 flex-1 break-words"><bdi>{module.title}</bdi></span>
             {module.classification === "premium" ? (
-              <span className="rounded-full bg-[#edf2ef] px-2 py-0.5 text-xs text-[#35574d]">Premium</span>
+              <span className="rounded-full bg-[#edf2ef] px-2 py-0.5 text-xs text-[#35574d]">إضافية</span>
             ) : null}
           </summary>
           <div className="border-t border-border p-1.5">
@@ -94,8 +94,8 @@ export function CurriculumList({ curriculum, ...listProps }: ListProps & { curri
           {curriculum.parts.map((part, index) => (
             <section key={part.id} aria-label={part.title} className="space-y-2">
               <div className="flex items-baseline gap-2">
-                <span className="text-xs font-semibold uppercase tracking-wider text-[#12685f]">Part {index + 1}</span>
-                <span className="min-w-0 text-sm font-semibold text-text">{part.title}</span>
+                <span className="shrink-0 text-sm font-semibold text-[#12685f]">الجزء <bdi dir="ltr">{index + 1}</bdi></span>
+                <span className="min-w-0 text-sm font-semibold text-text"><bdi>{part.title}</bdi></span>
               </div>
               <Modules modules={part.modules} {...listProps} />
             </section>

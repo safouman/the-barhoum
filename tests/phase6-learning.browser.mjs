@@ -117,19 +117,41 @@ try {
         </script>` }));
     }
 
+    await fixture("catalog");
+    await page.getByRole("heading", { name: "الدورات" }).waitFor();
+    const cardPrice = page.locator('main [dir="rtl"] bdi[dir="ltr"]').filter({ hasText: "EUR" }).first();
+    await cardPrice.waitFor();
+    const expectedPrice = await cardPrice.textContent();
+    assert.match(expectedPrice, /EUR\s+49\.00/);
+    await page.getByText("ضمن دوراتك", { exact: true }).waitFor();
+    await page.getByText("قريبًا", { exact: true }).waitFor();
+    assert.doesNotMatch(await page.locator("main").innerText(), /[٠-٩۰-۹]/u);
+    await assertNoOverflow();
+    await screenshot("00-catalog");
+
+    await fixture("detail");
+    await page.getByRole("heading", { name: "من الفكرة إلى العادة · Focus Lab" }).waitFor();
+    assert.equal(await page.locator('main bdi[dir="ltr"]').filter({ hasText: "EUR" }).textContent(), expectedPrice);
+    assert.equal(await page.locator("main h1").evaluate((heading) => getComputedStyle(heading).direction), "rtl");
+    await page.getByText("البداية · Foundations", { exact: true }).waitFor();
+    await assertNoOverflow();
+    await screenshot("00-course-detail");
+
     await fixture("library");
     const banner = page.getByRole("banner");
-    if (width < 768) await banner.getByRole("button", { name: "Menu" }).click();
-    await banner.getByRole("navigation", { name: "Primary" }).getByRole("link", { name: "Account" }).waitFor();
-    if (width < 768) await banner.getByRole("button", { name: "Menu" }).press("Escape");
-    const owned = page.getByRole("list", { name: "Owned courses" });
-    await owned.getByRole("progressbar", { name: "Course progress" }).first().waitFor();
+    if (width < 768) await banner.getByRole("button", { name: "القائمة" }).click();
+    await banner.getByRole("navigation", { name: "التنقل الرئيسي" }).getByRole("link", { name: "حسابي" }).waitFor();
+    if (width < 768) await banner.getByRole("button", { name: "القائمة" }).press("Escape");
+    const owned = page.getByRole("list", { name: "دوراتك" });
+    await owned.getByRole("progressbar", { name: "تقدّمك في الدورة" }).first().waitFor();
     assert.equal(await owned.getByRole("progressbar", { name: "Advanced practice" }).getAttribute("aria-valuenow"), "0");
-    await owned.getByText("Course completed", { exact: true }).waitFor();
+    await owned.getByText("دورة مكتملة", { exact: true }).waitFor();
+    assert.match(await owned.locator('bdi[dir="ltr"]').first().textContent(), /1\/4 · 25%/);
+    assert.doesNotMatch(await owned.innerText(), /[٠-٩۰-۹]/u);
     await assertNoOverflow();
     await screenshot("01-library");
     const visit = page.waitForResponse((response) => response.url().endsWith("/visit") && response.ok());
-    await owned.getByRole("link", { name: "Continue learning" }).click();
+    await owned.getByRole("link", { name: "تابع التعلّم" }).click();
     await visit;
     await page.getByRole("heading", { name: "Make room for focus" }).waitFor();
     await assertNoOverflow();
@@ -137,18 +159,18 @@ try {
     await screenshot("02-video-lesson");
 
     if (width !== 1440) {
-      const disclosure = page.locator("summary").filter({ hasText: "Course curriculum" }).first();
+      const disclosure = page.locator("summary").filter({ hasText: "محتوى الدورة" }).first();
       await disclosure.focus();
       assert.equal(await disclosure.evaluate((item) => item.matches(":focus-visible")), true);
       await disclosure.press("Enter");
-      await page.getByRole("navigation", { name: "Course curriculum", exact: true }).getByRole("link", { name: /Begin with one small action/ }).waitFor();
+      await page.getByRole("navigation", { name: "محتوى الدورة", exact: true }).getByRole("link", { name: /Begin with one small action/ }).waitFor();
       await screenshot("03-mobile-curriculum");
       await disclosure.press("Enter");
     }
 
     assert.equal(writes.filter(({ action }) => action === "visit").length, 1);
     if (!process.env.LEARNING_TEST_REAL_VIMEO) {
-      const resume = button("Resume at 0:32");
+      const resume = button("تابع من 0:32");
       await resume.waitFor();
       const conflict = page.waitForResponse((response) => response.url().endsWith("/resume") && response.status() === 409);
       await resume.click();
@@ -170,10 +192,10 @@ try {
     }
 
     completionMode = "unavailable";
-    await button("Complete & Continue").click();
-    await page.getByRole("status").filter({ hasText: "Progress could not be saved" }).waitFor();
+    await button("أكمل وتابع").click();
+    await page.getByRole("status").filter({ hasText: "تعذّر حفظ التقدّم" }).waitFor();
     completionMode = "success";
-    await button("Complete & Continue").click();
+    await button("أكمل وتابع").click();
     await page.waitForURL("**?view=pdf");
     await page.getByRole("link", { name: "Daily practice worksheet (PDF)" }).waitFor();
     assert.ok(await page.getByRole("link", { name: "Daily practice worksheet (PDF)" }).getAttribute("download") !== null);
@@ -185,34 +207,34 @@ try {
       await fixture(view);
       await assertNoOverflow();
       if (view === "locked") {
-        await page.getByRole("heading", { name: "This lesson is locked" }).waitFor();
+        await page.getByRole("heading", { name: "هذا الدرس مغلق" }).waitFor();
         assert.equal(await page.locator("iframe[src*=vimeo]").count(), 0);
         assert.equal(await page.locator('a[href*="/api/lesson-downloads"]').count(), 0);
       }
       if (view === "anonymous") {
         await page.locator("iframe[src*=vimeo]").waitFor();
-        assert.equal(await button("Complete & Continue").count(), 0);
+        assert.equal(await button("أكمل وتابع").count(), 0);
       }
       if (view === "locked") assert.equal(writes.filter(({ lessonId }) => lessonId === "5").length, 0);
       if (view === "anonymous") assert.equal(writes.filter(({ lessonId }) => lessonId === "1").length, freeWrites);
       if (view === "free") {
-        await button("Complete & Continue").waitFor();
+        await button("أكمل وتابع").waitFor();
         await page.waitForFunction(() => performance.getEntriesByType("resource").some(({ name }) => name.endsWith("/1/visit")));
       }
-      if (view === "completed") await button("Mark incomplete").waitFor();
-      if (view === "empty") await page.getByRole("link", { name: "Browse Courses" }).waitFor();
+      if (view === "completed") await button("إلغاء الإكمال").waitFor();
+      if (view === "empty") await page.getByRole("link", { name: "تصفّح الدورات" }).waitFor();
       await screenshot(`05-${view}`);
     }
 
     await fixture("completed");
-    await button("Mark incomplete").click();
-    await page.getByRole("status").filter({ hasText: "Lesson marked incomplete" }).waitFor();
+    await button("إلغاء الإكمال").click();
+    await page.getByRole("status").filter({ hasText: "تم إلغاء إكمال الدرس" }).waitFor();
     completionMode = "conflict";
-    await button("Complete & Continue").click();
-    await page.getByRole("status").filter({ hasText: "Your latest progress is shown" }).waitFor();
-    await button("Mark incomplete").waitFor();
+    await button("أكمل وتابع").click();
+    await page.getByRole("status").filter({ hasText: "يظهر الآن آخر تقدّم محفوظ" }).waitFor();
+    await button("إلغاء الإكمال").waitFor();
     await context.close();
-    console.log(`Phase 6 learning presentation passed at ${width}px`);
+    console.log(`Arabic learning presentation and progress passed at ${width}px`);
   }
 } finally {
   await browser?.close();
