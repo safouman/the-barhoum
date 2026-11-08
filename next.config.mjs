@@ -21,6 +21,12 @@ const nextConfig = {
     ];
 
     return [
+      ...(process.env.VERCEL_ENV === "preview"
+        ? [{
+            source: "/:path*",
+            headers: [{ key: "X-Robots-Tag", value: "noindex" }],
+          }]
+        : []),
       {
         source: "/fonts/:path*",
         headers: longCache,
