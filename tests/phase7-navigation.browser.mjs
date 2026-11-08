@@ -53,8 +53,18 @@ try {
             await assertPage(pathname);
         }
 
+        async function assertSkipLink() {
+            await page.keyboard.press("Tab");
+            const skipLink = page.getByRole("link", { name: /^(Skip to main content|انتقل إلى المحتوى الرئيسي)$/ });
+            assert.equal(await skipLink.evaluate((el) => el === document.activeElement), true);
+            assert.ok((await skipLink.boundingBox()).y >= 0);
+            await page.keyboard.press("Enter");
+            assert.equal(await page.getByRole("main").evaluate((el) => el === document.activeElement), true);
+        }
+
         await page.goto(origin + "/");
         await assertPage("/");
+        await assertSkipLink();
         assert.equal(await page.locator("#hero").count(), 1);
         const category = page.locator("#categories").getByRole("button", { name: "Me & Work", exact: true });
         await category.click();
@@ -71,6 +81,10 @@ try {
             assert.equal(await menu.getAttribute("aria-expanded"), "true");
             assert.equal(await menu.getAttribute("aria-controls"), await navigation.getAttribute("id"));
             assert.ok((await menu.boundingBox()).height >= 44);
+            await page.setViewportSize({ width, height: 150 });
+            assert.ok(await navigation.evaluate((el) => el.getBoundingClientRect().bottom <= window.innerHeight));
+            assert.ok(await navigation.evaluate((el) => el.scrollHeight > el.clientHeight));
+            await page.setViewportSize({ width, height: 900 });
             await page.keyboard.press("Tab");
             assert.equal(await link(names.courses).evaluate((el) => el === document.activeElement), true);
             assert.equal(await link(names.courses).evaluate((el) => getComputedStyle(el).outlineStyle), "solid");
@@ -102,6 +116,8 @@ try {
         await showNavigation();
         assert.equal(new URL(await link(names.entry).getAttribute("href"), origin).searchParams.get("returnTo"), freeLesson);
         await selectLink(names.entry, "/login");
+        await page.reload();
+        await assertSkipLink();
         const registrationLink = page.getByRole("main").getByRole("link", { name: "إنشاء حساب", exact: true });
         assert.equal(new URL(await registrationLink.getAttribute("href"), origin).searchParams.get("returnTo"), freeLesson);
         await registrationLink.click();

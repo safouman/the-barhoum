@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { CourseCatalogView } from "@/components/learning/CourseCatalogView";
 import { getDemoCourses } from "@/components/learning/fixtures";
@@ -6,13 +5,14 @@ import { purchaseAvailability } from "@/lib/commerce/course-payments/eligibility
 import { readCourseCommerce } from "@/lib/commerce/course-payments/offers";
 import { listPublishedCourses } from "@/lib/learning/payload-reader";
 import { readStudentSession } from "@/lib/student-auth/session";
+import { courseMetadata, listDiscoverableCourses } from "@/lib/learning/course-seo";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = {
-  title: "الدورات",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata() {
+  const courses = await listDiscoverableCourses();
+  return courseMetadata({ index: courses.length > 0 });
+}
 
 const technicalCourseSlugs = new Set([
   "preview-simple", "preview-modular", "preview-structured", "test-course", "phase-5-checkout-test",

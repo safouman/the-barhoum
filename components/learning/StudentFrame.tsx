@@ -10,7 +10,7 @@ export function StudentFrame({ children, signedIn, brandLabel, fontClassName }: 
     <html lang="ar" dir="rtl" className={fontClassName}>
       <body className="min-h-screen bg-[#f2f8f6]">
         <SiteHeader locale="ar" signedIn={signedIn} brandLabel={brandLabel} />
-        <main>{children}</main>
+        <main id="main-content" tabIndex={-1}>{children}</main>
       </body>
     </html>
   );

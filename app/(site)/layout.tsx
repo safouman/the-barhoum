@@ -215,7 +215,7 @@ export default async function RootLayout({
                 <LocaleProvider initialLocale={locale}>
                     <AnalyticsProvider>
                         <LocalizedSiteHeader site={site} signedIn={signedIn} />
-                        <main>{children}</main>
+                        <main id="main-content" tabIndex={-1}>{children}</main>
                         <Footer site={site} />
                     </AnalyticsProvider>
                 </LocaleProvider>

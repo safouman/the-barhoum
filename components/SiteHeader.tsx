@@ -13,8 +13,8 @@ import type { Locale, SiteConfig } from "@/lib/content";
 import styles from "./SiteHeader.module.css";
 
 const labels = {
-    en: { primary: "Primary", menu: "Menu", courses: "Courses", entry: "Sign in / Register", library: "My Learning", account: "Account" },
-    ar: { primary: "التنقل الرئيسي", menu: "القائمة", courses: "الدورات", entry: "دخول / تسجيل", library: "دروسي", account: "حسابي" },
+    en: { skip: "Skip to main content", primary: "Primary", menu: "Menu", courses: "Courses", entry: "Sign in / Register", library: "My Learning", account: "Account" },
+    ar: { skip: "انتقل إلى المحتوى الرئيسي", primary: "التنقل الرئيسي", menu: "القائمة", courses: "الدورات", entry: "دخول / تسجيل", library: "دروسي", account: "حسابي" },
 };
 
 type HeaderProps = {
@@ -70,7 +70,8 @@ function Header({ brandLabel, signedIn, locale, languageSwitch, pathname, return
         if (restoreFocus) toggle.current?.focus();
     }
 
-    return (
+    return <>
+        <a href="#main-content" className={styles.skipLink}>{text.skip}</a>
         <header
             className={styles.header}
             onKeyDown={(event) => {
@@ -126,5 +127,5 @@ function Header({ brandLabel, signedIn, locale, languageSwitch, pathname, return
                 </nav>
             </Container>
         </header>
-    );
+    </>;
 }

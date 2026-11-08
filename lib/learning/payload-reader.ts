@@ -68,6 +68,20 @@ export async function listPublishedCourses(courseIds?: number[]) {
     }));
 }
 
+export async function listPublishedCourseMetadata(slugs: string[]) {
+    const payload = await getPayload({ config });
+    const { docs } = await payload.find({
+        collection: "courses",
+        where: { slug: { in: slugs }, _status: { equals: "published" } },
+        draft: false,
+        depth: 1,
+        limit: 0,
+        pagination: false,
+        select: { slug: true, title: true, description: true, cover: true, updatedAt: true },
+    });
+    return docs.map((course) => ({ ...courseSummary(course), updatedAt: course.updatedAt }));
+}
+
 type ModuleRow = NonNullable<Course["modules"]>[number];
 type LessonRow = NonNullable<Course["lessons"]>[number];
 

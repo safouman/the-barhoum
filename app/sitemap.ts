@@ -3,11 +3,12 @@ import { seoConfig, type SeoPageKey } from "@/config/seo";
 import { DEFAULT_LOCALE } from "@/lib/i18n";
 import { getPageAlternateUrls, getPageCanonicalUrl } from "@/lib/seo";
 import { isAieoEnabled } from "@/config/features";
+import { courseCanonical, listDiscoverableCourses } from "@/lib/learning/course-seo";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-    const now = new Date();
+export const dynamic = "force-dynamic";
 
-    return (
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+    const pages: MetadataRoute.Sitemap = (
         Object.entries(seoConfig.pages) as Array<
             [SeoPageKey, (typeof seoConfig.pages)[SeoPageKey]]
         >
@@ -15,11 +16,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
         .filter(([key]) => isAieoEnabled || key !== ("ai-brief" as SeoPageKey))
         .map(([key, page]) => ({
             url: getPageCanonicalUrl(key, DEFAULT_LOCALE),
-            lastModified: now,
             changeFrequency: page.changeFrequency,
             priority: page.priority,
             alternates: {
                 languages: getPageAlternateUrls(key),
             },
         }));
+
+    const courses = await listDiscoverableCourses();
+    if (courses.length) pages.push({ url: courseCanonical() });
+    return pages.concat(courses.map(({ slug, updatedAt }) => ({
+        url: courseCanonical(slug),
+        lastModified: updatedAt,
+    })));
 }

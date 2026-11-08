@@ -5,6 +5,26 @@
     background: var(--color-background, #fff);
 }
 
+.skipLink {
+    position: absolute;
+    z-index: 60;
+    inset-block-start: 0.5rem;
+    inset-inline-start: 0.5rem;
+    transform: translateY(calc(-100% - 1rem));
+    border-radius: 0.375rem;
+    background: #fff;
+    padding: 0.625rem 0.875rem;
+    color: #12685f;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.skipLink:focus {
+    transform: none;
+    outline: 2px solid #12685f;
+    outline-offset: 2px;
+}
+
 .brand {
     position: relative;
     z-index: 1;
@@ -52,6 +72,8 @@
     z-index: 2;
     inset: 100% 0 auto;
     display: none;
+    max-height: calc(100dvh - 4rem);
+    overflow-y: auto;
     border-bottom: 1px solid #ccdcd8;
     padding: 0.75rem 1rem;
     background: #fff;
@@ -93,6 +115,8 @@
     .navigation[data-open="true"] {
         position: static;
         display: block;
+        max-height: none;
+        overflow: visible;
         border: 0;
         padding: 0;
         background: transparent;
