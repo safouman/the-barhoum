@@ -26,19 +26,16 @@ export function LessonExperience({ detail, progress }: {
   const endpoint = progress && lesson.access !== "locked" ? progressEndpoint(course.slug, lesson.id) : null;
   const courseHref = `/courses/${encodeURIComponent(course.slug)}`;
   const curriculumProgress = progress ? (
-    <div className="space-y-3">
-      <ProgressMeter label="تقدّمك في الدورة" count={progress.courseProgress.base} />
-      {progress.courseProgress.premiumModules.map((module) => <ProgressMeter key={module.moduleId} label={module.title} count={module.progress} />)}
-    </div>
+    <ProgressMeter label="تقدّمك في الدورة" count={progress.courseProgress.base} />
   ) : null;
   const curriculumList = (
-    <CurriculumList curriculum={curriculum} courseSlug={course.slug} activeLessonId={lesson.id} completedLessonIds={progress?.completedLessonIds} />
+    <CurriculumList curriculum={curriculum} courseSlug={course.slug} activeLessonId={lesson.id} completedLessonIds={progress?.completedLessonIds} premiumProgress={progress?.courseProgress.premiumModules} />
   );
 
   return (
     <div dir="rtl" lang="ar" className="border-t border-border bg-[#fcfdfc] text-text">
-      <Container className="grid items-start gap-7 py-6 sm:py-9 lg:grid-cols-[minmax(0,1fr)_minmax(17rem,0.44fr)] lg:gap-10">
-        <div className="min-w-0 space-y-6">
+      <Container className="grid [direction:ltr] items-start gap-7 py-6 sm:py-9 lg:grid-cols-[minmax(0,1fr)_minmax(17rem,0.44fr)] lg:gap-10">
+        <div dir="rtl" className="min-w-0 space-y-6">
           <header className="space-y-3">
             <Link href={courseHref} className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-[#12685f] hover:underline">
               <LearningIcon name="right" />
@@ -105,7 +102,7 @@ export function LessonExperience({ detail, progress }: {
           ) : null}
         </div>
 
-        <aside className="hidden min-w-0 rounded-md border border-border bg-white lg:sticky lg:top-5 lg:block">
+        <aside dir="rtl" className="hidden min-w-0 rounded-md border border-border bg-white lg:sticky lg:top-5 lg:block">
           <header className="border-b border-border p-4">
             <h2 className="text-lg">محتوى الدورة</h2>
             <p className="mt-1 text-xs text-subtle">عدد الدروس: <bdi dir="ltr">{lessons.length}</bdi></p>

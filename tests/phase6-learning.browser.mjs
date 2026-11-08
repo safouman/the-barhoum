@@ -158,6 +158,13 @@ try {
     if (process.env.LEARNING_TEST_REAL_VIMEO) await page.frameLocator("iframe[src*=vimeo]").getByRole("button", { name: /^play/i }).first().waitFor({ timeout: 15_000 });
     await screenshot("02-video-lesson");
 
+    const curriculum = page.getByRole("navigation", { name: "محتوى الدورة", exact: true });
+    if (width === 1440) {
+      const sidebar = await curriculum.boundingBox();
+      const player = await page.locator('iframe[src*="player.vimeo.com"]').boundingBox();
+      assert.ok(sidebar.x > player.x + player.width, "Desktop curriculum sits to the right of the player");
+    }
+
     if (width !== 1440) {
       const disclosure = page.locator("summary").filter({ hasText: "محتوى الدورة" }).first();
       await disclosure.focus();
@@ -165,8 +172,15 @@ try {
       await disclosure.press("Enter");
       await page.getByRole("navigation", { name: "محتوى الدورة", exact: true }).getByRole("link", { name: /Begin with one small action/ }).waitFor();
       await screenshot("03-mobile-curriculum");
-      await disclosure.press("Enter");
     }
+
+    const premiumModule = curriculum.locator("details").filter({ has: page.locator("summary").filter({ hasText: "Advanced practice" }) });
+    assert.equal(await curriculum.getByRole("progressbar").count(), 0, "Collapsed modules hide their progress");
+    await premiumModule.locator("summary").click();
+    await premiumModule.getByRole("progressbar", { name: "تقدّمك في الوحدة" }).waitFor();
+    assert.equal(await curriculum.getByRole("progressbar").count(), 1);
+    await premiumModule.locator("summary").click();
+    if (width !== 1440) await page.locator("summary").filter({ hasText: "محتوى الدورة" }).first().press("Enter");
 
     assert.equal(writes.filter(({ action }) => action === "visit").length, 1);
     if (!process.env.LEARNING_TEST_REAL_VIMEO) {

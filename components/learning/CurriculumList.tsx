@@ -1,5 +1,7 @@
 import Link from "next/link";
 import type { Curriculum, LessonSummary, ModulePlacement } from "@/lib/learning/contracts";
+import type { CourseProgress } from "@/lib/learning/progress-contract";
+import { ProgressMeter } from "./ProgressMeter";
 import { lessonHref } from "./curriculum";
 import { LearningIcon } from "./LearningIcon";
 
@@ -27,6 +29,7 @@ type ListProps = {
   courseSlug: string;
   activeLessonId?: string;
   completedLessonIds?: number[];
+  premiumProgress?: CourseProgress["premiumModules"];
 };
 
 function LessonList({ lessons, courseSlug, activeLessonId, completedLessonIds }: ListProps & { lessons: LessonSummary[] }) {
@@ -57,27 +60,37 @@ function LessonList({ lessons, courseSlug, activeLessonId, completedLessonIds }:
   );
 }
 
-function Modules({ modules, ...listProps }: ListProps & { modules: ModulePlacement[] }) {
+function Modules({ modules, premiumProgress, ...listProps }: ListProps & { modules: ModulePlacement[] }) {
   return (
     <div className="space-y-2">
-      {modules.map((module) => (
-        <details
-          key={module.id}
-          open={!listProps.activeLessonId || module.lessons.some(({ id }) => id === listProps.activeLessonId)}
-          className="group/module rounded-sm border border-border bg-white"
-        >
-          <summary className="flex min-h-12 cursor-pointer list-none items-center gap-2 rounded-sm px-3 py-2 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-focus [&::-webkit-details-marker]:hidden">
-            <LearningIcon name="down" className="size-4 shrink-0 transition-transform group-open/module:rotate-180" />
-            <span className="min-w-0 flex-1 break-words"><bdi>{module.title}</bdi></span>
-            {module.classification === "premium" ? (
-              <span className="rounded-full bg-[#edf2ef] px-2 py-0.5 text-xs text-[#35574d]">إضافية</span>
+      {modules.map((module) => {
+        const progress = module.classification === "premium"
+          ? premiumProgress?.find(({ moduleId }) => String(moduleId) === module.id)
+          : undefined;
+        return (
+          <details
+            key={module.id}
+            open={!listProps.activeLessonId || module.lessons.some(({ id }) => id === listProps.activeLessonId)}
+            className="group/module rounded-sm border border-border bg-white"
+          >
+            <summary className="flex min-h-12 cursor-pointer list-none items-center gap-2 rounded-sm px-3 py-2 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-focus [&::-webkit-details-marker]:hidden">
+              <LearningIcon name="down" className="size-4 shrink-0 transition-transform group-open/module:rotate-180" />
+              <span className="min-w-0 flex-1 break-words"><bdi>{module.title}</bdi></span>
+              {module.classification === "premium" ? (
+                <span className="rounded-full bg-[#edf2ef] px-2 py-0.5 text-xs text-[#35574d]">إضافية</span>
+              ) : null}
+            </summary>
+            {progress ? (
+              <div className="border-t border-border px-3 py-2">
+                <ProgressMeter label="تقدّمك في الوحدة" count={progress.progress} />
+              </div>
             ) : null}
-          </summary>
-          <div className="border-t border-border p-1.5">
-            <LessonList lessons={module.lessons} {...listProps} />
-          </div>
-        </details>
-      ))}
+            <div className="border-t border-border p-1.5">
+              <LessonList lessons={module.lessons} {...listProps} />
+            </div>
+          </details>
+        );
+      })}
     </div>
   );
 }
