@@ -9,10 +9,6 @@ const CONSENT_OPEN_EVENT_NAME = "barhoum-open-consent";
 
 type ConsentValue = typeof CONSENT_ACCEPTED | typeof CONSENT_REJECTED;
 
-function isConsentDisabled(): boolean {
-    return process.env.NEXT_PUBLIC_DISABLE_CONSENT === "true";
-}
-
 function getCookieValue(rawCookie: string, key: string): string | null {
     const cookies = rawCookie.split("; ");
     for (const entry of cookies) {
@@ -36,16 +32,10 @@ function readConsentFromDocument(): ConsentValue | null {
 }
 
 export function getAnalyticsConsent(): ConsentValue | null {
-    if (isConsentDisabled()) {
-        return CONSENT_ACCEPTED;
-    }
     return readConsentFromDocument();
 }
 
 export function hasAnalyticsConsent(): boolean {
-    if (isConsentDisabled()) {
-        return true;
-    }
     return readConsentFromDocument() === CONSENT_ACCEPTED;
 }
 

@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { CourseFunnelTracker } from "@/components/analytics/CourseFunnelTracker";
 import { Button } from "@/components/Button";
 import { Container } from "@/components/Container";
 import { formatOfferPrice, type CourseCommerce } from "@/components/commerce/checkout";
@@ -40,6 +41,7 @@ export function CourseDetailView({ course, commerce, progress }: { course: Cours
 
   return (
     <div dir="rtl" lang="ar" className="text-text">
+      {commerce ? <CourseFunnelTracker name="course_detail_viewed" courseKey={course.slug} /> : null}
       <section className="border-b border-border bg-[#f2f8f6] py-8 sm:py-9">
         <Container className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-14">
           <div className="space-y-4">
@@ -64,7 +66,7 @@ export function CourseDetailView({ course, commerce, progress }: { course: Cours
                 {baseOffer ? <p className="text-2xl font-semibold"><bdi dir="ltr" className="tabular-nums">{formatOfferPrice(baseOffer)}</bdi> <span className="text-sm font-normal text-subtle">دفعة واحدة</span></p> : null}
                 <p className="text-sm text-subtle">تشمل الدورة <bdi dir="ltr">{regularLessons}</bdi> من الدروس الأساسية، بما فيها أي دروس أساسية تضاف لاحقًا. الوحدات الإضافية تُشترى بشكل منفصل.</p>
                 {baseComingSoon ? <p className="text-sm font-semibold">قريبًا</p> : baseOffer ? (
-                  <PurchaseButton offerId={baseOffer.id} signedIn={commerce.signedIn} signInHref={signInHref} courseHref={courseHref}>اشترِ الدورة</PurchaseButton>
+                  <PurchaseButton offerId={baseOffer.id} courseKey={course.slug} signedIn={commerce.signedIn} signInHref={signInHref} courseHref={courseHref}>اشترِ الدورة</PurchaseButton>
                 ) : <p className="text-sm font-semibold">السعر غير متاح حاليًا</p>}
                 {preview ? (
                   <Link href={lessonHref(course.slug, preview.id)} className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#12685f] underline underline-offset-4">
@@ -110,7 +112,7 @@ export function CourseDetailView({ course, commerce, progress }: { course: Cours
                     {owned ? <p className="text-sm font-semibold text-[#12685f]">لديك وصول إلى هذه الوحدة</p> : comingSoon ? <p className="text-sm font-semibold">قريبًا</p> : offer ? (
                       <>
                         <p className="text-sm text-subtle"><bdi dir="ltr" className="tabular-nums">{formatOfferPrice(offer)}</bdi> · دفعة واحدة</p>
-                        <PurchaseButton offerId={offer.id} signedIn={commerce.signedIn} signInHref={signInHref} courseHref={courseHref}>اشترِ الوحدة</PurchaseButton>
+                        <PurchaseButton offerId={offer.id} courseKey={course.slug} offerCategory="premium_module" signedIn={commerce.signedIn} signInHref={signInHref} courseHref={courseHref}>اشترِ الوحدة</PurchaseButton>
                       </>
                     ) : <p className="text-sm font-semibold">السعر غير متاح حاليًا</p>}
                   </li>

@@ -1,9 +1,11 @@
+import { randomUUID } from "node:crypto";
 import type { AnalyticsEventName, AnalyticsEventPayload, SharedAnalyticsContext } from "@/lib/analytics/shared";
 import { ANALYTICS_DEFAULTS, sanitizeAnalyticsParams } from "@/lib/analytics/shared";
 
 type ServerEventOptions = {
   clientId?: string;
   userId?: string;
+  analyticsConsent?: boolean;
 };
 
 const GA4_MEASUREMENT_ID =
@@ -28,7 +30,6 @@ function buildPayload(
   name: AnalyticsEventName,
   params: AnalyticsEventPayload,
   context: Partial<SharedAnalyticsContext>,
-  options: ServerEventOptions
 ) {
   const mergedContext = {
     ...SERVER_DEFAULTS,
@@ -43,10 +44,9 @@ function buildPayload(
 
   const payload: {
     client_id: string;
-    user_id?: string;
     events: Array<{ name: AnalyticsEventName; params: AnalyticsEventPayload }>;
   } = {
-    client_id: options.clientId ?? `server-${Date.now()}`,
+    client_id: randomUUID(),
     events: [
       {
         name,
@@ -54,10 +54,6 @@ function buildPayload(
       },
     ],
   };
-
-  if (options.userId) {
-    payload.user_id = options.userId;
-  }
 
   return payload;
 }
@@ -68,19 +64,12 @@ export async function trackServerEvent(
   context: Partial<SharedAnalyticsContext> = {},
   options: ServerEventOptions = {}
 ) {
-  if (!ANALYTICS_ENDPOINT) {
-    if (process.env.NODE_ENV !== "production") {
-      console.info(
-        "[analytics-server] skipped event",
-        name,
-        "(missing GA4 credentials)"
-      );
-    }
-    return;
-  }
+  // Webhooks and notification jobs have no browser consent. A consented
+  // caller must opt in explicitly, and test environments never send events.
+  if (!ANALYTICS_ENDPOINT || process.env.VERCEL_ENV !== "production" || options.analyticsConsent !== true) return;
 
   try {
-    const payload = buildPayload(name, params, context, options);
+    const payload = buildPayload(name, params, context);
     const response = await fetch(ANALYTICS_ENDPOINT, {
       method: "POST",
       headers: {
@@ -91,20 +80,10 @@ export async function trackServerEvent(
     });
 
     if (!response.ok) {
-      const body = await response.text();
-      console.error("[analytics-server] failed", {
-        status: response.status,
-        body,
-        event: name,
-      });
-    } else if (process.env.NODE_ENV !== "production") {
-      console.info("[analytics-server]", name, payload.events[0].params);
+      console.error("[analytics-server] delivery failed", { status: response.status, event: name });
     }
-  } catch (error) {
-    console.error("[analytics-server] error dispatching event", {
-      name,
-      error: error instanceof Error ? error.message : String(error),
-    });
+  } catch {
+    console.error("[analytics-server] delivery failed", { event: name });
   }
 }
 

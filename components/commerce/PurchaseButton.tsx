@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 import { Button } from "@/components/Button";
 import { Notice, studentLink } from "@/components/student-auth/ui";
+import { event } from "@/lib/analytics";
 import { stripeCheckoutHref } from "./checkout";
 
 const englishErrors: Record<string, string> = {
@@ -28,7 +29,7 @@ const purchaseCopy = {
 };
 
 export function PurchaseButton({
-  offerId, signedIn, signInHref, courseHref, children, locale = "ar",
+  offerId, signedIn, signInHref, courseHref, children, locale = "ar", courseKey, offerCategory = "base",
 }: {
   offerId: number;
   signedIn: boolean;
@@ -36,6 +37,8 @@ export function PurchaseButton({
   courseHref: string;
   children: React.ReactNode;
   locale?: keyof typeof purchaseCopy;
+  courseKey?: string;
+  offerCategory?: "base" | "premium_module";
 }) {
   const copy = purchaseCopy[locale];
   const active = useRef(false);
@@ -58,6 +61,7 @@ export function PurchaseButton({
       const data = await response.json();
       const checkout = response.ok ? stripeCheckoutHref(data?.checkoutUrl) : undefined;
       if (checkout) {
+        if (courseKey) event("course_checkout_started", { course_key: courseKey, offer_category: offerCategory, locale });
         window.location.assign(checkout);
         return;
       }

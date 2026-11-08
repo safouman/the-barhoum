@@ -1,6 +1,7 @@
 import { readLessonProgress } from "@/lib/learning/progress-reader";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { CourseFunnelTracker } from "@/components/analytics/CourseFunnelTracker";
 import { LessonExperience } from "@/components/learning/LessonExperience";
 import { getDemoLesson, getDemoCourses } from "@/components/learning/fixtures";
 import { getPublishedLesson } from "@/lib/learning/payload-reader";
@@ -22,5 +23,12 @@ export default async function LessonPage({
   const progress = !demo && student && detail.lesson.access !== "locked"
     ? await readLessonProgress(student.id, courseSlug, Number(lessonId))
     : null;
-  return <LessonExperience detail={detail} progress={progress} />;
+  const viewEvent = detail.lesson.access === "free" ? "course_free_preview_opened"
+    : student && detail.lesson.access === "unlocked" ? "course_first_lesson_opened" : null;
+  return (
+    <>
+      {!demo && viewEvent ? <CourseFunnelTracker name={viewEvent} courseKey={detail.course.slug} /> : null}
+      <LessonExperience detail={detail} progress={progress} />
+    </>
+  );
 }

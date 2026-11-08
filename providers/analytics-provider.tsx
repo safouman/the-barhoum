@@ -1,13 +1,12 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Script from "next/script";
-import { usePathname, useSearchParams } from "next/navigation";
-import { Analytics as VercelAnalytics } from "@vercel/analytics/next";
-import type { AnalyticsEventName, AnalyticsEventPayload } from "@/lib/analytics/shared";
+import { usePathname } from "next/navigation";
+import { Analytics as VercelAnalytics, type BeforeSend } from "@vercel/analytics/next";
+import { analyticsLocation, analyticsVercelLocation, type AnalyticsEventName } from "@/lib/analytics/shared";
 import {
   event,
-  getAnalyticsContext,
   initAnalyticsContext,
   updateAnalyticsContext,
   type GtagFunction,
@@ -16,7 +15,6 @@ import { CookieConsentBanner } from "@/components/cookies/CookieConsentBanner";
 import { hasAnalyticsConsent } from "@/lib/consent";
 import { useLocale } from "@/providers/locale-provider";
 import {
-  capturePosthogPageLeave,
   isPosthogConfigured,
   setPosthogTrackingEnabled,
 } from "@/lib/analytics/posthog";
@@ -30,19 +28,12 @@ type SectionTracker = {
 };
 
 const SECTION_SELECTOR = "[data-analytics-section]";
-const UTM_STORAGE_KEY = "whispered:utm";
 const PAGE_SCROLL_THRESHOLDS: Array<{ threshold: number; event: AnalyticsEventName }> = [
   { threshold: 0.25, event: "scroll_25" },
   { threshold: 0.5, event: "scroll_50" },
   { threshold: 0.75, event: "scroll_75" },
   { threshold: 1, event: "scroll_100" },
 ];
-
-const DEFAULT_UTM = {
-  utm_source: "direct",
-  utm_medium: "direct",
-  utm_campaign: "none",
-};
 
 function detectDeviceType(): string {
   if (typeof navigator === "undefined") return "unknown";
@@ -52,75 +43,17 @@ function detectDeviceType(): string {
   return "desktop";
 }
 
-function resolveReferrer(): string {
-  if (typeof document === "undefined" || typeof window === "undefined") return "direct";
-  const ref = document.referrer;
-  if (!ref) return "direct";
-  try {
-    const refUrl = new URL(ref);
-    if (refUrl.origin === window.location.origin) {
-      return refUrl.pathname + refUrl.search;
-    }
-    return refUrl.origin;
-  } catch {
-    return ref;
+const beforeVercelSend: BeforeSend = (event) => {
+  if (!hasAnalyticsConsent() || event.type !== "pageview") return null;
+  const url = analyticsVercelLocation(event.url, document.referrer);
+  return url ? { ...event, url } : null;
+};
+
+function setGaEnabled(measurementId: string, enabled: boolean) {
+  (window as typeof window & Record<string, unknown>)[`ga-disable-${measurementId}`] = !enabled;
+  if (typeof window.gtag === "function") {
+    window.gtag("consent", "update", { analytics_storage: enabled ? "granted" : "denied" });
   }
-}
-
-type UtmKeys = "utm_source" | "utm_medium" | "utm_campaign";
-
-function parseUtm(search: string): Partial<Record<UtmKeys, string>> {
-  if (!search) return {};
-  const params = new URLSearchParams(search);
-  const result: Partial<Record<UtmKeys, string>> = {};
-  ["utm_source", "utm_medium", "utm_campaign"].forEach((key) => {
-    const value = params.get(key);
-    if (value) {
-      result[key as UtmKeys] = value.trim().toLowerCase();
-    }
-  });
-  return result;
-}
-
-function loadStoredUtm(): Partial<Record<UtmKeys, string>> {
-  if (typeof window === "undefined") return {};
-  try {
-    const raw = window.sessionStorage.getItem(UTM_STORAGE_KEY);
-    if (!raw) return {};
-    const parsed = JSON.parse(raw) as Partial<Record<UtmKeys, string>>;
-    return parsed ?? {};
-  } catch {
-    return {};
-  }
-}
-
-function resolveGtag(): GtagFunction | undefined {
-  if (typeof window === "undefined") {
-    return undefined;
-  }
-  const gtag = window.gtag;
-  return typeof gtag === "function" ? gtag : undefined;
-}
-
-function persistUtm(data: Record<UtmKeys, string>) {
-  if (typeof window === "undefined") return;
-  try {
-    window.sessionStorage.setItem(UTM_STORAGE_KEY, JSON.stringify(data));
-  } catch {
-    // ignore
-  }
-}
-
-function resolveUtm(search: string): Record<UtmKeys, string> {
-  const fromQuery = parseUtm(search);
-  const stored = loadStoredUtm();
-  const merged = { ...DEFAULT_UTM, ...stored };
-  const hasQuery = Object.keys(fromQuery).length > 0;
-  if (hasQuery) {
-    Object.assign(merged, fromQuery);
-    persistUtm(merged);
-  }
-  return merged;
 }
 
 function collectSections(previous: SectionTracker[] = []): SectionTracker[] {
@@ -143,29 +76,20 @@ function collectSections(previous: SectionTracker[] = []): SectionTracker[] {
 
 export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const { locale } = useLocale();
-  const disableConsent = process.env.NEXT_PUBLIC_DISABLE_CONSENT === "true";
-  const measurementId = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
+  // GA4's stream-level enhanced measurement can send automatic events outside
+  // our client allowlist. Enable it only after the stream settings are verified.
+  const configuredId = process.env.NEXT_PUBLIC_GA4_PRIVACY_VERIFIED === "true"
+    ? process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID : undefined;
+  const measurementId = configuredId && /^G-[A-Z0-9]+$/.test(configuredId) ? configuredId : undefined;
   const posthogConfigured = isPosthogConfigured();
-  const hasClientAnalytics = Boolean(measurementId) || posthogConfigured;
-  const [shouldLoadAnalytics, setShouldLoadAnalytics] = useState<boolean>(() =>
-    disableConsent ? hasClientAnalytics : false
-  );
+  const [shouldLoadAnalytics, setShouldLoadAnalytics] = useState(false);
   const [gaReady, setGaReady] = useState(false);
-  const gaReadyRef = useRef(false);
-  const pendingConsentEventRef = useRef<"accepted" | null>(null);
   const sectionsRef = useRef<SectionTracker[]>([]);
   const tickingRef = useRef(false);
   const engagementObserverRef = useRef<IntersectionObserver | null>(null);
-  const previousPathRef = useRef<string | null>(null);
   const mutationObserverRef = useRef<MutationObserver | null>(null);
   const lastPageViewRef = useRef<string | null>(null);
-  const lastPagePayloadRef = useRef<AnalyticsEventPayload | null>(null);
-  const pendingPageViewRef = useRef<{
-    key: string;
-    payload: AnalyticsEventPayload;
-  } | null>(null);
   const pageScrollStateRef = useRef<{
     thresholds: Array<{ threshold: number; event: AnalyticsEventName }>;
     nextIndex: number;
@@ -176,142 +100,47 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     hasUserScrolled: false,
   });
 
-  const search = useMemo(() => searchParams?.toString?.() ?? "", [searchParams]);
+  const applyConsent = useCallback(() => {
+    const location = analyticsLocation(window.location.href);
+    const enabled = Boolean(location) && hasAnalyticsConsent();
+    setShouldLoadAnalytics(enabled);
+    setPosthogTrackingEnabled(enabled);
 
-  useEffect(() => {
-    if (disableConsent) {
-      setShouldLoadAnalytics(hasClientAnalytics);
-      return;
-    }
-    if (hasAnalyticsConsent() && hasClientAnalytics) {
-      setShouldLoadAnalytics(true);
-    }
-  }, [disableConsent, hasClientAnalytics]);
-
-  useEffect(() => {
-    if (!posthogConfigured) {
-      return;
-    }
-    if (disableConsent) {
-      setPosthogTrackingEnabled(true);
-      return;
-    }
-    setPosthogTrackingEnabled(hasAnalyticsConsent());
-  }, [disableConsent, posthogConfigured]);
-
-  useEffect(() => {
-    if (typeof window === "undefined" || !measurementId) {
-      return;
-    }
-    (window as typeof window & Record<string, unknown>)[
-      `ga-disable-${measurementId}`
-    ] = !shouldLoadAnalytics;
-  }, [measurementId, shouldLoadAnalytics]);
-
-  useEffect(() => {
-    if (!posthogConfigured || typeof document === "undefined") {
-      return;
-    }
-
-    const sendPageLeave = () => {
-      if (!hasAnalyticsConsent()) {
-        return;
+    if (measurementId) {
+      if (location && enabled && typeof window.gtag !== "function") {
+        window.dataLayer ??= [];
+        window.gtag = function () {
+          window.dataLayer?.push(arguments as unknown as Record<string, unknown>);
+        } as GtagFunction;
+        window.gtag("consent", "default", {
+          analytics_storage: "denied",
+          ad_storage: "denied",
+          ad_user_data: "denied",
+          ad_personalization: "denied",
+        });
+        window.gtag("js", new Date());
+        window.gtag("config", measurementId, {
+          send_page_view: false,
+          allow_google_signals: false,
+          allow_ad_personalization_signals: false,
+          page_location: location,
+          page_referrer: "",
+          page_title: new URL(location).pathname,
+        });
       }
-      const payload = lastPagePayloadRef.current;
-      if (payload) {
-        capturePosthogPageLeave(payload);
-      }
-    };
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "hidden") {
-        sendPageLeave();
-      }
-    };
-
-    const handlePageHide = () => {
-      sendPageLeave();
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    if (typeof window !== "undefined") {
-      window.addEventListener("pagehide", handlePageHide);
+      setGaEnabled(measurementId, enabled);
     }
-
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-      if (typeof window !== "undefined") {
-        window.removeEventListener("pagehide", handlePageHide);
-      }
-    };
-  }, [posthogConfigured]);
-
-  const handleGaScriptLoaded = useCallback(() => {
-    gaReadyRef.current = true;
-    setGaReady(true);
-    if (typeof window !== "undefined" && measurementId) {
-      (window as typeof window & Record<string, unknown>)[
-        `ga-disable-${measurementId}`
-      ] = false;
-      const gtag = resolveGtag();
-      if (gtag) {
-        gtag("consent", "update", { analytics_storage: "granted" });
-      }
-    }
-    if (pendingConsentEventRef.current === "accepted") {
-      pendingConsentEventRef.current = null;
-      event("cookie_consent_given", { source: "banner" });
-    }
+    if (enabled) window.dispatchEvent(new Event("barhoum-analytics-ready"));
   }, [measurementId]);
 
-  const handleConsentGranted = useCallback(() => {
-    setShouldLoadAnalytics(true);
-    if (posthogConfigured) {
-      setPosthogTrackingEnabled(true);
-    }
-    if (gaReadyRef.current) {
-      event("cookie_consent_given", { source: "banner" });
-    } else {
-      pendingConsentEventRef.current = "accepted";
-    }
-  }, [posthogConfigured]);
-
-  const handleConsentRejected = useCallback(() => {
-    pendingConsentEventRef.current = null;
-    setShouldLoadAnalytics((previous) => (previous ? previous : false));
-    if (gaReadyRef.current) {
-      event("cookie_consent_rejected", { source: "banner" });
-    }
-    if (posthogConfigured) {
-      setPosthogTrackingEnabled(false);
-    }
-    if (typeof window !== "undefined" && measurementId) {
-      (window as typeof window & Record<string, unknown>)[
-        `ga-disable-${measurementId}`
-      ] = true;
-      const gtag = resolveGtag();
-      if (gtag) {
-        gtag("consent", "update", { analytics_storage: "denied" });
-      }
-    }
-  }, [measurementId, posthogConfigured]);
+  useEffect(() => {
+    applyConsent();
+  }, [applyConsent, pathname]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const utm = resolveUtm(window.location.search);
-    initAnalyticsContext({
-      locale,
-      device_type: detectDeviceType(),
-      referrer: resolveReferrer(),
-      page_path: window.location.pathname + window.location.search,
-      page_location: window.location.href,
-      page_title: document.title,
-      debug_mode: process.env.NODE_ENV !== "production",
-      category: "none",
-      program_name: "none",
-      ...utm,
-    });
+    initAnalyticsContext({ locale, device_type: detectDeviceType() });
 
     sectionsRef.current = collectSections(sectionsRef.current);
     setupEngagementObserver();
@@ -348,8 +177,6 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
     observer.observe(document.body, { childList: true, subtree: true });
     mutationObserverRef.current = observer;
 
-    previousPathRef.current = window.location.pathname + window.location.search;
-
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleResize);
@@ -366,63 +193,20 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const utm = resolveUtm(window.location.search);
-    updateAnalyticsContext(utm);
-
-    const currentPath = window.location.pathname + window.location.search;
-    const currentLocation = window.location.href;
-    const currentTitle = document.title;
-
-    const context = getAnalyticsContext();
-    const previousReferrer =
-      previousPathRef.current && previousPathRef.current !== currentPath
-        ? `${window.location.origin}${previousPathRef.current}`
-        : context.referrer ?? resolveReferrer();
-
-    updateAnalyticsContext({
-      page_path: currentPath,
-      page_location: currentLocation,
-      page_title: currentTitle,
-      referrer: previousReferrer,
-    });
-
-    const pageKey = `${currentPath}|${currentLocation}`;
-    const pageViewPayload: AnalyticsEventPayload = {
-      page_path: currentPath,
-      page_location: currentLocation,
-      page_title: currentTitle,
-      referrer: previousReferrer,
-    };
-
-    if (
-      posthogConfigured &&
-      hasAnalyticsConsent() &&
-      lastPageViewRef.current &&
-      lastPageViewRef.current !== pageKey &&
-      lastPagePayloadRef.current
-    ) {
-      capturePosthogPageLeave(lastPagePayloadRef.current);
+    const location = analyticsLocation(window.location.href);
+    if (!location || !shouldLoadAnalytics || !hasAnalyticsConsent()) {
+      lastPageViewRef.current = null;
+      return;
     }
-
-    const canSendPageView =
-      shouldLoadAnalytics &&
-      hasAnalyticsConsent() &&
-      (posthogConfigured || (Boolean(measurementId) && gaReady));
-
-    if (!canSendPageView) {
-      pendingPageViewRef.current = {
-        key: pageKey,
-        payload: pageViewPayload,
-      };
-    } else if (lastPageViewRef.current !== pageKey) {
-      lastPageViewRef.current = pageKey;
-      pendingPageViewRef.current = null;
-      event("page_view", pageViewPayload);
-      lastPagePayloadRef.current = pageViewPayload;
+    if (posthogConfigured || gaReady) {
+      // The actual pathname is local only and distinguishes navigations whose
+      // transmitted URLs have the same route template.
+      if (lastPageViewRef.current !== pathname) {
+        lastPageViewRef.current = pathname;
+        event("page_view");
+      }
     }
-
-    previousPathRef.current = currentPath;
-  }, [pathname, search, shouldLoadAnalytics, measurementId, gaReady, posthogConfigured]);
+  }, [pathname, shouldLoadAnalytics, gaReady, posthogConfigured]);
 
   useEffect(() => {
     pageScrollStateRef.current = {
@@ -508,27 +292,18 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
   return (
     <>
       {shouldLoadAnalytics && measurementId ? (
-        <>
-          <Script
-            src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
-            strategy="afterInteractive"
-            onLoad={handleGaScriptLoaded}
-          />
-          <Script id="ga4-init" strategy="afterInteractive">
-            {`
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', '${measurementId}', { send_page_view: false });
-              `}
-          </Script>
-        </>
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`}
+          strategy="afterInteractive"
+          referrerPolicy="no-referrer"
+          onReady={() => setGaReady(true)}
+        />
       ) : null}
-      {shouldLoadAnalytics ? <VercelAnalytics /> : null}
+      {shouldLoadAnalytics ? <VercelAnalytics beforeSend={beforeVercelSend} /> : null}
       {children}
       <CookieConsentBanner
-        onConsentGranted={handleConsentGranted}
-        onConsentRejected={handleConsentRejected}
+        onConsentGranted={applyConsent}
+        onConsentRejected={applyConsent}
       />
     </>
   );

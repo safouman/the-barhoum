@@ -5,11 +5,12 @@ import type {
   AnalyticsEventPayload,
   SharedAnalyticsContext,
 } from "@/lib/analytics/shared";
-import { ANALYTICS_DEFAULTS, sanitizeAnalyticsParams } from "@/lib/analytics/shared";
+import { ANALYTICS_DEFAULTS, analyticsLocation, sanitizeAnalyticsParams } from "@/lib/analytics/shared";
 import { hasAnalyticsConsent } from "@/lib/consent";
-import { capturePosthogEvent } from "@/lib/analytics/posthog";
+import { capturePosthogEvent, isPosthogConfigured } from "@/lib/analytics/posthog";
 
 export type GtagFunction = {
+  (command: "js", initializedAt: Date): void;
   (command: "event", eventName: string, params?: Record<string, unknown>): void;
   (command: "config", target: string, params?: Record<string, unknown>): void;
   (command: "consent", action: "default" | "update", params: Record<string, unknown>): void;
@@ -25,45 +26,26 @@ declare global {
 let sharedContext: SharedAnalyticsContext = { ...ANALYTICS_DEFAULTS };
 
 function getMeasurementId(): string | null {
-  const id = process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID;
+  const id = process.env.NEXT_PUBLIC_GA4_PRIVACY_VERIFIED === "true"
+    ? process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID : undefined;
   if (typeof id !== "string" || id.trim().length === 0) {
     return null;
   }
   return id.trim();
 }
 
-function ensureDataLayer() {
-  if (typeof window === "undefined") return;
-  window.dataLayer = window.dataLayer || [];
-}
-
-function pushToDataLayer(eventName: AnalyticsEventName, params: AnalyticsEventPayload) {
-  ensureDataLayer();
-  if (typeof window === "undefined") return;
-  window.dataLayer?.push({
-    event: eventName,
-    ...params,
-  });
-}
-
-function sendWithGtag(eventName: AnalyticsEventName, params: AnalyticsEventPayload) {
-  if (typeof window === "undefined") return;
+function sendWithGtag(name: AnalyticsEventName, params: AnalyticsEventPayload) {
   const measurementId = getMeasurementId();
-  if (!measurementId) return;
-  const gtag = window.gtag;
-  if (typeof gtag !== "function") {
-    pushToDataLayer(eventName, params);
-    return;
-  }
+  if (!measurementId || typeof window.gtag !== "function") return;
 
-  if (eventName === "page_view") {
-    gtag("config", measurementId, {
-      ...params,
-      page_path: params.page_path ?? params.page_location,
-    });
-  }
-
-  gtag("event", eventName, params);
+  window.gtag("event", name, {
+    ...params,
+    send_to: measurementId,
+    page_referrer: "",
+    page_title: params.page_path,
+    // Keep the event when navigation to Stripe starts immediately afterwards.
+    transport_type: "beacon",
+  });
 }
 
 export function initAnalyticsContext(initial: Partial<SharedAnalyticsContext>) {
@@ -82,34 +64,31 @@ export function updateAnalyticsContext(update: Partial<SharedAnalyticsContext>) 
   };
 }
 
-export function getAnalyticsContext(): SharedAnalyticsContext {
-  return { ...sharedContext };
-}
+export function event(name: AnalyticsEventName, props: AnalyticsEventPayload = {}): boolean {
+  if (typeof window === "undefined" || !hasAnalyticsConsent()) return false;
+  const location = analyticsLocation(window.location.href);
+  if (!location) return false;
 
-export function event(name: AnalyticsEventName, props: AnalyticsEventPayload = {}) {
-  const sanitizedProps = sanitizeAnalyticsParams(props);
-  const payload: AnalyticsEventPayload = {
+  if (typeof window.gtag !== "function" && !isPosthogConfigured()) return false;
+
+  const payload = sanitizeAnalyticsParams({
     ...sharedContext,
-    ...sanitizedProps,
-  };
+    ...props,
+    page_path: new URL(location).pathname,
+    page_location: location,
+  });
 
-  if (!hasAnalyticsConsent()) {
-    if (process.env.NODE_ENV !== "production") {
-      console.info("[analytics-blocked]", name, payload);
-    }
-    return;
+  if (name.startsWith("course_") && !payload.course_key) return false;
+
+  try {
+    capturePosthogEvent(name, payload);
+  } catch {
+    // A blocked analytics provider must not interfere with product actions.
   }
-
-  capturePosthogEvent(name, payload);
-
-  if (process.env.NODE_ENV !== "production") {
-    console.info("[analytics]", name, payload);
+  try {
+    sendWithGtag(name, payload);
+  } catch {
+    // A blocked analytics provider must not interfere with product actions.
   }
-
-  const measurementId = getMeasurementId();
-  if (!measurementId) {
-    return;
-  }
-
-  sendWithGtag(name, payload);
+  return true;
 }

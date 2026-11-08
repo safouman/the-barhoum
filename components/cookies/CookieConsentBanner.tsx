@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { analyticsLocation } from "@/lib/analytics/shared";
 import { useLocale } from "@/providers/locale-provider";
 import {
     CONSENT_EVENTS,
@@ -46,6 +47,11 @@ interface CookieConsentBannerProps {
     onConsentRejected?: () => void;
 }
 
+function hidePreviewBanner() {
+    return process.env.NEXT_PUBLIC_DISABLE_CONSENT === "true" &&
+        typeof window !== "undefined" && !analyticsLocation(window.location.origin);
+}
+
 export function CookieConsentBanner({
     onConsentGranted,
     onConsentRejected,
@@ -57,7 +63,7 @@ export function CookieConsentBanner({
     const [mode, setMode] = useState<"initial" | "manage">("initial");
 
     useEffect(() => {
-        if (process.env.NEXT_PUBLIC_DISABLE_CONSENT === "true") {
+        if (hidePreviewBanner()) {
             return;
         }
 
@@ -69,7 +75,7 @@ export function CookieConsentBanner({
 
     useEffect(() => {
         const unsubscribe = onConsentPreferencesRequested(() => {
-            if (process.env.NEXT_PUBLIC_DISABLE_CONSENT === "true") {
+            if (hidePreviewBanner()) {
                 return;
             }
             setMode("manage");
@@ -117,10 +123,6 @@ export function CookieConsentBanner({
         }
         return copy.body;
     }, [copy.body, copy.manageBody, mode]);
-
-    if (process.env.NEXT_PUBLIC_DISABLE_CONSENT === "true") {
-        return null;
-    }
 
     if (!isOpen) {
         return null;
