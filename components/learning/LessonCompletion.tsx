@@ -3,6 +3,7 @@
 import type { Locale } from "@/lib/content";
 import { learningCopy } from "./learning-copy";
 import styles from "./Learning.module.css";
+import workspace from "./LearningWorkspace.module.css";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Completion, LessonTarget } from "@/lib/learning/progress-contract";
@@ -58,7 +59,7 @@ export function LessonCompletion({ endpoint, initial, hasNext, locale = "ar" }: 
   }
 
   return (
-    <section aria-label={copy.completion} className="flex flex-wrap items-center justify-between gap-4 rounded-md border border-[var(--brand-surface)] bg-[var(--brand-surface)] p-4 sm:p-5">
+    <section aria-label={copy.completion} className={workspace.completion}>
       <div>
         <p className="flex items-center gap-2 text-sm font-semibold text-[var(--brand-text)]">
           {completion.completed ? <LearningIcon name="check" /> : null}

@@ -12,5 +12,5 @@ export default async function AccountPage({ searchParams }: { searchParams: Prom
   const { status } = await searchParams;
   const locale = await resolveLocale();
   const copy = studentCopy[locale].pages.account;
-  return <StudentShell locale={locale} title={copy.title} intro={copy.intro} wide><StudentAccount status={status} /></StudentShell>;
+  return <StudentShell editorial locale={locale} title={copy.title} intro={copy.intro} wide><StudentAccount status={status} /></StudentShell>;
 }

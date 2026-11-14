@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import styles from "./Account.module.css";
 import { useEffect, useState } from "react";
 import { useLocale } from "@/providers/locale-provider";
 import { studentCopy } from "@/lib/student-copy";
@@ -45,11 +46,15 @@ export function StudentAccount({ status }: { status?: string }) {
 
   const { student } = session.data;
   return (
-    <div className="space-y-5">
-      <ProfileForm student={student} onSave={(updated) => setSession({ ok: true, data: { student: updated } })} />
-      <EmailChangeForm student={student} />
-      <LoginMethods student={student} status={status} />
-      <SignOut locale={locale} />
+    <div className={styles.accountGrid}>
+      <div className={styles.profile}>
+        <ProfileForm student={student} onSave={(updated) => setSession({ ok: true, data: { student: updated } })} />
+      </div>
+      <div className={styles.security}>
+        <EmailChangeForm student={student} />
+        <LoginMethods student={student} status={status} />
+      </div>
+      <div className={styles.signOut}><SignOut locale={locale} /></div>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import workspace from "./LearningWorkspace.module.css";
 import type { Locale } from "@/lib/content";
 import { learningCopy } from "./learning-copy";
 import Markdown from "react-markdown";
@@ -24,12 +25,12 @@ export function LessonBlocks({ blocks, endpoint, resumePositions, locale = "ar" 
 }) {
   const copy = learningCopy[locale];
   return (
-    <div className="space-y-7">
+    <div className={workspace.blocks}>
       {blocks.map((block) => {
         switch (block.type) {
           case "text":
             return (
-              <div key={block.id} className="max-w-[68ch] space-y-4 leading-relaxed text-subtle [&_a]:underline [&_h2]:text-2xl [&_h3]:text-xl [&_ol]:list-decimal [&_ol]:ps-5 [&_ul]:list-disc [&_ul]:ps-5">
+              <div key={block.id} className={workspace.prose}>
                 <Markdown components={{
                   p: ({ children }) => <p dir="auto" className="break-words">{children}</p>,
                   li: ({ children }) => <li dir="auto" className="break-words">{children}</li>,
@@ -77,7 +78,7 @@ export function LessonBlocks({ blocks, endpoint, resumePositions, locale = "ar" 
           case "resources":
             if (!block.items.length) return null;
             return (
-              <section key={block.id} aria-label={copy.resources} className="rounded-sm border border-border bg-surface p-4 sm:p-5">
+              <section key={block.id} aria-label={copy.resources} className={workspace.resources}>
                 <h2 className="text-base font-semibold">{copy.resources}</h2>
                 <ul className="mt-2 divide-y divide-border" role="list">
                   {block.items.map((item, index) => (
@@ -85,10 +86,11 @@ export function LessonBlocks({ blocks, endpoint, resumePositions, locale = "ar" 
                       <a
                         href={item.url}
                         download={item.kind === "download" || undefined}
-                        className="flex min-h-11 items-center gap-2 text-sm font-medium text-[var(--brand-primary)] underline-offset-4 hover:underline"
+                        className={workspace.resourceLink}
                       >
                         <LearningIcon name={item.kind === "download" ? "download" : "external"} className="size-4 shrink-0" />
                         <bdi className="min-w-0 [overflow-wrap:anywhere]">{item.label}</bdi>
+                        <span>{item.kind === "download" ? copy.downloadFile : copy.openLink}</span>
                       </a>
                     </li>
                   ))}

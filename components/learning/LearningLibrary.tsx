@@ -1,6 +1,7 @@
 import type { Locale } from "@/lib/content";
 import { learningCopy } from "./learning-copy";
 import styles from "./Learning.module.css";
+import workspace from "./LearningWorkspace.module.css";
 import Image from "next/image";
 import Link from "next/link";
 import type { CourseSummary } from "@/lib/learning/contracts";
@@ -19,25 +20,25 @@ export function LearningLibrary({ entries, locale = "ar" }: { entries: LibraryEn
 
   return (
     <div dir={locale === "ar" ? "rtl" : "ltr"} lang={locale} className={styles.learning}>
-    <div className="mx-auto w-full max-w-screen-xl px-4 pb-16 pt-10 sm:px-6 sm:pt-16">
-      <header className="mb-8 max-w-2xl space-y-3 sm:mb-10">
+    <div className={workspace.library}>
+      <header className={workspace.libraryHeading}>
         <p className="text-sm font-semibold text-[var(--brand-primary)]">{copy.learnWith}</p>
         <h1 className="text-4xl leading-tight sm:text-6xl">{copy.library}</h1>
         <p className="text-base leading-relaxed text-subtle">{copy.libraryIntro}</p>
       </header>
 
       {ordered.length ? (
-        <ul aria-label={copy.yourCourses} className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+        <ul aria-label={copy.yourCourses} className={workspace.libraryGrid}>
           {ordered.map(({ course, progress }, index) => {
             const href = `/courses/${encodeURIComponent(course.slug)}`;
             const featured = !!latest && index === 0;
             return (
-              <li key={course.slug} className={`min-w-0 ${featured ? "md:col-span-2 xl:col-span-3" : ""}`}>
-                <article className={`h-full overflow-hidden rounded-md border border-border bg-[var(--brand-background)] ${featured ? "md:grid md:grid-cols-[1.05fr_1fr]" : "flex flex-col"}`}>
-                  <div className={`relative aspect-video bg-surface ${featured ? "md:aspect-auto md:min-h-64" : ""}`}>
+              <li key={course.slug} className={`min-w-0 ${featured ? workspace.featuredEntry : ""}`}>
+                <article className={`${workspace.libraryCard} ${featured ? workspace.featuredCard : ""}`}>
+                  <div className={workspace.libraryCover}>
                     <Image src={course.cover.url} alt={course.cover.alt} fill unoptimized={course.cover.url.startsWith("https://")} sizes={featured ? "(min-width: 768px) 50vw, 100vw" : "(min-width: 1280px) 33vw, (min-width: 768px) 50vw, 100vw"} className={course.cover.url === "/images/logo.png" ? "object-contain p-8" : "object-cover"} />
                   </div>
-                  <div className="flex min-w-0 flex-1 flex-col gap-4 p-5 sm:p-7">
+                  <div className={workspace.libraryBody}>
                     {featured ? <p className="text-sm font-semibold text-[var(--brand-primary)]">{copy.pickUp}</p> : null}
                     <div className="space-y-2">
                       <h2 className="text-2xl leading-tight"><Link href={href} className="hover:underline"><bdi>{course.title}</bdi></Link></h2>
@@ -69,7 +70,7 @@ export function LearningLibrary({ entries, locale = "ar" }: { entries: LibraryEn
           })}
         </ul>
       ) : (
-        <section className="rounded-md border border-border bg-[var(--brand-background)] px-6 py-10 sm:p-12">
+        <section className={workspace.empty}>
           <span className="mb-5 grid size-12 place-items-center rounded-full bg-[var(--brand-surface)] text-[var(--brand-primary)]"><LearningIcon name="list" className="size-6" /></span>
           <h2 className="text-2xl">{copy.emptyTitle}</h2>
           <p className="mb-5 mt-2 max-w-lg text-sm leading-relaxed text-subtle">{copy.emptyDescription}</p>

@@ -1,6 +1,7 @@
 import type { Locale } from "@/lib/content";
 import { learningCopy } from "./learning-copy";
 import styles from "./Learning.module.css";
+import workspace from "./LearningWorkspace.module.css";
 import Link from "next/link";
 import { Button } from "@/components/Button";
 import { Container } from "@/components/Container";
@@ -39,11 +40,11 @@ export function LessonExperience({ detail, progress, locale = "ar" }: {
   );
 
   return (
-    <div dir={direction} lang={locale} className={styles.learning}>
+    <div dir={direction} lang={locale} className={`${styles.learning} ${workspace.player}`}>
       <Container className={styles.playerGrid}>
         <div dir={direction} className="min-w-0 space-y-6">
-          <header className="space-y-3">
-            <Link href={courseHref} className="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-[var(--brand-primary)] hover:underline">
+          <header className={workspace.playerHeader}>
+            <Link href={courseHref} className={workspace.courseBack}>
               <LearningIcon name={locale === "ar" ? "right" : "left"} />
               <bdi>{course.title}</bdi>
             </Link>
@@ -58,14 +59,14 @@ export function LessonExperience({ detail, progress, locale = "ar" }: {
             {lesson.description ? <p className="text-sm leading-relaxed text-subtle" dir="auto">{lesson.description}</p> : null}
           </header>
 
-          <details className="group/mobile rounded-sm border border-border bg-surface lg:hidden">
+          <details className={`${workspace.mobileCurriculum} group/mobile`}>
             <summary className="flex min-h-12 cursor-pointer list-none items-center gap-2.5 rounded-sm px-3 py-2 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-focus [&::-webkit-details-marker]:hidden">
               <LearningIcon name="list" />
               <span className="flex-1">{copy.curriculum}</span>
               <LearningIcon name="down" className="size-4 transition-transform group-open/mobile:rotate-180" />
             </summary>
             {curriculumProgress ? <div className="border-t border-border bg-[var(--brand-background)] px-4 py-3">{curriculumProgress}</div> : null}
-            <nav aria-label={copy.curriculum} className="border-t border-border p-2.5">
+            <nav aria-label={copy.curriculum} className={`${workspace.curriculumNav} border-t border-border p-2.5`}>
               {curriculumList}
             </nav>
           </details>
@@ -108,13 +109,13 @@ export function LessonExperience({ detail, progress, locale = "ar" }: {
           ) : null}
         </div>
 
-        <aside dir={direction} className={styles.sidebar}>
+        <aside dir={direction} className={`${styles.sidebar} ${workspace.sidebar}`}>
           <header className="border-b border-border p-4">
             <h2 className="text-lg">{copy.curriculum}</h2>
             <p className="mt-1 text-xs text-subtle">{copy.lessonCount}: <bdi dir="ltr">{lessons.length}</bdi></p>
             {curriculumProgress ? <div className="mt-4">{curriculumProgress}</div> : null}
           </header>
-          <nav aria-label={copy.curriculum} className="max-h-[calc(100vh-10rem)] overflow-y-auto p-3">
+          <nav aria-label={copy.curriculum} className={`${workspace.curriculumNav} max-h-[calc(100vh-10rem)] overflow-y-auto py-3`}>
             {curriculumList}
           </nav>
         </aside>

@@ -1,0 +1,7 @@
+.accountGrid { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(0,.9fr); align-items: start; gap: 1.5rem; }
+.profile, .security { min-width: 0; }
+.security { display: grid; gap: 1.5rem; }
+.accountGrid h2 { font-size: 1.75rem; line-height: 1.3; }
+.accountGrid a { display: inline-flex; min-height: 44px; align-items: center; }
+.signOut { grid-column: 1 / -1; padding-block-start: .5rem; }
+@media(max-width:767px) { .accountGrid { grid-template-columns: minmax(0,1fr); } }
