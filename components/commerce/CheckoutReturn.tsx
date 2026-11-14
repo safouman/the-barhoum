@@ -97,7 +97,7 @@ export function CheckoutReturn({ orderId }: { orderId: string }) {
         {result.error === "login" ? (
           <>
             <Notice error>Sign in with the account you used at checkout to view this order.</Notice>
-            <Button href={orderSignInHref(orderId)} className="!text-[#14312e]">Sign in</Button>
+            <Button href={orderSignInHref(orderId)}>Sign in</Button>
           </>
         ) : result.error === "missing" ? (
           <>
@@ -131,11 +131,11 @@ export function CheckoutReturn({ orderId }: { orderId: string }) {
         {pending.has(order.status) ? (
           <Button onClick={refresh} disabled={refreshing} variant="ghost">{refreshing ? "Checking…" : "Check payment status"}</Button>
         ) : order.status === "fulfilled" ? (
-          <Button href={courseHref} className="!text-[#14312e]">Start course</Button>
+          <Button href={courseHref}>Start course</Button>
         ) : order.status === "support_required" ? (
           <Link href="/#lead-form" className={studentLink}>Contact support</Link>
         ) : (
-          <Button href={courseHref} className="!text-[#14312e]">Return to course</Button>
+          <Button href={courseHref}>Return to course</Button>
         )}
         {pending.has(order.status) ? <Link href="/#lead-form" className={studentLink}>Contact support</Link> : null}
         <Link href="/my-learning" className={studentLink}>My Learning</Link>
