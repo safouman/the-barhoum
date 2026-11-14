@@ -1,3 +1,5 @@
+import { learningCopy } from "@/components/learning/learning-copy";
+import { resolveLocale } from "@/lib/i18n.server";
 import { readLessonProgress } from "@/lib/learning/progress-reader";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -8,7 +10,10 @@ import { getPublishedLesson } from "@/lib/learning/payload-reader";
 import { readStudentSession } from "@/lib/student-auth/session";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Lesson preview", robots: { index: false, follow: false } };
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await resolveLocale();
+  return { title: learningCopy[locale].lesson, robots: { index: false, follow: false } };
+}
 
 export default async function LessonPage({
   params,
@@ -16,6 +21,7 @@ export default async function LessonPage({
   params: Promise<{ courseSlug: string; lessonId: string }>;
 }) {
   const { courseSlug, lessonId } = await params;
+  const locale = await resolveLocale();
   const student = await readStudentSession();
   const demo = Boolean(getDemoCourses());
   const detail = demo ? getDemoLesson(courseSlug, lessonId) : await getPublishedLesson(courseSlug, lessonId, student?.id);
@@ -27,8 +33,8 @@ export default async function LessonPage({
     : student && detail.lesson.access === "unlocked" ? "course_first_lesson_opened" : null;
   return (
     <>
-      {!demo && viewEvent ? <CourseFunnelTracker name={viewEvent} courseKey={detail.course.slug} /> : null}
-      <LessonExperience detail={detail} progress={progress} />
+      {!demo && viewEvent ? <CourseFunnelTracker name={viewEvent} locale={locale} courseKey={detail.course.slug} /> : null}
+      <LessonExperience detail={detail} progress={progress} locale={locale} />
     </>
   );
 }

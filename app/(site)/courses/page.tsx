@@ -1,3 +1,4 @@
+import { catalogCopy } from "@/components/learning/catalog-copy";
 import { headers } from "next/headers";
 import { resolveLocale } from "@/lib/i18n.server";
 import { CourseCatalogView } from "@/components/learning/CourseCatalogView";
@@ -12,7 +13,14 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata() {
   const courses = await listDiscoverableCourses();
-  return courseMetadata({ index: courses.length > 0 });
+  const locale = await resolveLocale();
+  const metadata = courseMetadata({ index: courses.length > 0 });
+  const { title, description } = catalogCopy[locale];
+  return {
+    ...metadata, title, description,
+    openGraph: { ...metadata.openGraph, title, description },
+    twitter: { ...metadata.twitter, title, description },
+  };
 }
 
 const technicalCourseSlugs = new Set([

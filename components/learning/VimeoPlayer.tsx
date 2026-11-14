@@ -1,5 +1,8 @@
 "use client";
 
+import type { Locale } from "@/lib/content";
+import { learningCopy } from "./learning-copy";
+import styles from "./Learning.module.css";
 import { useEffect, useRef, useState } from "react";
 import type { VideoResume } from "@/lib/learning/progress-contract";
 import { VimeoEmbed } from "./VimeoEmbed";
@@ -20,13 +23,15 @@ function resumeUrl(url: string, seconds: number) {
   return startUrl.href;
 }
 
-export function VimeoResumePlayer({ title, url, endpoint, videoId, initial }: {
+export function VimeoResumePlayer({ title, url, endpoint, videoId, initial, locale = "ar" }: {
   title: string;
   url: string;
   endpoint: string;
   videoId: string;
   initial?: VideoResume;
+  locale?: Locale;
 }) {
+  const copy = learningCopy[locale];
   const iframe = useRef<HTMLIFrameElement>(null);
   const initialResume = useRef(initial);
   const [resumeAt, setResumeAt] = useState<number | null>(null);
@@ -176,10 +181,10 @@ export function VimeoResumePlayer({ title, url, endpoint, videoId, initial }: {
   return (
     <div className="space-y-2">
       <VimeoEmbed key={resumedUrl ?? url} title={title} url={resumedUrl ?? url} frameRef={iframe} autoplay={resumedUrl !== null} />
-      {resumeError ? <p role="status" className="text-sm">تعذّر الانتقال إلى <bdi dir="ltr">{timeLabel(requestedTime ?? 0)}</bdi>. أوقف الفيديو مؤقتًا ثم شغّله مجددًا، أو استخدم شريط التقدّم.</p> : null}
+      {resumeError ? <p role="status" className="text-sm">{copy.resumeError} <bdi dir="ltr">{timeLabel(requestedTime ?? 0)}</bdi>. {copy.resumeHelp}</p> : null}
       {resumeAt !== null ? (
-        <button type="button" onClick={resume} className="inline-flex min-h-11 items-center rounded-full border border-[#12685f] px-4 py-2 text-sm font-semibold text-[#12685f] hover:bg-[#e4f8f5]">
-          تابع من <bdi dir="ltr" className="ms-1 tabular-nums">{timeLabel(resumeAt)}</bdi>
+        <button type="button" onClick={resume} className={styles.secondaryAction}>
+          {copy.resume} <bdi dir="ltr" className="ms-1 tabular-nums">{timeLabel(resumeAt)}</bdi>
         </button>
       ) : null}
     </div>

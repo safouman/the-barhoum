@@ -1,0 +1,144 @@
+.learning {
+  --color-background: var(--brand-background);
+  --color-surface: var(--brand-surface);
+  --color-text: var(--brand-text);
+  --color-subtle: var(--brand-text);
+  --color-primary: var(--brand-primary);
+  --color-accent: var(--brand-background);
+  --color-border: var(--brand-surface);
+  --color-focus: var(--brand-primary);
+  min-width: 0;
+  color: var(--brand-text);
+  background: var(--brand-background);
+  font-family: var(--brand-body);
+}
+
+.learning :where(h1, h2, h3) {
+  color: var(--brand-text);
+  font-family: var(--brand-display);
+  font-weight: 500;
+}
+
+.learning[lang="ar"],
+.learning[lang="ar"] :where(h1, h2, h3) {
+  font-family: var(--brand-arabic);
+}
+
+.learning :global(.btn) {
+  min-height: 44px;
+  border-radius: 999px;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 500;
+}
+
+.learning :global(.btn-solid) {
+  border-color: var(--brand-primary);
+  color: var(--brand-background);
+  background: var(--brand-primary);
+}
+
+.learning :global(.btn-outline) {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+  background: transparent;
+}
+
+.learning :where(a, button, summary):focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 4px;
+}
+
+.primaryAction {
+  display: inline-flex;
+  min-height: 44px;
+  max-width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid var(--brand-primary);
+  border-radius: 999px;
+  padding: 0.75rem 1.25rem;
+  color: var(--brand-background);
+  background: var(--brand-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.secondaryAction {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px solid var(--brand-primary);
+  border-radius: 999px;
+  padding: 0.75rem 1.25rem;
+  color: var(--brand-primary);
+  background: transparent;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.primaryAction:hover,
+.secondaryAction:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.primaryAction:disabled,
+.secondaryAction:disabled {
+  opacity: 0.6;
+}
+
+.playerGrid {
+  display: grid;
+  direction: ltr;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 2rem;
+  padding-block: 2rem 4rem;
+}
+
+.playerTitle {
+  overflow-wrap: anywhere;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.2;
+}
+
+.sidebar {
+  display: none;
+  min-width: 0;
+  border: 1px solid var(--brand-surface);
+  border-radius: 1.5rem;
+  background: var(--brand-background);
+}
+
+.progressTrack {
+  height: 0.375rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--brand-surface);
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--brand-primary);
+}
+
+@media (min-width: 1024px) {
+  .playerGrid {
+    grid-template-columns: minmax(0, 1fr) minmax(17rem, 0.44fr);
+    gap: 2.5rem;
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 1.5rem;
+    display: block;
+  }
+}

@@ -177,3 +177,8 @@
     transition: none;
   }
 }
+
+.logoCover {
+  object-fit: contain;
+  padding: 2rem;
+}

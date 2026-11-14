@@ -1,5 +1,6 @@
 "use client";
 
+import type { Locale } from "@/lib/content";
 import { useEffect, useRef } from "react";
 import { event } from "@/lib/analytics";
 import { onConsentChange } from "@/lib/consent";
@@ -12,9 +13,11 @@ type CourseViewEvent =
 export function CourseFunnelTracker({
   name,
   courseKey,
+  locale = "ar",
 }: {
   name: CourseViewEvent;
   courseKey: string;
+  locale?: Locale;
 }) {
   const lastView = useRef<string | null>(null);
 
@@ -30,7 +33,7 @@ export function CourseFunnelTracker({
           // Privacy settings may make session storage unavailable.
         }
       }
-      if (!event(name, { course_key: courseKey, locale: "ar" })) return;
+      if (!event(name, { course_key: courseKey, locale })) return;
 
       lastView.current = key;
       if (firstLesson) {
@@ -51,7 +54,7 @@ export function CourseFunnelTracker({
       unsubscribe();
       window.removeEventListener("barhoum-analytics-ready", trackView);
     };
-  }, [courseKey, name]);
+  }, [courseKey, name, locale]);
 
   return null;
 }

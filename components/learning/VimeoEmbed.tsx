@@ -2,7 +2,7 @@ export function VimeoEmbed({ title, url, frameRef, autoplay }: { title: string; 
   return (
     <iframe
       ref={frameRef}
-      className="block aspect-video w-full rounded-md bg-[#14312e]"
+      className="block aspect-video w-full rounded-md bg-[var(--brand-text)]"
       src={url}
       title={title}
       allow={autoplay ? "autoplay; fullscreen; picture-in-picture" : "fullscreen; picture-in-picture"}

@@ -1,11 +1,15 @@
 "use client";
 
+import type { Locale } from "@/lib/content";
+import { learningCopy } from "./learning-copy";
+import styles from "./Learning.module.css";
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Completion, LessonTarget } from "@/lib/learning/progress-contract";
 import { LearningIcon } from "./LearningIcon";
 
-export function LessonCompletion({ endpoint, initial, hasNext }: { endpoint: string; initial: Completion; hasNext: boolean }) {
+export function LessonCompletion({ endpoint, initial, hasNext, locale = "ar" }: { endpoint: string; initial: Completion; hasNext: boolean; locale?: Locale }) {
+  const copy = learningCopy[locale];
   const router = useRouter();
   const [completion, setCompletion] = useState(initial);
   const [message, setMessage] = useState("");
@@ -33,20 +37,20 @@ export function LessonCompletion({ endpoint, initial, hasNext }: { endpoint: str
       const result = await response.json() as { completion?: Completion; current?: Completion; nextUnfinishedLesson?: LessonTarget | null };
       if (response.status === 409 && result.current) {
         setCompletion(result.current);
-        setMessage("تغيّر تقدّم هذا الدرس على جهاز آخر. يظهر الآن آخر تقدّم محفوظ.");
+        setMessage(copy.syncConflict);
         router.refresh();
         return;
       }
       if (!response.ok || !result.completion) {
-        setMessage(response.status === 401 || response.status === 404 ? "تغيّرت صلاحية الوصول. حدّث الصفحة قبل حفظ التقدّم." : "تعذّر حفظ التقدّم. حاول مجددًا.");
+        setMessage(response.status === 401 || response.status === 404 ? copy.accessChanged : copy.saveError);
         return;
       }
       setCompletion(result.completion);
-      setMessage(completed ? "تم تحديد الدرس كمكتمل." : "تم إلغاء إكمال الدرس.");
+      setMessage(completed ? copy.marked : copy.unmarked);
       if (completed && result.nextUnfinishedLesson) router.push(result.nextUnfinishedLesson.href);
       else router.refresh();
     } catch {
-      setMessage("تعذّر حفظ التقدّم. حاول مجددًا.");
+      setMessage(copy.saveError);
     } finally {
       inFlight.current = false;
       setPending(false);
@@ -54,23 +58,23 @@ export function LessonCompletion({ endpoint, initial, hasNext }: { endpoint: str
   }
 
   return (
-    <section aria-label="إكمال الدرس" className="flex flex-wrap items-center justify-between gap-4 rounded-md border border-[#d2e6e0] bg-[#f2f8f6] p-4 sm:p-5">
+    <section aria-label={copy.completion} className="flex flex-wrap items-center justify-between gap-4 rounded-md border border-[var(--brand-surface)] bg-[var(--brand-surface)] p-4 sm:p-5">
       <div>
-        <p className="flex items-center gap-2 text-sm font-semibold text-[#14312e]">
+        <p className="flex items-center gap-2 text-sm font-semibold text-[var(--brand-text)]">
           {completion.completed ? <LearningIcon name="check" /> : null}
-          {completion.completed ? "الدرس مكتمل" : "هل أنهيت هذا الدرس؟"}
+          {completion.completed ? copy.lessonComplete : copy.finishedQuestion}
         </p>
-        <p className="mt-1 text-sm text-subtle">{completion.completed ? "يمكنك العودة إلى هذا الدرس في أي وقت." : "حدّد الدرس كمكتمل عندما تنتهي منه."}</p>
-        <p role="status" className={message ? "mt-2 text-sm text-[#0b625b]" : "sr-only"}>{message}</p>
+        <p className="mt-1 text-sm text-subtle">{completion.completed ? copy.reviewAnytime : copy.completeHint}</p>
+        <p role="status" className={message ? "mt-2 text-sm text-[var(--brand-primary)]" : "sr-only"}>{message}</p>
       </div>
       <button
         type="button"
         disabled={pending}
         onClick={() => void update(!completion.completed)}
-        className={`inline-flex min-h-11 items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold disabled:opacity-60 ${completion.completed ? "border border-[#12685f] text-[#12685f] hover:bg-white" : "bg-[#12685f] text-white hover:bg-[#0b504a]"}`}
+        className={completion.completed ? styles.secondaryAction : styles.primaryAction}
       >
-        {pending ? "جارٍ الحفظ…" : completion.completed ? "إلغاء الإكمال" : hasNext ? "أكمل وتابع" : "حدّد كمكتمل"}
-        {!completion.completed && !pending ? <LearningIcon name={hasNext ? "left" : "check"} /> : null}
+        {pending ? copy.saving : completion.completed ? copy.markIncomplete : hasNext ? copy.completeContinue : copy.markComplete}
+        {!completion.completed && !pending ? <LearningIcon name={hasNext ? locale === "ar" ? "left" : "right" : "check"} /> : null}
       </button>
     </section>
   );

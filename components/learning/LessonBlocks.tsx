@@ -1,3 +1,5 @@
+import type { Locale } from "@/lib/content";
+import { learningCopy } from "./learning-copy";
 import Markdown from "react-markdown";
 import type { LessonBlock } from "@/lib/learning/contracts";
 import type { VideoResume } from "@/lib/learning/progress-contract";
@@ -14,11 +16,13 @@ function vimeoId(url?: string) {
   return url?.match(/^https:\/\/player\.vimeo\.com\/video\/(\d+)(?:[?#]|$)/)?.[1];
 }
 
-export function LessonBlocks({ blocks, endpoint, resumePositions }: {
+export function LessonBlocks({ blocks, endpoint, resumePositions, locale = "ar" }: {
   blocks: LessonBlock[];
   endpoint?: string | null;
   resumePositions?: VideoResume[];
+  locale?: Locale;
 }) {
+  const copy = learningCopy[locale];
   return (
     <div className="space-y-7">
       {blocks.map((block) => {
@@ -45,11 +49,11 @@ export function LessonBlocks({ blocks, endpoint, resumePositions }: {
                     <figure key={index} className="space-y-2">
                       {video.vimeoEmbedUrl ? (
                         resumable ? (
-                          <VimeoResumePlayer key={`${endpoint}:${id}`} title={video.title} url={video.vimeoEmbedUrl} endpoint={endpoint} videoId={id} initial={resumePositions?.find((position) => position.videoId === id)} />
+                          <VimeoResumePlayer locale={locale} key={`${endpoint}:${id}`} title={video.title} url={video.vimeoEmbedUrl} endpoint={endpoint} videoId={id} initial={resumePositions?.find((position) => position.videoId === id)} />
                         ) : <VimeoEmbed title={video.title} url={video.vimeoEmbedUrl} />
                       ) : video.playbackUrl ? (
                         <video
-                          className="aspect-video w-full rounded-sm bg-[#14312e] object-contain"
+                          className="aspect-video w-full rounded-sm bg-[var(--brand-text)] object-contain"
                           src={video.playbackUrl}
                           poster={video.posterUrl}
                           controls
@@ -57,11 +61,11 @@ export function LessonBlocks({ blocks, endpoint, resumePositions }: {
                           preload="none"
                           aria-label={video.title}
                         >
-                          متصفّحك لا يدعم تشغيل الفيديو.
+                          {copy.unsupportedVideo}
                         </video>
                       ) : (
                         <div className="grid aspect-video place-items-center rounded-sm bg-surface p-4 text-center text-sm text-subtle">
-                          تشغيل الفيديو غير متاح الآن.
+                          {copy.unavailableVideo}
                         </div>
                       )}
                       <figcaption className="text-xs text-subtle"><bdi>{video.title}</bdi></figcaption>
@@ -73,15 +77,15 @@ export function LessonBlocks({ blocks, endpoint, resumePositions }: {
           case "resources":
             if (!block.items.length) return null;
             return (
-              <section key={block.id} aria-label="مواد الدرس" className="rounded-sm border border-border bg-surface p-4 sm:p-5">
-                <h2 className="text-base font-semibold">مواد الدرس</h2>
+              <section key={block.id} aria-label={copy.resources} className="rounded-sm border border-border bg-surface p-4 sm:p-5">
+                <h2 className="text-base font-semibold">{copy.resources}</h2>
                 <ul className="mt-2 divide-y divide-border" role="list">
                   {block.items.map((item, index) => (
                     <li key={index}>
                       <a
                         href={item.url}
                         download={item.kind === "download" || undefined}
-                        className="flex min-h-11 items-center gap-2 text-sm font-medium text-[#12685f] underline-offset-4 hover:underline"
+                        className="flex min-h-11 items-center gap-2 text-sm font-medium text-[var(--brand-primary)] underline-offset-4 hover:underline"
                       >
                         <LearningIcon name={item.kind === "download" ? "download" : "external"} className="size-4 shrink-0" />
                         <bdi className="min-w-0 [overflow-wrap:anywhere]">{item.label}</bdi>

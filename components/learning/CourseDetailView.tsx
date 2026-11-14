@@ -1,3 +1,6 @@
+import type { Locale } from "@/lib/content";
+import { learningCopy } from "./learning-copy";
+import styles from "./Learning.module.css";
 import Image from "next/image";
 import Link from "next/link";
 import { CourseFunnelTracker } from "@/components/analytics/CourseFunnelTracker";
@@ -13,7 +16,8 @@ import { LearningIcon } from "./LearningIcon";
 import { ProgressMeter } from "./ProgressMeter";
 import { lessonHref, orderedLessons } from "./curriculum";
 
-export function CourseDetailView({ course, commerce, progress }: { course: CourseDetail; commerce?: CourseCommerce; progress?: CourseProgressView | null }) {
+export function CourseDetailView({ course, commerce, progress, locale = "ar" }: { course: CourseDetail; commerce?: CourseCommerce; progress?: CourseProgressView | null; locale?: Locale }) {
+  const copy = learningCopy[locale];
   const lessons = orderedLessons(course.curriculum);
   const preview = lessons.find(({ access }) => access === "free");
   const firstOwned = commerce?.ownership.base ? lessons.find(({ access }) => access === "unlocked") ?? preview : undefined;
@@ -40,48 +44,48 @@ export function CourseDetailView({ course, commerce, progress }: { course: Cours
   ].filter(Boolean).join(" · ");
 
   return (
-    <div dir="rtl" lang="ar" className="text-text">
-      {commerce ? <CourseFunnelTracker name="course_detail_viewed" courseKey={course.slug} /> : null}
-      <section className="border-b border-border bg-[#f2f8f6] py-8 sm:py-9">
+    <div dir={locale === "ar" ? "rtl" : "ltr"} lang={locale} className={styles.learning}>
+      {commerce ? <CourseFunnelTracker name="course_detail_viewed" locale={locale} courseKey={course.slug} /> : null}
+      <section className="border-b border-border bg-[var(--brand-surface)] py-8 sm:py-9">
         <Container className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-14">
           <div className="space-y-4">
-            <p className="text-sm font-semibold text-[#12685f]">تعلّم مع برهوم</p>
+            <p className="text-sm font-semibold text-[var(--brand-primary)]">{copy.learnWith}</p>
             <h1 className="text-display leading-tight"><bdi>{course.title}</bdi></h1>
             <p className="text-lead max-w-[55ch]" dir="auto">{course.description}</p>
-            <p className="text-sm text-subtle">عدد الدروس: <bdi dir="ltr">{lessons.length}</bdi>{info ? <> · <bdi>{info}</bdi></> : null}</p>
+            <p className="text-sm text-subtle">{copy.lessonCount}: <bdi dir="ltr">{lessons.length}</bdi>{info ? <> · <bdi>{info}</bdi></> : null}</p>
             {commerce?.ownership.base ? (
               <div className="space-y-3">
-                <p className="text-sm font-semibold text-[#12685f]">هذه الدورة ضمن دوراتك</p>
-                {progress ? <ProgressMeter label="تقدّمك في الدورة" count={progress.courseProgress.base} /> : null}
+                <p className="text-sm font-semibold text-[var(--brand-primary)]">{copy.courseOwned}</p>
+                {progress ? <ProgressMeter label={copy.courseProgress} locale={locale} count={progress.courseProgress.base} /> : null}
                 {progress?.continueTarget ? (
-                  <Button href={progress.continueTarget.href} className="!text-[#14312e] max-sm:w-full">
-                    {progress.continueState === "review" ? "راجع الدورة" : progress.continueState === "start" ? "ابدأ الدورة" : "تابع التعلّم"}
+                  <Button href={progress.continueTarget.href} className="max-sm:w-full">
+                    {copy[progress.continueState]}
                   </Button>
                 ) : firstOwned ? (
-                  <Button href={lessonHref(course.slug, firstOwned.id)} className="!text-[#14312e] max-sm:w-full">تابع التعلّم</Button>
+                  <Button href={lessonHref(course.slug, firstOwned.id)} className="max-sm:w-full">{copy.continue}</Button>
                 ) : null}
               </div>
             ) : (baseOffer || baseComingSoon || basePriceUnavailable) && commerce ? (
-              <section aria-label="شراء الدورة" className="space-y-3 rounded-sm border border-border bg-white p-4">
-                {baseOffer ? <p className="text-2xl font-semibold"><bdi dir="ltr" className="tabular-nums">{formatOfferPrice(baseOffer)}</bdi> <span className="text-sm font-normal text-subtle">دفعة واحدة</span></p> : null}
-                <p className="text-sm text-subtle">تشمل الدورة <bdi dir="ltr">{regularLessons}</bdi> من الدروس الأساسية، بما فيها أي دروس أساسية تضاف لاحقًا. الوحدات الإضافية تُشترى بشكل منفصل.</p>
-                {baseComingSoon ? <p className="text-sm font-semibold">قريبًا</p> : baseOffer ? (
-                  <PurchaseButton offerId={baseOffer.id} courseKey={course.slug} signedIn={commerce.signedIn} signInHref={signInHref} courseHref={courseHref}>اشترِ الدورة</PurchaseButton>
-                ) : <p className="text-sm font-semibold">السعر غير متاح حاليًا</p>}
+              <section aria-label={copy.purchase} className="space-y-3 rounded-sm border border-border bg-[var(--brand-background)] p-4">
+                {baseOffer ? <p className="text-2xl font-semibold"><bdi dir="ltr" className="tabular-nums">{formatOfferPrice(baseOffer)}</bdi> <span className="text-sm font-normal text-subtle">{copy.once}</span></p> : null}
+                <p className="text-sm text-subtle">{copy.includes} <bdi dir="ltr">{regularLessons}</bdi> {copy.baseLessons}</p>
+                {baseComingSoon ? <p className="text-sm font-semibold">{copy.comingSoon}</p> : baseOffer ? (
+                  <PurchaseButton locale={locale} offerId={baseOffer.id} courseKey={course.slug} signedIn={commerce.signedIn} signInHref={signInHref} courseHref={courseHref}>{copy.buy}</PurchaseButton>
+                ) : <p className="text-sm font-semibold">{copy.priceUnavailable}</p>}
                 {preview ? (
-                  <Link href={lessonHref(course.slug, preview.id)} className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#12685f] underline underline-offset-4">
-                    <LearningIcon name="play" /> شاهد الدرس المجاني
+                  <Link href={lessonHref(course.slug, preview.id)} className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[var(--brand-primary)] underline underline-offset-4">
+                    <LearningIcon name="play" /> {copy.freeLesson}
                   </Link>
                 ) : null}
               </section>
             ) : preview ? (
-              <Button href={lessonHref(course.slug, preview.id)} className="!text-[#14312e] max-sm:w-full">
+              <Button href={lessonHref(course.slug, preview.id)} className="max-sm:w-full">
                 <LearningIcon name="play" />
-                شاهد الدرس المجاني
+                {copy.freeLesson}
               </Button>
             ) : null}
           </div>
-          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-md bg-[#14312e] shadow-sm">
+          <div className={`relative aspect-[16/10] w-full overflow-hidden rounded-md shadow-sm ${course.cover.url === "/images/logo.png" ? "bg-[var(--brand-background)]" : "bg-[var(--brand-text)]"}`}>
             <Image
               src={course.cover.url}
               alt={course.cover.alt}
@@ -89,7 +93,7 @@ export function CourseDetailView({ course, commerce, progress }: { course: Cours
               fill
               preload
               sizes="(min-width: 1024px) 44vw, 100vw"
-              className="object-cover object-center"
+              className={course.cover.url === "/images/logo.png" ? "object-contain p-8" : "object-cover object-center"}
             />
           </div>
         </Container>
@@ -98,23 +102,23 @@ export function CourseDetailView({ course, commerce, progress }: { course: Cours
       <Container className="grid gap-9 py-8 sm:py-9 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.52fr)] lg:gap-12">
         <section id="curriculum" aria-labelledby="curriculum-title" className="min-w-0 space-y-5">
           <div className="space-y-1">
-            <h2 id="curriculum-title" className="text-3xl">محتوى الدورة</h2>
-            <p className="text-sm text-subtle">تصفّح الدروس بالترتيب أو ابدأ بالدرس المجاني.</p>
+            <h2 id="curriculum-title" className="text-3xl">{copy.curriculum}</h2>
+            <p className="text-sm text-subtle">{copy.curriculumIntro}</p>
           </div>
-          <CurriculumList curriculum={course.curriculum} courseSlug={course.slug} />
+          <CurriculumList locale={locale} curriculum={course.curriculum} courseSlug={course.slug} />
           {upgrades.length > 0 && commerce ? (
             <section aria-labelledby="upgrades-title" className="space-y-3 pt-3">
-              <h2 id="upgrades-title" className="text-2xl">الوحدات الإضافية</h2>
+              <h2 id="upgrades-title" className="text-2xl">{copy.premium}</h2>
               <ul role="list" className="space-y-3">
                 {upgrades.map(({ module, owned, offer, comingSoon }) => (
                   <li key={module.id} className="space-y-3 rounded-sm border border-border bg-surface p-4">
                     <h3 className="text-lg"><bdi>{module.title}</bdi></h3>
-                    {owned ? <p className="text-sm font-semibold text-[#12685f]">لديك وصول إلى هذه الوحدة</p> : comingSoon ? <p className="text-sm font-semibold">قريبًا</p> : offer ? (
+                    {owned ? <p className="text-sm font-semibold text-[var(--brand-primary)]">{copy.moduleOwned}</p> : comingSoon ? <p className="text-sm font-semibold">{copy.comingSoon}</p> : offer ? (
                       <>
-                        <p className="text-sm text-subtle"><bdi dir="ltr" className="tabular-nums">{formatOfferPrice(offer)}</bdi> · دفعة واحدة</p>
-                        <PurchaseButton offerId={offer.id} courseKey={course.slug} offerCategory="premium_module" signedIn={commerce.signedIn} signInHref={signInHref} courseHref={courseHref}>اشترِ الوحدة</PurchaseButton>
+                        <p className="text-sm text-subtle"><bdi dir="ltr" className="tabular-nums">{formatOfferPrice(offer)}</bdi> · {copy.once}</p>
+                        <PurchaseButton locale={locale} offerId={offer.id} courseKey={course.slug} offerCategory="premium_module" signedIn={commerce.signedIn} signInHref={signInHref} courseHref={courseHref}>{copy.buyModule}</PurchaseButton>
                       </>
-                    ) : <p className="text-sm font-semibold">السعر غير متاح حاليًا</p>}
+                    ) : <p className="text-sm font-semibold">{copy.priceUnavailable}</p>}
                   </li>
                 ))}
               </ul>
@@ -123,11 +127,11 @@ export function CourseDetailView({ course, commerce, progress }: { course: Cours
         </section>
         {course.learningOutcomes?.length ? (
           <section aria-labelledby="outcomes-title" className="self-start rounded-md border border-border bg-surface p-5 sm:p-6">
-            <h2 id="outcomes-title" className="text-xl">ماذا ستتعلّم؟</h2>
+            <h2 id="outcomes-title" className="text-xl">{copy.outcomes}</h2>
             <ul role="list" className="mt-4 space-y-3">
               {course.learningOutcomes.map((outcome) => (
                 <li key={outcome} className="flex gap-2.5 text-sm leading-relaxed text-subtle">
-                  <LearningIcon name="check" className="mt-1 size-4 shrink-0 text-[#12685f]" />
+                  <LearningIcon name="check" className="mt-1 size-4 shrink-0 text-[var(--brand-primary)]" />
                   <span dir="auto">{outcome}</span>
                 </li>
               ))}

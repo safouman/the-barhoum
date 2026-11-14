@@ -37,7 +37,7 @@ export function CourseCard({ course, commerce, owned = commerce?.ownership.base 
           unoptimized={course.cover.url.startsWith("https://")}
           fill
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-          className={styles.coverImage}
+          className={course.cover.url === "/images/logo.png" ? `${styles.coverImage} ${styles.logoCover}` : styles.coverImage}
         />
       </div>
       <div className={styles.cardBody}>
