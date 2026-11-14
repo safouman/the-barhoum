@@ -13,6 +13,7 @@ import type { Locale, SiteConfig } from "@/lib/content";
 import styles from "./SiteHeader.module.css";
 
 const labels = {
+    fr: { skip: "Aller au contenu principal", primary: "Navigation principale", menu: "Menu", courses: "Cours", entry: "Connexion / Inscription", library: "Mes cours", account: "Mon compte" },
     en: { skip: "Skip to main content", primary: "Primary", menu: "Menu", courses: "Courses", entry: "Sign in / Register", library: "My Learning", account: "Account" },
     ar: { skip: "انتقل إلى المحتوى الرئيسي", primary: "التنقل الرئيسي", menu: "القائمة", courses: "الدورات", entry: "دخول / تسجيل", library: "دروسي", account: "حسابي" },
 };

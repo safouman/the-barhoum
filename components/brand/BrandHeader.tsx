@@ -45,7 +45,7 @@ export function BrandHeader({ locale: initialLocale, signedIn }: { locale: Local
     setLocale(value);
     const params = new URLSearchParams(search.toString());
     params.set("lang", value);
-    router.replace(pathname + "?" + params, { scroll: false });
+    router.replace(pathname + "?" + params + window.location.hash, { scroll: false });
   }
 
   return (

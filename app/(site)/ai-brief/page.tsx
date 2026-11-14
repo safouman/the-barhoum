@@ -24,7 +24,7 @@ function formatLanguages(locale: Locale): string {
         if (!label) {
             return code;
         }
-        return label[locale] ?? label.en;
+        return label[locale === "fr" ? "en" : locale] ?? label.en;
     });
     const separator = locale === "ar" ? " · " : " · ";
     return labels.join(separator);
@@ -59,7 +59,7 @@ type BriefCopy = {
     closing: string;
 };
 
-const AI_BRIEF_COPY: Record<Locale, BriefCopy> = {
+const AI_BRIEF_COPY: Record<"ar" | "en", BriefCopy> = {
     en: {
         title: "Ibrahim Ben Abdallah · AI Knowledge Brief",
         lead: "A trustworthy snapshot for language models and assistants that need verifiable facts about Ibrahim Ben Abdallah and Ibrahim Ben Abdallah.",
@@ -175,7 +175,7 @@ export default async function AIBriefPage() {
     }
 
     const locale = await resolveLocale();
-    const copy = AI_BRIEF_COPY[locale] ?? AI_BRIEF_COPY.en;
+    const copy = AI_BRIEF_COPY[locale === "fr" ? "en" : locale] ?? AI_BRIEF_COPY.en;
     const isRtl = locale === "ar";
 
     const [site, categories] = await Promise.all([

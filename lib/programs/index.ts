@@ -85,6 +85,7 @@ async function buildStaticProgramCatalog(): Promise<ProgramCatalogResult> {
                 copy: {
                     ar: arCopy,
                     en: enCopy,
+                    fr: enCopy,
                 },
                 categoryId: pkg.categoryId,
             } satisfies NormalizedProgram;
@@ -243,6 +244,7 @@ export async function getPrograms(): Promise<ProgramCatalogResult> {
                 copy: {
                     ar: arCopy,
                     en: enCopy,
+                    fr: enCopy,
                 },
                 categoryId: normalizedCategory,
             });

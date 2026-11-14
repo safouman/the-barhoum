@@ -23,10 +23,10 @@ const CATEGORY_ORDER: CategoryKey[] = [
 function buildPacksByCategory(
   programs: NormalizedProgram[]
 ): PacksByCategory {
-  const locales: Locale[] = ["ar", "en"];
+  const locales: Locale[] = ["ar", "en", "fr"];
 
   const result = CATEGORY_ORDER.reduce((acc, category) => {
-    acc[category] = { ar: [], en: [] };
+    acc[category] = { ar: [], en: [], fr: [] };
     return acc;
   }, {} as PacksByCategory);
 
@@ -43,7 +43,7 @@ function buildPacksByCategory(
     const currency = "TND";
 
     locales.forEach((locale) => {
-      const localeCopy = program.copy[locale];
+      const localeCopy = program.copy[locale] ?? program.copy.en;
       if (!localeCopy) return;
       const fallbackCopy = program.copy.en ?? localeCopy;
 
@@ -135,11 +135,11 @@ export default async function CoachingPage() {
       home={home}
       categories={categories}
       testimonials={testimonials}
-      ui={{ ar: uiAr, en: uiEn }}
-      leadFormCopy={{ ar: leadFormAr, en: leadFormEn }}
-      heroCopy={{ ar: heroAr, en: heroEn }}
-      aboutCopy={{ ar: aboutAr, en: aboutEn }}
-      methodCopy={{ ar: methodAr, en: methodEn }}
+      ui={{ ar: uiAr, en: uiEn, fr: uiEn }}
+      leadFormCopy={{ ar: leadFormAr, en: leadFormEn, fr: leadFormEn }}
+      heroCopy={{ ar: heroAr, en: heroEn, fr: heroEn }}
+      aboutCopy={{ ar: aboutAr, en: aboutEn, fr: aboutEn }}
+      methodCopy={{ ar: methodAr, en: methodEn, fr: methodEn }}
       locale={locale}
       packs={packs}
       catalogStatus={catalogStatus}

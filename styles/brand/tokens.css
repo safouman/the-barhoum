@@ -30,3 +30,38 @@
   outline: 2px solid var(--brand-primary);
   outline-offset: 5px;
 }
+
+.brand-footer {
+  padding: 24px;
+  border-top: 1px solid var(--brand-surface);
+  font-family: var(--brand-body);
+  font-size: 13px;
+}
+
+.brand-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 8px 28px;
+}
+
+.brand-footer :where(a, button) {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: var(--brand-primary);
+}
+
+.brand-footer button {
+  border: 0;
+  padding: 0;
+  font: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.brand-footer :where(a, button):hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
