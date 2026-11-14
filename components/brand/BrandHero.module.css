@@ -2,7 +2,7 @@
   position: relative;
   isolation: isolate;
   min-height: 500px;
-  padding: 12px 32px 68px;
+  padding: 4px 32px 68px;
   color: var(--brand-text);
   background: var(--brand-background);
   text-align: center;
@@ -32,11 +32,11 @@
 .subtitle {
   display: block;
   margin-top: 1px;
-  font-size: clamp(46px, 5.05vw, 68px);
+  font-size: clamp(50px, 5.48vw, 74px);
   line-height: 1.24;
   font-weight: 400;
   font-style: italic;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.03em;
 }
 
 .lead {
@@ -52,7 +52,7 @@
   display: block;
   width: 224px;
   height: 1px;
-  margin: 24px auto 27px;
+  margin: 9px auto 27px;
   background: linear-gradient(90deg, transparent, var(--brand-text), transparent);
 }
 
@@ -72,6 +72,7 @@
   justify-content: center;
   gap: 20px;
   min-height: 66px;
+  min-width: 348px;
   padding: 16px 42px;
   margin-top: 39px;
   border-radius: 999px;
@@ -154,13 +155,19 @@
     max-width: 600px;
     margin-inline: auto;
     font-size: clamp(48px, 12.25vw, 88px);
-    line-height: 1.02;
+    line-height: 0.98;
   }
 
   .subtitle {
-    margin-top: 14px;
-    font-size: clamp(43px, 10.7vw, 77px);
-    line-height: 1.08;
+    margin-top: 0;
+    font-size: clamp(46px, 11.53vw, 83px);
+    line-height: 0.96;
+    letter-spacing: -0.015em;
+  }
+
+  .lead {
+    font-size: 0.93em;
+    line-height: 1;
   }
 
   .lead,
@@ -188,6 +195,7 @@
 
   .action {
     min-height: 85px;
+    min-width: 0;
     width: min(100%, 474px);
     padding: 20px 30px;
     gap: 27px;
@@ -230,7 +238,7 @@
   }
 
   .subtitle {
-    margin-top: 8px;
+    margin-top: 0;
   }
 
   .divider {
