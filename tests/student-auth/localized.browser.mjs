@@ -9,6 +9,7 @@ const browser = await chromium.launch({ channel: process.env.BROWSER_CHANNEL ?? 
 try {
   for (const locale of ["ar", "en", "fr"]) {
     const context = await browser.newContext({ viewport: { width: Number(process.env.STUDENT_TEST_WIDTH ?? 390), height: 844 } });
+    await context.addCookies([{ name: "barhoum_consent", value: "rejected", url: origin }]);
     const page = await context.newPage();
     const copy = studentCopy[locale];
     const calls = [];

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { analyticsLocation } from "@/lib/analytics/shared";
+import type { Locale } from "@/lib/content";
 import { useLocale } from "@/providers/locale-provider";
 import {
     CONSENT_EVENTS,
@@ -21,7 +22,7 @@ type Copy = {
     manageBody: string;
 };
 
-const COPY: Record<"en" | "ar", Copy> = {
+const COPY: Record<Locale, Copy> = {
     en: {
         title: "Cookies for analytics",
         body: "We use analytics cookies to understand how people use Ibrahim Ben Abdallah. Accept analytics to help us improve, or reject to continue with essential cookies only.",
@@ -32,13 +33,21 @@ const COPY: Record<"en" | "ar", Copy> = {
             "You can update your analytics cookie preference at any time.",
     },
     ar: {
-        title: "",
+        title: "ملفات تعريف الارتباط التحليلية",
         body: "بموافقتك تعاونا نطورو خدماتنا خاطرنا نستعملو ملفات تعريف الارتباط التحليلية باش نفهمو كيفاش الناس يستعملو موقع إبراهيم بن عبد الله.  أما من حقك زادة ترفض وتكمّل تستعمل الملفات الأساسية برك و في الحالتين مرحبا بيك عندنا .",
         accept: "موافق",
         reject: "مش موافق",
         manageTitle: "تحديث تفضيلات ملفات الارتباط",
         manageBody:
             "يمكنك تحديث تفضيلك لملفات تعريف الارتباط التحليلية في أي وقت.",
+    },
+    fr: {
+        title: "Cookies de mesure d’audience",
+        body: "Nous utilisons des cookies de mesure d’audience pour comprendre l’utilisation du site Ibrahim Ben Abdallah. Acceptez-les pour nous aider à améliorer le site, ou refusez-les pour continuer avec les seuls cookies essentiels.",
+        accept: "Accepter la mesure d’audience",
+        reject: "Refuser",
+        manageTitle: "Modifier les préférences des cookies",
+        manageBody: "Vous pouvez modifier vos préférences de mesure d’audience à tout moment.",
     },
 };
 
@@ -57,7 +66,7 @@ export function CookieConsentBanner({
     onConsentRejected,
 }: CookieConsentBannerProps) {
     const { locale } = useLocale();
-    const language = locale === "ar" ? "ar" : "en";
+    const language = locale;
     const copy = COPY[language];
     const [isOpen, setIsOpen] = useState(false);
     const [mode, setMode] = useState<"initial" | "manage">("initial");
@@ -138,13 +147,13 @@ export function CookieConsentBanner({
             className="fixed inset-x-0 bottom-0 z-50 px-4 pb-4 sm:px-6 sm:pb-6"
             dir={isRtl ? "rtl" : "ltr"}
         >
-            <div className="mx-auto w-full max-w-3xl rounded-2xl border border-gray-200 bg-white/95 shadow-xl backdrop-blur-md">
+            <div className="mx-auto w-full max-w-3xl rounded-2xl border border-[var(--brand-surface)] bg-[var(--brand-background)] shadow-xl backdrop-blur-md">
                 <div className="space-y-4 px-6 py-6 sm:py-8">
                     <div className="space-y-2">
-                        <h2 className="text-base font-semibold text-[#222] sm:text-lg">
+                        <h2 className="text-base font-semibold text-[var(--brand-text)] sm:text-lg">
                             {manageTitle}
                         </h2>
-                        <p className="text-sm leading-relaxed text-[#222]/70 sm:text-base">
+                        <p className="text-sm leading-relaxed text-[var(--brand-text)] sm:text-base">
                             {manageBody}
                         </p>
                     </div>
@@ -155,7 +164,7 @@ export function CookieConsentBanner({
                     >
                         <button
                             type="button"
-                            className="inline-flex justify-center rounded-full bg-[#2AD6CA] px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-[#22BDB3] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                            className="inline-flex justify-center rounded-full bg-[var(--brand-primary)] px-5 py-2 text-sm font-medium text-[var(--brand-background)] shadow-sm transition hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                             onClick={() =>
                                 handleConsent(CONSENT_EVENTS.accepted)
                             }
@@ -164,7 +173,7 @@ export function CookieConsentBanner({
                         </button>
                         <button
                             type="button"
-                            className="inline-flex justify-center rounded-full border border-[#2AD6CA] px-5 py-2 text-sm font-medium text-[#2AD6CA] transition hover:bg-[#2AD6CA]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                            className="inline-flex justify-center rounded-full border border-[var(--brand-primary)] px-5 py-2 text-sm font-medium text-[var(--brand-primary)] transition hover:bg-[var(--brand-primary)]/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                             onClick={() =>
                                 handleConsent(CONSENT_EVENTS.rejected)
                             }
