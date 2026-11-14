@@ -10,12 +10,14 @@
 }
 
 .brand-experience {
+  overflow: clip;
   color: var(--brand-text);
   background: var(--brand-background);
   font-family: var(--brand-body);
 }
 
 .brand-experience :where(h1, h2, h3) {
+  color: var(--brand-text);
   font-family: var(--brand-display);
 }
 

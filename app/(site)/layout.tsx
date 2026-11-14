@@ -4,13 +4,13 @@ export const revalidate = 0;
 export const runtime = "nodejs";
 import Script from "next/script";
 import type { CSSProperties } from "react";
-import { Inter, Noto_Naskh_Arabic } from "next/font/google";
+import { Inter, Noto_Naskh_Arabic, Playfair_Display } from "next/font/google";
 import "../../styles/globals.css";
+import "../../styles/brand/tokens.css";
 import { LocaleProvider } from "@/providers/locale-provider";
 import { AnalyticsProvider } from "@/providers/analytics-provider";
-import { LocalizedSiteHeader } from "@/components/SiteHeader";
+import { BrandSiteChrome } from "@/components/BrandSiteChrome";
 import { readHeaderSignedIn } from "@/components/SiteHeaderSession";
-import { Footer } from "@/components/Footer";
 import { getSiteConfig } from "@/lib/content";
 import { getDirection } from "@/lib/i18n";
 import { resolveLocale } from "@/lib/i18n.server";
@@ -26,6 +26,13 @@ function toAbsoluteAssetUrl(path: string): string {
     }
     return `${siteUrl}/${path}`;
 }
+const playfair = Playfair_Display({
+    subsets: ["latin", "latin-ext"],
+    weight: ["400", "700"],
+    style: ["normal", "italic"],
+    variable: "--font-playfair",
+    display: "swap",
+});
 const inter = Inter({
     subsets: ["latin"],
     weight: ["400", "500", "600"],
@@ -89,7 +96,7 @@ export default async function RootLayout({
     const locale = await resolveLocale();
     const direction = getDirection(locale);
     const [site, signedIn] = await Promise.all([getSiteConfig(), readHeaderSignedIn()]);
-    const fontClass = `${inter.variable} ${notoNaskhArabic.variable}`;
+    const fontClass = `${inter.variable} ${notoNaskhArabic.variable} ${playfair.variable}`;
     const brand = seoConfig.brand;
     const sameAs = brand.socials;
     const organizationId = `${siteUrl}#organization`;
@@ -134,60 +141,9 @@ export default async function RootLayout({
         ...(sameAs.length ? { sameAs } : {}),
     };
 
-    const serviceJsonLd = {
-        "@context": "https://schema.org",
-        "@type": "Service",
-        name: brand.organization.name,
-        description: brand.person.description,
-        provider: {
-            "@id": personId,
-        },
-        serviceType: [
-            "Leadership coaching",
-            "Team facilitation",
-            "Creative mentoring",
-        ],
-        availableLanguage,
-        areaServed: brand.areaServed,
-        url: siteUrl,
-    };
-
-    const faqJsonLd = {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        mainEntity: [
-            {
-                "@type": "Question",
-                name: "What is Ibrahim Ben Abdallah?",
-                acceptedAnswer: {
-                    "@type": "Answer",
-                    text: "Ibrahim Ben Abdallah is the personal practice of Ibrahim Ben Abdallah, offering reflective and strategic coaching for people seeking grounded transformation.",
-                },
-            },
-            {
-                "@type": "Question",
-                name: "Who does Ibrahim support?",
-                acceptedAnswer: {
-                    "@type": "Answer",
-                    text: "Ibrahim works with founders, leaders, couples, and creatives who want to align their inner work with outer impact, drawing on psychology, spirituality, and conscious strategy.",
-                },
-            },
-            {
-                "@type": "Question",
-                name: "How can I start working with Ibrahim Ben Abdallah?",
-                acceptedAnswer: {
-                    "@type": "Answer",
-                    text: "Explore the coaching categories on the homepage, select the package that fits your context, and submit the lead form to begin a tailored onboarding conversation.",
-                },
-            },
-        ],
-    };
-
     const structuredData = JSON.stringify([
         organizationJsonLd,
         personJsonLd,
-        serviceJsonLd,
-        faqJsonLd,
     ]);
 
     return (
@@ -214,9 +170,9 @@ export default async function RootLayout({
                 </Script>
                 <LocaleProvider initialLocale={locale}>
                     <AnalyticsProvider>
-                        <LocalizedSiteHeader site={site} signedIn={signedIn} />
-                        <main id="main-content" tabIndex={-1}>{children}</main>
-                        <Footer site={site} />
+                        <BrandSiteChrome site={site} signedIn={signedIn}>
+                            {children}
+                        </BrandSiteChrome>
                     </AnalyticsProvider>
                 </LocaleProvider>
             </body>
