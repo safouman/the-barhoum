@@ -1,6 +1,25 @@
-/* The one-section homepage must not inherit the legacy full-viewport main floor. */
+/* Keep a short homepage's footer at the viewport edge without fixing it over content. */
+:global(body):has(.hero) {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--brand-background);
+}
+
+:global(.brand-experience):has(.hero) {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
 :global(main):has(> .hero:only-child) {
+  flex: 1 0 auto;
   min-height: 0;
+}
+
+:global(.brand-experience):has(.hero) > :global(header),
+:global(.brand-experience):has(.hero) > :global(footer) {
+  flex-shrink: 0;
 }
 
 .hero {
