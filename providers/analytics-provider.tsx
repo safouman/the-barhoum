@@ -300,11 +300,11 @@ export function AnalyticsProvider({ children }: { children: React.ReactNode }) {
         />
       ) : null}
       {shouldLoadAnalytics ? <VercelAnalytics beforeSend={beforeVercelSend} /> : null}
-      {children}
       <CookieConsentBanner
         onConsentGranted={applyConsent}
         onConsentRejected={applyConsent}
       />
+      {children}
     </>
   );
 }

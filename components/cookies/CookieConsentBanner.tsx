@@ -1,6 +1,7 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import styles from "./CookieConsentBanner.module.css";
 import { analyticsLocation } from "@/lib/analytics/shared";
 import type { Locale } from "@/lib/content";
 import { useLocale } from "@/providers/locale-provider";
@@ -68,6 +69,7 @@ export function CookieConsentBanner({
     const { locale } = useLocale();
     const language = locale;
     const copy = COPY[language];
+    const panelRef = useRef<HTMLDivElement>(null);
     const [isOpen, setIsOpen] = useState(false);
     const [mode, setMode] = useState<"initial" | "manage">("initial");
 
@@ -92,6 +94,13 @@ export function CookieConsentBanner({
         });
         return unsubscribe;
     }, []);
+
+    useEffect(() => {
+        if (isOpen && mode === "manage") {
+            panelRef.current?.scrollIntoView({ block: "start" });
+            panelRef.current?.querySelector("button")?.focus({ preventScroll: true });
+        }
+    }, [isOpen, mode]);
 
     useEffect(() => {
         const unsubscribe = onConsentChange((value) => {
@@ -141,14 +150,15 @@ export function CookieConsentBanner({
 
     return (
         <div
-            role="dialog"
+            ref={panelRef}
+            role="region"
             aria-live="polite"
             aria-label={manageTitle}
-            className="fixed inset-x-0 bottom-0 z-50 px-4 pb-4 sm:px-6 sm:pb-6"
+            className={styles.panel}
             dir={isRtl ? "rtl" : "ltr"}
         >
-            <div className="mx-auto w-full max-w-3xl rounded-2xl border border-[var(--brand-surface)] bg-[var(--brand-background)] shadow-xl backdrop-blur-md">
-                <div className="space-y-4 px-6 py-6 sm:py-8">
+            <div className={styles.content}>
+                <div className={styles.layout}>
                     <div className="space-y-2">
                         <h2 className="text-base font-semibold text-[var(--brand-text)] sm:text-lg">
                             {manageTitle}

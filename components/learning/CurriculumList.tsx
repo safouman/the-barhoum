@@ -77,8 +77,9 @@ function Modules({ modules, premiumProgress, variant = "default", ...listProps }
               {isFeatured ? <span aria-hidden="true" className={featured.moduleNumber}><bdi dir="ltr">{String(index + 1).padStart(2, "0")}</bdi></span> : null}
               <LearningIcon name="down" className={isFeatured ? featured.moduleChevron : "size-4 shrink-0 transition-transform group-open/module:rotate-180"} />
               <span className={isFeatured ? featured.moduleTitle : "min-w-0 flex-1 break-words"}><bdi>{module.title}</bdi></span>
+              {isFeatured ? <span className={featured.moduleMeta}>{copy.lessonCount}: <bdi dir="ltr">{module.lessons.length}</bdi></span> : null}
               {module.classification === "premium" ? (
-                <span className="rounded-full bg-[var(--brand-surface)] px-2 py-0.5 text-xs text-[var(--brand-primary)]">{copy.premiumBadge}</span>
+                <span className={`${isFeatured ? featured.moduleBadge : ""} rounded-full bg-[var(--brand-surface)] px-2 py-0.5 text-xs text-[var(--brand-primary)]`}>{copy.premiumBadge}</span>
               ) : null}
             </summary>
             {progress ? (

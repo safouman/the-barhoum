@@ -31,6 +31,12 @@ export function CourseDetailView({ course, commerce, progress, locale = "ar" }: 
   const signInHref = commerce?.signInHref ?? loginHref(courseHref);
   const modules = course.curriculum.type === "simple" ? [] : course.curriculum.type === "modular"
     ? course.curriculum.modules : course.curriculum.parts.flatMap((part) => part.modules);
+  const premiumOfferIds = new Set([
+    ...(commerce?.offers.map(({ moduleId }) => moduleId) ?? []),
+    ...(commerce?.comingSoonOffers ?? []),
+    ...(commerce?.unavailableOffers ?? []),
+  ]);
+  const hasPremiumOffer = modules.some(({ id, classification }) => classification === "premium" && premiumOfferIds.has(Number(id)));
   const regularLessons = course.curriculum.type === "simple" ? lessons.length
     : modules.filter(({ classification }) => classification === "regular").reduce((count, module) => count + module.lessons.length, 0);
   const upgrades = commerce?.ownership.base ? modules.flatMap((module) => {
@@ -61,7 +67,7 @@ export function CourseDetailView({ course, commerce, progress, locale = "ar" }: 
   ) : (baseOffer || baseComingSoon || basePriceUnavailable) && commerce ? (
     <section aria-label={copy.purchase} className="space-y-3 rounded-sm border border-border bg-[var(--brand-background)] p-4">
       {baseOffer ? <p className={isFeatured ? featured.price : "text-2xl font-semibold"}><bdi dir="ltr" className="tabular-nums">{formatOfferPrice(baseOffer)}</bdi> <span className="text-sm font-normal text-subtle">{copy.once}</span></p> : null}
-      <p className="text-sm text-subtle">{copy.includes} <bdi dir="ltr">{regularLessons}</bdi> {copy.baseLessons}</p>
+      <p className="text-sm text-subtle">{copy.includes} <bdi dir="ltr">{regularLessons}</bdi> {copy.baseLessons}{hasPremiumOffer ? <> {copy.premiumSeparate}</> : null}</p>
       {baseComingSoon ? <p className="text-sm font-semibold">{copy.comingSoon}</p> : baseOffer ? (
         <PurchaseButton locale={locale} offerId={baseOffer.id} courseKey={course.slug} signedIn={commerce.signedIn} signInHref={signInHref} courseHref={courseHref}>{copy.buy}</PurchaseButton>
       ) : <p className="text-sm font-semibold">{copy.priceUnavailable}</p>}

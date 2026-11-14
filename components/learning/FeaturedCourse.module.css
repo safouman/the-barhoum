@@ -115,82 +115,67 @@
 }
 
 .moduleGrid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  align-items: start;
-  gap: 1rem;
+  border-top: 1px solid var(--brand-surface);
 }
 
 .module {
   min-width: 0;
-  overflow: hidden;
-  border: 1px solid var(--brand-surface);
-  border-radius: 1.25rem;
-  background: var(--brand-background);
+  border-bottom: 1px solid var(--brand-surface);
 }
 
 .moduleSummary {
-  position: relative;
-  display: flex;
-  min-height: 12rem;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 2.75rem minmax(0, 1fr) auto 1rem;
   align-items: center;
-  justify-content: center;
   gap: 1rem;
-  padding: 1.75rem 1.25rem;
+  padding: 1.75rem 0.5rem;
+  min-height: 6.5rem;
   list-style: none;
   cursor: pointer;
-  text-align: center;
 }
 
-.moduleSummary::-webkit-details-marker {
-  display: none;
-}
-
-.moduleSummary:focus-visible {
-  outline: 2px solid var(--brand-primary);
-  outline-offset: -5px;
-  border-radius: 1.25rem;
-}
-
-.moduleSummary:hover {
-  background: var(--brand-surface);
-}
+.moduleSummary::-webkit-details-marker { display: none; }
+.moduleSummary:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 3px; }
+.moduleSummary:hover .moduleTitle { color: var(--brand-primary); }
 
 .moduleNumber {
+  grid-column: 1;
+  grid-row: 1;
   color: var(--brand-primary);
   font-family: var(--brand-display);
-  font-size: 2rem;
+  font-size: 1.625rem;
   font-weight: 400;
   font-variant-numeric: tabular-nums;
   line-height: 1;
 }
 
 .moduleTitle {
-  max-width: 26ch;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  line-height: 1.6;
+  grid-column: 2;
+  grid-row: 1;
+  max-width: 45ch;
+  font-family: var(--font-playfair), var(--font-noto-naskh), Georgia, serif;
+  font-size: clamp(1.25rem, 2vw, 1.625rem);
+  font-weight: 400;
+  line-height: 1.4;
   overflow-wrap: anywhere;
 }
 
+.moduleMeta {
+  grid-column: 3;
+  grid-row: 1;
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
 .moduleChevron {
-  position: absolute;
-  inset-block-start: 1rem;
-  inset-inline-end: 1.125rem;
-  width: 0.875rem;
-  height: 0.875rem;
+  grid-column: 4;
+  grid-row: 1;
+  width: 1rem;
+  height: 1rem;
   color: var(--brand-primary);
 }
-
-.module[open] .moduleChevron {
-  transform: rotate(180deg);
-}
-
-.moduleLessons {
-  border-top: 1px solid var(--brand-surface);
-  padding: 0.5rem;
-}
+.module[open] .moduleChevron { transform: rotate(180deg); }
+.moduleLessons { padding: 0 0 1.5rem 3.75rem; padding-inline: 3.75rem 0; }
 
 .outcomes {
   padding-block-start: clamp(2.5rem, 5vw, 4rem);
@@ -202,12 +187,6 @@
   line-height: 1.2;
 }
 
-@media (min-width: 640px) {
-  .moduleGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
 @media (min-width: 1024px) {
   .introduction {
     grid-template-columns: minmax(0, 1.55fr) minmax(17rem, 0.8fr);
@@ -216,10 +195,6 @@
 
   .enrollment {
     margin-block-start: 2.5rem;
-  }
-
-  .moduleGrid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -249,19 +224,25 @@
 
 /* Authored Latin text keeps Inter while Arabic glyphs use the existing Naskh face. */
 .description,
-.metadata bdi,
-.moduleTitle {
+.metadata bdi {
   font-family: var(--font-inter), var(--font-noto-naskh), sans-serif;
 }
 
 @media (max-width: 639px) {
-  .moduleSummary {
-    min-height: 8.5rem;
-    gap: 0.75rem;
-    padding: 1.5rem 1.25rem;
-  }
-
-  .moduleNumber {
-    font-size: 1.75rem;
-  }
+  .featured { padding-block-start: 1.5rem; }
+  .introduction { gap: 1.5rem; padding-block-end: 2.5rem; }
+  .eyebrow { margin-block-end: 0.75rem; }
+  .title { max-width: 24ch; font-size: clamp(1.75rem, 8.2vw, 2.25rem); line-height: 1.14; letter-spacing: -0.025em; text-wrap: balance; }
+  .description { margin-block-start: 1.25rem; font-size: 0.9375rem; line-height: 1.65; }
+  .metadata { margin-block-start: 1rem; gap: 0.25rem 0.75rem; }
+  .enrollment { padding: 1.25rem; border-radius: 0.75rem; }
+  .sectionHeading { margin-block-end: 1.5rem; gap: 0.75rem; }
+  .moduleSummary { grid-template-columns: 2rem minmax(0, 1fr) 1rem; gap: 0.375rem 0.75rem; padding: 1.25rem 0.25rem; }
+  .moduleTitle { font-size: 1.25rem; }
+  .moduleMeta { grid-column: 2; grid-row: 2; font-size: 0.75rem; }
+  .moduleChevron { grid-column: 3; }
+  .moduleNumber { align-self: start; padding-block-start: 0.25rem; font-size: 1.375rem; }
+  .moduleLessons { padding-inline: 0.5rem 0; padding-block-end: 1rem; }
 }
+
+.moduleBadge { grid-column: 2; justify-self: start; }

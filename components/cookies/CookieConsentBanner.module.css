@@ -1,0 +1,17 @@
+.panel {
+  position: relative;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--brand-surface);
+  background: var(--brand-background);
+  color: var(--brand-text);
+  font-family: var(--font-inter), var(--font-noto-naskh), sans-serif;
+}
+.content { max-width: 76rem; margin-inline: auto; }
+.layout { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem 2rem; }
+.layout > :first-child { max-width: 65ch; }
+.layout > :last-child { flex-shrink: 0; }
+.panel button { min-height: 44px; }
+@media (max-width: 767px) {
+  .panel { padding: 1.25rem; }
+  .layout { flex-direction: column; align-items: stretch; }
+}
