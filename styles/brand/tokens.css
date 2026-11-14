@@ -10,6 +10,15 @@
 }
 
 .brand-experience {
+  --color-background: var(--brand-background);
+  --color-surface: var(--brand-surface);
+  --color-text: var(--brand-text);
+  --color-subtle: var(--brand-text);
+  --color-primary: var(--brand-primary);
+  --color-border: var(--brand-surface);
+  --font-heading: var(--brand-display);
+  --font-base: var(--brand-body);
+  --font-ui: var(--brand-body);
   overflow: clip;
   color: var(--brand-text);
   background: var(--brand-background);
@@ -64,4 +73,33 @@
 .brand-footer :where(a, button):hover {
   text-decoration: underline;
   text-underline-offset: 4px;
+}
+
+
+.brand-experience .btn {
+  border-radius: 999px;
+  text-transform: none;
+  letter-spacing: normal;
+  font-family: var(--brand-body);
+}
+
+.brand-experience .btn-solid {
+  border-color: var(--brand-primary);
+  color: var(--brand-background);
+  background: var(--brand-primary);
+}
+
+.brand-experience .btn-outline {
+  border-color: var(--brand-primary);
+  color: var(--brand-primary);
+  background: transparent;
+}
+
+.brand-experience .btn:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 4px;
+}
+
+.brand-experience[lang="ar"] .btn {
+  font-family: var(--brand-arabic);
 }

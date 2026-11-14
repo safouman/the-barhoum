@@ -10,7 +10,7 @@ import { safeReturnTo } from "@/lib/student-auth/return-to";
 import { useLocale } from "@/providers/locale-provider";
 import styles from "./BrandHeader.module.css";
 
-export function BrandHeader({ locale: initialLocale, signedIn }: { locale: Locale; signedIn: boolean }) {
+export function BrandHeader({ locale: initialLocale, signedIn, allowLanguageSwitch = true }: { locale: Locale; signedIn: boolean; allowLanguageSwitch?: boolean }) {
   const { locale: selectedLocale, setLocale } = useLocale();
   const locale = selectedLocale ?? initialLocale;
   const text = brandCopy[locale].nav;
@@ -28,6 +28,7 @@ export function BrandHeader({ locale: initialLocale, signedIn }: { locale: Local
   const entry = "/login" + (returnTo ? "?" + new URLSearchParams({ returnTo }) : "");
   const primaryLinks = [
     { href: "/program", label: text.program },
+    { href: "/courses", label: text.courses },
     { href: "/organizations", label: text.organizations },
     { href: "/resources", label: text.resources },
   ];
@@ -42,6 +43,7 @@ export function BrandHeader({ locale: initialLocale, signedIn }: { locale: Local
   }
 
   function changeLocale(value: Locale) {
+    setOpenPath(null);
     setLocale(value);
     const params = new URLSearchParams(search.toString());
     params.set("lang", value);
@@ -67,7 +69,7 @@ export function BrandHeader({ locale: initialLocale, signedIn }: { locale: Local
           {accountLinks.map(({ href, label }) => <Link key={href} href={href}>{label}</Link>)}
         </div>
       </div>
-      <label className={styles.language}>
+      {allowLanguageSwitch ? <label className={styles.language}>
         <span className={styles.srOnly}>{text.language}</span>
         <select value={locale} onChange={(event) => changeLocale(event.target.value as Locale)}>
           <option value="en">EN</option>
@@ -75,14 +77,14 @@ export function BrandHeader({ locale: initialLocale, signedIn }: { locale: Local
           <option value="fr">FR</option>
         </select>
         <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true"><path d="m2 2 5 5 5-5" stroke="currentColor" strokeWidth="1.25" /></svg>
-      </label>
+      </label> : null}
       <button ref={trigger} type="button" className={styles.mobileToggle} aria-expanded={open} aria-controls={menuId} aria-label={open ? text.close : text.menu} onClick={() => setOpenPath(open ? null : pathname)}>
         <svg width="40" height="28" viewBox="0 0 40 28" fill="none" aria-hidden="true">
           {open ? <path d="m7 2 26 24M33 2 7 26" /> : <path d="M1 4H39M1 14H39M1 24H39" />}
         </svg>
       </button>
       <nav id={menuId} className={styles.mobileMenu} aria-label={text.menu} hidden={!open}>
-        {[...primaryLinks, { href: "/about", label: text.about }, { href: "/coaching", label: text.coaching }, { href: "/courses", label: text.courses }, ...accountLinks].map(({ href, label }) => (
+        {[...primaryLinks, { href: "/about", label: text.about }, { href: "/coaching", label: text.coaching }, ...accountLinks].map(({ href, label }) => (
           <Link key={href} href={href} onClick={() => setOpenPath(null)}>{label}</Link>
         ))}
       </nav>

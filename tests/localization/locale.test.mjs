@@ -70,3 +70,18 @@ test("hero translations retain the approved English copy and use Latin digits", 
     assert.doesNotMatch(JSON.stringify(brandCopy[language]), /[٠-٩۰-۹]/);
   }
 });
+
+
+test("only the checkout return route receives the fixed-English rendering marker", () => {
+  const { proxy } = loadTypeScript("../../proxy.ts", {
+    "next/server": { NextResponse: { next: value => value } },
+    "@/lib/i18n": { isLocale: value => ["ar", "en", "fr"].includes(value) },
+  });
+  for (const pathname of ["/checkout/return", "/login", "/account"]) {
+    const result = proxy({
+      headers: new Headers({ "x-barhoum-checkout": "1" }),
+      nextUrl: { pathname, searchParams: new URLSearchParams("lang=fr") },
+    });
+    assert.equal(result.request.headers.get("x-barhoum-checkout"), pathname === "/checkout/return" ? "1" : null);
+  }
+});

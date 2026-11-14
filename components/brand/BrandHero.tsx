@@ -12,7 +12,7 @@ export function BrandHero({ locale: initialLocale }: { locale: Locale }) {
   const copy = brandCopy[locale].hero;
 
   return (
-    <section className={styles.hero} lang={locale} dir={locale === "ar" ? "rtl" : "ltr"} data-locale={locale} aria-labelledby="brand-hero-title">
+    <section id="hero" data-analytics-section="Hero" className={styles.hero} lang={locale} dir={locale === "ar" ? "rtl" : "ltr"} data-locale={locale} aria-labelledby="brand-hero-title">
       <svg className={styles.desktopCurves} viewBox="0 0 1280 720" preserveAspectRatio="none" aria-hidden="true">
         <path d="M-120 482C123 458 202 308 166 150" />
         <path d="M1350 96C1051 194 1043 452 1280 612" />

@@ -143,7 +143,7 @@ const dimensions: Record<string, readonly string[]> = {
     context: ["lead", "payment"],
     device_type: ["desktop", "mobile", "tablet", "unknown"],
     direction: ["next", "back"],
-    locale: ["en", "ar", "unknown"],
+    locale: ["en", "ar", "fr", "unknown"],
     metric_name: ["CLS", "FCP", "FID", "INP", "LCP", "TTFB"],
     metric_rating: ["good", "needs-improvement", "poor"],
     offer_category: ["base", "premium_module"],

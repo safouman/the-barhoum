@@ -160,6 +160,7 @@ try {
     assert.equal(params.get("payment_method_types[0]"), "card");
     assert.equal(params.get("adaptive_pricing[enabled]"), "false");
     assert.equal(params.get("allow_promotion_codes"), "false");
+    assert.equal(params.get("locale"), "en");
     assert.equal(params.get("line_items[0][quantity]"), "1");
     assert.equal(params.get("cancel_url"), origin + "/courses/test-commerce");
     assert.equal(params.get("success_url"), origin + "/checkout/return?orderId=" + initial);

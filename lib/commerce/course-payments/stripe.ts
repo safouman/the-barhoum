@@ -73,6 +73,7 @@ export async function createStripeSession(provider: CourseStripe, order: Order) 
     const cancel = new URL(`/courses/${encodeURIComponent(order.cancel_course_slug)}`, order.checkout_origin);
     return provider.stripe.checkout.sessions.create({
         mode: "payment",
+        locale: "en",
         payment_method_types: ["card"],
         line_items: [{ price: order.stripe_price_id, quantity: 1 }],
         currency: order.currency,

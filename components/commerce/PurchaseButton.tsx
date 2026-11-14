@@ -23,8 +23,23 @@ const arabicErrors: Record<string, string> = {
   UNAUTHENTICATED: "سجّل الدخول لإتمام الشراء.",
 };
 
+const frenchErrors: Record<string, string> = {
+  ALREADY_OWNED: "Vous avez déjà accès à cette offre. Actualisez le cours pour continuer.",
+  BASE_REQUIRED: "Inscrivez-vous au cours avant d’acheter ce module.",
+  GEOGRAPHIC_RESTRICTION: "Les achats de cours seront bientôt disponibles dans votre région.",
+  OFFER_UNAVAILABLE: "Cette offre est indisponible. Actualisez le cours pour consulter les options.",
+  UNAUTHENTICATED: "Connectez-vous pour continuer.",
+};
+
 const purchaseCopy = {
   en: { errors: englishErrors, signIn: "Sign in", signInToBuy: "Sign in to purchase", busy: "Opening secure checkout…", failed: "Checkout couldn’t open. Try again in a moment.", reload: "Reload course" },
+  fr: {
+    errors: frenchErrors,
+    signIn: "Connexion", signInToBuy: "Se connecter pour s’inscrire",
+    busy: "Ouverture du paiement sécurisé…",
+    failed: "Le paiement n’a pas pu s’ouvrir. Réessayez dans un instant.",
+    reload: "Actualiser le cours",
+  },
   ar: { errors: arabicErrors, signIn: "دخول / تسجيل", signInToBuy: "سجّل الدخول للشراء", busy: "جارٍ فتح صفحة الدفع…", failed: "تعذّر فتح صفحة الدفع. حاول مرة أخرى بعد قليل.", reload: "تحديث صفحة الدورة" },
 };
 
@@ -75,12 +90,12 @@ export function PurchaseButton({
   }
 
   if (!signedIn) {
-    return <Button href={signInHref} className="!text-[#14312e] max-sm:w-full">{copy.signInToBuy}</Button>;
+    return <Button href={signInHref} className="max-sm:w-full">{copy.signInToBuy}</Button>;
   }
 
   return (
     <div className="space-y-3" aria-busy={busy}>
-      <Button onClick={beginCheckout} disabled={busy} className="!text-[#14312e] max-sm:w-full disabled:opacity-60">
+      <Button onClick={beginCheckout} disabled={busy} className="max-sm:w-full disabled:opacity-60">
         {busy ? copy.busy : children}
       </Button>
       {error ? (

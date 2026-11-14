@@ -5,6 +5,8 @@ import { isLocale } from "@/lib/i18n";
 export function proxy(request: NextRequest) {
   const headers = new Headers(request.headers);
   headers.delete("x-barhoum-locale");
+  headers.delete("x-barhoum-checkout");
+  if (request.nextUrl.pathname === "/checkout/return") headers.set("x-barhoum-checkout", "1");
   const locale = request.nextUrl.searchParams.get("lang");
   if (isLocale(locale)) headers.set("x-barhoum-locale", locale);
   return NextResponse.next({ request: { headers } });

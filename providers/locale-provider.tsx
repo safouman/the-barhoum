@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import type { Locale } from "@/lib/content";
 import { DEFAULT_LOCALE, getDirection, SUPPORTED_LOCALES } from "@/lib/i18n";
 import { event, updateAnalyticsContext } from "@/lib/analytics";
@@ -22,28 +22,32 @@ function isLocale(value: string | Locale | null | undefined): value is Locale {
 
 export function LocaleProvider({ children, initialLocale = DEFAULT_LOCALE }: { children: React.ReactNode; initialLocale?: Locale; }) {
   const searchParams = useSearchParams();
+  const fixedLocale = usePathname() === "/checkout/return" ? "en" : undefined;
   const initialQueryLocale = searchParams?.get("lang");
   const [locale, setLocaleState] = useState<Locale>(() =>
     isLocale(initialQueryLocale) ? initialQueryLocale : isLocale(initialLocale) ? initialLocale : DEFAULT_LOCALE
   );
 
   useEffect(() => {
+    if (fixedLocale) return;
     const param = searchParams?.get("lang");
     if (!isLocale(param)) return;
 
     setLocaleState((prev) => (param !== prev ? param : prev));
-  }, [searchParams]);
+  }, [searchParams, fixedLocale]);
+
+  const language = fixedLocale ?? locale;
 
   useEffect(() => {
     if (typeof document !== "undefined") {
-      document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=${60 * 60 * 24 * 365}`;
-      document.documentElement.dir = getDirection(locale);
-      document.documentElement.lang = locale;
+      if (!fixedLocale) document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=${60 * 60 * 24 * 365}`;
+      document.documentElement.dir = getDirection(language);
+      document.documentElement.lang = language;
     }
-  }, [locale]);
+  }, [locale, language, fixedLocale]);
 
   const setLocale = useCallback((value: Locale) => {
-    if (!isLocale(value)) {
+    if (fixedLocale || !isLocale(value)) {
       return;
     }
 
@@ -55,11 +59,11 @@ export function LocaleProvider({ children, initialLocale = DEFAULT_LOCALE }: { c
       updateAnalyticsContext({ locale: value });
       return value;
     });
-  }, []);
+  }, [fixedLocale]);
 
-  const direction = getDirection(locale);
+  const direction = getDirection(language);
 
-  const value = useMemo(() => ({ locale, setLocale, direction }), [locale, setLocale, direction]);
+  const value = useMemo(() => ({ locale: language, setLocale, direction }), [language, setLocale, direction]);
 
   return <LocaleContext.Provider value={value}>{children}</LocaleContext.Provider>;
 }
