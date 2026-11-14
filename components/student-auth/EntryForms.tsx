@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useLocale } from "@/providers/locale-provider";
 import { studentCopy } from "@/lib/student-copy";
-import { authError, googleHref, loginHref } from "./api";
+import { authError, googleHref, loginHref, safeReturnTo } from "./api";
 import { Field, GoogleLink, Notice, Panel, studentLink, Submit } from "./ui";
 import { fieldText, useSubmission } from "./use-submission";
 
@@ -27,7 +27,7 @@ export function LoginForm({ returnTo, status }: { returnTo: string; status?: str
       >
         <Field id="login-email" name="email" type="email" label={copy.email} dir="ltr" autoComplete="username" required maxLength={254} />
         <Field id="login-password" name="password" type="password" label={copy.password} dir="ltr" autoComplete="current-password" required />
-        <p className="text-sm"><Link href="/forgot-password" className={studentLink}>{copy.forgotPassword}</Link></p>
+        <p className="text-sm"><Link href={`/forgot-password?${new URLSearchParams({ returnTo: safeReturnTo(returnTo), lang: locale })}`} className={studentLink}>{copy.forgotPassword}</Link></p>
         {submission.error ? <Notice error>{authError(submission.error, locale)}</Notice> : null}
         <Submit busy={submission.busy} busyLabel={copy.busy}>{copy.signIn}</Submit>
       </form>
@@ -56,7 +56,7 @@ export function InboxForm({ mode, returnTo }: { mode: InboxMode; returnTo?: stri
         aria-busy={submission.busy}
         onSubmit={submission.handler(mode, (data) => {
           setSent(false);
-          return { email: fieldText(data, "email").trim(), ...(returnTo && returnTo !== "/my-learning" && mode !== "forgot-password" ? { returnTo } : {}) };
+          return { email: fieldText(data, "email").trim(), ...(returnTo && returnTo !== "/my-learning" ? { returnTo: safeReturnTo(returnTo) } : {}) };
         }, () => setSent(true))}
       >
         <Field id="inbox-email" name="email" type="email" label={copy.email} dir="ltr" autoComplete="email" required maxLength={254} />

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useLocale } from "@/providers/locale-provider";
 import { studentCopy } from "@/lib/student-copy";
-import { authError, loginHref } from "./api";
+import { authError, loginHref, safeReturnTo } from "./api";
 import { InboxForm } from "./EntryForms";
 import { Field, Notice, Panel, studentLink, Submit } from "./ui";
 import { fieldText, useSubmission } from "./use-submission";
@@ -21,6 +21,9 @@ export function TokenForm({ mode, google = false, checkInbox = false, returnTo }
   const [complete, setComplete] = useState(false);
   const [token, setToken] = useState<string | null>();
   const copy = tokenCopy[mode];
+  const retryHref = mode === "reset-password" && returnTo
+    ? `${copy.retry}?${new URLSearchParams({ returnTo: safeReturnTo(returnTo), lang: locale })}`
+    : copy.retry;
 
   useEffect(() => {
     let canceled = false;
@@ -84,7 +87,7 @@ export function TokenForm({ mode, google = false, checkInbox = false, returnTo }
               {mode === "verify" ? (
                 <button type="button" className={studentLink} onClick={() => setToken(null)}>{copy.retryLabel}</button>
               ) : (
-                <Link href={copy.retry} className={studentLink}>{copy.retryLabel}</Link>
+                <Link href={retryHref} className={studentLink}>{copy.retryLabel}</Link>
               )}
             </p>
           ) : null}
@@ -92,7 +95,7 @@ export function TokenForm({ mode, google = false, checkInbox = false, returnTo }
       ) : (
         <>
           <Notice error>{authError("INVALID_TOKEN", locale)}</Notice>
-          <p><Link href={copy.retry} className={studentLink}>{copy.retryLabel}</Link></p>
+          <p><Link href={retryHref} className={studentLink}>{copy.retryLabel}</Link></p>
         </>
       )}
     </Panel>

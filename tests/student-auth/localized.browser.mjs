@@ -11,6 +11,13 @@ try {
     const context = await browser.newContext({ viewport: { width: Number(process.env.STUDENT_TEST_WIDTH ?? 390), height: 844 } });
     await context.addCookies([{ name: "barhoum_consent", value: "rejected", url: origin }]);
     const page = await context.newPage();
+    const goto = async (url) => {
+      await page.goto(url);
+      await page.waitForFunction(() => {
+        const form = document.querySelector("form");
+        return !form || Object.keys(form).some(key => key.startsWith("__reactProps$"));
+      });
+    };
     const copy = studentCopy[locale];
     const calls = [];
     let signedIn = false;
@@ -41,7 +48,7 @@ try {
       return route.fulfill({ json: path === "me" || path === "profile" || path === "login" ? { student } : { ok: true } });
     });
 
-    await page.goto(origin + "/register?lang=" + locale);
+    await goto(origin + "/register?lang=" + locale);
     await page.getByRole("heading", { name: copy.pages.register.title, exact: true }).waitFor();
     await page.getByLabel(copy.email, { exact: true }).fill(student.email);
     await page.getByRole("button", { name: copy.sendVerification, exact: true }).click();
@@ -49,7 +56,7 @@ try {
     assert.deepEqual(calls.at(-1), { path: "register", body: { email: student.email }, method: "POST" });
 
     const fragmentToken = "synthetic-token-qa";
-    await page.goto(origin + "/verify-email?lang=" + locale + "#token=" + fragmentToken);
+    await goto(origin + "/verify-email?lang=" + locale + "#token=" + fragmentToken);
     await page.getByLabel(copy.fullName, { exact: true }).fill(student.name);
     await page.getByLabel(copy.newPassword, { exact: true }).fill("test-password-12");
     assert.equal(await page.evaluate(() => location.hash), "");
@@ -58,9 +65,9 @@ try {
     await page.getByRole("status").filter({ hasText: copy.verified }).waitFor();
     assert.deepEqual(calls.at(-1).body, { token: fragmentToken, name: student.name, password: "test-password-12" });
 
-    await page.goto(origin + "/login?lang=" + locale + "&returnTo=%2F%2Funtrusted.example");
+    await goto(origin + "/login?lang=" + locale + "&returnTo=%2F%2Funtrusted.example");
     assert.match(await page.getByRole("link", { name: copy.google, exact: true }).getAttribute("href"), /returnTo=%2Fmy-learning/);
-    await page.goto(origin + "/login?lang=" + locale + "&returnTo=%2Faccount");
+    await goto(origin + "/login?lang=" + locale + "&returnTo=%2Faccount");
     assert.match(await page.getByRole("link", { name: copy.google, exact: true }).getAttribute("href"), /returnTo=%2Faccount/);
     await page.getByLabel(copy.email, { exact: true }).fill(student.email);
     await page.getByLabel(copy.password, { exact: true }).fill("incorrect-password");
@@ -87,17 +94,48 @@ try {
     assert.deepEqual(calls.findLast(call => call.path === "email-change").body, { email: "new@example.test" });
     await page.getByRole("button", { name: copy.signOut, exact: true }).click();
     await page.waitForURL(origin + "/login");
-    await page.goto(origin + "/forgot-password?lang=" + locale);
+    await goto(origin + "/forgot-password?lang=" + locale);
     await page.getByLabel(copy.email, { exact: true }).fill(student.email);
     await page.getByRole("button", { name: copy.sendReset, exact: true }).click();
     await page.getByRole("status").filter({ hasText: copy.resetSent }).waitFor();
     assert.deepEqual(calls.at(-1), { path: "forgot-password", body: { email: student.email }, method: "POST" });
-    await page.goto(origin + "/reset-password?lang=" + locale + "#token=reset-synthetic");
+    await goto(origin + "/reset-password?lang=" + locale + "#token=reset-synthetic");
     await page.getByLabel(copy.newPassword, { exact: true }).fill("another-password-12");
     await page.getByRole("button", { name: copy.savePassword, exact: true }).click();
     await page.getByRole("status").filter({ hasText: copy.passwordSaved }).waitFor();
     assert.deepEqual(calls.at(-1).body, { token: "reset-synthetic", password: "another-password-12" });
-    await page.goto(origin + "/confirm-email?lang=" + locale + "#token=email-synthetic");
+    const courseReturn = "/courses/main-program/lessons/21";
+    await goto(origin + "/login?" + new URLSearchParams({ lang: locale, returnTo: courseReturn }));
+    await page.getByRole("link", { name: copy.forgotPassword, exact: true }).click();
+    await page.getByRole("heading", { name: copy.pages.forgot.title, exact: true }).waitFor();
+    assert.equal(new URL(page.url()).searchParams.get("returnTo"), courseReturn);
+    await page.getByLabel(copy.email, { exact: true }).fill(student.email);
+    await page.getByRole("button", { name: copy.sendReset, exact: true }).click();
+    await page.getByRole("status").filter({ hasText: copy.resetSent }).waitFor();
+    assert.deepEqual(calls.at(-1).body, { email: student.email, returnTo: courseReturn });
+    // Represents the same validated destination delivered in the reset email.
+    await goto(origin + "/reset-password?" + new URLSearchParams({ lang: locale, returnTo: courseReturn }) + "#token=reset-context-synthetic");
+    await page.getByLabel(copy.newPassword, { exact: true }).fill("another-password-12");
+    assert.equal(new URL(page.url()).hash, "");
+    await page.getByRole("button", { name: copy.savePassword, exact: true }).click();
+    await page.getByRole("status").filter({ hasText: copy.passwordSaved }).waitFor();
+    assert.deepEqual(calls.at(-1).body, { token: "reset-context-synthetic", password: "another-password-12" });
+    await page.getByRole("link", { name: copy.signIn, exact: true }).click();
+    await page.waitForURL(url => url.pathname === "/login");
+    assert.equal(new URL(page.url()).pathname, "/login");
+    assert.equal(new URL(page.url()).searchParams.get("returnTo"), courseReturn);
+    for (const unsafe of ["https://evil.example/courses/main-program", "//evil.example", "/courses/main-program?redirect=https://evil.example"]) {
+      await goto(origin + "/reset-password?" + new URLSearchParams({ lang: locale, returnTo: unsafe }));
+      const retry = page.getByRole("link", { name: copy.requestReset, exact: true });
+      await retry.waitFor();
+      assert.equal(new URL(await retry.getAttribute("href"), origin).searchParams.get("returnTo"), "/my-learning");
+      await retry.click();
+      await page.waitForURL(url => url.pathname === "/forgot-password");
+      assert.equal(new URL(page.url()).pathname, "/forgot-password");
+      const back = page.getByRole("link", { name: copy.backToSignIn, exact: true });
+      assert.equal(new URL(await back.getAttribute("href"), origin).searchParams.get("returnTo"), "/my-learning");
+    }
+    await goto(origin + "/confirm-email?lang=" + locale + "#token=email-synthetic");
     await page.getByRole("button", { name: copy.confirmEmail, exact: true }).click();
     await page.getByRole("status").filter({ hasText: copy.emailSaved }).waitFor();
     assert.deepEqual(calls.at(-1).body, { token: "email-synthetic" });

@@ -22,7 +22,7 @@ export function BrandHeader({ locale: initialLocale, signedIn, allowLanguageSwit
   const menuId = useId();
   const trigger = useRef<HTMLButtonElement>(null);
   const orderId = pathname === "/checkout/return" ? search.get("orderId") : null;
-  const destination = pathname === "/login" || pathname === "/register" ? search.get("returnTo")
+  const destination = ["/login", "/register", "/verify-email", "/forgot-password", "/reset-password"].includes(pathname) ? search.get("returnTo")
     : orderId ? pathname + "?" + new URLSearchParams({ orderId }) : pathname;
   const returnTo = safeReturnTo(destination, "");
   const entry = "/login" + (returnTo ? "?" + new URLSearchParams({ returnTo }) : "");
@@ -64,6 +64,7 @@ export function BrandHeader({ locale: initialLocale, signedIn, allowLanguageSwit
         <Image src="/images/logo.png" alt="" width={473} height={667} preload />
       </Link>
       <div className={styles.desktopSecondary}>
+        <Link href="/coaching">{text.coaching}</Link>
         <Link href="/about">{text.about}</Link>
         <div className={styles.accountLinks}>
           {accountLinks.map(({ href, label }) => <Link key={href} href={href}>{label}</Link>)}

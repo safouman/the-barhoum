@@ -73,7 +73,7 @@ export async function passwordLogin(payload: Payload, email: string, password: s
     }, candidate.id);
 }
 
-export function startRecovery(payload: Payload, email: string) {
+export function startRecovery(payload: Payload, email: string, returnTo?: string) {
     requireStudentEmail();
     queueEmailWork(payload, async () => {
         const candidate = await getStudent(payload, "email", email);
@@ -86,7 +86,7 @@ export function startRecovery(payload: Payload, email: string) {
             await updateStudent(payload, context, record.id, { resetPasswordToken: digest(token) });
             return token;
         }, candidate.id);
-        if (token) await sendStudentEmail(payload, email, "reset", token);
+        if (token) await sendStudentEmail(payload, email, "reset", token, returnTo);
     });
 }
 

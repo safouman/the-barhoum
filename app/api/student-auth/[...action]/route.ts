@@ -102,9 +102,9 @@ export async function POST(request: NextRequest) {
                 return withCookie(authJSON({ student: profile(user) }), token);
             }
             case "forgot-password": {
-                const { email } = readBody(emailBody, data);
+                const { email, returnTo } = readBody(registrationBody, data);
                 await rateLimit(payload, request, "forgot-password", email, [5, 25], 30);
-                startRecovery(payload, email);
+                startRecovery(payload, email, returnTo ? safeReturnTo(returnTo) : undefined);
                 return authJSON({ ok: true }, 202);
             }
             case "reset-password": {
