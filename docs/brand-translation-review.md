@@ -41,3 +41,9 @@ components/learning/learning-copy.ts and components/learning/catalog-copy.ts,
 French purchase labels in components/commerce/PurchaseButton.tsx, and shared
 footer labels. Authored course titles, questions, videos and files keep their
 original language. Checkout and payment confirmation remain English.
+
+## Premium checkpoint 1
+
+The Arabic and French heading in lib/home-refinement-copy.ts is a review draft.
+The English “From awareness to impact” heading and the body narrative reuse
+the approved team brief. Authored curriculum text is unchanged.
