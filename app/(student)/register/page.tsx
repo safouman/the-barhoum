@@ -1,3 +1,4 @@
+import { AuthCourseContext } from "@/components/student-auth/AuthCourseContext";
 import { resolveLocale } from "@/lib/i18n.server";
 import { studentCopy } from "@/lib/student-copy";
 import { safeReturnTo } from "@/lib/student-auth/return-to";
@@ -11,7 +12,8 @@ export async function generateMetadata() {
 
 export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ returnTo?: string }> }) {
   const { returnTo } = await searchParams;
+  const destination = safeReturnTo(returnTo);
   const locale = await resolveLocale();
   const copy = studentCopy[locale].pages.register;
-  return <StudentShell locale={locale} title={copy.title} intro={copy.intro}><InboxForm mode="register" returnTo={safeReturnTo(returnTo)} /></StudentShell>;
+  return <StudentShell editorial context={destination.startsWith("/courses/") ? <AuthCourseContext returnTo={destination} locale={locale} /> : undefined} locale={locale} title={copy.title} intro={copy.intro}><InboxForm mode="register" returnTo={destination} /></StudentShell>;
 }

@@ -13,7 +13,7 @@ export function CourseCatalogView({ entries, locale = "ar" }: {
   const copy = catalogCopy[locale];
 
   return (
-    <div dir={locale === "ar" ? "rtl" : "ltr"} lang={locale} className={`brand-experience ${styles.catalog}`}>
+    <div dir={locale === "ar" ? "rtl" : "ltr"} lang={locale} className={styles.catalog}>
       <section className={styles.introduction}>
         <Container>
           <p className={styles.eyebrow}>{copy.eyebrow}</p>

@@ -1,12 +1,26 @@
 import type { ComponentProps, ReactNode } from "react";
 import type { Locale } from "@/lib/content";
 import { studentCopy } from "@/lib/student-copy";
+import styles from "./StudentUI.module.css";
 import { Button } from "@/components/Button";
 
 export const fieldClass = "min-h-12 w-full rounded-xl border border-[var(--brand-primary)] bg-[var(--brand-background)] px-4 py-3 text-base text-[var(--brand-text)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--brand-primary)]";
 export const studentLink = "font-medium text-[var(--brand-primary)] underline decoration-[var(--brand-primary)] underline-offset-4";
 
-export function StudentShell({ title, intro, children, wide = false, locale = "en" }: { title: string; intro?: string; children: ReactNode; wide?: boolean; locale?: Locale }) {
+export function StudentShell({ title, intro, children, wide = false, locale = "en", editorial = false, context }: { title: string; intro?: string; children: ReactNode; wide?: boolean; locale?: Locale; editorial?: boolean; context?: ReactNode }) {
+  if (editorial) return (
+    <div lang={locale} dir={locale === "ar" ? "rtl" : "ltr"} className={`${styles.shell} ${wide ? styles.wide : ""} ${context ? styles.withContext : ""}`}>
+      <div className={styles.introduction}>
+        <header className={styles.heading}>
+          <p>{studentCopy[locale].eyebrow}</p>
+          <h1>{title}</h1>
+          {intro ? <p>{intro}</p> : null}
+        </header>
+        {context ? <div className={styles.journey}>{context}</div> : null}
+      </div>
+      <div className={styles.body}>{children}</div>
+    </div>
+  );
   return (
     <div className={`mx-auto w-full px-5 pb-16 pt-10 sm:px-6 sm:pb-24 sm:pt-16 ${wide ? "max-w-3xl" : "max-w-xl"}`}>
       <header className="mb-8 space-y-4">
@@ -20,7 +34,7 @@ export function StudentShell({ title, intro, children, wide = false, locale = "e
 }
 
 export function Panel({ children }: { children: ReactNode }) {
-  return <div className="min-w-0 space-y-6 rounded-[1.5rem] border border-[var(--brand-surface)] bg-[var(--brand-background)] p-5 shadow-sm sm:p-8">{children}</div>;
+  return <div className={`${styles.panel} min-w-0 space-y-6 rounded-[1.5rem] border border-[var(--brand-surface)] bg-[var(--brand-background)] p-5 shadow-sm sm:p-8`}>{children}</div>;
 }
 
 export function Notice({ children, error = false }: { children: ReactNode; error?: boolean }) {

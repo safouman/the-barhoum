@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import styles from "./BrandSiteChrome.module.css";
 import { triggerConsentPreferences } from "@/lib/consent";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
@@ -36,7 +37,7 @@ export function BrandSiteChrome({ children, signedIn }: {
     fr: { privacy: "Confidentialité", terms: "Conditions", cookies: "Préférences des cookies", coaching: "Coaching", label: "Informations du site" },
   }[locale];
   return (
-    <div className="brand-experience" lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
+    <div className={`brand-experience ${styles.site}`} lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
       <BrandHeader locale={locale} signedIn={signedIn} allowLanguageSwitch={!checkout} />
       <main id="main-content" tabIndex={-1}>{children}</main>
       <footer className="brand-footer">

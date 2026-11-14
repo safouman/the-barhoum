@@ -1,12 +1,12 @@
 .catalog {
-  min-height: 65vh;
+  min-width: 0;
   background: var(--brand-background, #f9f6f2);
   color: var(--brand-text, #1a1a1a);
   font-family: var(--brand-body, var(--font-inter), Arial, sans-serif);
 }
 
 .introduction {
-  padding-block: clamp(3rem, 6vw, 5.5rem) clamp(2rem, 4vw, 3.5rem);
+  padding-block: clamp(2rem, 5vw, 4.5rem) clamp(2rem, 4vw, 3rem);
   border-bottom: 1px solid var(--brand-surface, #ede8e3);
 }
 
@@ -20,9 +20,10 @@
 .title {
   margin: 0;
   font-family: var(--brand-display, var(--font-playfair), Georgia, serif);
-  font-size: clamp(2.75rem, 5vw, 4.25rem);
-  font-weight: 600;
+  font-size: clamp(2.25rem, 5vw, 4.25rem);
+  font-weight: 500;
   line-height: 1.15;
+  text-wrap: balance;
 }
 
 .description {
@@ -38,8 +39,8 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.5rem, 4vw, 3rem);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -55,7 +56,7 @@
   flex-direction: column;
   overflow: hidden;
   border: 1px solid var(--brand-surface, #ede8e3);
-  border-radius: 1.5rem;
+  border-radius: .75rem;
   background: var(--brand-background, #f9f6f2);
   color: var(--brand-text, #1a1a1a);
   text-decoration: none;
@@ -100,7 +101,7 @@
 .cardTitle {
   margin: 0;
   font-family: var(--font-playfair), var(--font-noto-naskh), Georgia, serif;
-  font-size: 1.75rem;
+  font-size: clamp(1.5rem, 2.5vw, 1.875rem);
   font-weight: 500;
   line-height: 1.3;
 }

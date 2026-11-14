@@ -1,0 +1,32 @@
+.shell { max-width: 40rem; margin-inline: auto; padding: clamp(2rem, 5vw, 4rem) 1.5rem clamp(4rem, 7vw, 6rem); color: var(--brand-text); }
+.wide { max-width: 64rem; }
+.heading { margin-block-end: 2rem; }
+.heading > p:first-child { margin: 0 0 1rem; color: var(--brand-primary); font-size: .8125rem; font-weight: 500; }
+.heading h1 { margin: 0; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1.15; letter-spacing: -.025em; text-wrap: balance; }
+.heading > p:last-child:not(:first-child) { max-width: 48ch; margin-block: 1.25rem 0; font-size: 1rem; line-height: 1.75; }
+.body { min-width: 0; }
+.withContext { max-width: 72rem; display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1fr); gap: 0 clamp(2.5rem, 6vw, 6rem); align-items: start; }
+.withContext .introduction { grid-column: 1; min-width: 0; }
+.withContext .body { grid-column: 2; }
+.shell .panel { border-radius: .75rem; box-shadow: none; padding: clamp(1.25rem, 3vw, 2rem); }
+.shell input { border-color: var(--brand-primary); border-radius: .375rem; }
+.shell input:hover { border-color: var(--brand-primary); }
+.shell input:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 3px; }
+.courseContext { border-top: 1px solid var(--brand-surface); padding-block-start: 1.75rem; }
+.courseContext > p:first-child { margin: 0 0 .75rem; color: var(--brand-primary); font-size: .8125rem; }
+.courseTitle { margin: 0; font-family: var(--font-playfair), var(--font-noto-naskh), Georgia, serif; font-size: clamp(1.5rem, 2.5vw, 2rem); line-height: 1.35; }
+.contextPrice { margin: 1rem 0; font-size: 1.125rem; font-weight: 600; }
+.contextNote { max-width: 42ch; margin-block: 1rem .5rem; font-size: .875rem; line-height: 1.7; }
+.contextLink { display: inline-flex; min-height: 44px; align-items: center; color: var(--brand-primary); text-decoration: underline; text-underline-offset: 4px; font-size: .875rem; }
+.shell[lang="ar"] .heading h1 { letter-spacing: 0; }
+@media(max-width: 767px) {
+ .shell { padding-inline: 1.25rem; padding-block-start: 1.75rem; }
+ .withContext { display: flex; flex-direction: column; gap: 0; }
+ .withContext > * { width: 100%; }
+ .heading { margin-block-end: 1.5rem; }
+ .journey { margin-block-end: 1.75rem; }
+ .courseContext { padding-block-start: 1.25rem; }
+ .courseTitle { font-size: 1.375rem; }
+ .contextPrice { margin-block: .75rem; }
+ .contextNote { margin-block: .75rem 0; }
+}
