@@ -63,7 +63,8 @@
   font-size: 21px;
   line-height: 1.5;
   font-weight: 400;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
 }
 
 .action {
@@ -190,7 +191,7 @@
     max-width: 540px;
     font-size: clamp(17px, 3.8vw, 27px);
     line-height: 1.46;
-    letter-spacing: -0.025em;
+    letter-spacing: -0.01em;
   }
 
   .action {
