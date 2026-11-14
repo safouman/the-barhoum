@@ -33,3 +33,11 @@ French action: Découvrir le programme
 ## Metadata
 
 The new hero dictionary follows the approved program narrative. Legacy English and Arabic SEO descriptions still require alignment during the wider rollout. French legal and AI reference titles/descriptions are draft translations. Legacy slogans that did not have translated source text retain their prior English fallback and are not newly approved claims.
+
+## Route integration translation drafts
+
+Owner review also covers lib/public-page-copy.ts, lib/student-copy.ts,
+components/learning/learning-copy.ts and components/learning/catalog-copy.ts,
+French purchase labels in components/commerce/PurchaseButton.tsx, and shared
+footer labels. Authored course titles, questions, videos and files keep their
+original language. Checkout and payment confirmation remain English.

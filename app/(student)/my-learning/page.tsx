@@ -18,7 +18,7 @@ export default async function MyLearningPage() {
   const student = await readStudentSession();
   if (!student) {
     return (
-      <StudentShell title={copy.library} wide>
+      <StudentShell title={copy.library} locale={locale} wide>
         <Panel>
           <Notice>{copy.signInDescription}</Notice>
           <Button href={loginHref("/my-learning")}>{copy.signIn}</Button>
