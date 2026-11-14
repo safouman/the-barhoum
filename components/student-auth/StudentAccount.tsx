@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useLocale } from "@/providers/locale-provider";
+import { studentCopy } from "@/lib/student-copy";
 import { Button } from "@/components/Button";
 import { authError, authRequest, googleHref, loginHref, type AuthResult, type Student } from "./api";
 import { Field, fieldClass, GoogleLink, Notice, Panel, studentLink, Submit } from "./ui";
@@ -9,11 +11,13 @@ import { fieldText, useSubmission } from "./use-submission";
 import { SignOut } from "./SignOut";
 
 const ageRanges = [
-  ["under-18", "Under 18"], ["18-24", "18–24"], ["25-34", "25–34"],
+  ["under-18", ""], ["18-24", "18–24"], ["25-34", "25–34"],
   ["35-44", "35–44"], ["45-54", "45–54"], ["55-64", "55–64"], ["65+", "65+"],
 ];
 
 export function StudentAccount({ status }: { status?: string }) {
+  const { locale } = useLocale();
+  const copy = studentCopy[locale];
   const [session, setSession] = useState<AuthResult<{ student: Student }> | null>(null);
   const [retry, setRetry] = useState(0);
 
@@ -25,15 +29,15 @@ export function StudentAccount({ status }: { status?: string }) {
     return () => controller.abort();
   }, [retry]);
 
-  if (!session) return <Panel><p role="status" className="text-subtle">Loading your student account…</p></Panel>;
+  if (!session) return <Panel><p role="status" className="text-subtle">{copy.loadingAccount}</p></Panel>;
   if (!session.ok) {
     return (
       <Panel>
-        <Notice error>{session.code === "UNAUTHENTICATED" ? "Sign in to view your student account." : authError(session.code)}</Notice>
+        <Notice error>{session.code === "UNAUTHENTICATED" ? copy.signInAccount : authError(session.code, locale)}</Notice>
         {session.code === "UNAUTHENTICATED" ? (
-          <Button href={loginHref("/account")} className="!text-[#14312e]">Sign in</Button>
+          <Button href={loginHref("/account")} className="!rounded-full !bg-[var(--brand-primary)] !normal-case !tracking-normal !text-[var(--brand-background)]">{copy.signIn}</Button>
         ) : (
-          <Button onClick={() => { setSession(null); setRetry((attempt) => attempt + 1); }} className="!text-[#14312e]">Try again</Button>
+          <Button onClick={() => { setSession(null); setRetry((attempt) => attempt + 1); }} className="!rounded-full !bg-[var(--brand-primary)] !normal-case !tracking-normal !text-[var(--brand-background)]">{copy.retry}</Button>
         )}
       </Panel>
     );
@@ -45,12 +49,14 @@ export function StudentAccount({ status }: { status?: string }) {
       <ProfileForm student={student} onSave={(updated) => setSession({ ok: true, data: { student: updated } })} />
       <EmailChangeForm student={student} />
       <LoginMethods student={student} status={status} />
-      <SignOut locale="ar" />
+      <SignOut locale={locale} />
     </div>
   );
 }
 
 function ProfileForm({ student, onSave }: { student: Student; onSave: (updated: Student) => void }) {
+  const { locale } = useLocale();
+  const copy = studentCopy[locale];
   const submission = useSubmission();
   const [saved, setSaved] = useState(false);
   const initials = student.name.trim().split(/\s+/u).slice(0, 2).map((name) => Array.from(name)[0]).join("").toLocaleUpperCase();
@@ -58,10 +64,10 @@ function ProfileForm({ student, onSave }: { student: Student; onSave: (updated: 
   return (
     <Panel>
       <div className="flex min-w-0 items-center gap-3">
-        <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-full bg-[#d7efeb] font-semibold text-[#12685f]">{initials}</span>
+        <span aria-hidden="true" className="grid size-12 shrink-0 place-items-center rounded-full bg-[var(--brand-surface)] font-semibold text-[var(--brand-primary)]">{initials}</span>
         <div className="min-w-0">
-          <h2 className="text-2xl">Profile</h2>
-          <p className="break-all text-sm text-subtle">{student.email}</p>
+          <h2 className="text-2xl">{copy.profile}</h2>
+          <p dir="ltr" className="break-all text-sm text-subtle">{student.email}</p>
         </div>
       </div>
       <form
@@ -77,30 +83,32 @@ function ProfileForm({ student, onSave }: { student: Student; onSave: (updated: 
           };
         }, ({ student: updated }) => { onSave(updated); setSaved(true); }, "PATCH")}
       >
-        <Field id="profile-name" name="name" label="Full name" autoComplete="name" defaultValue={student.name} required maxLength={120} />
-        <Field id="profile-city" name="city" label="City (optional)" autoComplete="address-level2" defaultValue={student.city ?? ""} maxLength={120} />
+        <Field id="profile-name" name="name" label={copy.fullName} dir="auto" autoComplete="name" defaultValue={student.name} required maxLength={120} />
+        <Field id="profile-city" name="city" label={copy.city} dir="auto" autoComplete="address-level2" defaultValue={student.city ?? ""} maxLength={120} />
         <div className="space-y-1.5">
-          <label className="block text-sm font-semibold" htmlFor="profile-age">Age range (optional)</label>
+          <label className="block text-sm font-semibold" htmlFor="profile-age">{copy.age}</label>
           <select id="profile-age" name="ageRange" className={fieldClass} defaultValue={student.ageRange ?? ""}>
-            <option value="">Prefer not to say</option>
-            {ageRanges.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+            <option value="">{copy.preferNotSay}</option>
+            {ageRanges.map(([value, label]) => <option key={value} value={value} dir={value === "under-18" ? undefined : "ltr"}>{value === "under-18" ? copy.under18 : label}</option>)}
           </select>
         </div>
-        {submission.error ? <Notice error>{authError(submission.error)}</Notice> : null}
-        {saved ? <Notice>Your profile was saved.</Notice> : null}
-        <Submit busy={submission.busy}>Save profile</Submit>
+        {submission.error ? <Notice error>{authError(submission.error, locale)}</Notice> : null}
+        {saved ? <Notice>{copy.profileSaved}</Notice> : null}
+        <Submit busy={submission.busy} busyLabel={copy.busy}>{copy.saveProfile}</Submit>
       </form>
     </Panel>
   );
 }
 
 function EmailChangeForm({ student }: { student: Student }) {
+  const { locale } = useLocale();
+  const copy = studentCopy[locale];
   const submission = useSubmission();
   const [sent, setSent] = useState(false);
   return (
     <Panel>
-      <h2 className="text-2xl">Change email</h2>
-      <p className="text-sm text-subtle">Your current address stays active until you verify the new one.</p>
+      <h2 className="text-2xl">{copy.changeEmail}</h2>
+      <p className="text-sm text-subtle">{copy.changeEmailIntro}</p>
       <form
         method="post"
         className="space-y-4"
@@ -110,46 +118,50 @@ function EmailChangeForm({ student }: { student: Student }) {
           return { email: fieldText(data, "email").trim() };
         }, () => setSent(true))}
       >
-        <Field id="change-email" name="email" type="email" label="New email address" autoComplete="email" required maxLength={254} />
-        {submission.error ? <Notice error>{authError(submission.error)}</Notice> : null}
-        {sent ? <Notice>If this address can be used, we’ll send a verification link. Check your new inbox and spam folder.</Notice> : null}
-        <Submit busy={submission.busy}>Send confirmation link</Submit>
+        <Field id="change-email" name="email" type="email" label={copy.newEmail} dir="ltr" autoComplete="email" required maxLength={254} />
+        {submission.error ? <Notice error>{authError(submission.error, locale)}</Notice> : null}
+        {sent ? <Notice>{copy.changeEmailSent}</Notice> : null}
+        <Submit busy={submission.busy} busyLabel={copy.busy}>{copy.sendConfirmation}</Submit>
       </form>
       {submission.error === "REAUTH_REQUIRED" ? <Reauthenticate student={student} /> : null}
-      {submission.error === "UNAUTHENTICATED" ? <Link href={loginHref("/account")} className={studentLink}>Sign in</Link> : null}
+      {submission.error === "UNAUTHENTICATED" ? <Link href={loginHref("/account")} className={studentLink}>{copy.signIn}</Link> : null}
     </Panel>
   );
 }
 
 function Reauthenticate({ student }: { student: Student }) {
+  const { locale } = useLocale();
+  const copy = studentCopy[locale];
   return (
     <div className="space-y-3 text-sm">
-      <p className="text-subtle">After signing in again, return here and retry the change.</p>
-      {student.hasPassword ? <Link href={loginHref("/account")} className={studentLink}>Sign in again with your password</Link> : null}
-      {student.hasGoogle ? <GoogleLink href={googleHref("reauth", "/account")}>Continue with Google</GoogleLink> : null}
+      <p className="text-subtle">{copy.reauthIntro}</p>
+      {student.hasPassword ? <Link href={loginHref("/account")} className={studentLink}>{copy.reauthPassword}</Link> : null}
+      {student.hasGoogle ? <GoogleLink href={googleHref("reauth", "/account")}>{copy.google}</GoogleLink> : null}
     </div>
   );
 }
 
 function LoginMethods({ student, status }: { student: Student; status?: string }) {
+  const { locale } = useLocale();
+  const copy = studentCopy[locale];
   return (
     <Panel>
-      <h2 className="text-2xl">Sign-in methods</h2>
+      <h2 className="text-2xl">{copy.methods}</h2>
       {status === "reauth-required" ? (
         <>
-          <Notice error>{authError("REAUTH_REQUIRED")}</Notice>
+          <Notice error>{authError("REAUTH_REQUIRED", locale)}</Notice>
           <Reauthenticate student={student} />
         </>
       ) : null}
       {status === "google-canceled" || status === "google-failed" ? (
-        <Notice error>{status === "google-canceled" ? "The Google request was canceled." : "The Google request didn’t finish. Try again."}</Notice>
+        <Notice error>{copy.statuses[status]}</Notice>
       ) : null}
-      <p className="text-sm text-subtle">Password {student.hasPassword ? "is set." : "hasn’t been set."}</p>
-      <Link href="/forgot-password" className={studentLink}>{student.hasPassword ? "Reset your password" : "Set a password using email"}</Link>
+      <p className="text-sm text-subtle">{student.hasPassword ? copy.passwordSet : copy.passwordUnset}</p>
+      <Link href="/forgot-password" className={studentLink}>{student.hasPassword ? copy.resetPassword : copy.setPassword}</Link>
       {student.hasGoogle ? (
-        <p className="text-sm text-subtle">Google is linked to this account.</p>
+        <p className="text-sm text-subtle">{copy.googleLinked}</p>
       ) : (
-        <GoogleLink href={googleHref("link", "/account")}>Link Google account</GoogleLink>
+        <GoogleLink href={googleHref("link", "/account")}>{copy.linkGoogle}</GoogleLink>
       )}
     </Panel>
   );
