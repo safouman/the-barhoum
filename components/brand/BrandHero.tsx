@@ -33,7 +33,7 @@ export function BrandHero({ locale: initialLocale }: { locale: Locale }) {
         </h1>
         <span className={styles.divider} aria-hidden="true" />
         <p className={styles.description}>{copy.description}</p>
-        <Link href="/program" className={styles.action}>
+        <Link href={"/program?" + new URLSearchParams({ lang: locale })} className={styles.action}>
           <span>{copy.action}</span>
           <svg viewBox="0 0 28 24" width="28" height="24" fill="none" aria-hidden="true">
             <path d="M2 12H24M16 4L24 12L16 20" stroke="currentColor" strokeWidth="1.5" />
