@@ -52,24 +52,30 @@ export function CourseDetailView({ course, commerce, progress, locale = "ar" }: 
     course.difficulty,
   ].filter(Boolean).join(" · ");
 
+  const primaryAction = commerce?.ownership.base ? (
+    progress?.continueTarget ? (
+      <Button href={progress.continueTarget.href} className="max-sm:w-full">
+        {copy[progress.continueState]}
+      </Button>
+    ) : firstOwned ? (
+      <Button href={lessonHref(course.slug, firstOwned.id)} className="max-sm:w-full">{copy.continue}</Button>
+    ) : null
+  ) : !baseComingSoon && baseOffer && commerce ? (
+    <PurchaseButton locale={locale} offerId={baseOffer.id} courseKey={course.slug} signedIn={commerce.signedIn} signInHref={signInHref} courseHref={courseHref}>{copy.buy}</PurchaseButton>
+  ) : null;
+
   const enrollment = commerce?.ownership.base ? (
     <div className="space-y-3">
       <p className="text-sm font-semibold text-[var(--brand-primary)]">{copy.courseOwned}</p>
       {progress ? <ProgressMeter label={copy.courseProgress} locale={locale} count={progress.courseProgress.base} /> : null}
-      {progress?.continueTarget ? (
-        <Button href={progress.continueTarget.href} className="max-sm:w-full">
-          {copy[progress.continueState]}
-        </Button>
-      ) : firstOwned ? (
-        <Button href={lessonHref(course.slug, firstOwned.id)} className="max-sm:w-full">{copy.continue}</Button>
-      ) : null}
+      {primaryAction}
     </div>
   ) : (baseOffer || baseComingSoon || basePriceUnavailable) && commerce ? (
     <section aria-label={copy.purchase} className="space-y-3 rounded-sm border border-border bg-[var(--brand-background)] p-4">
       {baseOffer ? <p className={isFeatured ? featured.price : "text-2xl font-semibold"}><bdi dir="ltr" className="tabular-nums">{formatOfferPrice(baseOffer)}</bdi> <span className="text-sm font-normal text-subtle">{copy.once}</span></p> : null}
       <p className="text-sm text-subtle">{copy.includes} <bdi dir="ltr">{regularLessons}</bdi> {copy.baseLessons}{hasPremiumOffer ? <> {copy.premiumSeparate}</> : null}</p>
       {baseComingSoon ? <p className="text-sm font-semibold">{copy.comingSoon}</p> : baseOffer ? (
-        <PurchaseButton locale={locale} offerId={baseOffer.id} courseKey={course.slug} signedIn={commerce.signedIn} signInHref={signInHref} courseHref={courseHref}>{copy.buy}</PurchaseButton>
+        primaryAction
       ) : <p className="text-sm font-semibold">{copy.priceUnavailable}</p>}
       {preview ? (
         <Link href={lessonHref(course.slug, preview.id)} className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[var(--brand-primary)] underline underline-offset-4">
@@ -105,6 +111,15 @@ export function CourseDetailView({ course, commerce, progress, locale = "ar" }: 
         <p className="text-sm text-subtle">{copy.curriculumIntro}</p>
       </div>
       <CurriculumList variant={isFeatured ? "featured" : "default"} locale={locale} curriculum={course.curriculum} courseSlug={course.slug} />
+      {isFeatured && primaryAction ? (
+        <div className={featured.curriculumAction} data-curriculum-action>
+          <p className={featured.actionTitle}><bdi>{course.title}</bdi></p>
+          <div className={featured.actionControls}>
+            {!commerce?.ownership.base && baseOffer ? <p className={featured.actionPrice}><bdi dir="ltr">{formatOfferPrice(baseOffer)}</bdi> <span>{copy.once}</span></p> : null}
+            {primaryAction}
+          </div>
+        </div>
+      ) : null}
       {upgrades.length > 0 && commerce ? (
         <section aria-labelledby="upgrades-title" className="space-y-3 pt-3">
           <h2 id="upgrades-title" className="text-2xl">{copy.premium}</h2>

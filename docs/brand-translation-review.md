@@ -42,8 +42,10 @@ French purchase labels in components/commerce/PurchaseButton.tsx, and shared
 footer labels. Authored course titles, questions, videos and files keep their
 original language. Checkout and payment confirmation remain English.
 
-## Premium checkpoint 1
+## Premium checkpoint 1 — final refinement
 
-The Arabic and French heading in lib/home-refinement-copy.ts is a review draft.
-The English “From awareness to impact” heading and the body narrative reuse
-the approved team brief. Authored curriculum text is unchanged.
+The secondary homepage section was removed at the owner's request. The hero
+now includes the six-hour online-program information in its description.
+English follows the approved program facts; the matching Arabic and French
+wording in lib/brand-copy.ts remains an owner-review translation draft.
+Authored curriculum text is unchanged.

@@ -14,7 +14,7 @@ export const brandCopy: Record<Locale, BrandCopy> = {
       title: "Human Intelligence",
       lead: "for Your",
       emphasis: "Professional Evolution.",
-      description: "Develop your emotional intelligence, strengthen your communication, understand people and organizational dynamics, and turn your professional potential into meaningful influence.",
+      description: "A six-hour online program to develop your emotional intelligence, strengthen your communication, understand people and organizational dynamics, and turn your professional potential into meaningful influence.",
       action: "Explore the Program",
     },
     pages: {
@@ -30,7 +30,7 @@ export const brandCopy: Record<Locale, BrandCopy> = {
       title: "الذكاء الإنساني",
       lead: "من أجل",
       emphasis: "تطوّرك المهني.",
-      description: "طوّر ذكاءك العاطفي، وعزّز تواصلك، وافهم الناس وديناميكيات المؤسسات، وحوّل إمكاناتك المهنية إلى تأثير فعّال.",
+      description: "برنامج عبر الإنترنت مدّته 6 ساعات لتطوير ذكائك العاطفي، وتعزيز تواصلك، وفهم الناس وديناميكيات المؤسسات، وتحويل إمكاناتك المهنية إلى تأثير فعّال.",
       action: "اكتشف البرنامج",
     },
     pages: {
@@ -46,7 +46,7 @@ export const brandCopy: Record<Locale, BrandCopy> = {
       title: "L’intelligence humaine",
       lead: "pour votre",
       emphasis: "évolution professionnelle.",
-      description: "Développez votre intelligence émotionnelle, renforcez votre communication, comprenez les personnes et les dynamiques organisationnelles, et transformez votre potentiel professionnel en une influence qui compte.",
+      description: "Un programme en ligne de 6 heures pour développer votre intelligence émotionnelle, renforcer votre communication, comprendre les personnes et les dynamiques organisationnelles, et transformer votre potentiel professionnel en une influence qui compte.",
       action: "Découvrir le programme",
     },
     pages: {

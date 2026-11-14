@@ -246,3 +246,21 @@
 }
 
 .moduleBadge { grid-column: 2; justify-self: start; }
+
+/* The trailing enrollment uses the same state-resolved action as the introduction. */
+.curriculumAction { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem 3rem; padding-block: 2.5rem 0; }
+.actionTitle { max-width: 28ch; margin: 0; font-family: var(--font-playfair), var(--font-noto-naskh), Georgia, serif; font-size: 1.625rem; line-height: 1.35; }
+.actionControls { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; }
+.actionPrice { margin: 0; font-size: 1rem; }
+.actionPrice span { display: block; font-size: 0.8125rem; line-height: 1.6; }
+.actionControls :where(a[class~="btn"], button) { min-height: 44px; }
+@media (max-width: 639px) {
+  .curriculumAction { gap: 1.25rem; padding-block-start: 2rem; }
+  .actionTitle { font-size: 1.375rem; }
+  .actionControls { width: 100%; }
+  .actionControls > :last-child, .actionControls :where(a[class~="btn"], button) { width: 100%; }
+  .moduleLessons :where(li > a) { display: grid; grid-template-columns: 1.75rem minmax(0, 1fr); gap: 0.5rem 0.625rem; align-items: start; padding-inline: 0.25rem; }
+  .moduleLessons :where(li > a > span:first-child) { grid-column: 1; grid-row: 1; width: 1.75rem; height: 1.75rem; }
+  .moduleLessons :where(li > a > span:nth-child(2)) { grid-column: 2; grid-row: 1; line-height: 1.6; }
+  .moduleLessons :where(li > a > span:last-child:not(:nth-child(2)):not([class~="sr-only"])) { grid-column: 2; grid-row: 2; justify-self: start; }
+}
