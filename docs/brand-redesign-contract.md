@@ -23,7 +23,7 @@ Auth-return and token parameters must survive switching. Use locale-aware server
 
 ## Ownership and first checkpoint
 
-A / feat/redesign-public: components/brand/** except copy; app/(site)/page.tsx; app/(site)/coaching/page.tsx; archive old page as components/legacy/CoachingPage.tsx. Own isolated BrandHeader and BrandHero with CSS modules. Header consumes locale, signedIn and brandCopy, account links reuse safeReturnTo. CTA /program must resolve in checkpoint; initial program page may render exact six approved modules and placeholder disclosure. Do not edit existing SiteHeader, shared Button, layouts, tokens or locale files. Build only homepage/hero/coaching and minimal program destination before owner visual review. Wider public pages follow later.
+A / feat/redesign-public: components/brand/** except copy; app/(site)/page.tsx; app/(site)/coaching/page.tsx; archive old page as components/legacy/CoachingPage.tsx. Own isolated BrandHeader and BrandHero with CSS modules. Header consumes locale, signedIn and brandCopy, account links reuse safeReturnTo. The Program is the real Payload-backed main course; /program redirects to /courses/human-intelligence-for-your-professional-evolution. /courses is the all-published-course catalog. No static program curriculum or price is permitted. Do not edit existing SiteHeader, shared Button, layouts, tokens or locale files. Build only homepage/hero/coaching and minimal program destination before owner visual review. Wider public pages follow later.
 
 B / feat/redesign-student: components/learning/**, components/student-auth/**, app/(student)/**/page.tsx, app/(site)/courses/**/page.tsx. First checkpoint is implementation inventory and locale plumbing preparation, plus representative course/catalog styling in own branch only; wider UI rollout and integration wait for hero acceptance. Do not modify APIs, entitlement/progress/readers, shared files, payment or English checkout/return behavior, public SiteHeader or root layouts.
 
@@ -47,3 +47,13 @@ Preserve coaching form/payment behavior under /coaching. Legacy homepage source 
 ## Acceptance
 
 Screenshot exact supplied desktop/mobile dimensions, plus 320/390/1440 and Arabic/French text. Compare spacing, title wraps, logo, curves, fonts, nav and CTA. Screenshot capture excludes cookie banner only by explicit rejected-consent test cookie, keeping real consent behavior intact. Verify keyboard menu/Escape/focus, account returns, EN/AR/FR reload/switch and bidi digits. Preserve course/security/commerce/progress tests. Lint/types/build and relevant tests before integration. Early screenshots come from isolated local build; deploy integrated Development Preview only after coordinator review.
+
+## Owner integration correction
+
+The Program and Courses are distinct links to the same existing platform. Coordinator owns /program redirect, Development Payload fixture, BrandHeader menu mapping and shared student/site layouts. A static program page is removed. Existing data readers, commerce, entitlement and progress APIs remain the single implementations.
+
+Integration work continues from this correction.
+A owns Organizations, Resources, About routes, components/brand/InformationPage*, lib/public-page-copy.ts. Approved narrative and existing public resources only, AR/FR drafts flagged in review documentation.
+B owns course detail, lesson presentation, catalog, library and progress presentation under components/learning except StudentFrame; course route locale props. Authored content and authorization stay unchanged.
+C owns components/student-auth and student auth/account page copy/styling, lib/student-copy.ts. Do not edit checkout/return or its child commerce components. Coordinator owns app/(student)/layout.tsx and StudentFrame, LocaleProvider fixed-English checkout support and integration.
+All agents work in separate worktrees, test and commit independently. No production changes.
