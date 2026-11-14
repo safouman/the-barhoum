@@ -32,4 +32,4 @@ French action: Découvrir le programme
 
 ## Metadata
 
-Home descriptions now follow the approved program narrative. French legal and AI reference titles/descriptions are draft translations. Legacy slogans that did not have translated source text retain their prior English fallback and are not newly approved claims.
+The new hero dictionary follows the approved program narrative. Legacy English and Arabic SEO descriptions still require alignment during the wider rollout. French legal and AI reference titles/descriptions are draft translations. Legacy slogans that did not have translated source text retain their prior English fallback and are not newly approved claims.
