@@ -1,16 +1,24 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Locale } from "@/lib/content";
 import type { CourseDetail, CourseSummary } from "@/lib/learning/contracts";
 import { formatOfferPrice, type CourseCommerce } from "@/components/commerce/checkout";
+import { catalogCopy } from "./catalog-copy";
 import { LearningIcon } from "./LearningIcon";
+import styles from "./Catalog.module.css";
 
 type CardCourse = CourseSummary & Pick<CourseDetail, "estimatedDuration" | "difficulty" | "category">;
 
-export function CourseCard({ course, commerce, owned = commerce?.ownership.base ?? false }: { course: CardCourse; commerce?: CourseCommerce; owned?: boolean }) {
+export function CourseCard({ course, commerce, owned = commerce?.ownership.base ?? false, locale = "ar" }: {
+  course: CardCourse;
+  commerce?: CourseCommerce;
+  owned?: boolean;
+  locale?: Locale;
+}) {
+  const copy = catalogCopy[locale];
   const metadata = [course.category, course.estimatedDuration, course.difficulty]
     .filter(Boolean)
     .join(" · ");
-
   const offer = commerce?.offers.find(({ moduleId }) => moduleId === null);
   const comingSoon = commerce?.comingSoonOffers?.includes(null);
   const priceUnavailable = commerce?.unavailableOffers?.includes(null);
@@ -18,30 +26,32 @@ export function CourseCard({ course, commerce, owned = commerce?.ownership.base 
   return (
     <Link
       href={`/courses/${encodeURIComponent(course.slug)}`}
-      className="group flex h-full flex-col overflow-hidden rounded-md border border-border bg-background transition-colors hover:border-[#12685f] focus-visible:!outline-[#12685f]"
+      lang={locale}
+      dir={locale === "ar" ? "rtl" : "ltr"}
+      className={styles.card}
     >
-      <div className="relative aspect-video bg-surface">
+      <div className={styles.cover}>
         <Image
           src={course.cover.url}
           alt={course.cover.alt}
           unoptimized={course.cover.url.startsWith("https://")}
           fill
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-          className="object-cover"
+          className={styles.coverImage}
         />
       </div>
-      <div className="flex flex-1 flex-col gap-3 p-5">
-        {metadata ? <p className="text-xs font-medium text-[#12685f]"><bdi>{metadata}</bdi></p> : null}
-        <h2 className="text-xl leading-tight"><bdi>{course.title}</bdi></h2>
-        <p className="line-clamp-3 text-sm leading-relaxed text-subtle" dir="auto">{course.description}</p>
+      <div className={styles.cardBody}>
+        {metadata ? <p className={styles.metadata}><bdi>{metadata}</bdi></p> : null}
+        <h2 className={styles.cardTitle}><bdi>{course.title}</bdi></h2>
+        <p className={styles.cardDescription} dir="auto">{course.description}</p>
         {owned || comingSoon || offer || priceUnavailable ? (
-          <p className="text-sm font-semibold text-[#12685f]">
-            {owned ? "ضمن دوراتك" : comingSoon ? "قريبًا" : offer ? <bdi dir="ltr" className="tabular-nums">{formatOfferPrice(offer)}</bdi> : "السعر غير متاح حاليًا"}
+          <p className={styles.price}>
+            {owned ? copy.owned : comingSoon ? copy.comingSoon : offer ? <bdi dir="ltr" className="tabular-nums">{formatOfferPrice(offer)}</bdi> : copy.priceUnavailable}
           </p>
         ) : null}
-        <span className="mt-auto inline-flex items-center gap-2 pt-3 text-sm font-semibold text-[#12685f] underline-offset-4 group-hover:underline">
-          {owned ? "تابع التعلّم" : "عرض الدورة"}
-          <LearningIcon name="left" />
+        <span className={styles.action}>
+          {owned ? copy.continueLearning : copy.viewCourse}
+          <LearningIcon name={locale === "ar" ? "left" : "right"} />
         </span>
       </div>
     </Link>

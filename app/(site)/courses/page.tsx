@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import { resolveLocale } from "@/lib/i18n.server";
 import { CourseCatalogView } from "@/components/learning/CourseCatalogView";
 import { getDemoCourses } from "@/components/learning/fixtures";
 import { purchaseAvailability } from "@/lib/commerce/course-payments/eligibility";
@@ -19,8 +20,9 @@ const technicalCourseSlugs = new Set([
 ]);
 
 export default async function CoursesPage() {
+  const locale = await resolveLocale();
   const demo = getDemoCourses();
-  if (demo) return <CourseCatalogView entries={demo.map((course) => ({ course }))} />;
+  if (demo) return <CourseCatalogView entries={demo.map((course) => ({ course }))} locale={locale} />;
 
   const [courses, student, requestHeaders] = await Promise.all([
     listPublishedCourses(),
@@ -36,5 +38,5 @@ export default async function CoursesPage() {
       course,
       commerce: await readCourseCommerce(course.id, student?.id, availability, "catalog"),
     })));
-  return <CourseCatalogView entries={entries} />;
+  return <CourseCatalogView entries={entries} locale={locale} />;
 }

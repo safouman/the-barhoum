@@ -1,31 +1,37 @@
 import { Container } from "@/components/Container";
+import type { Locale } from "@/lib/content";
 import type { CourseCommerce } from "@/components/commerce/checkout";
 import type { CourseSummary } from "@/lib/learning/contracts";
 import { CourseCard } from "./CourseCard";
+import { catalogCopy } from "./catalog-copy";
+import styles from "./Catalog.module.css";
 
-export function CourseCatalogView({ entries }: {
+export function CourseCatalogView({ entries, locale = "ar" }: {
   entries: Array<{ course: CourseSummary; commerce?: CourseCommerce }>;
+  locale?: Locale;
 }) {
+  const copy = catalogCopy[locale];
+
   return (
-    <div dir="rtl" lang="ar" className="bg-[#fcfdfc] text-text">
-      <section className="border-b border-border bg-[#f2f8f6] py-10 sm:py-14">
-        <Container className="space-y-3">
-          <p className="text-sm font-semibold text-[#12685f]">تعلّم مع برهوم</p>
-          <h1 className="text-display leading-tight">الدورات</h1>
-          <p className="text-lead max-w-[56ch]">تصفّح الدورات، تعرّف على محاورها وابدأ بدرس مجاني.</p>
+    <div dir={locale === "ar" ? "rtl" : "ltr"} lang={locale} className={`brand-experience ${styles.catalog}`}>
+      <section className={styles.introduction}>
+        <Container>
+          <p className={styles.eyebrow}>{copy.eyebrow}</p>
+          <h1 className={styles.title}>{copy.title}</h1>
+          <p className={styles.description}>{copy.description}</p>
         </Container>
       </section>
-      <Container className="py-8 sm:py-10">
+      <Container className={styles.content}>
         {entries.length ? (
-          <ul role="list" aria-label="الدورات المتاحة" className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <ul aria-label={copy.available} className={styles.grid}>
             {entries.map(({ course, commerce }) => (
-              <li key={course.slug} className="min-w-0">
-                <CourseCard course={course} commerce={commerce} />
+              <li key={course.slug}>
+                <CourseCard course={course} commerce={commerce} locale={locale} />
               </li>
             ))}
           </ul>
         ) : (
-          <p className="text-subtle">لا توجد دورات متاحة الآن. تفقّد هذه الصفحة لاحقًا.</p>
+          <p className={styles.empty}>{copy.empty}</p>
         )}
       </Container>
     </div>
