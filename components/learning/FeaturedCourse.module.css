@@ -1,0 +1,248 @@
+.featured {
+  padding-block: clamp(2rem, 5vw, 4.5rem) clamp(3rem, 6vw, 5.5rem);
+}
+
+.introduction {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 2rem;
+  padding-block-end: clamp(2.5rem, 6vw, 4.5rem);
+  border-bottom: 1px solid var(--brand-surface);
+}
+
+.editorial {
+  min-width: 0;
+  max-width: 47rem;
+}
+
+.eyebrow {
+  margin: 0 0 1.25rem;
+  color: var(--brand-primary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
+.title {
+  margin: 0;
+  max-width: 21ch;
+  font-size: clamp(2.5rem, 5.2vw, 4.5rem);
+  font-weight: 500;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  overflow-wrap: break-word;
+}
+
+.description {
+  max-width: 48ch;
+  margin: 1.75rem 0 0;
+  font-size: clamp(1rem, 1.4vw, 1.125rem);
+  line-height: 1.8;
+}
+
+.metadata {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin: 1.5rem 0 0;
+  color: var(--brand-primary);
+  font-size: 0.8125rem;
+  line-height: 1.7;
+}
+
+.enrollment {
+  min-width: 0;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--brand-surface);
+  border-radius: 1.5rem;
+  background: var(--brand-background);
+}
+
+.enrollment :where(section) {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.enrollment :where(button, a[class~="btn"]) {
+  width: 100%;
+  white-space: normal;
+  line-height: 1.5;
+}
+
+.enrollment :where(a) {
+  max-width: 100%;
+}
+
+.cover {
+  position: relative;
+  grid-column: 1 / -1;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 1.5rem;
+  background: var(--brand-surface);
+}
+
+.curriculum {
+  min-width: 0;
+  padding-block-start: clamp(2.5rem, 5vw, 4rem);
+}
+
+.sectionHeading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  margin-block-end: 1.75rem;
+}
+
+.sectionHeading h2 {
+  margin: 0;
+  font-size: clamp(1.75rem, 3vw, 2.375rem);
+  line-height: 1.2;
+}
+
+.sectionHeading p {
+  max-width: 42ch;
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.moduleGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 1rem;
+}
+
+.module {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--brand-surface);
+  border-radius: 1.25rem;
+  background: var(--brand-background);
+}
+
+.moduleSummary {
+  position: relative;
+  display: flex;
+  min-height: 12rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 1.75rem 1.25rem;
+  list-style: none;
+  cursor: pointer;
+  text-align: center;
+}
+
+.moduleSummary::-webkit-details-marker {
+  display: none;
+}
+
+.moduleSummary:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: -5px;
+  border-radius: 1.25rem;
+}
+
+.moduleSummary:hover {
+  background: var(--brand-surface);
+}
+
+.moduleNumber {
+  color: var(--brand-primary);
+  font-family: var(--brand-display);
+  font-size: 2rem;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.moduleTitle {
+  max-width: 26ch;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.moduleChevron {
+  position: absolute;
+  inset-block-start: 1rem;
+  inset-inline-end: 1.125rem;
+  width: 0.875rem;
+  height: 0.875rem;
+  color: var(--brand-primary);
+}
+
+.module[open] .moduleChevron {
+  transform: rotate(180deg);
+}
+
+.moduleLessons {
+  border-top: 1px solid var(--brand-surface);
+  padding: 0.5rem;
+}
+
+.outcomes {
+  padding-block-start: clamp(2.5rem, 5vw, 4rem);
+}
+
+.outcomes h2 {
+  margin: 0 0 1.5rem;
+  font-size: clamp(1.75rem, 3vw, 2.375rem);
+  line-height: 1.2;
+}
+
+@media (min-width: 640px) {
+  .moduleGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .introduction {
+    grid-template-columns: minmax(0, 1.55fr) minmax(17rem, 0.8fr);
+    gap: clamp(2.5rem, 5vw, 5rem);
+  }
+
+  .enrollment {
+    margin-block-start: 2.5rem;
+  }
+
+  .moduleGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.authoredTitle {
+  font-family: var(--font-playfair), var(--font-noto-naskh), Georgia, serif;
+}
+
+.price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.75rem;
+  margin: 0;
+}
+
+.price > bdi {
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.price > span {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.5;
+}
