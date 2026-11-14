@@ -1,0 +1,30 @@
+:root {
+  --brand-primary: #006b6b;
+  --brand-accent: #00b5a6;
+  --brand-background: #f9f6f2;
+  --brand-surface: #ede8e3;
+  --brand-text: #1a1a1a;
+  --brand-display: var(--font-playfair), Georgia, serif;
+  --brand-body: var(--font-inter), Arial, sans-serif;
+  --brand-arabic: var(--font-noto-naskh), serif;
+}
+
+.brand-experience {
+  color: var(--brand-text);
+  background: var(--brand-background);
+  font-family: var(--brand-body);
+}
+
+.brand-experience :where(h1, h2, h3) {
+  font-family: var(--brand-display);
+}
+
+.brand-experience[lang="ar"],
+.brand-experience[lang="ar"] :where(h1, h2, h3) {
+  font-family: var(--brand-arabic);
+}
+
+.brand-experience :focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 5px;
+}
