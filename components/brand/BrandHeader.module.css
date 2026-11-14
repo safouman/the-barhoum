@@ -1,0 +1,274 @@
+.header {
+  position: relative;
+  z-index: 5;
+  height: 220px;
+  color: var(--brand-text);
+  background: transparent;
+  font-family: var(--brand-body);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.logo {
+  position: absolute;
+  top: 19px;
+  left: 50%;
+  display: block;
+  width: 112px;
+  transform: translateX(-50%);
+}
+
+.logo img {
+  width: 100%;
+  height: auto;
+}
+
+.desktopPrimary {
+  position: absolute;
+  left: 6.7%;
+  top: 45px;
+}
+
+.desktopPrimary nav,
+.desktopSecondary,
+.accountLinks {
+  display: flex;
+  align-items: center;
+}
+
+.desktopPrimary nav {
+  gap: 36px;
+}
+
+.header a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.header a:hover {
+  color: var(--brand-primary);
+}
+
+.desktopSecondary {
+  position: absolute;
+  right: 175px;
+  top: 45px;
+  gap: 24px;
+}
+
+.accountLinks {
+  gap: 16px;
+  font-size: 12px;
+}
+
+.language {
+  position: absolute;
+  top: 39px;
+  right: 6.7%;
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  padding-left: 28px;
+  border-left: 1px solid color-mix(in srgb, var(--brand-text), transparent 78%);
+}
+
+.language select {
+  appearance: none;
+  border: 0;
+  padding: 6px 24px 6px 6px;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.language svg {
+  position: absolute;
+  right: 2px;
+  pointer-events: none;
+}
+
+.divider {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  width: 72px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--brand-text), transparent);
+  transform: translateX(-50%);
+}
+
+.mobileToggle,
+.mobileMenu {
+  display: none;
+}
+
+.skip {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 8;
+  padding: 10px 16px;
+  background: var(--brand-background);
+  transform: translateY(-150%);
+}
+
+.skip:focus {
+  transform: translateY(0);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+.header[lang="ar"] {
+  font-family: var(--brand-arabic);
+}
+
+@media (max-width: 1160px) and (min-width: 901px) {
+  .desktopPrimary {
+    left: 4%;
+  }
+
+  .desktopPrimary nav {
+    gap: 18px;
+  }
+
+  .desktopSecondary {
+    right: 140px;
+    gap: 16px;
+  }
+
+  .language {
+    right: 4%;
+    padding-left: 16px;
+  }
+}
+
+@media (max-width: 900px) {
+  .header {
+    height: 280px;
+  }
+
+  .logo {
+    top: 27px;
+    width: 146px;
+  }
+
+  .desktopPrimary,
+  .desktopSecondary {
+    display: none;
+  }
+
+  .mobileToggle {
+    position: absolute;
+    top: 77px;
+    left: 6.5%;
+    display: grid;
+    width: 48px;
+    height: 44px;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    color: var(--brand-text);
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .mobileToggle svg {
+    stroke: currentColor;
+    stroke-width: 2.5;
+  }
+
+  .language {
+    top: 77px;
+    right: 6.5%;
+    border: 0;
+    padding: 0;
+    font-size: 23px;
+  }
+
+  .language select {
+    padding-right: 30px;
+  }
+
+  .divider {
+    bottom: 27px;
+    width: 88px;
+  }
+
+  .mobileMenu:not([hidden]) {
+    position: absolute;
+    z-index: 10;
+    top: 250px;
+    inset-inline: 24px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 28px;
+    border: 1px solid var(--brand-surface);
+    border-radius: 18px;
+    background: var(--brand-background);
+    box-shadow: 0 12px 30px color-mix(in srgb, var(--brand-text), transparent 92%);
+    font-size: 18px;
+  }
+
+  .mobileMenu a {
+    min-height: 44px;
+    padding-block: 10px;
+  }
+}
+
+@media (max-width: 520px) {
+  .header {
+    height: 152px;
+  }
+
+  .logo {
+    top: 15px;
+    width: 80px;
+  }
+
+  .mobileToggle {
+    top: 39px;
+    width: 44px;
+    height: 44px;
+    left: 4.5%;
+  }
+
+  .mobileToggle svg {
+    width: 25px;
+    height: 22px;
+  }
+
+  .language {
+    top: 43px;
+    right: 6.5%;
+    font-size: 15px;
+  }
+
+  .language select {
+    padding-right: 21px;
+  }
+
+  .language svg {
+    width: 10px;
+  }
+
+  .divider {
+    bottom: 14px;
+    width: 48px;
+  }
+
+  .mobileMenu:not([hidden]) {
+    top: 138px;
+    inset-inline: 16px;
+    padding: 14px 20px;
+    font-size: 16px;
+  }
+}
