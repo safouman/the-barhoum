@@ -1,3 +1,8 @@
+/* The one-section homepage must not inherit the legacy full-viewport main floor. */
+:global(main):has(> .hero:only-child) {
+  min-height: 0;
+}
+
 .hero {
   position: relative;
   isolation: isolate;
