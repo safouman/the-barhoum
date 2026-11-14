@@ -72,13 +72,14 @@ export const seoConfig: SeoConfig = {
             slogan: {
                 en: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر.",
                 ar: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر.",
+                fr: "De meilleurs outils ne produisent pas automatiquement de meilleures décisions, équipes ou carrières.",
             },
         },
         person: {
             name: "Ibrahim Ben Abdallah",
             alternateName: ["إبراهيم بن عبد الله", "Barhoum"],
             jobTitle: "Self-leadership coach ",
-            description: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر.",
+            description: "Human intelligence for your professional evolution.",
             image: "/images/hero.jpeg",
         },
         domains: {
@@ -95,26 +96,32 @@ export const seoConfig: SeoConfig = {
     defaultTitle: {
         en: "Ibrahim Ben Abdallah",
         ar: "إبراهيم بن عبد الله",
+        fr: "Ibrahim Ben Abdallah",
     },
     titleTemplate: {
         en: "%s | Ibrahim Ben Abdallah",
         ar: "%s | إبراهيم بن عبد الله",
+        fr: "%s | Ibrahim Ben Abdallah",
     },
     siteName: {
         en: "Ibrahim Ben Abdallah",
         ar: "إبراهيم بن عبد الله",
+        fr: "Ibrahim Ben Abdallah",
     },
     description: {
         en: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر.",
         ar: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر.",
+        fr: "Développez votre intelligence émotionnelle, renforcez votre communication, comprenez les personnes et les dynamiques organisationnelles, et transformez votre potentiel professionnel en une influence qui compte.",
     },
     openGraphLocale: {
         en: "en_US",
         ar: "ar_TN",
+        fr: "fr_FR",
     },
     openGraphDescription: {
         en: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر.",
         ar: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر.",
+        fr: "Développez votre intelligence émotionnelle, renforcez votre communication, comprenez les personnes et les dynamiques organisationnelles, et transformez votre potentiel professionnel en une influence qui compte.",
     },
     openGraphImages: [
         {
@@ -124,6 +131,7 @@ export const seoConfig: SeoConfig = {
             alt: {
                 en: "Ibrahim Ben Abdallah brand card on a deep teal background",
                 ar: "بطاقة علامة إبراهيم بن عبد الله على خلفية خضراء داكنة",
+                fr: "Ibrahim Ben Abdallah brand card on a deep teal background",
             },
         },
     ],
@@ -132,10 +140,12 @@ export const seoConfig: SeoConfig = {
         title: {
             en: "Ibrahim Ben Abdallah",
             ar: "إبراهيم بن عبد الله",
+            fr: "Ibrahim Ben Abdallah",
         },
         description: {
             en: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر.",
             ar: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر.",
+            fr: "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر.",
         },
     },
     pages: {
@@ -158,6 +168,13 @@ export const seoConfig: SeoConfig = {
                     ogDescription:
                         "نربحك برشا وقت في شويّة وقت ، كان عندك صدق و صبر.",
                     canonical: "/?lang=ar",
+                },
+                fr: {
+                    "title": "Ibrahim Ben Abdallah",
+                    "description": "Développez votre intelligence émotionnelle, renforcez votre communication, comprenez les personnes et les dynamiques organisationnelles, et transformez votre potentiel professionnel en une influence qui compte.",
+                    "ogTitle": "Ibrahim Ben Abdallah | Ibrahim Ben Abdallah",
+                    "ogDescription": "Développez votre intelligence émotionnelle, renforcez votre communication, comprenez les personnes et les dynamiques organisationnelles, et transformez votre potentiel professionnel en une influence qui compte.",
+                    "canonical": "/?lang=fr"
                 },
             },
         },
@@ -183,6 +200,13 @@ export const seoConfig: SeoConfig = {
                         "التزامنا بحماية بياناتك الشخصية أثناء الاستفادة من خدماتنا التدريبية.",
                     canonical: "/privacy?lang=ar",
                 },
+                fr: {
+                    "title": "Politique de confidentialité",
+                    "description": "Découvrez comment Ibrahim Ben Abdallah collecte, utilise et protège les informations personnelles dans le cadre de ses services.",
+                    "ogDescription": "Découvrez comment Ibrahim Ben Abdallah collecte, utilise et protège les informations personnelles dans le cadre de ses services.",
+                    "canonical": "/privacy?lang=fr",
+                    "ogTitle": "Politique de confidentialité | Ibrahim Ben Abdallah"
+                },
             },
         },
         terms: {
@@ -204,6 +228,13 @@ export const seoConfig: SeoConfig = {
                     ogDescription:
                         "المبادئ التي ننظم بها علاقتنا مع العملاء لضمان تجربة واضحة ومتوازنة.",
                     canonical: "/terms?lang=ar",
+                },
+                fr: {
+                    "title": "Conditions d’utilisation",
+                    "description": "Consultez les conditions qui encadrent votre utilisation des services d’Ibrahim Ben Abdallah.",
+                    "canonical": "/terms?lang=fr",
+                    "ogTitle": "Conditions d’utilisation | Ibrahim Ben Abdallah",
+                    "ogDescription": "Consultez les conditions qui encadrent votre utilisation des services d’Ibrahim Ben Abdallah."
                 },
             },
         },
@@ -229,6 +260,13 @@ export const seoConfig: SeoConfig = {
                     ogDescription:
                         "حقائق ونبرة ومراجع موثوقة لتوليد محتوى دقيق حول إبراهيم بن عبد الله.",
                     canonical: "/ai-brief?lang=ar",
+                },
+                fr: {
+                    "title": "Fiche de référence pour l’IA",
+                    "description": "Guide de référence destiné aux assistants et modèles d’IA qui présentent Ibrahim Ben Abdallah.",
+                    "ogTitle": "Fiche de référence pour l’IA | Ibrahim Ben Abdallah",
+                    "ogDescription": "Guide de référence destiné aux assistants et modèles d’IA qui présentent Ibrahim Ben Abdallah.",
+                    "canonical": "/ai-brief?lang=fr"
                 },
             },
         },

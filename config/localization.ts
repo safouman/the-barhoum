@@ -1,6 +1,6 @@
 import type { Locale } from "@/lib/content";
 
-const KNOWN_LOCALES: Locale[] = ["ar", "en"];
+const KNOWN_LOCALES: Locale[] = ["ar", "en", "fr"];
 
 type EnvConfig = {
   available: string | undefined;
@@ -41,7 +41,7 @@ const defaultLocale =
 
 const enableAllLocales = (() => {
   const value = env.enabledFlag?.trim().toLowerCase();
-  return value === "true" || value === "1" || value === "yes" || value === "on";
+  return value === undefined || value === "true" || value === "1" || value === "yes" || value === "on";
 })();
 
 const enabledLocales: Locale[] = enableAllLocales ? availableLocales : [defaultLocale];

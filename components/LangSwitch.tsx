@@ -30,7 +30,7 @@ export function LangSwitch({ options, className }: LangSwitchProps) {
         const params = new URLSearchParams(searchParams?.toString());
         params.set("lang", value);
         const query = params.toString();
-        router.replace(query ? `${pathname}?${query}` : pathname, {
+        router.replace((query ? `${pathname}?${query}` : pathname) + window.location.hash, {
             scroll: false,
         });
     };
@@ -47,6 +47,7 @@ export function LangSwitch({ options, className }: LangSwitchProps) {
             {options.map((option) => (
                 <button
                     type="button"
+                    aria-pressed={option.value === locale}
                     key={option.value}
                     className={clsx(
                         "px-1.5 py-1 md:px-2.5 md:py-1 transition text-[0.7rem] md:text-sm",

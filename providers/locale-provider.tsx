@@ -16,35 +16,16 @@ type LocaleContextValue = {
 
 const LocaleContext = createContext<LocaleContextValue | undefined>(undefined);
 
-function readCookie(): Locale | null {
-  if (typeof document === "undefined") return null;
-  const entries = document.cookie.split("; ");
-  for (const entry of entries) {
-    const [key, value] = entry.split("=");
-    if (key === LOCALE_COOKIE && isLocale(value)) {
-      return value;
-    }
-  }
-  return null;
-}
-
 function isLocale(value: string | Locale | null | undefined): value is Locale {
   return !!value && SUPPORTED_LOCALES.includes(value as Locale);
 }
 
 export function LocaleProvider({ children, initialLocale = DEFAULT_LOCALE }: { children: React.ReactNode; initialLocale?: Locale; }) {
   const searchParams = useSearchParams();
+  const initialQueryLocale = searchParams?.get("lang");
   const [locale, setLocaleState] = useState<Locale>(() =>
-    isLocale(initialLocale) ? initialLocale : DEFAULT_LOCALE
+    isLocale(initialQueryLocale) ? initialQueryLocale : isLocale(initialLocale) ? initialLocale : DEFAULT_LOCALE
   );
-
-  useEffect(() => {
-    const existing = readCookie();
-    if (existing && existing !== locale) {
-      setLocaleState(existing);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     const param = searchParams?.get("lang");

@@ -1,7 +1,6 @@
 
 import 'server-only';
 import { cookies, headers } from 'next/headers';
-import type { ReadonlyURLSearchParams } from 'next/navigation';
 import type { Locale } from '@/lib/content';
 import { DEFAULT_LOCALE, isLocale } from './i18n';
 
@@ -23,9 +22,12 @@ async function safeHeader(name: string) {
   }
 }
 
-export async function resolveLocale(searchParams?: ReadonlyURLSearchParams | null): Promise<Locale> {
+export async function resolveLocale(searchParams?: Pick<URLSearchParams, "get"> | null): Promise<Locale> {
   const fromSearch = searchParams?.get('lang');
   if (isLocale(fromSearch)) return fromSearch;
+
+  const requestLocale = await safeHeader("x-barhoum-locale");
+  if (isLocale(requestLocale)) return requestLocale;
 
   const cookieLocale = await safeCookie(COOKIE_KEY);
   if (isLocale(cookieLocale)) return cookieLocale;

@@ -6,7 +6,8 @@ import { z } from "zod";
 export const localizedSchema = z.object({
     ar: z.string(),
     en: z.string(),
-});
+    fr: z.string().optional(),
+}).transform(({ ar, en, fr }) => ({ ar, en, fr: fr ?? en }));
 
 type Localized = z.infer<typeof localizedSchema>;
 
@@ -38,7 +39,8 @@ export const packageSchema = z.object({
     features: z.object({
         ar: z.array(z.string()),
         en: z.array(z.string()),
-    }),
+        fr: z.array(z.string()).optional(),
+    }).transform(({ ar, en, fr }) => ({ ar, en, fr: fr ?? en })),
     visible: z.boolean(),
 });
 
@@ -63,7 +65,8 @@ const cvEntrySchema = z.object({
     bullets: z.object({
         ar: z.array(z.string()),
         en: z.array(z.string()),
-    }),
+        fr: z.array(z.string()).optional(),
+    }).transform(({ ar, en, fr }) => ({ ar, en, fr: fr ?? en })),
 });
 
 const cvSectionSchema = z.object({
@@ -104,7 +107,7 @@ export type Payment = z.infer<typeof paymentSchema>;
 export const paymentsSchema = z.array(paymentSchema);
 
 const languageOptionSchema = z.object({
-    value: z.enum(["ar", "en"]),
+    value: z.enum(["ar", "en", "fr"]),
     label: z.string(),
 });
 
@@ -268,6 +271,7 @@ export const uiSchema = z.object({
         label: z.string(),
         ar: z.string(),
         en: z.string(),
+        fr: z.string().default("Français"),
     }),
     home: z.object({
         categories: z.object({
@@ -305,13 +309,13 @@ export const getTestimonials = () =>
     loadJson("testimonials.json", z.array(testimonialSchema));
 export const getHomeData = () => loadJson("home.json", homeSchema);
 export const getUiStrings = (locale: Locale) =>
-    loadJson(`ui.${locale}.json`, uiSchema);
+    loadJson(`ui.${locale === "fr" ? "en" : locale}.json`, uiSchema);
 export const getCvData = () => loadJson("cv.json", cvSchema);
 export const getLinksData = () => loadJson("links.json", linksSchema);
 export const getPayments = () => loadJson("payments.json", paymentsSchema);
 export const getSiteConfig = () => loadJson("site.json", siteConfigSchema);
 export const getLeadFormCopy = (locale: Locale) =>
-    loadJson(`forms/lead.${locale}.json`, leadFormSchema);
+    loadJson(`forms/lead.${locale === "fr" ? "en" : locale}.json`, leadFormSchema);
 export const getProgramCopy = () =>
     loadJson("programs.json", programCopySchema);
 
@@ -328,12 +332,12 @@ export const getHomeMarkdown = (
         process.cwd(),
         "content",
         "home",
-        `${section}.${locale}.md`
+        `${section}.${locale === "fr" ? "en" : locale}.md`
     );
     return loadMarkdown(filePath);
 };
 
-export type Locale = "ar" | "en";
+export type Locale = "ar" | "en" | "fr";
 
 export type LocalizedField = Localized;
 
@@ -352,4 +356,5 @@ const programCopyItemSchema = z.object({
 const programCopySchema = z.object({
     ar: z.record(z.string(), programCopyItemSchema),
     en: z.record(z.string(), programCopyItemSchema),
-});
+    fr: z.record(z.string(), programCopyItemSchema).optional(),
+}).transform(({ ar, en, fr }) => ({ ar, en, fr: fr ?? en }));

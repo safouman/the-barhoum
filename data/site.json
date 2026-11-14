@@ -2,11 +2,13 @@
   "brand": {
     "header": {
       "ar": "Rebirth",
-      "en": "Rebirth"
+      "en": "Rebirth",
+      "fr": "Rebirth"
     },
     "footer": {
       "ar": "Rebirth",
-      "en": "Rebirth"
+      "en": "Rebirth",
+      "fr": "Rebirth"
     }
   },
   "languageSwitch": {
@@ -18,6 +20,10 @@
       {
         "value": "en",
         "label": "EN"
+      },
+      {
+        "value": "fr",
+        "label": "FR"
       }
     ]
   },
