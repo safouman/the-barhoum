@@ -1,0 +1,152 @@
+{
+  "sourceFile": "Ibrahim_Ben_Abdallah_Icon_System_APPROVED.pdf",
+  "sourcePdfSha256": "a57c65d8e82dd51fb64b0dcc77cdb685ad251eaa34fd968c361564f207bd4d1d",
+  "sourceImageSize": [
+    1774,
+    887
+  ],
+  "sourcePixelSha256": "179467ae3010a3c319f7dba9a3867ca2ea0edc31bff093fc2f8949d6f6bbfbbf",
+  "extraction": "Lossless RGB pixel crops from the embedded raster. Native background retained. No redraw, tracing, recoloring, alpha matting, rotation or resampling.",
+  "icons": [
+    {
+      "name": "emotional-intelligence",
+      "src": "/images/brand-icons/emotional-intelligence.png",
+      "width": 305,
+      "height": 236,
+      "crop": [
+        57,
+        74,
+        362,
+        310
+      ],
+      "sha256": "b7613a5086ed84177767fd34c9042d8eb702a75078683c63492d287a79cfe012",
+      "pixelSha256": "2e0af9359c6f9b7016a4256c97f8ad33a1c0895437314a808bfff88b1d1543df"
+    },
+    {
+      "name": "people-management",
+      "src": "/images/brand-icons/people-management.png",
+      "width": 293,
+      "height": 216,
+      "crop": [
+        428,
+        86,
+        721,
+        302
+      ],
+      "sha256": "e5309c7d09aec5f3751f2c16f7084c5b495ab47d9d9568d5d7e409ddad467c1c",
+      "pixelSha256": "f630c052e6be49a1ed10c1c1095fceeaddefc61acf4fce02b24734dce1c4a106"
+    },
+    {
+      "name": "organizational-dynamics",
+      "src": "/images/brand-icons/organizational-dynamics.png",
+      "width": 269,
+      "height": 191,
+      "crop": [
+        787,
+        92,
+        1056,
+        283
+      ],
+      "sha256": "95e32233827995ec01c658d14f06f1a162b63f6011a478d9058dcc44e339f323",
+      "pixelSha256": "6853d390df757bbb764932eb6fa23d30489cb12ce109ceffff12759cbcb7593a"
+    },
+    {
+      "name": "professional-growth",
+      "src": "/images/brand-icons/professional-growth.png",
+      "width": 262,
+      "height": 239,
+      "crop": [
+        1129,
+        71,
+        1391,
+        310
+      ],
+      "sha256": "cdb771d4a112de55f384aca672a9eaa8b1147e8d932b770e4ff588d5aa3b14d1",
+      "pixelSha256": "3120753f3528de04c97771412c567cb27824c2f2baf4409f016e6aab22618f49"
+    },
+    {
+      "name": "performance-focus",
+      "src": "/images/brand-icons/performance-focus.png",
+      "width": 249,
+      "height": 237,
+      "crop": [
+        1468,
+        68,
+        1717,
+        305
+      ],
+      "sha256": "0c0c36e296e15b2420147b6ea0dff71e291c24b1a97a5d365d0ef7eb78de999d",
+      "pixelSha256": "1a62048c2fbbeb3a6220198f716c5d72a24b10a9b73a27f076395b28f9c84bb4"
+    },
+    {
+      "name": "communication-influence",
+      "src": "/images/brand-icons/communication-influence.png",
+      "width": 288,
+      "height": 206,
+      "crop": [
+        56,
+        475,
+        344,
+        681
+      ],
+      "sha256": "794cdb630b3dc0774801ae997cb18aa64bac19ef84b94c2aaad6d0c85b0da57d",
+      "pixelSha256": "977e2908b995b7df64b4ae993ab9255279631c7d908fffcc108e61dd045ba3c5"
+    },
+    {
+      "name": "leadership",
+      "src": "/images/brand-icons/leadership.png",
+      "width": 283,
+      "height": 229,
+      "crop": [
+        417,
+        460,
+        700,
+        689
+      ],
+      "sha256": "03872078e7aedefa01c636873800583ac216d575ade4c6c31bdac96d7080b4aa",
+      "pixelSha256": "fe97ed992695781af78f200b72b72e33b44bfd295bebc20b43faf1ef5b30ac2b"
+    },
+    {
+      "name": "learning-development",
+      "src": "/images/brand-icons/learning-development.png",
+      "width": 273,
+      "height": 253,
+      "crop": [
+        762,
+        437,
+        1035,
+        690
+      ],
+      "sha256": "0bc834925bc698a2df8bf2b689dbc2f0adcb00d2715332f413b7b34591317abf",
+      "pixelSha256": "a9bfdbea66cd48c3943ce25f71b9fa38a9042060dfb039683bc18a5aae58c190"
+    },
+    {
+      "name": "wellbeing-self-regulation",
+      "src": "/images/brand-icons/wellbeing-self-regulation.png",
+      "width": 233,
+      "height": 219,
+      "crop": [
+        1133,
+        475,
+        1366,
+        694
+      ],
+      "sha256": "af20d71c53c60639a46189bf7f1b1480e9b405f9b296e1e3dda55d1322701d15",
+      "pixelSha256": "7a637e00481f39278b2477c41855556f88d1b015a6b6f54a669ec32c7d1d674e"
+    },
+    {
+      "name": "mind-heart-integration",
+      "src": "/images/brand-icons/mind-heart-integration.png",
+      "width": 311,
+      "height": 141,
+      "crop": [
+        1433,
+        516,
+        1744,
+        657
+      ],
+      "sha256": "4e7b5653725bdb94dc82f53c820adf21ab505988b6246445c5435ce78a2152da",
+      "pixelSha256": "80694cae6d807b38a2093c48a7dcc10400209945cdb252b635c4efd19488b2f9"
+    }
+  ]
+}

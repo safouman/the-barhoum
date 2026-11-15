@@ -13,7 +13,7 @@ export default async function AboutPage() {
   const locale = await resolveLocale();
   const copy = publicPageCopy[locale].about;
   return (
-    <InformationPage locale={locale} eyebrow={copy.eyebrow} {...brandCopy[locale].pages.about} sections={copy.sections}>
+    <InformationPage locale={locale} eyebrow={copy.eyebrow} {...brandCopy[locale].pages.about} sections={copy.sections.map((section, index) => ({ ...section, icon: index === 0 ? "mind-heart-integration" as const : index === 1 ? "leadership" as const : undefined }))}>
       <InformationAction href={"/program?" + new URLSearchParams({ lang: locale })}>{copy.action}</InformationAction>
     </InformationPage>
   );

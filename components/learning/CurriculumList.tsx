@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { BrandIcon } from "@/components/brand/BrandIcon";
+import { programModuleIcons } from "@/lib/brand-icons";
 import { MAIN_PROGRAM_SLUG } from "@/lib/learning/main-program";
 import featured from "./FeaturedCourse.module.css";
 import type { Locale } from "@/lib/content";
@@ -61,6 +63,7 @@ function Modules({ modules, premiumProgress, variant = "default", ...listProps }
   return (
     <div className={isFeatured ? featured.moduleGrid : "space-y-2"}>
       {modules.map((module, index) => {
+        const icon = isFeatured && Object.hasOwn(programModuleIcons, module.title) ? programModuleIcons[module.title] : undefined;
         const progress = module.classification === "premium"
           ? premiumProgress?.find(({ moduleId }) => String(moduleId) === module.id)
           : undefined;
@@ -74,7 +77,7 @@ function Modules({ modules, premiumProgress, variant = "default", ...listProps }
             className={isFeatured ? featured.module : "group/module rounded-sm border border-border bg-[var(--brand-background)]"}
           >
             <summary className={isFeatured ? featured.moduleSummary : "flex min-h-12 cursor-pointer list-none items-center gap-2 rounded-sm px-3 py-2 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-focus [&::-webkit-details-marker]:hidden"}>
-              {isFeatured ? <span aria-hidden="true" className={featured.moduleNumber}><bdi dir="ltr">{String(index + 1).padStart(2, "0")}</bdi></span> : null}
+              {isFeatured ? <span aria-hidden="true" className={`${featured.moduleNumber} ${icon ? featured.moduleNumberWithIcon : ""}`}>{icon ? <BrandIcon name={icon} size={32} /> : null}<bdi dir="ltr">{String(index + 1).padStart(2, "0")}</bdi></span> : null}
               <LearningIcon name="down" className={isFeatured ? featured.moduleChevron : "size-4 shrink-0 transition-transform group-open/module:rotate-180"} />
               <span className={isFeatured ? featured.moduleTitle : "min-w-0 flex-1 break-words"}><bdi>{module.title}</bdi></span>
               {isFeatured ? <span className={featured.moduleMeta}>{copy.lessonCount}: <bdi dir="ltr">{module.lessons.length}</bdi></span> : null}
