@@ -1,14 +1,15 @@
-// Pixel-exact crops from the approved icon PDF. See public/images/brand-icons/source.json.
+// Original crops are retained. Six module assets use alpha-refined derivatives;
+// see public/images/brand-icons/{source.json,transparent/source.json}.
 export const brandIconAssets = {
-  "emotional-intelligence": { src: "/images/brand-icons/emotional-intelligence.png", width: 305, height: 236 },
+  "emotional-intelligence": { src: "/images/brand-icons/transparent/emotional-intelligence.png", width: 305, height: 236 },
   "people-management": { src: "/images/brand-icons/people-management.png", width: 293, height: 216 },
-  "organizational-dynamics": { src: "/images/brand-icons/organizational-dynamics.png", width: 269, height: 191 },
-  "professional-growth": { src: "/images/brand-icons/professional-growth.png", width: 262, height: 239 },
-  "performance-focus": { src: "/images/brand-icons/performance-focus.png", width: 249, height: 237 },
-  "communication-influence": { src: "/images/brand-icons/communication-influence.png", width: 288, height: 206 },
+  "organizational-dynamics": { src: "/images/brand-icons/transparent/organizational-dynamics.png", width: 269, height: 191 },
+  "professional-growth": { src: "/images/brand-icons/transparent/professional-growth.png", width: 262, height: 239 },
+  "performance-focus": { src: "/images/brand-icons/transparent/performance-focus.png", width: 249, height: 237 },
+  "communication-influence": { src: "/images/brand-icons/transparent/communication-influence.png", width: 288, height: 206 },
   "leadership": { src: "/images/brand-icons/leadership.png", width: 283, height: 229 },
   "learning-development": { src: "/images/brand-icons/learning-development.png", width: 273, height: 253 },
-  "wellbeing-self-regulation": { src: "/images/brand-icons/wellbeing-self-regulation.png", width: 233, height: 219 },
+  "wellbeing-self-regulation": { src: "/images/brand-icons/transparent/wellbeing-self-regulation.png", width: 233, height: 219 },
   "mind-heart-integration": { src: "/images/brand-icons/mind-heart-integration.png", width: 311, height: 141 },
 } as const;
 export type BrandIconName = keyof typeof brandIconAssets;

@@ -1,41 +1,46 @@
-# Checkpoint 3C — Original branded iconography
+# Checkpoint 3C — Course-only iconography refinement
 
-Development-only implementation. Owner visual acceptance remains pending.
+Supersedes the visually rejected placements at `7d4cf29`. Development only; owner visual acceptance remains required.
 
-## Source and fidelity
+## Placement and shared curriculum
 
-The attached `Ibrahim_Ben_Abdallah_Icon_System_APPROVED.pdf` contains one embedded 1774 × 887 RGB raster board, rather than individual vector icons. Ten native-resolution, lossless PNG crops retain the original background, colors, gradients, proportions and pixels. No tracing, redrawing, recoloring, transparency conversion or resampling was applied. Next Image uses `unoptimized` with `object-fit: contain` to avoid lossy conversion or distortion. The supplied artwork has a baked-in light background; it is deliberately retained.
+Branded artwork is removed from About, Organizations and Resources. People Management, Leadership, Learning & Development and Mind–Heart Integration remain available as original assets, without placements.
 
-`public/images/brand-icons/source.json` records the source PDF/image hashes, exact crop rectangles, native dimensions and asset hashes. `scripts/verify-brand-icon-source.py <approved.pdf>` verifies decoded pixel equality against the PDF; Pillow and pypdf are audit tools, not application dependencies. `node --test tests/brand-icons/assets.test.mjs` guards the extracted file bytes and dimensions.
+The six approved module icons appear only within the existing featured program, using its actual Payload module titles and structure:
 
-## Placement map
-
-| Original icon | Existing placement |
+| Module title | Icon |
 | --- | --- |
-| Emotional Intelligence | Program module: Understand Yourself to Act Better |
-| People Management | Organizations: Human ↔ Human |
-| Organizational Dynamics | Program module: Decode Organizational Dynamics |
-| Professional Growth | Program module: Build Your Professional Growth Plan |
-| Performance & Focus | Program module: Master Your Presence in Meetings |
-| Communication & Influence | Program module: Communicate with Intelligence |
-| Leadership | About: Clarity, judgment, and human relationships |
-| Learning & Development | Resources: Free course previews |
-| Wellbeing & Self-Regulation | Program module: Manage Pressure & Difficult Relationships |
-| Mind–Heart Integration | About: The future is artificial. The difference is human. |
+| Understand Yourself to Act Better | Emotional Intelligence |
+| Decode Organizational Dynamics | Organizational Dynamics |
+| Communicate with Intelligence | Communication & Influence |
+| Master Your Presence in Meetings | Performance & Focus |
+| Manage Pressure & Difficult Relationships | Wellbeing & Self-Regulation |
+| Build Your Professional Growth Plan | Professional Growth |
 
-The six existing module headings and ordering remain Payload-backed. Artwork is assigned by the current approved module title, only on the featured program. Reordering preserves the association; a renamed/unrecognized module receives no misleading replacement icon. This is a presentation mapping, without schema or course-data changes. Public-page mappings apply to the corresponding existing EN/FR/AR sections.
+The public course, owner course view and lesson-player navigation reuse the same `CurriculumList` mapping. Reordering retains the title association. An unrecognized/renamed module gets no misleading fallback icon. Displayed titles, lesson relationships and ordering remain Payload-driven; there is no second curriculum or schema change.
 
-## Accessibility and scope
+## Transparent source treatment
 
-Icons accompany existing visible headings, so they have empty alt text and are hidden from assistive technology. They are decorative, not controls. Module numbers, native accordion summaries, carets, lock/play/list/download/arrow icons and focus behavior are preserved. Artwork never flips in RTL. Existing fonts, colors, logo, content, links and actions remain unchanged.
+The approved PDF contains a raster board, with no original alpha/vector layers. All ten pixel-exact native crops and their original provenance remain unchanged in `public/images/brand-icons/`. Six transparent derivatives are stored separately under `transparent/`.
 
-No dependencies, migrations, database writes, environment changes, purchase changes or Production changes. No artwork was added to the homepage hero or standard functional controls.
+Image-editing background removal was trialed but introduced speckling and was rejected. The shipped derivatives instead use deterministic source-raster alpha refinement: clear border-connected neutral background pixels, then unmix the white matte into RGB/alpha. This avoids redrawing, resampling, background recoloring, CSS blend modes and white containers. Native canvas dimensions, coordinates and proportions remain unchanged. Pale highlights blend smoothly with the page; reconstructed transparency cannot be claimed to be the unavailable original alpha layer.
 
-## Verification
+`scripts/prepare-module-icon-alpha.mjs` reproduces the six derivatives from retained originals using the existing Sharp installation. There is no new runtime dependency. `transparent/source.json` records output dimensions and hashes. Tests verify transparent outer borders, retention of visible source geometry and source-color reconstruction on white within 1.6 RGB levels of rounding. The cream/dark review sheet exposes edge and matte behavior.
 
-- Ten extracted PNGs verified pixel-for-pixel against the embedded PDF image.
-- Lint, types and Next.js webpack build passed.
-- Read-only Chrome placement checks cover About, Organizations, Resources and the actual Payload-backed featured course in EN/FR/AR at 1440, 390 and 320 px (36 combinations).
-- Checks cover image loading/proportions, unchanged bytes over HTTP, no horizontal overflow, decorative accessibility and keyboard accordion toggling.
-- Desktop/mobile screenshots include collapsed and expanded curriculum states. Hosted evidence is recorded separately after deployment.
-- Existing commerce, authentication, progress and media behavior are outside the changed files; no full backend audit or purchase was repeated for this presentation-only task.
+## Composition and accessibility
+
+Public rows use 64px artwork on desktop and 48px on narrow mobile. Student navigation uses 44px artwork. A separate 12px (11px in student navigation) ordinal sits above the module title, leaving the title dominant. Existing editorial fonts, colors, module separators, free/locked/completed lesson controls and native summary interactions are retained.
+
+Decorative images retain empty alt text and `aria-hidden`; existing visible module headings provide meaning. Artwork is not mirrored in RTL. Functional SVG icons, keyboard focus, lesson links and completion logic are unchanged.
+
+## Focused verification
+
+- Original ten files pass exact hash/native-dimension checks; all six derivatives pass alpha/source-color fidelity checks.
+- Lint, types and Next.js webpack build pass.
+- Read-only responsive checks cover removed public placements, public curriculum, actual free lesson and locked paid lesson in EN/FR/AR at 1440, 390 and 320 px (54 combinations).
+- Checks cover loaded assets, image sizes/proportions, no horizontal overflow, decorative accessibility, native keyboard accordion interaction and anonymous paid-embed denial.
+- Actual signed-in Development QA browser evidence is captured separately after deployment; no synthetic ownership fixtures are substituted.
+- No purchases or completion changes are made for icon verification. Native lesson visits may update the QA student's last-visited lesson through existing behavior.
+- No migrations, course edits, commerce/authentication/progress implementation changes, environment changes or Production deployment.
+
+Hosted screenshots and measured results are delivered in the companion evidence folder. External Vimeo playback is not re-certified by this visual task.

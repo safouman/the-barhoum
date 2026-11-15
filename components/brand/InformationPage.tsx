@@ -1,12 +1,10 @@
 import Link from "next/link";
-import { BrandIcon } from "./BrandIcon";
-import type { BrandIconName } from "@/lib/brand-icons";
 import type { ReactNode } from "react";
 import type { Locale } from "@/lib/content";
 import styles from "./InformationPage.module.css";
 
-export type InformationSection = { title: string; paragraphs: string[]; icon?: BrandIconName };
-export type InformationResource = { href: string; title: string; description: string; icon?: BrandIconName };
+export type InformationSection = { title: string; paragraphs: string[] };
+export type InformationResource = { href: string; title: string; description: string };
 
 export function InformationPage({
   locale, eyebrow, title, intro, sections, children,
@@ -28,7 +26,7 @@ export function InformationPage({
       <div className={styles.sections}>
         {sections.map((section) => (
           <section key={section.title} className={styles.section}>
-            {section.icon ? <div className={styles.sectionHeading}><BrandIcon name={section.icon} /><h2>{section.title}</h2></div> : <h2>{section.title}</h2>}
+            <h2>{section.title}</h2>
             <div>{section.paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
           </section>
         ))}
@@ -45,9 +43,8 @@ export function InformationAction({ href, children }: { href: string; children: 
 export function InformationResources({ resources, linkLabel }: { resources: InformationResource[]; linkLabel: string }) {
   return (
     <ul className={styles.resources}>
-      {resources.map(({ href, title, description, icon }) => (
+      {resources.map(({ href, title, description }) => (
         <li key={href}>
-          {icon ? <BrandIcon name={icon} /> : null}
           <h2>{title}</h2>
           <p>{description}</p>
           <Link href={href} className={styles.resourceLink}>

@@ -14,7 +14,7 @@ export default async function ResourcesPage() {
   const [locale, site, home] = await Promise.all([resolveLocale(), getSiteConfig(), getHomeData()]);
   const copy = publicPageCopy[locale].resources;
   const resources: InformationResource[] = [
-    { href: "/courses?" + new URLSearchParams({ lang: locale }), ...copy.preview, icon: "learning-development" },
+    { href: "/courses?" + new URLSearchParams({ lang: locale }), ...copy.preview },
   ];
   const introduction = home.media.videos.find((video) => video.fallback?.startsWith("/video/"));
   if (introduction?.fallback) resources.push({ href: introduction.fallback, ...copy.introduction });

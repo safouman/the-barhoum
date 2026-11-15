@@ -1,0 +1,65 @@
+{
+  "method": "Border-connected neutral background removal and white-matte color-to-alpha unmixing. Native dimensions and geometry retained without resampling. Pale highlights blend with the page; original source PNGs retained. Compositing onto white reconstructs retained source colors within rounding.",
+  "icons": [
+    {
+      "name": "emotional-intelligence",
+      "src": "/images/brand-icons/transparent/emotional-intelligence.png",
+      "width": 305,
+      "height": 236,
+      "sha256": "920c18e40ce8214fc1d88d0ba0efb35a0aa0fbd27ba521aaa537aacdcedcf9ed",
+      "transparentPixels": 47036,
+      "alphaAdjustedPixels": 23633,
+      "unchangedOpaquePixels": 1290
+    },
+    {
+      "name": "organizational-dynamics",
+      "src": "/images/brand-icons/transparent/organizational-dynamics.png",
+      "width": 269,
+      "height": 191,
+      "sha256": "86f89bc623cc8892c65fc43a0c48557dcfa79bacf87c9ddad26ef6e7f0cf33aa",
+      "transparentPixels": 30203,
+      "alphaAdjustedPixels": 19994,
+      "unchangedOpaquePixels": 1182
+    },
+    {
+      "name": "communication-influence",
+      "src": "/images/brand-icons/transparent/communication-influence.png",
+      "width": 288,
+      "height": 206,
+      "sha256": "bda599141309edf4e2e4468ef151f69365df2bd8bc728ba24648274c57626c45",
+      "transparentPixels": 36281,
+      "alphaAdjustedPixels": 21896,
+      "unchangedOpaquePixels": 1099
+    },
+    {
+      "name": "performance-focus",
+      "src": "/images/brand-icons/transparent/performance-focus.png",
+      "width": 249,
+      "height": 237,
+      "sha256": "2ac8e79e9e13a961910dd6a206eaf5c946e655a54e28558745c842d9182a0021",
+      "transparentPixels": 37258,
+      "alphaAdjustedPixels": 20413,
+      "unchangedOpaquePixels": 1342
+    },
+    {
+      "name": "wellbeing-self-regulation",
+      "src": "/images/brand-icons/transparent/wellbeing-self-regulation.png",
+      "width": 233,
+      "height": 219,
+      "sha256": "6c92d1232f0a20f7252453531bb753b7dffb2e9a53e153ed7594809452437d1d",
+      "transparentPixels": 25351,
+      "alphaAdjustedPixels": 24537,
+      "unchangedOpaquePixels": 1139
+    },
+    {
+      "name": "professional-growth",
+      "src": "/images/brand-icons/transparent/professional-growth.png",
+      "width": 262,
+      "height": 239,
+      "sha256": "3640ed54106867e4143eccb1610c98ac766b36a0c465cf435f46893f56df0995",
+      "transparentPixels": 43505,
+      "alphaAdjustedPixels": 17430,
+      "unchangedOpaquePixels": 1683
+    }
+  ]
+}
