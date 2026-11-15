@@ -14,7 +14,7 @@
 .shell input:focus-visible { outline: 2px solid var(--brand-primary); outline-offset: 3px; }
 .courseContext { border-top: 1px solid var(--brand-surface); padding-block-start: 1.75rem; }
 .courseContext > p:first-child { margin: 0 0 .75rem; color: var(--brand-primary); font-size: .8125rem; }
-.courseTitle { margin: 0; font-family: var(--font-playfair), var(--font-noto-naskh), Georgia, serif; font-size: clamp(1.5rem, 2.5vw, 2rem); line-height: 1.35; }
+.courseTitle { margin: 0; font-family: var(--brand-display); font-size: clamp(1.5rem, 2.5vw, 2rem); line-height: 1.35; }
 .contextPrice { margin: 1rem 0; font-size: 1.125rem; font-weight: 600; }
 .contextNote { max-width: 42ch; margin-block: 1rem .5rem; font-size: .875rem; line-height: 1.7; }
 .contextLink { display: inline-flex; min-height: 44px; align-items: center; color: var(--brand-primary); text-decoration: underline; text-underline-offset: 4px; font-size: .875rem; }

@@ -4,7 +4,7 @@
   height: 220px;
   color: var(--brand-text);
   background: transparent;
-  font-family: var(--brand-body);
+  font-family: var(--brand-ui);
   font-size: 15px;
   line-height: 1.45;
 }
@@ -127,9 +127,6 @@
   clip-path: inset(50%);
 }
 
-.header[lang="ar"] {
-  font-family: var(--brand-arabic);
-}
 
 @media (max-width: 1160px) and (min-width: 1101px) {
   .desktopPrimary {

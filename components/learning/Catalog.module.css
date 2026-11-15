@@ -100,7 +100,7 @@
 
 .cardTitle {
   margin: 0;
-  font-family: var(--font-playfair), var(--font-noto-naskh), Georgia, serif;
+  font-family: var(--brand-display);
   font-size: clamp(1.5rem, 2.5vw, 1.875rem);
   font-weight: 500;
   line-height: 1.3;
@@ -147,11 +147,6 @@
   line-height: 1.75;
 }
 
-.catalog[lang="ar"],
-.catalog[lang="ar"] .title,
-.card[lang="ar"] {
-  font-family: var(--brand-arabic, var(--font-noto-naskh), serif);
-}
 
 @media (max-width: 1023px) {
   .grid {

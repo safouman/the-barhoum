@@ -153,7 +153,7 @@
   grid-column: 2;
   grid-row: 1;
   max-width: 45ch;
-  font-family: var(--font-playfair), var(--font-noto-naskh), Georgia, serif;
+  font-family: var(--brand-display);
   font-size: clamp(1.25rem, 2vw, 1.625rem);
   font-weight: 400;
   line-height: 1.4;
@@ -199,7 +199,7 @@
 }
 
 .authoredTitle {
-  font-family: var(--font-playfair), var(--font-noto-naskh), Georgia, serif;
+  font-family: var(--brand-display);
 }
 
 .price {
@@ -225,7 +225,7 @@
 /* Authored Latin text keeps Inter while Arabic glyphs use the existing Naskh face. */
 .description,
 .metadata bdi {
-  font-family: var(--font-inter), var(--font-noto-naskh), sans-serif;
+  font-family: var(--brand-body);
 }
 
 @media (max-width: 639px) {
@@ -249,7 +249,7 @@
 
 /* The trailing enrollment uses the same state-resolved action as the introduction. */
 .curriculumAction { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.5rem 3rem; padding-block: 2.5rem 0; }
-.actionTitle { max-width: 28ch; margin: 0; font-family: var(--font-playfair), var(--font-noto-naskh), Georgia, serif; font-size: 1.625rem; line-height: 1.35; }
+.actionTitle { max-width: 28ch; margin: 0; font-family: var(--brand-display); font-size: 1.625rem; line-height: 1.35; }
 .actionControls { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; }
 .actionPrice { margin: 0; font-size: 1rem; }
 .actionPrice span { display: block; font-size: 0.8125rem; line-height: 1.6; }

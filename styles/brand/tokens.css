@@ -4,9 +4,10 @@
   --brand-background: #f9f6f2;
   --brand-surface: #ede8e3;
   --brand-text: #1a1a1a;
-  --brand-display: var(--font-playfair), Georgia, serif;
-  --brand-body: var(--font-inter), Arial, sans-serif;
-  --brand-arabic: var(--font-noto-naskh), serif;
+  --brand-display: var(--font-playfair), var(--font-tajawal-heading), Georgia, serif;
+  --brand-hero: var(--font-playfair), var(--font-tajawal-hero), Georgia, serif;
+  --brand-body: var(--font-inter), var(--font-tajawal), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  --brand-ui: var(--font-inter), var(--font-tajawal-ui), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
 }
 
 .brand-experience {
@@ -18,7 +19,7 @@
   --color-border: var(--brand-surface);
   --font-heading: var(--brand-display);
   --font-base: var(--brand-body);
-  --font-ui: var(--brand-body);
+  --font-ui: var(--brand-ui);
   overflow: clip;
   color: var(--brand-text);
   background: var(--brand-background);
@@ -30,10 +31,6 @@
   font-family: var(--brand-display);
 }
 
-.brand-experience[lang="ar"],
-.brand-experience[lang="ar"] :where(h1, h2, h3) {
-  font-family: var(--brand-arabic);
-}
 
 .brand-experience :focus-visible {
   outline: 2px solid var(--brand-primary);
@@ -43,7 +40,7 @@
 .brand-footer {
   padding: 24px;
   border-top: 1px solid var(--brand-surface);
-  font-family: var(--brand-body);
+  font-family: var(--brand-ui);
   font-size: 13px;
 }
 
@@ -80,7 +77,7 @@
   border-radius: 999px;
   text-transform: none;
   letter-spacing: normal;
-  font-family: var(--brand-body);
+  font-family: var(--brand-ui);
 }
 
 .brand-experience .btn-solid {
@@ -100,6 +97,8 @@
   outline-offset: 4px;
 }
 
-.brand-experience[lang="ar"] .btn {
-  font-family: var(--brand-arabic);
+.brand-experience :where(button, input, select, textarea, label) {
+  font-family: var(--brand-ui);
 }
+
+.arabic-script-run { letter-spacing: normal; }

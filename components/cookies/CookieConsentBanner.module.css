@@ -4,7 +4,7 @@
   border-bottom: 1px solid var(--brand-surface);
   background: var(--brand-background);
   color: var(--brand-text);
-  font-family: var(--font-inter), var(--font-noto-naskh), sans-serif;
+  font-family: var(--brand-body);
 }
 .content { max-width: 76rem; margin-inline: auto; }
 .layout { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem 2rem; }

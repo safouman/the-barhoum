@@ -1,3 +1,4 @@
+import { LatinFontPreloads } from "@/components/LatinFontPreloads";
 import type { ReactNode } from "react";
 import type { Locale, SiteConfig } from "@/lib/content";
 import { BrandSiteChrome } from "@/components/BrandSiteChrome";
@@ -15,6 +16,9 @@ export function StudentFrame({ children, signedIn, site, locale, checkout, fontC
   const language = checkout ? "en" : locale;
   return (
     <html lang={language} dir={language === "ar" ? "rtl" : "ltr"} className={fontClassName}>
+      {/* Shared App Router root: next/head is a Pages Router API. */}
+      {/* eslint-disable-next-line @next/next/no-head-element */}
+      <head><LatinFontPreloads /></head>
       <body>
         <LocaleProvider initialLocale={locale}>
           <AnalyticsProvider>

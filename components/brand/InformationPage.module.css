@@ -123,13 +123,9 @@
   text-underline-offset: 4px;
 }
 
-.page[dir="rtl"] {
-  font-family: var(--brand-arabic);
-}
 
 .page[dir="rtl"] h1,
 .page[dir="rtl"] h2 {
-  font-family: var(--brand-arabic);
   letter-spacing: 0;
 }
 

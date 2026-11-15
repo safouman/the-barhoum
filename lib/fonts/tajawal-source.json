@@ -1,0 +1,33 @@
+{
+  "stylesheet": "https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap",
+  "faces": [
+    {
+      "weight": 400,
+      "file": "Tajawal-400.woff2",
+      "source": "https://fonts.gstatic.com/s/tajawal/v12/Iura6YBj_oCad4k1nzSBC5xLhLFw4Q.woff2",
+      "bytes": 8916,
+      "sha256": "4969197a00e95b22413373f0f30b870e90fdfbe1c1b9aa2620d3e5fa0771c74d"
+    },
+    {
+      "weight": 500,
+      "file": "Tajawal-500.woff2",
+      "source": "https://fonts.gstatic.com/s/tajawal/v12/Iurf6YBj_oCad4k1l8KiHrRpiZtK6GwN9w.woff2",
+      "bytes": 8868,
+      "sha256": "46d9e2f3b2d68c51d15133cc8bf8ccd76b29e72d2fa5ed8b56b81a1d584f2373"
+    },
+    {
+      "weight": 700,
+      "file": "Tajawal-700.woff2",
+      "source": "https://fonts.gstatic.com/s/tajawal/v12/Iurf6YBj_oCad4k1l4qkHrRpiZtK6GwN9w.woff2",
+      "bytes": 9040,
+      "sha256": "33d0ac88246960c05e487caa5cacfde93a5c9c4ea29e4970e7f5dcb8a1fcba6f"
+    },
+    {
+      "weight": 800,
+      "file": "Tajawal-800.woff2",
+      "source": "https://fonts.gstatic.com/s/tajawal/v12/Iurf6YBj_oCad4k1l5anHrRpiZtK6GwN9w.woff2",
+      "bytes": 9380,
+      "sha256": "af463ee17b3ea24dfdd343a6a9fb60a76bd5ac8438b5de82d8ef2d14c0f51684"
+    }
+  ]
+}

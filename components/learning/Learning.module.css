@@ -19,10 +19,6 @@
   font-weight: 500;
 }
 
-.learning[lang="ar"],
-.learning[lang="ar"] :where(h1, h2, h3) {
-  font-family: var(--brand-arabic);
-}
 
 .learning :global(.btn) {
   min-height: 44px;

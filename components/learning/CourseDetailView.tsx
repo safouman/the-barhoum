@@ -1,3 +1,4 @@
+import { ArabicText } from "@/components/ArabicText";
 import { MAIN_PROGRAM_SLUG } from "@/lib/learning/main-program";
 import featured from "./FeaturedCourse.module.css";
 import type { Locale } from "@/lib/content";
@@ -113,7 +114,7 @@ export function CourseDetailView({ course, commerce, progress, locale = "ar" }: 
       <CurriculumList variant={isFeatured ? "featured" : "default"} locale={locale} curriculum={course.curriculum} courseSlug={course.slug} />
       {isFeatured && primaryAction ? (
         <div className={featured.curriculumAction} data-curriculum-action>
-          <p className={featured.actionTitle}><bdi>{course.title}</bdi></p>
+          <p className={featured.actionTitle}><bdi><ArabicText text={course.title} /></bdi></p>
           <div className={featured.actionControls}>
             {!commerce?.ownership.base && baseOffer ? <p className={featured.actionPrice}><bdi dir="ltr">{formatOfferPrice(baseOffer)}</bdi> <span>{copy.once}</span></p> : null}
             {primaryAction}
@@ -149,7 +150,7 @@ export function CourseDetailView({ course, commerce, progress, locale = "ar" }: 
           <section className={featured.introduction}>
             <div className={featured.editorial}>
               <p className={featured.eyebrow}>{copy.learnWith}</p>
-              <h1 className={featured.title}><bdi className={featured.authoredTitle}>{course.title}</bdi></h1>
+              <h1 className={featured.title}><bdi className={featured.authoredTitle}><ArabicText text={course.title} /></bdi></h1>
               <p className={featured.description} dir="auto">{course.description}</p>
               <p className={featured.metadata}>
                 <span>{copy.lessonCount}: <bdi dir="ltr">{lessons.length}</bdi></span>
@@ -172,7 +173,7 @@ export function CourseDetailView({ course, commerce, progress, locale = "ar" }: 
             <Container className="grid items-center gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-14">
               <div className="space-y-4">
                 <p className="text-sm font-semibold text-[var(--brand-primary)]">{copy.learnWith}</p>
-                <h1 className="text-display leading-tight"><bdi>{course.title}</bdi></h1>
+                <h1 className="text-display leading-tight"><bdi><ArabicText text={course.title} /></bdi></h1>
                 <p className="text-lead max-w-[55ch]" dir="auto">{course.description}</p>
                 <p className="text-sm text-subtle">{copy.lessonCount}: <bdi dir="ltr">{lessons.length}</bdi>{info ? <> · <bdi>{info}</bdi></> : null}</p>
                 {enrollment}

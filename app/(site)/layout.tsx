@@ -1,10 +1,10 @@
+import { LatinFontPreloads } from "@/components/LatinFontPreloads";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 // optional but helpful in some hosts:
 export const runtime = "nodejs";
 import Script from "next/script";
-import type { CSSProperties } from "react";
-import { Inter, Noto_Naskh_Arabic, Playfair_Display } from "next/font/google";
+import { siteFontClassName } from "@/lib/fonts";
 import "../../styles/globals.css";
 import "../../styles/brand/tokens.css";
 import { LocaleProvider } from "@/providers/locale-provider";
@@ -26,66 +26,6 @@ function toAbsoluteAssetUrl(path: string): string {
     }
     return `${siteUrl}/${path}`;
 }
-const playfair = Playfair_Display({
-    subsets: ["latin", "latin-ext"],
-    weight: ["400", "700"],
-    style: ["normal", "italic"],
-    variable: "--font-playfair",
-    display: "swap",
-});
-const inter = Inter({
-    subsets: ["latin"],
-    weight: ["400", "500", "600"],
-    variable: "--font-inter",
-    display: "swap",
-    fallback: [
-        "Noto Naskh Arabic",
-        "system-ui",
-        "-apple-system",
-        "BlinkMacSystemFont",
-        "Segoe UI",
-        "sans-serif",
-    ],
-    preload: true,
-});
-
-const notoNaskhArabic = Noto_Naskh_Arabic({
-    subsets: ["arabic"],
-    weight: ["400", "700"],
-    variable: "--font-noto-naskh",
-    display: "swap",
-    preload: true,
-});
-
-function parseFontList(value: string | undefined): string[] {
-    if (!value) {
-        return [];
-    }
-    return value
-        .split(",")
-        .map((entry) => entry.trim().replace(/^['"]|['"]$/g, ""))
-        .filter((entry) => entry.length > 0);
-}
-
-const interFontList = parseFontList(inter.style.fontFamily);
-const notoFontList = parseFontList(notoNaskhArabic.style.fontFamily);
-const primaryNotoFont = notoFontList.at(0);
-const interMergedFontFamily = interFontList.length
-    ? [
-          interFontList[0],
-          ...(primaryNotoFont ? [primaryNotoFont] : []),
-          ...interFontList.slice(1),
-          ...notoFontList.slice(1),
-      ].join(", ")
-    : "";
-
-const fontStyleVariables = {
-    ...(interMergedFontFamily
-        ? { "--font-inter-merged": interMergedFontFamily }
-        : {}),
-    ...(primaryNotoFont ? { "--font-noto-primary": primaryNotoFont } : {}),
-};
-
 export const metadata = getDefaultMetadata();
 
 export default async function RootLayout({
@@ -96,7 +36,7 @@ export default async function RootLayout({
     const locale = await resolveLocale();
     const direction = getDirection(locale);
     const [site, signedIn] = await Promise.all([getSiteConfig(), readHeaderSignedIn()]);
-    const fontClass = `${inter.variable} ${notoNaskhArabic.variable} ${playfair.variable}`;
+
     const brand = seoConfig.brand;
     const sameAs = brand.socials;
     const organizationId = `${siteUrl}#organization`;
@@ -150,10 +90,10 @@ export default async function RootLayout({
         <html
             lang={locale}
             dir={direction}
-            className={fontClass}
-            style={fontStyleVariables as CSSProperties}
+            className={siteFontClassName}
         >
             <head>
+                <LatinFontPreloads />
                 <link
                     rel="alternate"
                     type="application/ld+json"
