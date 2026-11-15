@@ -10,6 +10,7 @@ const output = process.env.TYPOGRAPHY_OUTPUT;
 assert.ok(output, "Provide an evidence output directory");
 await mkdir(output, { recursive: true });
 const baseline = process.env.TYPOGRAPHY_BASELINE === "1";
+const heroFocus = process.env.TYPOGRAPHY_FOCUS === "hero-auth";
 const browser = await chromium.launch({ channel: process.env.BROWSER_CHANNEL ?? "chrome" });
 const results = [], fonts = [], inkMetrics = [];
 try {
@@ -41,7 +42,7 @@ try {
       fonts.push({ path: new URL(page.url()).pathname, lang, width, selector, fonts: used });
       return used;
     }
-    const routes = baseline ? ["/", "/resources"] : ["/", "/about", "/courses", "/courses/min-al-fikra-ila-al-ada", "/login", "/register", "/verify-email", "/courses/human-intelligence-for-your-professional-evolution/lessons/21", "/resources", "/coaching"];
+    const routes = baseline ? ["/", "/resources"] : heroFocus ? ["/", "/login", "/register", "/verify-email"] : ["/", "/about", "/courses", "/courses/min-al-fikra-ila-al-ada", "/login", "/register", "/verify-email", "/courses/human-intelligence-for-your-professional-evolution/lessons/21", "/resources", "/coaching"];
     for (const route of routes) {
       const response = await page.goto(origin + route + "?lang=" + lang, { waitUntil: "domcontentloaded" });
       assert.equal(response.status(), 200, route);
@@ -61,6 +62,9 @@ try {
             });
             assert.ok(ink.lineHeight >= ink.inkHeight, "Arabic hero ink exceeds line box");
             inkMetrics.push({ lang, width, ...ink });
+            const phrases = await page.locator("#brand-hero-title > span:first-child, #brand-hero-title > span:last-child > span, #brand-hero-title em").evaluateAll(elements => elements.map(element => ({ text: element.textContent, height: element.getBoundingClientRect().height, lineHeight: parseFloat(getComputedStyle(element).lineHeight) })));
+            assert.equal(phrases.length, 3);
+            for (const phrase of phrases) assert.ok(phrase.height <= phrase.lineHeight + 1, "Arabic hero phrase wraps: " + phrase.text);
           }
           await rendered("#hero p", [/Tajawal-Regular/, /Inter/]);
           await rendered("#hero a span", [/Tajawal-Medium/]);
@@ -89,6 +93,18 @@ try {
       const name = route === "/" ? "home" : route.split("/").filter(Boolean).join("-");
       if (baseline || route === "/" || route === "/about" || route === "/login" || route === "/courses/min-al-fikra-ila-al-ada" || route === "/resources") {
         await page.screenshot({ path: join(output, `${name}-${lang}-${width}.png`), fullPage: true });
+      }
+      if (heroFocus && route === "/" && width < 1440) {
+        const toggle = page.locator("header button");
+        await toggle.press("Enter");
+        assert.equal(await toggle.getAttribute("aria-expanded"), "true");
+        const menuLink = page.locator('header nav:not([hidden]) a[href="/coaching"]');
+        await menuLink.waitFor({ state: "visible" });
+        await rendered('header nav:not([hidden]) a[href="/coaching"]', lang === "ar" ? [/Tajawal-Medium/] : [/Inter/]);
+        assert.ok(await menuLink.evaluate(element => { const rect = element.getBoundingClientRect(); return rect.left >= 0 && rect.right <= innerWidth; }));
+        await page.screenshot({ path: join(output, `navigation-${lang}-${width}.png`), fullPage: true });
+        await toggle.press("Escape");
+        assert.equal(await toggle.getAttribute("aria-expanded"), "false");
       }
       results.push({ route, lang, width, status: response.status(), reflow: true });
     }

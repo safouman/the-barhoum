@@ -286,6 +286,17 @@
   }
 }
 
+/* Keep the approved Arabic phrases together on narrow phones. */
+@media (max-width: 360px) {
+  .hero[data-locale="ar"] .title {
+    font-size: clamp(38px, 12.5vw, 44px);
+  }
+
+  .hero[data-locale="ar"] .subtitle {
+    font-size: clamp(34px, 11.25vw, 39px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .action {
     transition: none;
