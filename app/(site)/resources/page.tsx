@@ -20,7 +20,7 @@ export default async function ResourcesPage() {
   if (introduction?.fallback) resources.push({ href: introduction.fallback, ...copy.introduction });
   for (const social of site.socials) {
     if ((social.id === "instagram" || social.id === "youtube") && social.href.startsWith("https://")) {
-      resources.push({ href: social.href, title: social.label, description: copy.socialDescription });
+      resources.push({ href: social.href, title: social.label, description: copy.socialDescription, social: social.id });
     }
   }
 

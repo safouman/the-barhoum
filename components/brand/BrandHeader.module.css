@@ -51,14 +51,14 @@
 
 .desktopSecondary {
   position: absolute;
-  right: 175px;
+  right: calc(6.7% + 104px);
   top: 45px;
   gap: 24px;
 }
 
 .accountLinks {
   gap: 16px;
-  font-size: 12px;
+  font-size: inherit;
 }
 
 .language {
@@ -128,18 +128,22 @@
 }
 
 
-@media (max-width: 1160px) and (min-width: 1101px) {
+@media (max-width: 1280px) and (min-width: 1101px) {
   .desktopPrimary {
     left: 4%;
   }
 
   .desktopPrimary nav {
-    gap: 18px;
+    gap: 16px;
   }
 
   .desktopSecondary {
     right: 140px;
-    gap: 16px;
+    gap: 12px;
+  }
+
+  .accountLinks {
+    gap: 12px;
   }
 
   .language {

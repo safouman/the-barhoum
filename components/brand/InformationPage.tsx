@@ -1,10 +1,11 @@
 import Link from "next/link";
+import { SocialMark } from "./SocialMark";
 import type { ReactNode } from "react";
 import type { Locale } from "@/lib/content";
 import styles from "./InformationPage.module.css";
 
 export type InformationSection = { title: string; paragraphs: string[] };
-export type InformationResource = { href: string; title: string; description: string };
+export type InformationResource = { href: string; title: string; description: string; social?: "instagram" | "youtube" };
 
 export function InformationPage({
   locale, eyebrow, title, intro, sections, children,
@@ -43,9 +44,9 @@ export function InformationAction({ href, children }: { href: string; children: 
 export function InformationResources({ resources, linkLabel }: { resources: InformationResource[]; linkLabel: string }) {
   return (
     <ul className={styles.resources}>
-      {resources.map(({ href, title, description }) => (
+      {resources.map(({ href, title, description, social }) => (
         <li key={href}>
-          <h2>{title}</h2>
+          <h2 className={social ? styles.socialHeading : undefined}>{social ? <SocialMark name={social} /> : null}{title}</h2>
           <p>{description}</p>
           <Link href={href} className={styles.resourceLink}>
             {linkLabel}<span className={styles.srOnly}> — {title}</span><span aria-hidden="true">→</span>

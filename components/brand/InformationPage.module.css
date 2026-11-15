@@ -189,3 +189,13 @@
  .intro { margin-block-start: 1.25rem; font-size: 1.0625rem; line-height: 1.75; }
  .action { width: 100%; }
 }
+
+.socialHeading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.socialHeading svg {
+  flex-shrink: 0;
+  color: var(--brand-primary);
+}
